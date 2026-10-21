@@ -69,12 +69,13 @@ export const FIELD_KEYS: KeyTable<ExportedField> = {
   // Se recorren por dentro, con sus propias tablas.
   validations: "core",
   logic: "core",
-  // Son parte de su tipo de campo y las cubre la palabra del tipo: checkbox, file, rich_text y los
-  // de opciones.
+  // Son parte de su tipo de campo y las cubre la palabra del tipo: checkbox, file, rich_text,
+  // datalist y los de opciones.
   title: "core",
   options: "core",
   fileConfig: "core",
   content: "core",
+  suggestions: "core",
   // Se declara por valor: binding:mapped.
   apiBinding: "core",
   alwaysDisabled: "feature",
