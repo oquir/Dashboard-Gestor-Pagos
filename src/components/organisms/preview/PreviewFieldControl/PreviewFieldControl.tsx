@@ -13,6 +13,7 @@ import { catalogOptions } from "../../../../lib/mockCatalog/mockCatalog";
 import type { CatalogOption } from "../../../../types/catalog";
 import { RichTextView } from "../../../atoms/RichTextView/RichTextView";
 import { PreviewAffixFrame } from "../PreviewAffixFrame/PreviewAffixFrame";
+import { PreviewDatalistInput } from "../PreviewDatalistInput/PreviewDatalistInput";
 import { PreviewDateInput } from "../PreviewDateInput/PreviewDateInput";
 import { PreviewDateRangeInput } from "../PreviewDateRangeInput/PreviewDateRangeInput";
 import { PreviewNumberInput } from "../PreviewNumberInput/PreviewNumberInput";
@@ -96,6 +97,21 @@ export function PreviewFieldControl({
         numberInput(controlClasses)
       );
     }
+
+    // El valor es lo escrito, se elija una sugerencia o no: por eso valida y viaja como un texto.
+    case "datalist":
+      return (
+        <PreviewDatalistInput
+          inputId={inputId}
+          suggestions={field.suggestions ?? []}
+          value={toInputValue(value)}
+          placeholder={placeholder}
+          maxLength={maxLengthOf(field)}
+          disabled={disabled}
+          className={controlClasses}
+          onChange={onChange}
+        />
+      );
 
     // type tel y email no validan nada por si solos fuera de un <form>; lo que traen es el teclado
     // del celular. El formato lo valida el schema, con el patron de fabrica del tipo.
