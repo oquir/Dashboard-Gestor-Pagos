@@ -15,6 +15,12 @@ export function dateMockText(field: CanvasField): string {
   return isDateRangeField(field) ? `${single} → ${single}` : single;
 }
 
+export function suggestionCountText(count: number): string {
+  if (count === 0) return "Sin sugerencias";
+
+  return count === 1 ? "1 sugerencia" : `${count} sugerencias`;
+}
+
 export function previewOptions(field: CanvasField): PreviewOptions {
   if (!allowsManualOptions(field)) {
     return { items: PLACEHOLDER_OPTIONS, isPlaceholder: true, note: "catalog" };
