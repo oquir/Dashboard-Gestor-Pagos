@@ -32,6 +32,7 @@ export function ValidationsPanel({ field }: { field: CanvasField }) {
     field.type === "text" ||
     field.type === "textarea" ||
     field.type === "select" ||
+    field.type === "datalist" ||
     isContactField(field.type);
   // Telefono y correo ya validan sin patron: lo vacio no es "sin formato" sino "el de fabrica".
   const builtInFormat: PatternRule | undefined = builtInFormatOf(field);
