@@ -22,6 +22,11 @@ export const TEL_FIELD_TYPE = "tel";
 
 export const EMAIL_FIELD_TYPE = "email";
 
+// Texto libre que sugiere una lista mientras se escribe: el <datalist> de HTML. No es un campo de
+// opciones -- el valor es lo escrito, no un id --, asi que valida y se mapea como un texto. Ver
+// lib/fieldSuggestions.
+export const DATALIST_FIELD_TYPE = "datalist";
+
 // Texto que trae su propio formato: sin un patron del autor validan contra el del tipo. Ver
 // lib/fieldContact.
 export const CONTACT_FIELD_TYPES: string[] = [TEL_FIELD_TYPE, EMAIL_FIELD_TYPE];
@@ -33,6 +38,7 @@ export const LENGTH_CAPABLE_FIELD_TYPES: string[] = [
   "textarea",
   TEL_FIELD_TYPE,
   EMAIL_FIELD_TYPE,
+  DATALIST_FIELD_TYPE,
   "number",
   "calculated",
 ];
@@ -44,6 +50,7 @@ export const PLACEHOLDER_CAPABLE_FIELD_TYPES: string[] = [
   "textarea",
   TEL_FIELD_TYPE,
   EMAIL_FIELD_TYPE,
+  DATALIST_FIELD_TYPE,
   "number",
   "calculated",
   "select",
@@ -56,6 +63,7 @@ export const TOOLTIP_CAPABLE_FIELD_TYPES: string[] = [
   "text",
   TEL_FIELD_TYPE,
   EMAIL_FIELD_TYPE,
+  DATALIST_FIELD_TYPE,
   "number",
   "date",
   "select",
@@ -81,6 +89,7 @@ export const FIELD_TYPES: FieldTypeDef[] = [
   { type: "calculated", label: "Calculado", category: "basico" },
   { type: "file", label: "Archivo", category: "basico" },
   { type: "search_select", label: "Select con búsqueda", category: "complejo" },
+  { type: DATALIST_FIELD_TYPE, label: "Input Datalist", category: "complejo" },
   { type: "toggle_group", label: "Toggle Buttons", category: "complejo" },
   { type: "radio_group", label: "Radio Buttons", category: "complejo" },
   { type: "checkbox_group", label: "Checkbox Group", category: "complejo" },
