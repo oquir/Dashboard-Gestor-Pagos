@@ -11,6 +11,7 @@ import {
   Magnifier,
   Phone,
 } from "reicon-react";
+import { NARROW_FIELD_HIDDEN_CLASSES } from "../../../constants/uiClasses";
 import { affixOf } from "../../../lib/fieldAffix/fieldAffix";
 import { phoneKindOf } from "../../../lib/fieldContact/fieldContact";
 import { showsOptionsInline } from "../../../lib/fieldOptions/fieldOptions";
@@ -139,7 +140,10 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
         field.title,
         <div className={INPUT_CLASSES}>
           <span className="flex min-w-0 items-center gap-2">
-            <Magnifier size={14} className="shrink-0 text-fg-muted" />
+            <Magnifier
+              size={14}
+              className={`shrink-0 text-fg-muted ${NARROW_FIELD_HIDDEN_CLASSES}`}
+            />
             <span className="truncate">
               {placeholder ??
                 (options.note ? SELECT_NOTE_TEXT[options.note] : "Buscar y seleccionar…")}
@@ -238,7 +242,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
       return (
         <div className={INPUT_CLASSES}>
           <span className="truncate">{placeholder ?? "Escribe o elige…"}</span>
-          <span className={SUGGESTION_COUNT_CLASSES}>
+          <span className={`${SUGGESTION_COUNT_CLASSES} ${NARROW_FIELD_HIDDEN_CLASSES}`}>
             {suggestionCountText(suggestionsOf(field)?.length ?? 0)}
             <ListDown size={14} className="shrink-0" />
           </span>
@@ -260,7 +264,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
       return (
         <div className={READONLY_INPUT_CLASSES}>
           {withAffixes(field, placeholder ?? "Valor calculado")}
-          <Calculator size={14} className="shrink-0" />
+          <Calculator size={14} className={`shrink-0 ${NARROW_FIELD_HIDDEN_CLASSES}`} />
         </div>
       );
 
@@ -268,7 +272,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
       return (
         <div className={INPUT_CLASSES}>
           <span className="truncate">{placeholder ?? PHONE_SAMPLES[phoneKindOf(field)]}</span>
-          <Phone size={14} className="shrink-0 text-fg-muted" />
+          <Phone size={14} className={`shrink-0 text-fg-muted ${NARROW_FIELD_HIDDEN_CLASSES}`} />
         </div>
       );
 
@@ -276,7 +280,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
       return (
         <div className={INPUT_CLASSES}>
           <span className="truncate">{placeholder ?? "correo@ejemplo.com"}</span>
-          <Envelope size={14} className="shrink-0 text-fg-muted" />
+          <Envelope size={14} className={`shrink-0 text-fg-muted ${NARROW_FIELD_HIDDEN_CLASSES}`} />
         </div>
       );
 
@@ -284,7 +288,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
       return (
         <div className={INPUT_CLASSES}>
           <span className="truncate">{dateMockText(field)}</span>
-          <Calendar size={14} className="shrink-0 text-fg-muted" />
+          <Calendar size={14} className={`shrink-0 text-fg-muted ${NARROW_FIELD_HIDDEN_CLASSES}`} />
         </div>
       );
 

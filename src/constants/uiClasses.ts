@@ -51,6 +51,13 @@ export const CHROME_ON_ROW_CLASSES: string =
 
 export const CHROME_PINNED_CLASSES: string = "opacity-100";
 
+// El icono de adentro del control de muestra (la calculadora, el calendario, la lupa) se esconde
+// cuando el campo es tan angosto que no deja ver ni el texto, como el DV con los dos paneles
+// abiertos. Es una container query sobre el ancho real del contenido del chip, que depende de la
+// fila, de los paneles y de la pantalla. Los iconos de la cabecera no usan esto: deciden con el
+// largo de su propio nombre (ver CanvasFieldChip).
+export const NARROW_FIELD_HIDDEN_CLASSES: string = "@max-[5rem]:hidden";
+
 // La barra de herramientas de una fila del lienzo. El disparador y el desplegable los dibujan
 // RowColumnsMenu y RowStylesMenu, que viven en otra carpeta, asi que las clases no pueden quedarse
 // privadas dentro de RowToolbar.
