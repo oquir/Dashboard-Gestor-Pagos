@@ -38,6 +38,7 @@ export function ValidationOverrideCard({
     field.type === "text" ||
     field.type === "textarea" ||
     field.type === "select" ||
+    field.type === "datalist" ||
     isContactField(field.type);
 
   function setRule(updates: Partial<FieldValidationOverride["validations"]>): void {
