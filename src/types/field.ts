@@ -172,6 +172,10 @@ export interface CanvasField {
   // El texto gris del campo vacio. Solo presentacion: nunca entra en el valor. Ver
   // lib/fieldPlaceholder.
   placeholder?: string;
+  // Solo datalist: lo que se sugiere mientras se escribe, una entrada por linea del panel y tal
+  // cual se tecleo -- vacias incluidas --. No limita el valor, que sigue siendo el texto escrito.
+  // Ver lib/fieldSuggestions.
+  suggestions?: string[];
   // Solo telefono: que numero pide, y con eso que patron de fabrica valida. Ausente es celular, y
   // por eso el store solo guarda "fijo" o "fax". Ver lib/fieldContact.
   phoneKind?: PhoneKind;
