@@ -7,6 +7,7 @@ import {
   CloudUpload,
   Database,
   Envelope,
+  ListDown,
   Magnifier,
   Phone,
 } from "reicon-react";
@@ -14,6 +15,7 @@ import { affixOf } from "../../../lib/fieldAffix/fieldAffix";
 import { phoneKindOf } from "../../../lib/fieldContact/fieldContact";
 import { showsOptionsInline } from "../../../lib/fieldOptions/fieldOptions";
 import { placeholderOf } from "../../../lib/fieldPlaceholder/fieldPlaceholder";
+import { suggestionsOf } from "../../../lib/fieldSuggestions/fieldSuggestions";
 import type { CanvasField, FieldOption } from "../../../types/field";
 import { RichTextView } from "../../atoms/RichTextView/RichTextView";
 import {
@@ -38,6 +40,7 @@ import {
   SELECT_CHEVRON_CLASSES,
   SELECT_NOTE_TEXT,
   SPINNER_CLASSES,
+  SUGGESTION_COUNT_CLASSES,
   TEXTAREA_CLASSES,
   TILE_CLASSES,
   TILE_ON_CLASSES,
@@ -48,7 +51,7 @@ import type {
   OptionsNote,
   PreviewOptions,
 } from "./FieldPreviewControl.types";
-import { dateMockText, previewOptions } from "./FieldPreviewControl.utils";
+import { dateMockText, previewOptions, suggestionCountText } from "./FieldPreviewControl.utils";
 
 function withFrame(title: string | undefined, control: ReactNode) {
   return (
@@ -226,6 +229,19 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
               strokeLinecap="round"
             />
           </svg>
+        </div>
+      );
+
+    // La lista del navegador solo aparece al escribir, asi que en el lienzo lo que lo distingue de
+    // un texto comun es cuantas sugerencias tiene.
+    case "datalist":
+      return (
+        <div className={INPUT_CLASSES}>
+          <span className="truncate">{placeholder ?? "Escribe o elige…"}</span>
+          <span className={SUGGESTION_COUNT_CLASSES}>
+            {suggestionCountText(suggestionsOf(field)?.length ?? 0)}
+            <ListDown size={14} className="shrink-0" />
+          </span>
         </div>
       );
 
