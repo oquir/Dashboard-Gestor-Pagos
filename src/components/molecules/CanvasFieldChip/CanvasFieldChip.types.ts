@@ -1,6 +1,10 @@
 import type { MouseEvent } from "react";
 import type { CanvasField } from "../../../types/field";
 
+// Adonde va el valor del campo: a una ruta de la API, a ningun lado (excluido) o todavia sin
+// decidir. Un campo presentacional no tiene valor, asi que no lleva ninguna marca.
+export type FieldDestination = "sent" | "internal" | "pending" | "none";
+
 export interface CanvasFieldChipProps {
   field: CanvasField;
   rowId: string;
