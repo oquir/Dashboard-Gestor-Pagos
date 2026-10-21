@@ -27,6 +27,9 @@ export const SPINNER_CLASSES: string = "flex shrink-0 flex-col text-fg-subtle";
 
 export const AFFIX_CLASSES: string = "shrink-0 text-fg-muted";
 
+export const SUGGESTION_COUNT_CLASSES: string =
+  "flex shrink-0 items-center gap-1.5 text-[11px] tabular-nums text-fg-muted";
+
 // Sin espacios, como lo exige el patron: el ejemplo del lienzo no puede ser algo que no valida.
 export const PHONE_SAMPLES: Record<PhoneKind, string> = {
   celular: "3001234567",
