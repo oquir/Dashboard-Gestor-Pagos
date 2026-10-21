@@ -152,11 +152,13 @@ Cada hook vive en su propia carpeta, igual que los componentes:
 
 Se declaran en `FIELD_TYPES` (`src/constants/fieldTypes.ts`) y se agrupan por categoría, que es lo que dibuja la paleta:
 
-- **Básicos** — `text`, `number`, `select`, `textarea`, `checkbox`, `calculated`, `file`.
-- **Complejos** — `search_select`, `toggle_group`, `radio_group`, `checkbox_group`.
+- **Básicos** — `text`, `number`, `tel`, `email`, `date`, `select`, `textarea`, `checkbox`, `calculated`, `file`.
+- **Complejos** — `search_select`, `datalist`, `toggle_group`, `radio_group`, `checkbox_group`.
 - **Contenido** — `label`, `rich_text`.
 
 `checkbox` y `checkbox_group` son tipos distintos a propósito: el primero es un booleano único, el segundo es multi-selección con `options[]`.
+
+`datalist` ("Input Datalist") es texto libre que sugiere una lista mientras se escribe, el `<datalist>` de HTML. No es un campo de opciones: el valor es lo escrito, así que valida y se mapea como un `text`, y sus `suggestions` (una por línea en Atributos) no restringen nada.
 
 `radio_group` y `checkbox_group` pueden declarar `inlineOptions: true` para poner sus opciones en una sola línea en vez de apiladas; se prende en Atributos, sección Diseño. Es solo presentación y usa `flex-wrap`, así que no promete que todo quepa. `toggle_group` ya es horizontal y `select` no tiene dónde ponerlas.
 
