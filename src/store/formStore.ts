@@ -9,6 +9,7 @@ import { clampZoom } from "../lib/canvasZoom/canvasZoom";
 import { slugifyFieldName, uniqueFieldName } from "../lib/fieldName/fieldName";
 import { allowsManualOptions, isOptionBasedField } from "../lib/fieldOptions/fieldOptions";
 import { createFieldRule, moveRule } from "../lib/fieldRule/fieldRule";
+import { parseSuggestionsText } from "../lib/fieldSuggestions/fieldSuggestions";
 import { createEmptyTooltip } from "../lib/fieldTooltip/fieldTooltip";
 import {
   canTransfer,
@@ -931,6 +932,14 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
       mapFieldEverywhere(state, fieldId, (field) => ({
         ...field,
         placeholder: text === "" ? undefined : text,
+      })),
+    ),
+  // Tambien se guarda lo tecleado: una entrada por linea, sin recortar. Ver lib/fieldSuggestions.
+  setFieldSuggestions: (fieldId, text) =>
+    set((state) =>
+      mapFieldEverywhere(state, fieldId, (field) => ({
+        ...field,
+        suggestions: parseSuggestionsText(text),
       })),
     ),
   // Celular es el default y no se guarda, igual que admitir negativos: solo fijo y fax dejan la clave.
