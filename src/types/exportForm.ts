@@ -105,6 +105,9 @@ export interface ExportedField {
   // El texto gris del campo vacio, ya recortado. Solo presentacion: el consumidor lo pone como
   // placeholder del input (o como primera opcion de un select) y nunca lo toma como valor.
   placeholder?: string;
+  // Solo en un datalist que las tenga, ya recortadas y sin repetidas. Son el <option value> de su
+  // <datalist>: sugieren, no restringen, y el valor sigue siendo el texto escrito.
+  suggestions?: string[];
   inlineOptions?: boolean;
   // Solo aparece en un campo fecha que pide rango: su valor es { desde, hasta } y no un texto.
   dateRange?: boolean;
