@@ -26,6 +26,7 @@ import { placeholderOf } from "../fieldPlaceholder/fieldPlaceholder";
 import { exportableDecimals, exportableRounding } from "../fieldRounding/fieldRounding";
 import { compileScript } from "../fieldScript/fieldScript";
 import { exportableAllowsNegative } from "../fieldSign/fieldSign";
+import { suggestionsOf } from "../fieldSuggestions/fieldSuggestions";
 import { exportableTooltip } from "../fieldTooltip/fieldTooltip";
 import { enabledChecks } from "../groupCheck/groupCheck";
 import { exportableFormatting } from "../numberFormat/numberFormat";
@@ -209,6 +210,7 @@ export function mapRows(
       prefix: affixOf(field, "prefix"),
       suffix: affixOf(field, "suffix"),
       placeholder: placeholderOf(field),
+      suggestions: suggestionsOf(field),
       inlineOptions: exportableInlineOptions(field),
       dateRange: exportableDateRange(field),
       includesTime: exportableIncludesTime(field),
