@@ -15,6 +15,7 @@ import {
 } from "../../../../lib/fieldOptions/fieldOptions";
 import { supportsPlaceholder } from "../../../../lib/fieldPlaceholder/fieldPlaceholder";
 import { supportsRounding } from "../../../../lib/fieldRounding/fieldRounding";
+import { supportsSuggestions } from "../../../../lib/fieldSuggestions/fieldSuggestions";
 import { supportsTooltip } from "../../../../lib/fieldTooltip/fieldTooltip";
 import { getFreeRuns, getMaxSpanAt } from "../../../../lib/rowLayout/rowLayout";
 import {
@@ -42,6 +43,7 @@ import { FieldTooltipEditor } from "../FieldTooltipEditor/FieldTooltipEditor";
 import { FileOptionsEditor } from "../FileOptionsEditor/FileOptionsEditor";
 import { NumberOptionsEditor } from "../NumberOptionsEditor/NumberOptionsEditor";
 import { PhoneOptionsEditor } from "../PhoneOptionsEditor/PhoneOptionsEditor";
+import { SuggestionsEditor } from "../SuggestionsEditor/SuggestionsEditor";
 import {
   GENERAL_DESCRIPTION,
   LAYOUT_DESCRIPTION,
@@ -172,6 +174,8 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
       </PanelSection>
 
       {canEditOptions && <FieldOptionsEditor field={field} />}
+
+      {supportsSuggestions(field.type) && <SuggestionsEditor field={field} />}
 
       {isOptionBased && !canEditOptions && (
         <PanelSection
