@@ -29,7 +29,7 @@ export const DESTINATION_ICONS: Partial<Record<FieldDestination, ComponentType<I
 // pedido del usuario: esa paleta puede cambiar, y recolorear los avisos no tiene por que mover este
 // simbolo. Hoy pintan lo mismo que esos dos tokens, en claro y en oscuro.
 export const DESTINATION_COLOR_CLASSES: Partial<Record<FieldDestination, string>> = {
-  sent: "text-amber-600 dark:text-amber-400",
+  sent: "text-brand dark:text-brand",
   internal: "text-slate-400 dark:text-neutral-500",
   pending: "text-slate-400 dark:text-neutral-500",
 };
