@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { generarDatos } from './data/generar'
 import { nombreCompleto } from './lib/formato'
-import type { Archivo, ConfigMunicipio, Datos, EstadoNovedad, EstadoRevision, Impuesto, Usuario } from './types'
+import type { Archivo, ConfigMunicipio, Datos, EstadoNovedad, EstadoRevision, Impuesto, Tarifa, Usuario } from './types'
 
 interface Estado extends Datos {
   usuarioId: string | null
@@ -21,6 +21,8 @@ interface Estado extends Datos {
   ) => void
   revisarDeclaracion: (id: string, estado: EstadoRevision, observacion: string) => void
   guardarConfiguracion: (config: ConfigMunicipio) => void
+  /** Reemplaza las actividades del año gravable con las del Excel cargado. */
+  cargarActividades: (municipioId: string, vigencia: number, tarifas: Tarifa[], archivo: string) => void
   guardarUsuario: (usuario: Usuario) => void
   alternarUsuario: (id: string) => void
   alternarMunicipio: (id: string) => void
@@ -91,6 +93,14 @@ export const useDatos = create<Estado>()(
           configuraciones: s.configuraciones.map((c) => (c.municipioId === config.municipioId ? config : c)),
         })),
 
+      cargarActividades: (municipioId, vigencia, tarifas, archivo) => {
+        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
+        const carga = { municipioId, vigencia, tarifas, archivo, cargadoPor: usuario ? nombreCompleto(usuario) : '', fechaCarga: hoy() }
+        set((s) => ({
+          actividades: [...s.actividades.filter((a) => a.municipioId !== municipioId || a.vigencia !== vigencia), carga],
+        }))
+      },
+
       guardarUsuario: (usuario) =>
         set((s) => ({
           usuarios: s.usuarios.some((u) => u.id === usuario.id)
@@ -118,6 +128,6 @@ export const useDatos = create<Estado>()(
 
       reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
     }),
-    { name: 'gestor-pagos-demo', version: 15 },
+    { name: 'gestor-pagos-demo', version: 18 },
   ),
 )
