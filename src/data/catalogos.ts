@@ -1,6 +1,7 @@
 // Datos fijos del mock. Municipios, personas y empresas son ficticios.
+import { nombreCompleto } from '../lib/formato'
 import { SANCIONES_LEY } from '../lib/reglas'
-import type { ConfigMunicipio, Municipio, Sector, Tarifa, Usuario } from '../types'
+import type { ActividadesVigencia, ConfigMunicipio, Municipio, Sector, Tarifa, Usuario } from '../types'
 
 export const MUNICIPIOS: Municipio[] = [
   {
@@ -58,11 +59,29 @@ const BASE_TARIFAS: Record<string, [number, number, number, number]> = {
   m3: [4, 6, 8, 5],
 }
 
-function tarifas(municipioId: string): Tarifa[] {
+/** Actividad que los municipios agregaron en 2026. */
+const NUEVAS_2026: typeof ACTIVIDADES = [{ ciiu: '4791', descripcion: 'Comercio al por menor realizado a través de internet', sector: 'comercial' }]
+
+function tarifas(municipioId: string, vigencia: number): Tarifa[] {
   const [ind, com, ser, fin] = BASE_TARIFAS[municipioId]
-  const porSector: Record<Sector, number> = { industrial: ind, comercial: com, servicios: ser, financiero: fin }
-  return ACTIVIDADES.map((a) => ({ ...a, porMil: porSector[a.sector] }))
+  // En 2024 la tarifa comercial era un punto más baja.
+  const porSector: Record<Sector, number> = { industrial: ind, comercial: vigencia === 2024 ? com - 1 : com, servicios: ser, financiero: fin }
+  const actividades = vigencia >= 2026 ? [...ACTIVIDADES, ...NUEVAS_2026] : ACTIVIDADES
+  return actividades.map((a) => ({ ...a, porMil: porSector[a.sector] }))
 }
+
+/** Actividades de cada municipio por año gravable, como si las hubiera cargado el administrador a inicio de año. */
+export const ACTIVIDADES_POR_VIGENCIA: ActividadesVigencia[] = MUNICIPIOS.flatMap((m) => {
+  const administrador = USUARIOS.find((u) => u.municipioId === m.id && u.rol === 'admin_municipio')!
+  return [2024, 2025, 2026].map((vigencia) => ({
+    municipioId: m.id,
+    vigencia,
+    tarifas: tarifas(m.id, vigencia),
+    cargadoPor: nombreCompleto(administrador),
+    fechaCarga: `${vigencia}-01-20`,
+    archivo: `actividades_${vigencia}.xlsx`,
+  }))
+})
 
 export const CONFIGURACIONES: ConfigMunicipio[] = [
   {
@@ -101,7 +120,6 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     autorretencion: { modalidad: 'porcentaje', porcentaje: 50 },
     sanciones: { ...SANCIONES_LEY },
     plazoInscripcionMeses: 2,
-    tarifas: tarifas('m1'),
   },
   {
     municipioId: 'm2',
@@ -130,7 +148,6 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     autorretencion: { modalidad: 'plena', porcentaje: 100 },
     sanciones: { ...SANCIONES_LEY },
     plazoInscripcionMeses: 2,
-    tarifas: tarifas('m2'),
   },
   {
     municipioId: 'm3',
@@ -148,7 +165,6 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     // Ejemplo de municipio que rebajó las sanciones de ley.
     sanciones: { extemporaneidad: 4, extemporaneidadEmplazamiento: 8, correccion: 8, correccionEmplazamiento: 16, minimaUvt: 10 },
     plazoInscripcionMeses: 3,
-    tarifas: tarifas('m3'),
   },
 ]
 
