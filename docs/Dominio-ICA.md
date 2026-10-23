@@ -118,6 +118,7 @@ Retención y autorretención solo tienen Inicial y Corrección (secciones 3 y 4)
 
 Beneficio potestativo de los concejos municipales (usualmente entre 5% y 15%), pensado para incentivar el pago temprano. Es **exclusivo del ICA anual** (renglón 36): nunca aplica en ReteICA ni en autorretención. **No hay norma nacional**: porcentaje, condiciones y efectos los fija el acuerdo de cada concejo, así que las reglas siguientes son la parametrización por defecto y deben poder ajustarse por municipio:
 
+- **Tramos por año gravable**: el acuerdo suele fijar hasta tres tramos de fechas de pago con porcentajes que bajan a medida que se acerca el vencimiento (p. ej., 15% hasta el 28 de febrero, 10% en marzo y 5% del 1 al 15 de abril), y los puede cambiar cada año gravable. Las fechas caen en el año siguiente al gravable, que es cuando se declara; por fuera de los tramos no hay descuento.
 - **Paz y salvo**: el contribuyente no puede deber vigencias anteriores; si debe, el sistema oculta el beneficio.
 - **Base de cálculo**: solo sobre el impuesto neto a cargo, jamás sobre sanciones ni intereses.
 - **Pérdida del beneficio**: automática si el pago es parcial, extemporáneo o entra en un acuerdo de pago.
@@ -302,6 +303,7 @@ Lo que el dominio les exige a los cuatro frentes del dashboard: las inscripcione
 - **Una ReteICA sin pagar merece una alerta propia**, no solo el estado de ineficaz: no consignar lo retenido dentro de los dos meses siguientes puede encuadrar en el art. 402 del Código Penal (sección 3).
 - **Agentes retenedores**: no tienen estado de cuenta ni paz y salvo ("declare y pague"); su soporte son las declaraciones presentadas (sección 3).
 - **Correcciones**: la sección de pago solo lleva lo que se paga con la corrección; lo ya pagado por ese periodo entra como crédito (sección 6.2).
+- **Radicado y número de factura**: cada declaración (ICA anual, ReteICA y autorretención) lleva los dos. El radicado es la referencia del pago; el número de factura, solo numérico, es el que identifica el pago. Una corrección trae su propio número de factura.
 
 ### 6.4 Configuración por municipio
 
@@ -310,7 +312,7 @@ No hay formulario nacional de retención ni de autorretención, y cada concejo f
 - **Tarifas**: por actividad, dentro de los topes de ley de la sección 2; una tarifa fuera de ellos merece advertencia, no bloqueo, porque el sector financiero tiene reglas propias. En ReteICA, tarifa única (Medellín: 2 por mil), por actividad o por concepto (compras / servicios), cada una con su base mínima en UVT. En autorretención, la tarifa plena o un porcentaje de ella.
 - **Estructura del formulario**: si se detallan actividades, qué complementarios existen (sobretasas bomberil y de seguridad, con su porcentaje) y si se retienen o autorretienen, pagos a no residentes y formulario conjunto de retención y autorretención.
 - **Calendario**: periodicidad (anual, bimestral o mensual) y vencimientos según el último dígito del NIT.
-- **Beneficios y cobros**: descuento por pronto pago (porcentaje y condiciones), anticipo (hasta el 40%) y pago voluntario.
+- **Beneficios y cobros**: descuento por pronto pago (tramos de fechas y porcentajes por año gravable, y condiciones), anticipo (hasta el 40%) y pago voluntario.
 - **Procedimiento**: si se exige la declaración en ceros, si la cancelación del RIT es automática o verificada, si la corrección a la baja sigue el art. 589 clásico o la corrección directa, los soportes de inscripción por calidad y el plazo para inscribirse.
 - **Sanciones**: la configuración parte de los valores de ley (extemporaneidad del 5% o 10% por mes, con topes del 100% y 200%; corrección del 10% o 20%; mínimo de 10 UVT) y **no acepta valores mayores**: el municipio solo puede bajarlos (sección 5).
 - **Datos con vigencia, no constantes**: UVT, bases mínimas, plazos y tasa de interés de mora (sección 7) caducan, así que van como parámetros con fecha de vigencia. Los plazos se cargan desde fuentes oficiales y, mientras no estén, quedan vacíos: no se inventan.
