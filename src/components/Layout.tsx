@@ -1,5 +1,5 @@
-import { Building2, FileText, IdCard, Landmark, LayoutDashboard, LogOut, Menu, RotateCcw, Settings, Users, Wallet, X } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
+import { Building2, ChartSquare, Document, AddressCard, Courthouse, Category, Logout, Menu, RotateLeft, Setting, Users, Wallet, Xmark } from 'reicon-react'
+import type { IconComponent } from 'reicon-react'
 import { useState } from 'react'
 import { Navigate, NavLink, Outlet } from 'react-router'
 import { etiquetaRol, nombreCompleto } from '../lib/formato'
@@ -9,12 +9,13 @@ import { ritVisible, useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
 import { Badge, Boton, Select } from './ui'
 
-const NAVEGACION: { a: string; texto: string; icono: LucideIcon; permiso?: Permiso }[] = [
-  { a: '/', texto: 'Inicio', icono: LayoutDashboard },
-  { a: '/rit', texto: 'Inscripciones', icono: IdCard },
-  { a: '/declaraciones', texto: 'Declaraciones', icono: FileText },
+const NAVEGACION: { a: string; texto: string; icono: IconComponent; permiso?: Permiso }[] = [
+  { a: '/', texto: 'Inicio', icono: Category },
+  { a: '/rit', texto: 'Inscripciones', icono: AddressCard },
+  { a: '/declaraciones', texto: 'Declaraciones', icono: Document },
   { a: '/pagos', texto: 'Pagos', icono: Wallet },
-  { a: '/configuracion', texto: 'Configuración', icono: Settings },
+  { a: '/reportes', texto: 'Reportes', icono: ChartSquare, permiso: 'verReportes' },
+  { a: '/configuracion', texto: 'Configuración', icono: Setting },
   { a: '/usuarios', texto: 'Usuarios', icono: Users, permiso: 'gestionarUsuarios' },
   { a: '/municipios', texto: 'Municipios', icono: Building2, permiso: 'gestionarMunicipios' },
 ]
@@ -62,7 +63,7 @@ export default function Layout() {
   const marca = (
     <div className="flex items-center gap-2 px-5 py-5">
       <span className="flex size-9 items-center justify-center rounded-lg bg-brand-600 text-white">
-        <Landmark className="size-5" aria-hidden />
+        <Courthouse className="size-5" aria-hidden />
       </span>
       <div>
         <p className="text-sm font-semibold text-slate-900">Gestor de Pagos</p>
@@ -85,7 +86,7 @@ export default function Layout() {
             <div className="flex items-center justify-between pr-3">
               {marca}
               <Boton variante="fantasma" aria-label="Cerrar menú" onClick={() => setMenuAbierto(false)}>
-                <X className="size-5" />
+                <Xmark className="size-5" />
               </Boton>
             </div>
             {menu}
@@ -128,11 +129,11 @@ export default function Layout() {
             </div>
             <Badge tono={usuario.rol === '1cero1' ? 'info' : 'neutral'}>{etiquetaRol[usuario.rol]}</Badge>
             <Boton variante="fantasma" title="Reiniciar los datos de la demo" onClick={reiniciar}>
-              <RotateCcw className="size-4" aria-hidden />
+              <RotateLeft className="size-4" aria-hidden />
               <span className="hidden xl:inline">Reiniciar demo</span>
             </Boton>
             <Boton variante="fantasma" title="Cambiar de usuario" onClick={cerrarSesion}>
-              <LogOut className="size-4" aria-hidden />
+              <Logout className="size-4" aria-hidden />
               <span className="hidden xl:inline">Salir</span>
             </Boton>
           </div>
