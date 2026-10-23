@@ -91,6 +91,16 @@ export function descargarBlob(blob: Blob, nombre: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
+/** CSV para Excel en español: separado por punto y coma y con BOM para que respete las tildes. */
+export function descargarCsv(filas: (string | number)[][], nombre: string) {
+  const celda = (valor: string | number) => {
+    const texto = String(valor)
+    return /[;"\r\n]/.test(texto) ? `"${texto.replaceAll('"', '""')}"` : texto
+  }
+  const contenido = filas.map((fila) => fila.map(celda).join(';')).join('\r\n')
+  descargarBlob(new Blob(['﻿', contenido], { type: 'text/csv;charset=utf-8' }), nombre)
+}
+
 /** Descarga un archivo: el contenido cargado si existe, o el PDF de muestra. */
 export async function descargarArchivo(archivo: Archivo, titulo: string, contexto: string[]) {
   const guardado = await contenidoGuardado(archivo)
