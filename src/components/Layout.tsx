@@ -1,4 +1,4 @@
-import { Building2, ChartSquare, Document, AddressCard, Courthouse, Category, Logout, Menu, RotateLeft, Setting, Users, Wallet, Xmark } from 'reicon-react'
+import { Building2, ChartSquare, Document, AddressCard, Briefcase, Courthouse, Category, Logout, Menu, RotateLeft, Setting, Users, Wallet, Xmark } from 'reicon-react'
 import type { IconComponent } from 'reicon-react'
 import { useState } from 'react'
 import { Navigate, NavLink, Outlet } from 'react-router'
@@ -15,6 +15,7 @@ const NAVEGACION: { a: string; texto: string; icono: IconComponent; permiso?: Pe
   { a: '/declaraciones', texto: 'Declaraciones', icono: Document },
   { a: '/pagos', texto: 'Pagos', icono: Wallet },
   { a: '/reportes', texto: 'Reportes', icono: ChartSquare, permiso: 'verReportes' },
+  { a: '/actividades', texto: 'Actividades', icono: Briefcase },
   { a: '/configuracion', texto: 'Configuración', icono: Setting },
   { a: '/usuarios', texto: 'Usuarios', icono: Users, permiso: 'gestionarUsuarios' },
   { a: '/municipios', texto: 'Municipios', icono: Building2, permiso: 'gestionarMunicipios' },
