@@ -58,6 +58,18 @@ export interface Novedad {
   observacion?: string
   /** Documentos que la administración le envía con la respuesta. */
   documentosRespuesta?: Archivo[]
+  /** Lo que diligenció el contribuyente en la inscripción o en la actualización: el formulario completo. */
+  datos?: DatosRit
+  /** Lo que diligenció en la cancelación, un formulario más corto. */
+  cancelacion?: DatosCancelacion
+  /** Documentos que cargó con la solicitud. */
+  soportes: Soporte[]
+}
+
+/** Formulario de cancelación del RIT. */
+export interface DatosCancelacion {
+  fechaCese: string
+  motivo: string
 }
 
 export interface Actividad {
@@ -109,6 +121,24 @@ export interface Inscripcion {
   soportes: Soporte[]
   novedades: Novedad[]
 }
+
+/** Datos del formulario de inscripción y del de actualización. La inscripción guarda los del último formulario aprobado. */
+export type DatosRit = Pick<
+  Inscripcion,
+  | 'tipoPersona'
+  | 'tipoDocumento'
+  | 'documento'
+  | 'dv'
+  | 'nombre'
+  | 'representanteLegal'
+  | 'direccion'
+  | 'telefono'
+  | 'correo'
+  | 'fechaInicioActividades'
+  | 'regimenSimple'
+  | 'actividades'
+  | 'calidades'
+>
 
 // --- Declaraciones y pagos ---
 
@@ -169,6 +199,17 @@ export interface Tarifa {
   porMil: number
 }
 
+/** Actividades y tarifas de un año gravable. Las carga el administrador del municipio con la plantilla de Excel. */
+export interface ActividadesVigencia {
+  municipioId: string
+  vigencia: number
+  tarifas: Tarifa[]
+  cargadoPor: string
+  fechaCarga: string
+  /** Nombre del Excel del que salieron. */
+  archivo: string
+}
+
 /** Rango de fechas de pago (inclusive) con su porcentaje de descuento. */
 export interface TramoProntoPago {
   desde: string
@@ -204,7 +245,6 @@ export interface ConfigMunicipio {
     minimaUvt: number
   }
   plazoInscripcionMeses: number
-  tarifas: Tarifa[]
 }
 
 /** Recaudo consolidado de un mes de años anteriores: la demo solo trae pagos uno a uno del año en curso. */
@@ -224,4 +264,5 @@ export interface Datos {
   pagos: Pago[]
   recaudoHistorico: RecaudoMensual[]
   configuraciones: ConfigMunicipio[]
+  actividades: ActividadesVigencia[]
 }
