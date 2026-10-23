@@ -1,4 +1,4 @@
-import { Download, FileArchive, Search } from 'lucide-react'
+import { Zip, Search } from 'reicon-react'
 import { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import Tabla from '../components/Tabla'
@@ -12,7 +12,7 @@ import {
   formatoFecha,
   formatoPesos,
 } from '../lib/formato'
-import { descargarDeclaracion, descargarDeclaracionesZip } from '../lib/pdfDeclaracion'
+import { descargarDeclaracionesZip } from '../lib/pdfDeclaracion'
 import { estadoPago } from '../lib/reglas'
 import { impuestosVisibles, useDeclaraciones, useSesion } from '../lib/sesion'
 import { ayudanteColumnas } from '../lib/tabla'
@@ -24,14 +24,16 @@ const PESTANAS: { valor: Impuesto | ''; texto: string }[] = [
   { valor: '', texto: 'Todas' },
   { valor: 'ica', texto: 'ICA anual' },
   { valor: 'reteica', texto: 'ReteICA' },
-  { valor: 'autorretencion', texto: 'Autorretención' },
+  { valor: 'autorretencion', texto: 'AutoReteICA' },
 ]
 
 interface Fila {
   d: Declaracion
   nombre: string
+  /** NIT o cédula del declarante, con su tipo. */
+  documento: string
   pago: EstadoPago
-  /** Número de la declaración que corrige, si es una corrección. */
+  /** Radicado de la declaración que corrige, si es una corrección. */
   corrige?: string
 }
 
@@ -40,11 +42,16 @@ const col = ayudanteColumnas<Fila>()
 const COLUMNAS = col.columns([
   col.accessor((f) => f.d.numero, {
     id: 'numero',
-    header: 'Número',
+    header: 'Radicado',
     meta: { clase: 'whitespace-nowrap' },
     cell: ({ row: { original: { d } } }) => (
       <Link to={`/declaraciones/${d.id}`} className="font-medium tabular-nums text-slate-900 hover:text-brand-700">{d.numero}</Link>
     ),
+  }),
+  col.accessor((f) => f.d.numeroFactura, {
+    id: 'factura',
+    header: 'N.º de factura',
+    meta: { clase: 'whitespace-nowrap tabular-nums text-slate-700' },
   }),
   col.accessor((f) => etiquetaTipoDeclaracion[f.d.tipo], {
     id: 'tipo',
@@ -58,7 +65,16 @@ const COLUMNAS = col.columns([
       </>
     ),
   }),
-  col.accessor('nombre', { header: 'Declarante', meta: { clase: 'max-w-64 truncate text-slate-700' } }),
+  col.accessor('nombre', {
+    header: 'Declarante',
+    meta: { clase: 'max-w-64' },
+    cell: ({ row: { original: f } }) => (
+      <>
+        <p className="truncate text-slate-700">{f.nombre}</p>
+        <p className="truncate text-xs tabular-nums text-slate-500">{f.documento}</p>
+      </>
+    ),
+  }),
   col.accessor((f) => `${f.d.impuesto}-${f.d.vigencia}-${f.d.periodo}`, {
     id: 'periodo',
     header: 'Impuesto y periodo',
@@ -98,23 +114,6 @@ const COLUMNAS = col.columns([
     cell: ({ row: { original: { d } } }) => <Badge tono={tonoRevision[d.estadoRevision]}>{etiquetaEstadoRevision[d.estadoRevision]}</Badge>,
   }),
 ])
-
-const COLUMNA_PDF = col.display({
-  id: 'pdf',
-  header: 'PDF',
-  meta: { alinear: 'derecha' },
-  cell: ({ row: { original: { d } } }) => (
-    <button
-      type="button"
-      onClick={() => descargarDeclaracion(d, useDatos.getState())}
-      className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-brand-700 hover:bg-brand-50"
-      aria-label={`Descargar el PDF de la declaración ${d.numero}`}
-      title="Descargar PDF"
-    >
-      <Download className="size-4" aria-hidden /> PDF
-    </button>
-  ),
-})
 
 /** Casillas para elegir declaraciones; la del encabezado marca todas las filtradas, no solo la página. */
 function columnaSeleccion(filas: Fila[], seleccion: ReadonlySet<string>, marcar: (ids: string[], marcado: boolean) => void) {
@@ -166,22 +165,30 @@ export default function Declaraciones() {
   const [revision, setRevision] = useState<EstadoRevision | ''>('')
 
   const filas = useMemo<Fila[]>(() => {
-    const nombres = new Map(inscripciones.map((i) => [i.id, i.nombre]))
+    const porId = new Map(inscripciones.map((i) => [i.id, i]))
     const numeros = new Map(declaraciones.map((d) => [d.id, d.numero]))
-    return declaraciones.map((d) => ({
-      d,
-      nombre: nombres.get(d.inscripcionId) ?? '',
-      pago: estadoPago(d, pagos),
-      corrige: d.corrigeA && numeros.get(d.corrigeA),
-    }))
+    return declaraciones.map((d) => {
+      const ins = porId.get(d.inscripcionId)
+      return {
+        d,
+        nombre: ins?.nombre ?? '',
+        documento: ins ? `${ins.tipoDocumento} ${ins.documento}${ins.dv ? `-${ins.dv}` : ''}` : '',
+        pago: estadoPago(d, pagos),
+        corrige: d.corrigeA && numeros.get(d.corrigeA),
+      }
+    })
   }, [declaraciones, inscripciones, pagos])
 
   const filtradas = useMemo(() => {
     const busqueda = texto.trim().toLowerCase()
     return filas.filter(
-      ({ d, nombre, pago: p }) =>
+      ({ d, nombre, documento, pago: p }) =>
         (!impuesto || d.impuesto === impuesto) &&
-        (!busqueda || nombre.toLowerCase().includes(busqueda) || d.numero.toLowerCase().includes(busqueda)) &&
+        (!busqueda ||
+          nombre.toLowerCase().includes(busqueda) ||
+          documento.toLowerCase().includes(busqueda) ||
+          d.numero.toLowerCase().includes(busqueda) ||
+          String(d.numeroFactura).includes(busqueda)) &&
         (!tipo || d.tipo === tipo) &&
         (!pago || p === pago) &&
         (!revision || d.estadoRevision === revision),
@@ -201,7 +208,7 @@ export default function Declaraciones() {
       return nueva
     })
   }, [setSeleccion])
-  const columnas = useMemo(() => col.columns([columnaSeleccion(filtradas, seleccion, marcar), ...COLUMNAS, COLUMNA_PDF]), [filtradas, seleccion, marcar])
+  const columnas = useMemo(() => col.columns([columnaSeleccion(filtradas, seleccion, marcar), ...COLUMNAS]), [filtradas, seleccion, marcar])
   const marcadas = filtradas.filter((f) => seleccion.has(f.d.id))
 
   const descargarSeleccion = async () => {
@@ -221,7 +228,7 @@ export default function Declaraciones() {
     <>
       <PageHeader
         titulo="Declaraciones"
-        descripcion="ICA anual (formulario único nacional), retención (ReteICA) y autorretención. Las de retención y autorretención sin pago total son ineficaces."
+        descripcion="ICA anual (formulario único nacional), retención (ReteICA) y autorretención (AutoReteICA). Las de ReteICA y AutoReteICA sin pago total son ineficaces."
       />
 
       <div className="mb-4 flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1 sm:inline-flex">
@@ -242,7 +249,7 @@ export default function Declaraciones() {
         <div className="flex flex-wrap items-center gap-3 border-b border-slate-100 p-4">
           <div className="relative min-w-60 flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" aria-hidden />
-            <Input placeholder="Buscar por declarante o número" className="pl-9" value={texto} onChange={(e) => setTexto(e.target.value)} />
+            <Input placeholder="Buscar por declarante, NIT o cédula, radicado o factura" className="pl-9" value={texto} onChange={(e) => setTexto(e.target.value)} />
           </div>
           <Select aria-label="Tipo de declaración" className="w-auto" value={tipo} onChange={(e) => setTipo(e.target.value as TipoDeclaracion | '')}>
             <option value="">Todo tipo</option>
@@ -270,7 +277,7 @@ export default function Declaraciones() {
               {marcadas.length} {marcadas.length === 1 ? 'declaración seleccionada' : 'declaraciones seleccionadas'}
             </span>
             <Boton variante="primario" disabled={generando} onClick={descargarSeleccion}>
-              <FileArchive className="size-4" aria-hidden /> {generando ? 'Generando PDF…' : 'Descargar PDF (.zip)'}
+              <Zip className="size-4" aria-hidden /> {generando ? 'Generando PDF…' : 'Descargar PDF (.zip)'}
             </Boton>
             <Boton variante="fantasma" disabled={generando} onClick={() => setSeleccion(new Set())}>
               Quitar selección
