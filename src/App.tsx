@@ -9,6 +9,7 @@ import Inicio from './pages/Inicio'
 import Login from './pages/Login'
 import Municipios from './pages/Municipios'
 import Pagos from './pages/Pagos'
+import Reportes from './pages/Reportes'
 import Usuarios from './pages/Usuarios'
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="declaraciones" element={<Declaraciones />} />
           <Route path="declaraciones/:id" element={<DeclaracionDetalle />} />
           <Route path="pagos" element={<Pagos />} />
+          <Route path="reportes" element={<Reportes />} />
           <Route path="configuracion" element={<Configuracion />} />
           <Route path="usuarios" element={<Usuarios />} />
           <Route path="municipios" element={<Municipios />} />
