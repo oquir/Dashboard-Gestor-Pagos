@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import Layout from './components/Layout'
+import Actividades from './pages/Actividades'
 import Configuracion from './pages/Configuracion'
 import DeclaracionDetalle from './pages/DeclaracionDetalle'
 import Declaraciones from './pages/Declaraciones'
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="declaraciones/:id" element={<DeclaracionDetalle />} />
           <Route path="pagos" element={<Pagos />} />
           <Route path="reportes" element={<Reportes />} />
+          <Route path="actividades" element={<Actividades />} />
           <Route path="configuracion" element={<Configuracion />} />
           <Route path="usuarios" element={<Usuarios />} />
           <Route path="municipios" element={<Municipios />} />
