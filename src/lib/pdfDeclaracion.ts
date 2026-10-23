@@ -17,7 +17,7 @@ export interface FuentePdf {
 const TITULOS: Record<Impuesto, string> = {
   ica: 'Formulario Único Nacional de Declaración y Pago del Impuesto de Industria y Comercio',
   reteica: 'Declaración de retenciones del impuesto de industria y comercio (ReteICA)',
-  autorretencion: 'Declaración de autorretenciones del impuesto de industria y comercio',
+  autorretencion: 'Declaración de autorretenciones del impuesto de industria y comercio (AutoReteICA)',
 }
 
 const MARGEN = 40
@@ -83,7 +83,7 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   estilo(true, 10)
   doc.text(titulo, MARGEN + 14, y + 54)
   estilo(false, 8, GRIS)
-  doc.text('Número de la declaración', DERECHA - 14, y + 20, { align: 'right' })
+  doc.text('Radicado', DERECHA - 14, y + 20, { align: 'right' })
   estilo(true, 12)
   doc.text(d.numero, DERECHA - 14, y + 36, { align: 'right' })
   estilo(false, 9)
@@ -94,6 +94,7 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   const datos: [string, string][] = [
     ['Impuesto', etiquetaImpuesto[d.impuesto]],
     ['Periodo', etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)],
+    ['Número de factura', String(d.numeroFactura)],
     ['Fecha de presentación', formatoFecha(d.fechaPresentacion)],
     ['Fecha de vencimiento', formatoFecha(d.fechaVencimiento)],
   ]
