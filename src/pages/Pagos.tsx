@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router'
+import { CargaAsobancaria, DescargaAsobancaria } from '../components/Asobancaria'
 import Tabla from '../components/Tabla'
 import { Badge, Card, CardHeader, PageHeader, StatTile } from '../components/ui'
 import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
@@ -42,6 +43,11 @@ const COLUMNAS_CARTERA = cc.columns([
       </>
     ),
   }),
+  cc.accessor((f) => f.d.numeroFactura, {
+    id: 'factura',
+    header: 'N.º de factura',
+    meta: { clase: 'whitespace-nowrap tabular-nums text-slate-700' },
+  }),
   cc.accessor((f) => f.d.totalAPagar, { id: 'total', header: 'Total a pagar', meta: VALOR, cell: ({ getValue }) => formatoPesos(getValue()) }),
   cc.accessor('pagado', { header: 'Pagado', meta: VALOR, cell: ({ getValue }) => formatoPesos(getValue()) }),
   cc.accessor((f) => f.d.totalAPagar - f.pagado, {
@@ -77,6 +83,11 @@ const COLUMNAS_PAGOS = cp.columns([
         <span className="text-xs text-slate-500"> · {etiquetaImpuesto[d.impuesto]}</span>
       </>
     ),
+  }),
+  cp.accessor((f) => f.d.numeroFactura, {
+    id: 'factura',
+    header: 'N.º de factura',
+    meta: { clase: 'whitespace-nowrap tabular-nums text-slate-700' },
   }),
   cp.accessor((f) => f.p.valor, {
     id: 'valor',
@@ -124,17 +135,22 @@ export default function Pagos() {
     <>
       <PageHeader
         titulo="Pagos"
-        descripcion="Recaudo y cartera. En el ICA anual el pago puede ser parcial; en retención y autorretención solo el pago total le da efecto a la declaración."
+        descripcion="Recaudo y cartera. En el ICA anual el pago puede ser parcial; en ReteICA y AutoReteICA solo el pago total le da efecto a la declaración."
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatTile etiqueta="Recaudado en 2026" valor={`$${formatoCompacto(datos.recaudo2026)}`} detalle={`${datos.recibidos.length} pagos registrados`} />
         <StatTile etiqueta="Saldo pendiente de ICA anual" valor={`$${formatoCompacto(datos.saldoIca)}`} detalle="Pagos parciales y declaraciones sin pago" />
         <StatTile
-          etiqueta="Retenciones y autorretenciones ineficaces"
+          etiqueta="ReteICA y AutoReteICA ineficaces"
           valor={String(datos.ineficaces.length)}
           detalle={`$${formatoCompacto(datos.saldoIneficaces)} sin pagar`}
         />
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <CargaAsobancaria />
+        <DescargaAsobancaria declaraciones={declaraciones} />
       </div>
 
       <Card className="mt-6">
