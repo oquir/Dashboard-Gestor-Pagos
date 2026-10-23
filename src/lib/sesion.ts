@@ -17,7 +17,18 @@ export function useSesion() {
   return { usuario, municipioId }
 }
 
-export const delMunicipio = <T extends { municipioId: string | null }>(lista: T[], municipioId: string | null) =>
+/**
+ * Si el usuario ve lo recaudado por el municipio. El administrador decide en Configuración
+ * si los funcionarios lo ven; si no hay configuración, no lo ven.
+ */
+export function useVerRecaudo() {
+  const { usuario, municipioId } = useSesion()
+  const configuraciones = useDatos((s) => s.configuraciones)
+  const ocultar = configuraciones.find((c) => c.municipioId === municipioId)?.ocultarRecaudoAFuncionarios ?? true
+  return usuario?.rol !== 'funcionario' || !ocultar
+}
+
+export const delMunicipio =<T extends { municipioId: string | null }>(lista: T[], municipioId: string | null) =>
   municipioId === null ? lista : lista.filter((item) => item.municipioId === municipioId)
 
 /** Filtro: el municipio del registro tiene activo ese impuesto. */
