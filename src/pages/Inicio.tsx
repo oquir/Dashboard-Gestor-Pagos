@@ -6,7 +6,7 @@ import type { FilaRecaudo } from '../components/GraficoRecaudo'
 import { Badge, Card, CardHeader, StatTile, Vacio } from '../components/ui'
 import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoNovedad, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
 import { estadoPago, totalPagado } from '../lib/reglas'
-import { conRit, delMunicipio, IMPUESTOS, impuestoActivo, impuestosVisibles, ritVisible, useDeclaraciones, useSesion } from '../lib/sesion'
+import { conRit, delMunicipio, IMPUESTOS, impuestoActivo, impuestosVisibles, ritVisible, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
 import { tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
 import type { Declaracion, EstadoPago } from '../types'
@@ -100,8 +100,7 @@ function ListaDeudas({ titulo, descripcion, vacio, deudas, nombres }: {
 }
 
 export default function Inicio() {
-  const { usuario, municipioId } = useSesion()
-  const configuraciones = useDatos((s) => s.configuraciones)
+  const { municipioId } = useSesion()
   const todasInscripciones = useDatos((s) => s.inscripciones)
   const declaraciones = useDeclaraciones()
   const municipios = useDatos((s) => s.municipios)
@@ -111,9 +110,7 @@ export default function Inicio() {
   const [vista, setVista] = useState<Vista>('bimestral')
   const visibles = useMemo(() => impuestosVisibles(municipios, municipioId), [municipios, municipioId])
   const conRitVisible = ritVisible(municipios, municipioId)
-  // El administrador decide en Configuración si los funcionarios ven el recaudo; si no hay configuración, no lo ven.
-  const ocultarRecaudo = configuraciones.find((c) => c.municipioId === municipioId)?.ocultarRecaudoAFuncionarios ?? true
-  const verRecaudo = usuario?.rol !== 'funcionario' || !ocultarRecaudo
+  const verRecaudo = useVerRecaudo()
   const tarjetas = 3 + Number(conRitVisible) + Number(verRecaudo)
 
   // Recaudo del año elegido, mes a mes: el año en curso sale de los pagos; los anteriores, del histórico.
