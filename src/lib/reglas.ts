@@ -1,5 +1,5 @@
 // Reglas del dominio que usa el dashboard (ver docs/Dominio-ICA.md, secciones 5 y 6).
-import type { ConfigMunicipio, Declaracion, EstadoPago, Pago, Sector } from '../types'
+import type { ActividadesVigencia, ConfigMunicipio, Declaracion, EstadoPago, Pago, Sector, Tarifa } from '../types'
 
 /** UVT 2026 (dato que caduca, sección 7 del dominio). */
 export const UVT = 52374
@@ -21,6 +21,16 @@ export const TOPES_TARIFA: Record<Exclude<Sector, 'financiero'>, [number, number
   comercial: [2, 10],
   servicios: [2, 10],
 }
+
+export function fueraDeTope({ sector, porMil }: Tarifa) {
+  if (sector === 'financiero') return false
+  const [min, max] = TOPES_TARIFA[sector]
+  return porMil < min || porMil > max
+}
+
+/** Actividades que rigen en el año gravable: las de ese año o, si no se han cargado, las del último año anterior. */
+export const actividadesDe = (cargas: ActividadesVigencia[], municipioId: string, vigencia: number) =>
+  cargas.filter((c) => c.municipioId === municipioId && c.vigencia <= vigencia).sort((a, b) => b.vigencia - a.vigencia)[0]
 
 export function totalPagado(declaracionId: string, pagos: Pago[]) {
   return pagos.filter((p) => p.declaracionId === declaracionId).reduce((suma, p) => suma + p.valor, 0)
