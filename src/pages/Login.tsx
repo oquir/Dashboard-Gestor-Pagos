@@ -1,4 +1,4 @@
-import { Landmark } from 'lucide-react'
+import { Courthouse } from 'reicon-react'
 import { Navigate, useNavigate } from 'react-router'
 import { Badge, Card } from '../components/ui'
 import { etiquetaRol, nombreCompleto } from '../lib/formato'
@@ -32,11 +32,11 @@ export default function Login() {
       <div className="mx-auto max-w-5xl">
         <div className="mb-10 flex items-center gap-3">
           <span className="flex size-11 items-center justify-center rounded-xl bg-brand-600 text-white">
-            <Landmark className="size-6" aria-hidden />
+            <Courthouse className="size-6" aria-hidden />
           </span>
           <div>
             <h1 className="text-2xl font-semibold text-slate-900">Gestor de Pagos</h1>
-            <p className="text-sm text-slate-500">Industria y comercio, retención, autorretención y RIT · demo con datos simulados</p>
+            <p className="text-sm text-slate-500">Industria y comercio, ReteICA, AutoReteICA y RIT · demo con datos simulados</p>
           </div>
         </div>
 

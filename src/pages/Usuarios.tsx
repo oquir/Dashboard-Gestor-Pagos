@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react'
+import { Plus } from 'reicon-react'
 import { useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
 import Tabla from '../components/Tabla'

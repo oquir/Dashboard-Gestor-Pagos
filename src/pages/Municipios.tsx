@@ -1,4 +1,4 @@
-import { MapPin } from 'lucide-react'
+import { Location } from 'reicon-react'
 import { useMemo } from 'react'
 import { Navigate, useNavigate } from 'react-router'
 import { Badge, Boton, Card, PageHeader } from '../components/ui'
@@ -51,7 +51,7 @@ export default function Municipios() {
                 <div>
                   <p className="font-semibold text-slate-900">{m.nombre}</p>
                   <p className="flex items-center gap-1 text-sm text-slate-500">
-                    <MapPin className="size-3.5" aria-hidden /> {m.departamento} · DANE {m.codigoDane}
+                    <Location className="size-3.5" aria-hidden /> {m.departamento} · DANE {m.codigoDane}
                   </p>
                 </div>
                 <Badge tono={m.activo ? 'exito' : 'neutral'}>{m.activo ? 'Activo' : 'Inactivo'}</Badge>
