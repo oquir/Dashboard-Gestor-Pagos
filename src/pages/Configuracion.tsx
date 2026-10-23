@@ -1,15 +1,13 @@
-import { Save, AlertTriangle, Plus, Xmark } from 'reicon-react'
-import { useMemo, useState } from 'react'
+import { Save, Plus, Xmark } from 'reicon-react'
+import { useState } from 'react'
 import type { ReactNode } from 'react'
-import Tabla from '../components/Tabla'
 import { Boton, Campo, Card, CardHeader, Input, PageHeader, Select, Vacio } from '../components/ui'
 import { formatoFecha, formatoPesos } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { ANTICIPO_MAXIMO, SANCIONES_LEY, TOPES_TARIFA, UVT } from '../lib/reglas'
+import { ANTICIPO_MAXIMO, SANCIONES_LEY, UVT } from '../lib/reglas'
 import { useSesion } from '../lib/sesion'
-import { ayudanteColumnas } from '../lib/tabla'
 import { useDatos } from '../store'
-import type { ConfigMunicipio, Tarifa, TramoProntoPago } from '../types'
+import type { ConfigMunicipio, TramoProntoPago } from '../types'
 
 const numero = (v: string) => (v === '' ? 0 : Number(v))
 
@@ -40,46 +38,6 @@ function erroresTramos(vigencia: number, tramos: TramoProntoPago[]) {
     const cruce = tramos.find((o, j) => j !== i && o.desde && o.hasta && o.desde <= t.hasta && t.desde <= o.hasta)
     return cruce && `Se cruza con el tramo del ${formatoFecha(cruce.desde)} al ${formatoFecha(cruce.hasta)}.`
   })
-}
-
-function fueraDeTope({ sector, porMil }: Tarifa) {
-  if (sector === 'financiero') return false
-  const [min, max] = TOPES_TARIFA[sector]
-  return porMil < min || porMil > max
-}
-
-const col = ayudanteColumnas<Tarifa>()
-
-function columnasTarifas(editable: boolean, cambiarTarifa: (ciiu: string, porMil: number) => void) {
-  return col.columns([
-    col.accessor('ciiu', { header: 'CIIU', meta: { clase: 'tabular-nums text-slate-500' } }),
-    col.accessor('descripcion', { header: 'Actividad', meta: { clase: 'text-slate-900' } }),
-    col.accessor('sector', { header: 'Sector', meta: { clase: 'capitalize text-slate-600' } }),
-    col.accessor('porMil', {
-      header: 'Tarifa (por mil)',
-      // Sin ordenar: las filas saltarían de lugar mientras se escribe.
-      enableSorting: false,
-      meta: { clase: 'w-40' },
-      cell: ({ row: { original: t } }) => (
-        <>
-          <Input
-            type="number"
-            step="0.1"
-            min={0}
-            aria-label={`Tarifa de ${t.descripcion}`}
-            disabled={!editable}
-            value={t.porMil}
-            onChange={(e) => cambiarTarifa(t.ciiu, numero(e.target.value))}
-          />
-          {fueraDeTope(t) && (
-            <p className="mt-1 flex items-center gap-1 text-xs text-amber-800">
-              <AlertTriangle className="size-3" aria-hidden /> Fuera de los topes de ley
-            </p>
-          )}
-        </>
-      ),
-    }),
-  ])
 }
 
 const ETIQUETAS_SANCION: Record<keyof ConfigMunicipio['sanciones'], string> = {
@@ -249,14 +207,6 @@ function Formulario({ config, editable }: { config: ConfigMunicipio; editable: b
     setB((actual) => ({ ...actual, ...parcial }))
     setGuardado(false)
   }
-  const columnas = useMemo(
-    () =>
-      columnasTarifas(editable, (ciiu, porMil) => {
-        setB((actual) => ({ ...actual, tarifas: actual.tarifas.map((t) => (t.ciiu === ciiu ? { ...t, porMil } : t)) }))
-        setGuardado(false)
-      }),
-    [editable],
-  )
 
   const errores: Record<string, string> = {}
   for (const clave of Object.keys(SANCIONES_LEY) as (keyof ConfigMunicipio['sanciones'])[]) {
@@ -392,10 +342,10 @@ function Formulario({ config, editable }: { config: ConfigMunicipio; editable: b
         )}
       </Seccion>
 
-      <Seccion titulo="Funcionarios" descripcion="Lo que ven los funcionarios del municipio en Inicio.">
+      <Seccion titulo="Funcionarios" descripcion="Lo que ven los funcionarios del municipio.">
         <Interruptor
           etiqueta="Ocultar el recaudo del municipio"
-          ayuda="Encendido, los funcionarios no ven en Inicio el recaudo del año ni la gráfica de recaudo por años."
+          ayuda="Encendido, los funcionarios no ven el recaudo del año en Inicio ni en Pagos, ni la gráfica de recaudo por años."
           valor={b.ocultarRecaudoAFuncionarios}
           deshabilitado={!editable}
           onChange={(v) => cambiar({ ocultarRecaudoAFuncionarios: v })}
@@ -409,11 +359,6 @@ function Formulario({ config, editable }: { config: ConfigMunicipio; editable: b
           </Campo>
         ))}
       </Seccion>
-
-      <Card>
-        <CardHeader titulo="Tarifas por actividad" descripcion="Por mil. Topes de ley: industrial 2 a 7; comercial y servicios 2 a 10; el sector financiero tiene reglas propias." />
-        <Tabla datos={b.tarifas} columnas={columnas} idFila={(t) => t.ciiu} densa claseFila={() => ''} />
-      </Card>
 
       {editable && (
         <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center justify-end gap-3 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
