@@ -1,5 +1,5 @@
 // Genera los datos de la demo con una semilla fija: siempre salen los mismos.
-import { nombreCompleto } from '../lib/formato'
+import { etiquetaCalidad, nombreCompleto } from '../lib/formato'
 import { porcentajeProntoPago, redondearMil, UVT } from '../lib/reglas'
 import type {
   Archivo,
@@ -7,6 +7,7 @@ import type {
   CalidadInscrita,
   ConfigMunicipio,
   Datos,
+  DatosRit,
   Declaracion,
   EstadoInscripcion,
   EstadoRevision,
@@ -16,10 +17,12 @@ import type {
   Pago,
   RecaudoMensual,
   Renglon,
+  Tarifa,
   TipoPersona,
 } from '../types'
 import {
   ACTIVIDADES,
+  ACTIVIDADES_POR_VIGENCIA,
   APELLIDOS,
   CALLES,
   CONFIGURACIONES,
@@ -114,14 +117,112 @@ const ANEXOS: Record<Impuesto, string[]> = {
   autorretencion: ['Relación de bases de autorretención'],
 }
 
+/** Documento que acredita la calidad, en la inscripción o en la actualización que la agrega. */
+const SOPORTE_CALIDAD: Partial<Record<Calidad, string>> = {
+  agente_retenedor: 'Acto que acredita la calidad de agente retenedor',
+  autorretenedor: 'Resolución de designación como autorretenedor',
+}
+
 function soportesRequeridos(tipo: TipoPersona, calidades: Calidad[]) {
   const lista =
     tipo === 'natural'
       ? ['Formulario RIT', 'Copia del RUT', 'Copia de la cédula']
       : ['Formulario RIT', 'Copia del RUT', 'Certificado de existencia y representación legal (máx. 30 días)', 'Cédula del representante legal']
-  if (calidades.includes('agente_retenedor')) lista.push('Acto que acredita la calidad de agente retenedor')
-  if (calidades.includes('autorretenedor')) lista.push('Resolución de designación como autorretenedor')
+  if (calidades.includes('agente_retenedor')) lista.push(SOPORTE_CALIDAD.agente_retenedor!)
+  if (calidades.includes('autorretenedor')) lista.push(SOPORTE_CALIDAD.autorretenedor!)
   return lista
+}
+
+const direccionAleatoria = (az: Azar) => `${az.elegir(CALLES)} ${az.entero(1, 120)} # ${az.entero(1, 99)}-${az.entero(1, 99)}`
+const telefonoAleatorio = (az: Azar) => `3${az.entero(10, 25)} ${az.entero(100, 999)} ${az.entero(1000, 9999)}`
+
+type Motivo = { motivo: string; soportes: string[]; noAplicaANaturales?: boolean }
+
+/** Motivos de actualización: el documento que pide cada uno y cómo estaba el dato antes del cambio. */
+const MOTIVOS_ACTUALIZACION: (Motivo & { antes: (az: Azar, d: DatosRit) => Partial<DatosRit> })[] = [
+  { motivo: 'Cambio de dirección del establecimiento', soportes: ['Copia del RUT actualizado'], antes: (az) => ({ direccion: direccionAleatoria(az) }) },
+  {
+    motivo: 'Cambio del correo de notificación',
+    soportes: [],
+    antes: (az, d) => ({ correo: d.correo.replace(/^\D+/, az.elegir(['gerencia', 'admin', 'tesoreria', 'info'].filter((p) => !d.correo.startsWith(p)))) }),
+  },
+  { motivo: 'Actualización de datos de contacto', soportes: [], antes: (az) => ({ telefono: telefonoAleatorio(az) }) },
+  {
+    motivo: 'Cambio de representante legal',
+    soportes: ['Certificado de existencia y representación legal (máx. 30 días)', 'Cédula del representante legal'],
+    noAplicaANaturales: true,
+    antes: (az) => ({ representanteLegal: `${az.elegir(NOMBRES)} ${az.elegir(APELLIDOS)}` }),
+  },
+]
+
+const MOTIVOS_CANCELACION: Motivo[] = [
+  { motivo: 'Cierre definitivo del establecimiento', soportes: [] },
+  { motivo: 'Traslado de la actividad a otro municipio', soportes: ['Copia del RUT actualizado'] },
+  { motivo: 'Venta del establecimiento de comercio', soportes: ['Contrato de compraventa del establecimiento'] },
+  { motivo: 'Liquidación de la sociedad', soportes: ['Certificado de liquidación de la sociedad'], noAplicaANaturales: true },
+]
+
+const semilla = (texto: string) => [...texto].reduce((h, c) => Math.imul(h, 31) + c.charCodeAt(0), 7)
+
+/**
+ * Llena lo que el contribuyente diligenció en cada solicitud del RIT. La inscripción tiene los datos del último
+ * formulario aprobado; hacia atrás, cada actualización aprobada deshace su cambio. Agrega actualizaciones para que
+ * haya historiales largos: las calidades que llegaron después de inscribirse y, en las canceladas, al menos dos.
+ * Usa su propio azar para no cambiar el resto de los datos.
+ */
+function agregarFormularios(ins: Inscripcion) {
+  const az = crearAzar(semilla(ins.id))
+  const esNatural = ins.tipoPersona === 'natural'
+  const aplica = (m: Motivo) => !esNatural || !m.noAplicaANaturales
+  const { novedades } = ins
+  const inscripcion = novedades[0]
+  const cargados = (nombres: string[], fecha: string) => nombres.map((nombre) => ({ nombre, entregado: true, archivo: archivoAleatorio(az, nombre, fecha) }))
+  const aprobada = (fecha: string, descripcion: string, calidad?: Calidad) =>
+    novedades.push({
+      id: '', tipo: 'actualizacion', fecha, descripcion, calidad, estado: 'aprobada', revisadaPor: inscripcion.revisadaPor, fechaRevision: sumarDias(fecha, 5), soportes: [],
+    })
+
+  if (ins.estado === 'activa' || ins.estado === 'cancelada') {
+    for (const c of ins.calidades) {
+      if (c.calidad !== 'contribuyente' && c.desde > inscripcion.fecha) {
+        aprobada(sumarDias(c.desde, az.entero(5, 40)), `Agrega la calidad de ${etiquetaCalidad[c.calidad].toLowerCase()} (${c.acto})`, c.calidad)
+      }
+    }
+    const tope = novedades.find((n) => n.tipo === 'cancelacion' || n.estado === 'pendiente')?.fecha ?? '2026-08-31'
+    const desde = sumarDias(inscripcion.fecha, 60)
+    const hasta = sumarDias(tope, -20)
+    let faltan = ins.estado === 'cancelada' ? 2 - novedades.filter((n) => n.tipo === 'actualizacion').length : az.prob(0.25) ? 1 : 0
+    while (faltan-- > 0 && desde < hasta) aprobada(fechaAleatoria(az, desde, hasta), az.elegir(MOTIVOS_ACTUALIZACION.filter(aplica)).motivo)
+    novedades.sort((a, b) => a.fecha.localeCompare(b.fecha))
+    novedades.forEach((n, i) => (n.id = `${ins.id}-n${i + 1}`))
+  }
+
+  let vigente: DatosRit = structuredClone({
+    tipoPersona: ins.tipoPersona, tipoDocumento: ins.tipoDocumento, documento: ins.documento, dv: ins.dv, nombre: ins.nombre,
+    representanteLegal: ins.representanteLegal, direccion: ins.direccion, telefono: ins.telefono, correo: ins.correo,
+    fechaInicioActividades: ins.fechaInicioActividades, regimenSimple: ins.regimenSimple, actividades: ins.actividades, calidades: ins.calidades,
+  })
+  for (const n of [...novedades].reverse()) {
+    if (n.tipo === 'cancelacion') {
+      const m = az.elegir(MOTIVOS_CANCELACION.filter(aplica))
+      n.cancelacion = { fechaCese: n.fecha, motivo: m.motivo }
+      n.soportes = cargados(['Solicitud de cancelación firmada', ...m.soportes], n.fecha)
+    } else if (n.tipo === 'actualizacion' && n.estado === 'pendiente') {
+      // Aún no se aplica: pide lo vigente más la calidad nueva.
+      n.datos = structuredClone(vigente)
+      n.datos.calidades.push({ calidad: n.calidad!, desde: n.fecha, acto: /\(([^)]+)\)/.exec(n.descripcion)?.[1] })
+      n.soportes = cargados([SOPORTE_CALIDAD[n.calidad!]!], n.fecha)
+    } else if (n.tipo === 'actualizacion') {
+      n.datos = structuredClone(vigente)
+      const motivo = MOTIVOS_ACTUALIZACION.find((m) => m.motivo === n.descripcion)
+      n.soportes = cargados(n.calidad ? [SOPORTE_CALIDAD[n.calidad]!] : motivo!.soportes, n.fecha)
+      vigente = n.calidad ? { ...vigente, calidades: vigente.calidades.filter((c) => c.calidad !== n.calidad) } : { ...vigente, ...motivo!.antes(az, vigente) }
+    } else {
+      n.datos = structuredClone(vigente)
+      const requeridos = soportesRequeridos(ins.tipoPersona, vigente.calidades.map((c) => c.calidad))
+      n.soportes = ins.soportes.filter((s) => requeridos.includes(s.nombre))
+    }
+  }
 }
 
 function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripcion {
@@ -157,7 +258,7 @@ function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripci
   const revisor = nombreCompleto(az.elegir(revisores))
   const fechaInscripcion = sumarDias(fechaInicio, az.entero(5, 50))
   const novedades: Novedad[] = []
-  const novedad = (datos: Omit<Novedad, 'id'>) => novedades.push({ id: `${id}-n${novedades.length + 1}`, ...datos })
+  const novedad = (datos: Omit<Novedad, 'id' | 'soportes'>) => novedades.push({ id: `${id}-n${novedades.length + 1}`, soportes: [], ...datos })
 
   if (estado === 'en_revision') {
     novedad({ tipo: 'inscripcion', fecha: menor(fechaInscripcion, FECHA_DEMO), descripcion: 'Solicitud de inscripción en el RIT', estado: 'pendiente' })
@@ -172,9 +273,8 @@ function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripci
     novedad({ tipo: 'inscripcion', fecha: fechaInscripcion, descripcion: 'Solicitud de inscripción en el RIT', estado: 'aprobada', revisadaPor: revisor, fechaRevision: sumarDias(fechaInscripcion, 6) })
     if (az.prob(0.3)) {
       const fecha = fechaAleatoria(az, sumarDias(fechaInscripcion, 90), '2026-01-31')
-      const motivos = ['Cambio de dirección del establecimiento', 'Cambio de dirección de notificación', 'Actualización de datos de contacto']
-      if (!esNatural) motivos.push('Cambio de representante legal')
-      novedad({ tipo: 'actualizacion', fecha, descripcion: az.elegir(motivos), estado: 'aprobada', revisadaPor: revisor, fechaRevision: sumarDias(fecha, 5) })
+      const motivos = MOTIVOS_ACTUALIZACION.filter((m) => !esNatural || !m.noAplicaANaturales)
+      novedad({ tipo: 'actualizacion', fecha, descripcion: az.elegir(motivos).motivo, estado: 'aprobada', revisadaPor: revisor, fechaRevision: sumarDias(fecha, 5) })
     }
     if (estado === 'cancelada') {
       const fecha = fechaAleatoria(az, '2026-02-01', '2026-08-31')
@@ -196,7 +296,7 @@ function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripci
   const documento = esNatural ? String(az.entero(10_000_000, 1_199_999_999)) : String(az.entero(900_100_000, 901_999_999))
   const nombre = nombreSujeto(az, tipoPersona)
 
-  return {
+  const inscripcion: Inscripcion = {
     id,
     municipioId,
     numeroRit: `${MUNICIPIOS.find((m) => m.id === municipioId)!.codigoDane}-${String(n).padStart(5, '0')}`,
@@ -206,8 +306,8 @@ function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripci
     dv: esNatural ? undefined : String(az.entero(0, 9)),
     nombre,
     representanteLegal: esNatural ? undefined : `${az.elegir(NOMBRES)} ${az.elegir(APELLIDOS)}`,
-    direccion: `${az.elegir(CALLES)} ${az.entero(1, 120)} # ${az.entero(1, 99)}-${az.entero(1, 99)}`,
-    telefono: `3${az.entero(10, 25)} ${az.entero(100, 999)} ${az.entero(1000, 9999)}`,
+    direccion: direccionAleatoria(az),
+    telefono: telefonoAleatorio(az),
     correo: `contacto${n}@${esNatural ? 'correo' : 'empresa'}.demo`,
     fechaInicioActividades: fechaInicio,
     regimenSimple,
@@ -217,6 +317,8 @@ function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripci
     soportes,
     novedades,
   }
+  agregarFormularios(inscripcion)
+  return inscripcion
 }
 
 // --- Declaraciones ---
@@ -231,8 +333,8 @@ interface PerfilIca {
   autorretencionesPct: number
 }
 
-function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, diasMora: number, descuentoPct: number, sancionCorreccion = 0) {
-  const tarifa = cfg.tarifas.find((t) => t.ciiu === ins.actividades[0].ciiu)?.porMil ?? 7
+function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, tarifas: Tarifa[], diasMora: number, descuentoPct: number, sancionCorreccion = 0) {
+  const tarifa = tarifas.find((t) => t.ciiu === ins.actividades[0].ciiu)?.porMil ?? 7
   const autorretenedor = ins.calidades.some((c) => c.calidad === 'autorretenedor')
   const r8 = redondearMil(p.ingresos)
   const r9 = redondearMil(r8 * p.fueraPct)
@@ -303,6 +405,9 @@ export function generarDatos(): Datos {
 
   for (const municipio of MUNICIPIOS) {
     const cfg = CONFIGURACIONES.find((c) => c.municipioId === municipio.id)!
+    const tarifasDe = (vigencia: number) => ACTIVIDADES_POR_VIGENCIA.find((a) => a.municipioId === municipio.id && a.vigencia === vigencia)!.tarifas
+    const tarifas2025 = tarifasDe(2025)
+    const tarifas2026 = tarifasDe(2026)
     for (let n = 1; n <= INSCRIPCIONES_POR_MUNICIPIO; n++) {
       const ins = generarInscripcion(az, municipio.id, n)
       inscripciones.push(ins)
@@ -327,7 +432,7 @@ export function generarDatos(): Datos {
         const patron = az.prob(0.8) ? 'total' : az.prob(0.6) ? 'parcial' : 'ninguno'
         // Solo conserva el descuento quien paga todo y está a paz y salvo; el porcentaje sale del tramo de la fecha de pago.
         const descuento = patron === 'total' && az.prob(0.6) ? porcentajeProntoPago(cfg, 2025, presentacion) : 0
-        const liq = liquidarIca(perfil, ins, cfg, diasMora, descuento)
+        const liq = liquidarIca(perfil, ins, cfg, tarifas2025, diasMora, descuento)
         const revision = estadoRevisionAleatorio(az, 0.3)
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
@@ -342,10 +447,10 @@ export function generarDatos(): Datos {
         // Corrección de mayor valor: hereda como crédito lo ya pagado.
         if (patron === 'total' && liq.r38 > 0 && az.prob(0.1)) {
           const corregido = { ...perfil, ingresos: perfil.ingresos * (1.05 + az.num() * 0.1) }
-          const base = liquidarIca(corregido, ins, cfg, diasMora, 0)
+          const base = liquidarIca(corregido, ins, cfg, tarifas2025, diasMora, 0)
           const mayorValor = Math.max(base.r33 - liq.r33, 0)
           const sancion = Math.max(redondearMil((mayorValor * cfg.sanciones.correccion) / 100), redondearMil(cfg.sanciones.minimaUvt * UVT))
-          const nueva = liquidarIca(corregido, ins, cfg, diasMora, 0, sancion)
+          const nueva = liquidarIca(corregido, ins, cfg, tarifas2025, diasMora, 0, sancion)
           const pagado = liq.r38
           const aPagar = Math.max(nueva.r38 - pagado, 0)
           const fecha = menor(sumarDias(presentacion, az.entero(30, 150)), FECHA_DEMO)
@@ -365,7 +470,7 @@ export function generarDatos(): Datos {
       if (ins.estado === 'cancelada' && puedeDeclararIca) {
         const cierre = ins.novedades.find((nv) => nv.tipo === 'cancelacion')!.fecha
         const fraccion = { ...perfil, ingresos: perfil.ingresos * (0.3 + az.num() * 0.4) }
-        const liq = liquidarIca(fraccion, ins, { ...cfg, anticipoPorcentaje: 0 }, 0, 0)
+        const liq = liquidarIca(fraccion, ins, { ...cfg, anticipoPorcentaje: 0 }, tarifas2026, 0, 0)
         const presentacion = sumarDias(cierre, az.entero(5, 25))
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
@@ -394,7 +499,7 @@ export function generarDatos(): Datos {
             const tarifas =
               cfg.reteica.modalidad === 'unica'
                 ? [cfg.reteica.tarifaUnicaPorMil]
-                : [cfg.tarifas.find((t) => t.sector === 'servicios')!.porMil, cfg.tarifas.find((t) => t.sector === 'comercial')!.porMil]
+                : [tarifas2026.find((t) => t.sector === 'servicios')!.porMil, tarifas2026.find((t) => t.sector === 'comercial')!.porMil]
             let retenciones = 0
             for (const tarifa of tarifas) {
               const base = az.entero(15, 900) * 1_000_000
@@ -410,7 +515,7 @@ export function generarDatos(): Datos {
               { codigo: '18', concepto: 'Subtotal', valor: impuesto },
             )
           } else {
-            const principal = cfg.tarifas.find((t) => t.ciiu === ins.actividades[0].ciiu)?.porMil ?? 7
+            const principal = tarifas2026.find((t) => t.ciiu === ins.actividades[0].ciiu)?.porMil ?? 7
             const tarifa = cfg.autorretencion.modalidad === 'plena' ? principal : (principal * cfg.autorretencion.porcentaje) / 100
             const base = redondearMil((perfil.ingresos / 6) * (0.8 + az.num() * 0.4))
             impuesto = redondearMil((base * tarifa) / 1000)
@@ -457,6 +562,7 @@ export function generarDatos(): Datos {
     pagos,
     recaudoHistorico: generarHistorico(az, declaraciones, pagos),
     configuraciones: structuredClone(CONFIGURACIONES),
+    actividades: structuredClone(ACTIVIDADES_POR_VIGENCIA),
   }
 }
 
