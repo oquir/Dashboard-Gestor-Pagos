@@ -9,6 +9,8 @@ export type Permiso =
   /** Aprobar o rechazar novedades del RIT y revisar declaraciones. */
   | 'revisar'
   | 'verReportes'
+  /** Descargar la plantilla y cargar desde Excel las actividades y tarifas de un año gravable. */
+  | 'cargarActividades'
 
 const PERMISOS: Record<Permiso, Rol[]> = {
   verTodosLosMunicipios: ['1cero1'],
@@ -18,6 +20,8 @@ const PERMISOS: Record<Permiso, Rol[]> = {
   // La revisión es un acto de la administración municipal, no del proveedor.
   revisar: ['admin_municipio', 'funcionario'],
   verReportes: ['1cero1', 'admin_municipio'],
+  // Los funcionarios solo consultan las actividades.
+  cargarActividades: ['1cero1', 'admin_municipio'],
 }
 
 export const puede = (rol: Rol | undefined, permiso: Permiso) => rol !== undefined && PERMISOS[permiso].includes(rol)
