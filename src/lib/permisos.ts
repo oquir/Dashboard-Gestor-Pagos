@@ -8,6 +8,7 @@ export type Permiso =
   | 'editarConfiguracion'
   /** Aprobar o rechazar novedades del RIT y revisar declaraciones. */
   | 'revisar'
+  | 'verReportes'
 
 const PERMISOS: Record<Permiso, Rol[]> = {
   verTodosLosMunicipios: ['1cero1'],
@@ -16,6 +17,7 @@ const PERMISOS: Record<Permiso, Rol[]> = {
   editarConfiguracion: ['1cero1', 'admin_municipio'],
   // La revisión es un acto de la administración municipal, no del proveedor.
   revisar: ['admin_municipio', 'funcionario'],
+  verReportes: ['1cero1', 'admin_municipio'],
 }
 
 export const puede = (rol: Rol | undefined, permiso: Permiso) => rol !== undefined && PERMISOS[permiso].includes(rol)
