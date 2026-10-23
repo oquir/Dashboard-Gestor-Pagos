@@ -40,7 +40,14 @@ export function estadoPago(declaracion: Declaracion, pagos: Pago[]): EstadoPago 
   return pagado >= declaracion.totalAPagar ? 'pagada' : 'ineficaz'
 }
 
-export const redondearMil = (valor: number) => Math.round(valor / 1000) * 1000
+/** Descuento por pronto pago del año gravable para un pago en esa fecha; 0 si no cae en ningún tramo. */
+export function porcentajeProntoPago(cfg: ConfigMunicipio, vigencia: number, fecha: string) {
+  if (!cfg.prontoPago.activo) return 0
+  const tramos = cfg.prontoPago.porVigencia.find((v) => v.vigencia === vigencia)?.tramos ?? []
+  return tramos.find((t) => t.desde <= fecha && fecha <= t.hasta)?.porcentaje ?? 0
+}
+
+export const redondearMil =(valor: number) => Math.round(valor / 1000) * 1000
 
 /** Renglones de subtotal y total de la liquidación (se resaltan en pantalla y en el PDF). */
 export const RENGLONES_TOTALES = new Set(['16', '25', '33', '34', '38', '18', 'T'])
