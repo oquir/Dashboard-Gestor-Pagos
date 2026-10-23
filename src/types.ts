@@ -132,7 +132,10 @@ export interface Declaracion {
   /** 1 en el ICA anual; bimestre (1–6) en retención y autorretención. */
   periodo: number
   tipo: TipoDeclaracion
+  /** Radicado: la referencia de la declaración, que también acompaña el pago. */
   numero: string
+  /** Número de factura con el que se identifica el pago. Solo dígitos. */
+  numeroFactura: number
   corrigeA?: string
   /** Solo en clausura: fecha exacta de cierre. */
   fechaCierre?: string
@@ -166,14 +169,24 @@ export interface Tarifa {
   porMil: number
 }
 
+/** Rango de fechas de pago (inclusive) con su porcentaje de descuento. */
+export interface TramoProntoPago {
+  desde: string
+  hasta: string
+  porcentaje: number
+}
+
 export interface ConfigMunicipio {
   municipioId: string
   periodicidadRetencion: 'bimestral' | 'mensual'
   formularioConjunto: boolean
   declaracionEnCeros: boolean
   cancelacionRitAutomatica: boolean
+  /** Los funcionarios no ven en Inicio lo que ha recaudado el municipio. */
+  ocultarRecaudoAFuncionarios: boolean
   correccionABaja: 'proyecto_589' | 'correccion_directa'
-  prontoPago: { activo: boolean; porcentaje: number }
+  /** El concejo fija los tramos para cada año gravable; fuera de ellos no hay descuento. */
+  prontoPago: { activo: boolean; porVigencia: { vigencia: number; tramos: TramoProntoPago[] }[] }
   anticipoPorcentaje: number
   sobretasaBomberil: { activa: boolean; porcentaje: number }
   reteica: {
