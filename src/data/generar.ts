@@ -1,6 +1,6 @@
 // Genera los datos de la demo con una semilla fija: siempre salen los mismos.
 import { nombreCompleto } from '../lib/formato'
-import { redondearMil, UVT } from '../lib/reglas'
+import { porcentajeProntoPago, redondearMil, UVT } from '../lib/reglas'
 import type {
   Archivo,
   Calidad,
@@ -231,7 +231,7 @@ interface PerfilIca {
   autorretencionesPct: number
 }
 
-function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, diasMora: number, conDescuento: boolean, sancionCorreccion = 0) {
+function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, diasMora: number, descuentoPct: number, sancionCorreccion = 0) {
   const tarifa = cfg.tarifas.find((t) => t.ciiu === ins.actividades[0].ciiu)?.porMil ?? 7
   const autorretenedor = ins.calidades.some((c) => c.calidad === 'autorretenedor')
   const r8 = redondearMil(p.ingresos)
@@ -256,7 +256,7 @@ function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, diasM
   const r33 = Math.max(saldo, 0)
   const r34 = Math.max(-saldo, 0)
   const r35 = r33
-  const r36 = conDescuento && cfg.prontoPago.activo && diasMora === 0 ? Math.min(redondearMil((r20 * cfg.prontoPago.porcentaje) / 100), r35) : 0
+  const r36 = diasMora === 0 ? Math.min(redondearMil((r20 * descuentoPct) / 100), r35) : 0
   const r37 = diasMora > 0 ? redondearMil(r33 * 0.00067 * diasMora) : 0
   const r38 = r35 - r36 + r37
   const renglones: Renglon[] = [
@@ -279,7 +279,7 @@ function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, diasM
     { codigo: '33', concepto: 'Total saldo a cargo', valor: r33 },
     { codigo: '34', concepto: 'Total saldo a favor', valor: r34 },
     { codigo: '35', concepto: 'Valor a pagar', valor: r35 },
-    { codigo: '36', concepto: 'Descuento por pronto pago', valor: r36 },
+    { codigo: '36', concepto: r36 > 0 ? `Descuento por pronto pago (${descuentoPct} %)` : 'Descuento por pronto pago', valor: r36 },
     { codigo: '37', concepto: 'Intereses de mora', valor: r37 },
     { codigo: '38', concepto: 'Total a pagar', valor: r38 },
   ]
@@ -297,6 +297,9 @@ export function generarDatos(): Datos {
     if (valor > 0) pagos.push({ id: `p${pagos.length + 1}`, declaracionId, fecha, valor, medio: az.elegir(['PSE', 'Banco de Bogotá', 'Bancolombia', 'Davivienda']) })
   }
   const numero = (prefijo: string, vigencia: number) => `${prefijo}-${vigencia}-${String(consecutivo++).padStart(6, '0')}`
+  // La factura lleva su propio consecutivo y no usa el azar, para no cambiar el resto de los datos.
+  let factura = 4_810_200_000
+  const numeroFactura = () => ++factura
 
   for (const municipio of MUNICIPIOS) {
     const cfg = CONFIGURACIONES.find((c) => c.municipioId === municipio.id)!
@@ -322,13 +325,15 @@ export function generarDatos(): Datos {
         const diasMora = az.prob(0.12) ? az.entero(5, 120) : 0
         const presentacion = diasMora > 0 ? sumarDias(vencimiento, diasMora) : sumarDias(vencimiento, -az.entero(1, 60))
         const patron = az.prob(0.8) ? 'total' : az.prob(0.6) ? 'parcial' : 'ninguno'
-        const liq = liquidarIca(perfil, ins, cfg, diasMora, patron === 'total' && az.prob(0.6))
+        // Solo conserva el descuento quien paga todo y está a paz y salvo; el porcentaje sale del tramo de la fecha de pago.
+        const descuento = patron === 'total' && az.prob(0.6) ? porcentajeProntoPago(cfg, 2025, presentacion) : 0
+        const liq = liquidarIca(perfil, ins, cfg, diasMora, descuento)
         const revision = estadoRevisionAleatorio(az, 0.3)
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
           adjuntos: [],
           id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'inicial',
-          numero: numero('ICA', 2025), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
+          numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
           totalAPagar: liq.r38, saldoAFavor: liq.r34, estadoRevision: revision.estado, observacion: revision.observacion,
         })
         if (patron === 'total') agregarPago(id, presentacion, liq.r38)
@@ -337,10 +342,10 @@ export function generarDatos(): Datos {
         // Corrección de mayor valor: hereda como crédito lo ya pagado.
         if (patron === 'total' && liq.r38 > 0 && az.prob(0.1)) {
           const corregido = { ...perfil, ingresos: perfil.ingresos * (1.05 + az.num() * 0.1) }
-          const base = liquidarIca(corregido, ins, cfg, diasMora, false)
+          const base = liquidarIca(corregido, ins, cfg, diasMora, 0)
           const mayorValor = Math.max(base.r33 - liq.r33, 0)
           const sancion = Math.max(redondearMil((mayorValor * cfg.sanciones.correccion) / 100), redondearMil(cfg.sanciones.minimaUvt * UVT))
-          const nueva = liquidarIca(corregido, ins, cfg, diasMora, false, sancion)
+          const nueva = liquidarIca(corregido, ins, cfg, diasMora, 0, sancion)
           const pagado = liq.r38
           const aPagar = Math.max(nueva.r38 - pagado, 0)
           const fecha = menor(sumarDias(presentacion, az.entero(30, 150)), FECHA_DEMO)
@@ -348,7 +353,7 @@ export function generarDatos(): Datos {
           declaraciones.push({
             adjuntos: [],
             id: idCorreccion, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'correccion',
-            corrigeA: id, numero: numero('ICA', 2025), fechaPresentacion: fecha, fechaVencimiento: vencimiento,
+            corrigeA: id, numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: fecha, fechaVencimiento: vencimiento,
             renglones: [...nueva.renglones, { codigo: '—', concepto: 'Menos lo pagado con la declaración que se corrige', valor: pagado }],
             totalAPagar: aPagar, saldoAFavor: nueva.r34, estadoRevision: 'pendiente',
           })
@@ -360,13 +365,13 @@ export function generarDatos(): Datos {
       if (ins.estado === 'cancelada' && puedeDeclararIca) {
         const cierre = ins.novedades.find((nv) => nv.tipo === 'cancelacion')!.fecha
         const fraccion = { ...perfil, ingresos: perfil.ingresos * (0.3 + az.num() * 0.4) }
-        const liq = liquidarIca(fraccion, ins, { ...cfg, anticipoPorcentaje: 0 }, 0, false)
+        const liq = liquidarIca(fraccion, ins, { ...cfg, anticipoPorcentaje: 0 }, 0, 0)
         const presentacion = sumarDias(cierre, az.entero(5, 25))
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
           adjuntos: [],
           id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2026, periodo: 1, tipo: 'clausura',
-          fechaCierre: cierre, numero: numero('ICA', 2026), fechaPresentacion: presentacion, fechaVencimiento: sumarDias(cierre, 60),
+          fechaCierre: cierre, numero: numero('ICA', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: sumarDias(cierre, 60),
           renglones: liq.renglones, totalAPagar: liq.r38, saldoAFavor: liq.r34, estadoRevision: 'revisada',
         })
         agregarPago(id, presentacion, liq.r38)
@@ -430,7 +435,7 @@ export function generarDatos(): Datos {
           declaraciones.push({
             adjuntos: [],
             id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: esRete ? 'reteica' : 'autorretencion', vigencia: 2026, periodo: bimestre,
-            tipo: 'inicial', numero: numero(esRete ? 'RET' : 'AUT', 2026), fechaPresentacion: presentacion, fechaVencimiento: vencimiento,
+            tipo: 'inicial', numero: numero(esRete ? 'RET' : 'AUT', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento,
             renglones, totalAPagar: total, saldoAFavor: 0, estadoRevision: revision.estado, observacion: revision.observacion,
           })
           if (az.prob(esRete ? 0.9 : 0.95)) agregarPago(id, presentacion, total)
