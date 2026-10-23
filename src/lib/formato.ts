@@ -64,7 +64,7 @@ export const etiquetaEstadoNovedad: Record<EstadoNovedad, string> = {
 export const etiquetaImpuesto: Record<Impuesto, string> = {
   ica: 'ICA anual',
   reteica: 'ReteICA',
-  autorretencion: 'Autorretención',
+  autorretencion: 'AutoReteICA',
 }
 
 export const etiquetaTipoDeclaracion: Record<TipoDeclaracion, string> = {
