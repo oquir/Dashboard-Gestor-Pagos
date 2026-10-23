@@ -1,6 +1,6 @@
 import { useTable } from '@tanstack/react-table'
 import type { RowData } from '@tanstack/react-table'
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowDown, ArrowUp, Sort, ChevronLeft, ChevronRight } from 'reicon-react'
 import { caracteristicas } from '../lib/tabla'
 import type { Columnas } from '../lib/tabla'
 import { Boton, Vacio } from './ui'
@@ -75,7 +75,7 @@ export default function Tabla<T extends RowData>({
                           ) : orden === 'desc' ? (
                             <ArrowDown className="size-3.5" aria-hidden />
                           ) : (
-                            <ArrowUpDown className="size-3.5 opacity-40" aria-hidden />
+                            <Sort className="size-3.5 opacity-40" aria-hidden />
                           )}
                         </button>
                       ) : (

@@ -1,4 +1,4 @@
-import { Download, FileArchive, FileText } from 'lucide-react'
+import { Download, Zip, Document } from 'reicon-react'
 import { descargarArchivo, descargarZip, formatoTamano } from '../lib/archivos'
 import type { ItemArchivo } from '../lib/archivos'
 import { formatoFecha } from '../lib/formato'
@@ -27,7 +27,7 @@ export default function ListaArchivos({ titulo, descripcion, items, contexto, no
         acciones={
           cargados.length > 0 && (
             <Boton variante="secundario" onClick={() => descargarZip(nombreZip, cargados, contexto)}>
-              <FileArchive className="size-4" aria-hidden /> Descargar todos (.zip)
+              <Zip className="size-4" aria-hidden /> Descargar todos (.zip)
             </Boton>
           )
         }
@@ -38,7 +38,7 @@ export default function ListaArchivos({ titulo, descripcion, items, contexto, no
         <ul className="divide-y divide-slate-100">
           {items.map(({ titulo, archivo }) => (
             <li key={titulo} className="flex items-center gap-3 px-5 py-3 text-sm">
-              <FileText className={`size-5 shrink-0 ${archivo ? 'text-brand-600' : 'text-slate-300'}`} aria-hidden />
+              <Document className={`size-5 shrink-0 ${archivo ? 'text-brand-600' : 'text-slate-300'}`} aria-hidden />
               <div className="min-w-0 flex-1">
                 <p className={archivo ? 'text-slate-900' : 'text-red-700'}>{titulo}</p>
                 <p className="truncate text-xs text-slate-500">
