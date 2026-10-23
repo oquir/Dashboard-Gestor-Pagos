@@ -1,4 +1,4 @@
-import { ArrowLeft, CircleCheck, Download, TriangleAlert } from 'lucide-react'
+import { ArrowLeft, TickCircle, Download, AlertTriangle } from 'reicon-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import ListaArchivos from '../components/ListaArchivos'
@@ -131,7 +131,7 @@ export default function DeclaracionDetalle() {
       </Link>
       <PageHeader
         titulo={`${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}`}
-        descripcion={`Declaración ${d.numero}`}
+        descripcion={`Radicado ${d.numero}`}
         acciones={
           <>
             <Badge tono="info">{etiquetaTipoDeclaracion[d.tipo]}</Badge>
@@ -196,6 +196,9 @@ export default function DeclaracionDetalle() {
               <Dato etiqueta="Declarante">
                 {!ins ? '—' : municipioConRit ? <Link className="font-medium text-brand-700 hover:underline" to={`/rit/${ins.id}`}>{ins.nombre}</Link> : ins.nombre}
               </Dato>
+              <Dato etiqueta="Número de factura">
+                <span className="tabular-nums">{d.numeroFactura}</span>
+              </Dato>
               <Dato etiqueta="Vencimiento">{formatoFecha(d.fechaVencimiento)}</Dato>
               <Dato etiqueta="Presentación">
                 {formatoFecha(d.fechaPresentacion)}
@@ -236,9 +239,9 @@ export default function DeclaracionDetalle() {
               {validaciones(d, ins, contraRit).map((v) => (
                 <li key={v.texto} className="flex items-start gap-2 text-sm">
                   {v.ok ? (
-                    <CircleCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-label="Cumple" />
+                    <TickCircle className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-label="Cumple" />
                   ) : (
-                    <TriangleAlert className="mt-0.5 size-4 shrink-0 text-red-600" aria-label="Inconsistencia" />
+                    <AlertTriangle className="mt-0.5 size-4 shrink-0 text-red-600" aria-label="Inconsistencia" />
                   )}
                   <span className={v.ok ? 'text-slate-700' : 'font-medium text-red-700'}>{v.texto}</span>
                 </li>
