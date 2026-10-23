@@ -6,6 +6,7 @@ import type {
   EstadoRevision,
   Impuesto,
   Rol,
+  Sector,
   TipoDeclaracion,
   TipoNovedad,
   TipoPersona,
@@ -19,6 +20,8 @@ const fecha = new Intl.DateTimeFormat('es-CO', { day: '2-digit', month: 'short',
 export const formatoPesos = (valor: number) => pesos.format(valor)
 export const formatoCompacto = (valor: number) => compacto.format(valor)
 export const formatoFecha = (iso: string) => fecha.format(new Date(`${iso}T12:00:00`))
+/** Para comparar textos sin importar tildes, mayúsculas ni espacios de los extremos. */
+export const normalizar = (texto: string) => texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').trim().toLowerCase()
 
 export const etiquetaRol: Record<Rol, string> = {
   '1cero1': '1cero1',
@@ -59,6 +62,13 @@ export const etiquetaEstadoNovedad: Record<EstadoNovedad, string> = {
   pendiente: 'Pendiente',
   aprobada: 'Aprobada',
   rechazada: 'Rechazada',
+}
+
+export const etiquetaSector: Record<Sector, string> = {
+  industrial: 'Industrial',
+  comercial: 'Comercial',
+  servicios: 'Servicios',
+  financiero: 'Financiero',
 }
 
 export const etiquetaImpuesto: Record<Impuesto, string> = {
