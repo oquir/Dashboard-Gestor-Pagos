@@ -1,4 +1,4 @@
-import { Search } from 'lucide-react'
+import { Search } from 'reicon-react'
 import { useMemo, useState } from 'react'
 import { Link, Navigate } from 'react-router'
 import Tabla from '../components/Tabla'

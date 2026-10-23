@@ -1,4 +1,4 @@
-import { ArrowLeft, CircleCheck, CircleX, Download, FileText, Paperclip, X } from 'lucide-react'
+import { ArrowLeft, TickCircle, CloseCircle, Download, Document, Paperclip, Xmark } from 'reicon-react'
 import { useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { Link, useParams } from 'react-router'
@@ -26,7 +26,7 @@ import type { Calidad, Novedad } from '../types'
 const HABILITA: Record<Calidad, string> = {
   contribuyente: 'Declara ICA anual.',
   agente_retenedor: 'Declara ReteICA: el portal solo la habilita con esta responsabilidad en el RIT.',
-  autorretenedor: 'Declara autorretención; a este sujeto no se le practica ReteICA.',
+  autorretenedor: 'Declara AutoReteICA; a este sujeto no se le practica ReteICA.',
 }
 
 const TAMANO_MAXIMO = 10 * 1024 * 1024
@@ -77,7 +77,7 @@ function RespuestaSolicitud({ inscripcionId, novedad, correo }: { inscripcionId:
             <ul className="mb-2 divide-y divide-slate-100 rounded-lg ring-1 ring-slate-200">
               {archivos.map((f, i) => (
                 <li key={`${f.name}-${i}`} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700">
-                  <FileText className="size-4 shrink-0 text-brand-600" aria-hidden />
+                  <Document className="size-4 shrink-0 text-brand-600" aria-hidden />
                   <span className="min-w-0 flex-1 truncate">{f.name}</span>
                   <span className="shrink-0 text-xs text-slate-500">{formatoTamano(f.size)}</span>
                   <button
@@ -86,7 +86,7 @@ function RespuestaSolicitud({ inscripcionId, novedad, correo }: { inscripcionId:
                     className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-red-600"
                     aria-label={`Quitar ${f.name}`}
                   >
-                    <X className="size-4" aria-hidden />
+                    <Xmark className="size-4" aria-hidden />
                   </button>
                 </li>
               ))}
@@ -105,10 +105,10 @@ function RespuestaSolicitud({ inscripcionId, novedad, correo }: { inscripcionId:
       </div>
       <div className="flex flex-wrap gap-2 border-t border-slate-100 px-5 py-3">
         <Boton variante="primario" disabled={enviando} onClick={() => responder('aprobada')}>
-          <CircleCheck className="size-4" aria-hidden /> Aprobar
+          <TickCircle className="size-4" aria-hidden /> Aprobar
         </Boton>
         <Boton variante="secundario" disabled={enviando} onClick={() => responder('rechazada')}>
-          <CircleX className="size-4" aria-hidden /> Rechazar
+          <CloseCircle className="size-4" aria-hidden /> Rechazar
         </Boton>
       </div>
     </Card>
