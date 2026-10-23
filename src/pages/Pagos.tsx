@@ -5,7 +5,7 @@ import Tabla from '../components/Tabla'
 import { Badge, Card, CardHeader, PageHeader, StatTile } from '../components/ui'
 import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
 import { estadoPago, totalPagado } from '../lib/reglas'
-import { useDeclaraciones } from '../lib/sesion'
+import { useDeclaraciones, useVerRecaudo } from '../lib/sesion'
 import { ayudanteColumnas } from '../lib/tabla'
 import { tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
@@ -104,6 +104,7 @@ export default function Pagos() {
   const declaraciones = useDeclaraciones()
   const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
+  const verRecaudo = useVerRecaudo()
 
   const datos = useMemo(() => {
     const porId = new Map(declaraciones.map((d) => [d.id, d]))
@@ -138,8 +139,10 @@ export default function Pagos() {
         descripcion="Recaudo y cartera. En el ICA anual el pago puede ser parcial; en ReteICA y AutoReteICA solo el pago total le da efecto a la declaración."
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatTile etiqueta="Recaudado en 2026" valor={`$${formatoCompacto(datos.recaudo2026)}`} detalle={`${datos.recibidos.length} pagos registrados`} />
+      <div className={`grid gap-4 ${verRecaudo ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
+        {verRecaudo && (
+          <StatTile etiqueta="Recaudado en 2026" valor={`$${formatoCompacto(datos.recaudo2026)}`} detalle={`${datos.recibidos.length} pagos registrados`} />
+        )}
         <StatTile etiqueta="Saldo pendiente de ICA anual" valor={`$${formatoCompacto(datos.saldoIca)}`} detalle="Pagos parciales y declaraciones sin pago" />
         <StatTile
           etiqueta="ReteICA y AutoReteICA ineficaces"
