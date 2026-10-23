@@ -71,8 +71,30 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     formularioConjunto: false,
     declaracionEnCeros: false,
     cancelacionRitAutomatica: false,
+    ocultarRecaudoAFuncionarios: true,
     correccionABaja: 'proyecto_589',
-    prontoPago: { activo: true, porcentaje: 10 },
+    // El caso típico: tres tramos que bajan a medida que se acerca el vencimiento.
+    prontoPago: {
+      activo: true,
+      porVigencia: [
+        {
+          vigencia: 2025,
+          tramos: [
+            { desde: '2026-01-01', hasta: '2026-02-28', porcentaje: 15 },
+            { desde: '2026-03-01', hasta: '2026-03-31', porcentaje: 10 },
+            { desde: '2026-04-01', hasta: '2026-04-15', porcentaje: 5 },
+          ],
+        },
+        {
+          vigencia: 2026,
+          tramos: [
+            { desde: '2027-01-01', hasta: '2027-02-28', porcentaje: 15 },
+            { desde: '2027-03-01', hasta: '2027-03-31', porcentaje: 10 },
+            { desde: '2027-04-01', hasta: '2027-04-15', porcentaje: 5 },
+          ],
+        },
+      ],
+    },
     anticipoPorcentaje: 40,
     sobretasaBomberil: { activa: true, porcentaje: 4 },
     reteica: { modalidad: 'unica', tarifaUnicaPorMil: 2, baseMinimaServiciosUvt: 15, baseMinimaComprasUvt: 15 },
@@ -87,8 +109,21 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     formularioConjunto: true,
     declaracionEnCeros: true,
     cancelacionRitAutomatica: false,
+    ocultarRecaudoAFuncionarios: true,
     correccionABaja: 'correccion_directa',
-    prontoPago: { activo: true, porcentaje: 15 },
+    prontoPago: {
+      activo: true,
+      porVigencia: [
+        { vigencia: 2024, tramos: [{ desde: '2025-01-01', hasta: '2025-03-14', porcentaje: 15 }] },
+        {
+          vigencia: 2025,
+          tramos: [
+            { desde: '2026-01-01', hasta: '2026-02-27', porcentaje: 15 },
+            { desde: '2026-02-28', hasta: '2026-03-13', porcentaje: 10 },
+          ],
+        },
+      ],
+    },
     anticipoPorcentaje: 25,
     sobretasaBomberil: { activa: true, porcentaje: 5 },
     reteica: { modalidad: 'actividad', tarifaUnicaPorMil: 0, baseMinimaServiciosUvt: 4, baseMinimaComprasUvt: 27 },
@@ -103,8 +138,9 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     formularioConjunto: false,
     declaracionEnCeros: false,
     cancelacionRitAutomatica: true,
+    ocultarRecaudoAFuncionarios: true,
     correccionABaja: 'proyecto_589',
-    prontoPago: { activo: false, porcentaje: 0 },
+    prontoPago: { activo: false, porVigencia: [] },
     anticipoPorcentaje: 0,
     sobretasaBomberil: { activa: false, porcentaje: 0 },
     reteica: { modalidad: 'concepto', tarifaUnicaPorMil: 0, baseMinimaServiciosUvt: 25, baseMinimaComprasUvt: 50 },
