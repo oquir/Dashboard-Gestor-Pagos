@@ -4,7 +4,6 @@ import type {
   EstadoInscripcion,
   EstadoNovedad,
   EstadoPago,
-  EstadoRevision,
   Impuesto,
   Rol,
   Sector,
@@ -82,12 +81,6 @@ export const etiquetaTipoDeclaracion: Record<TipoDeclaracion, string> = {
   inicial: 'Inicial',
   correccion: 'Corrección',
   clausura: 'Clausura',
-}
-
-export const etiquetaEstadoRevision: Record<EstadoRevision, string> = {
-  pendiente: 'Por revisar',
-  revisada: 'Revisada',
-  con_observaciones: 'Con observaciones',
 }
 
 export const etiquetaEstadoAprobacion: Record<EstadoAprobacion, string> = {
