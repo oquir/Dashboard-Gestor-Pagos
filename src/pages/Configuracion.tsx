@@ -2,10 +2,10 @@ import { Save, Plus, Xmark } from 'reicon-react'
 import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { Boton, Campo, Card, CardHeader, Input, PageHeader, Select, Vacio } from '../components/ui'
-import { formatoFecha, formatoPesos } from '../lib/formato'
+import { etiquetaImpuesto, formatoFecha, formatoPesos } from '../lib/formato'
 import { puede } from '../lib/permisos'
 import { ANTICIPO_MAXIMO, SANCIONES_LEY, UVT } from '../lib/reglas'
-import { useSesion } from '../lib/sesion'
+import { IMPUESTOS, useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
 import type { ConfigMunicipio, TramoProntoPago } from '../types'
 
@@ -199,6 +199,7 @@ function Formulario({ config, editable }: { config: ConfigMunicipio; editable: b
   const municipio = useDatos((s) => s.municipios.find((m) => m.id === config.municipioId))
   const impuestos = municipio?.impuestos ?? TODOS_ACTIVOS
   const conRit = municipio?.rit ?? true
+  const conAprobacion = IMPUESTOS.filter((i) => impuestos[i] && municipio?.aprobacionPrevia[i])
   const tituloRetencion =
     impuestos.reteica && impuestos.autorretencion ? 'ReteICA y AutoReteICA' : impuestos.reteica ? 'Retención (ReteICA)' : 'Autorretención (AutoReteICA)'
   const [b, setB] = useState(config)
@@ -222,6 +223,8 @@ function Formulario({ config, editable }: { config: ConfigMunicipio; editable: b
       })
     }
   }
+  if (b.aprobacionPrevia.plazoDiasHabiles < 1) errores.plazoAprobacion = 'Debe ser de al menos 1 día hábil.'
+  if (b.aprobacionPrevia.vigenciaReciboDiasHabiles < 1) errores.vigenciaRecibo = 'Debe ser de al menos 1 día hábil.'
   const hayErrores = Object.keys(errores).length > 0
   const cambio = JSON.stringify(b) !== JSON.stringify(config)
 
@@ -341,6 +344,30 @@ function Formulario({ config, editable }: { config: ConfigMunicipio; editable: b
           </>
         )}
       </Seccion>
+
+      {conAprobacion.length > 0 && (
+        <Seccion
+          titulo="Aprobación previa"
+          descripcion={`Activa en ${conAprobacion.map((i) => etiquetaImpuesto[i]).join(', ')} (la activa 1cero1). El contribuyente paga cuando el municipio aprueba; descuento, sanciones e intereses se liquidan con la fecha de radicación.`}
+        >
+          <Campo etiqueta="Plazo para aprobar (días hábiles)" ayuda="Cuenta desde la radicación. Si se radicó a tiempo, no pasa del vencimiento." error={errores.plazoAprobacion}>
+            <Input type="number" min={1} disabled={!editable} value={b.aprobacionPrevia.plazoDiasHabiles} onChange={(e) => cambiar({ aprobacionPrevia: { ...b.aprobacionPrevia, plazoDiasHabiles: numero(e.target.value) } })} />
+          </Campo>
+          <Campo etiqueta="Si se vence el plazo sin revisión">
+            <Select disabled={!editable} value={b.aprobacionPrevia.alVencer} onChange={(e) => cambiar({ aprobacionPrevia: { ...b.aprobacionPrevia, alVencer: e.target.value as ConfigMunicipio['aprobacionPrevia']['alVencer'] } })}>
+              <option value="aprobar">Se aprueba automáticamente y se envía el correo</option>
+              <option value="alertar">Sigue por aprobar y se alerta como vencida</option>
+            </Select>
+          </Campo>
+          <Campo
+            etiqueta="Vigencia del recibo (días hábiles)"
+            ayuda="Desde la aprobación. Si paga dentro de este plazo, conserva las condiciones de la radicación, como el descuento por pronto pago."
+            error={errores.vigenciaRecibo}
+          >
+            <Input type="number" min={1} disabled={!editable} value={b.aprobacionPrevia.vigenciaReciboDiasHabiles} onChange={(e) => cambiar({ aprobacionPrevia: { ...b.aprobacionPrevia, vigenciaReciboDiasHabiles: numero(e.target.value) } })} />
+          </Campo>
+        </Seccion>
+      )}
 
       <Seccion titulo="Funcionarios" descripcion="Lo que ven los funcionarios del municipio.">
         <Interruptor
