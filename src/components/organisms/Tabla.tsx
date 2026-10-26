@@ -1,9 +1,10 @@
 import { useTable } from '@tanstack/react-table'
 import type { RowData } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, Sort, ChevronLeft, ChevronRight } from 'reicon-react'
-import { caracteristicas } from '../lib/tabla'
-import type { Columnas } from '../lib/tabla'
-import { Boton, Vacio } from './ui'
+import { caracteristicas } from '../../lib/tabla'
+import type { Columnas } from '../../lib/tabla'
+import { Boton } from '../atoms'
+import { Vacio } from '../molecules'
 
 interface Props<T extends RowData> {
   datos: T[]
