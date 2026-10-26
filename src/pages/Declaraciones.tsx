@@ -19,7 +19,7 @@ import { impuestosVisibles, useAprobacion, useDeclaraciones, useSesion } from '.
 import { ayudanteColumnas } from '../lib/tabla'
 import { tonoAprobacion, tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
-import type { Declaracion, EstadoPago, Impuesto, TipoDeclaracion } from '../types'
+import type { Declaracion, EstadoAprobacion, EstadoPago, Impuesto, TipoDeclaracion } from '../types'
 
 const PESTANAS: { valor: Impuesto | ''; texto: string }[] = [
   { valor: '', texto: 'Todas' },
@@ -175,6 +175,7 @@ export default function Declaraciones() {
   const [texto, setTexto] = useState('')
   const [tipo, setTipo] = useState<TipoDeclaracion | ''>('')
   const [pago, setPago] = useState<EstadoPago | ''>('')
+  const [filtroAprobacion, setFiltroAprobacion] = useState<EstadoAprobacion | 'no_aplica' | ''>('')
 
   const filas = useMemo<Fila[]>(() => {
     const porId = new Map(inscripciones.map((i) => [i.id, i]))
@@ -192,10 +193,14 @@ export default function Declaraciones() {
     })
   }, [declaraciones, inscripciones, pagos, aprobacion])
 
+  // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
+  const conAprobacion = filas.some((f) => f.aprobacion)
+  const estadoAprobacion = conAprobacion ? filtroAprobacion : ''
+
   const filtradas = useMemo(() => {
     const busqueda = texto.trim().toLowerCase()
     return filas.filter(
-      ({ d, nombre, documento, pago: p }) =>
+      ({ d, nombre, documento, pago: p, aprobacion: a }) =>
         (!impuesto || d.impuesto === impuesto) &&
         (!busqueda ||
           nombre.toLowerCase().includes(busqueda) ||
@@ -203,9 +208,10 @@ export default function Declaraciones() {
           d.numero.toLowerCase().includes(busqueda) ||
           String(d.numeroFactura).includes(busqueda)) &&
         (!tipo || d.tipo === tipo) &&
-        (!pago || p === pago),
+        (!pago || p === pago) &&
+        (!estadoAprobacion || (a?.estado ?? 'no_aplica') === estadoAprobacion),
     )
-  }, [filas, impuesto, texto, tipo, pago])
+  }, [filas, impuesto, texto, tipo, pago, estadoAprobacion])
 
   // La selección sobrevive a los filtros, pero solo cuentan y se descargan las declaraciones que siguen visibles.
   const [seleccion, setSeleccion] = useState<ReadonlySet<string>>(new Set())
@@ -220,7 +226,6 @@ export default function Declaraciones() {
       return nueva
     })
   }, [setSeleccion])
-  const conAprobacion = filas.some((f) => f.aprobacion)
   const columnas = useMemo(
     () => col.columns([columnaSeleccion(filtradas, seleccion, marcar), ...COLUMNAS, ...(conAprobacion ? [COLUMNA_APROBACION] : [])]),
     [filtradas, seleccion, marcar, conAprobacion],
@@ -279,6 +284,15 @@ export default function Declaraciones() {
               <option key={valor} value={valor}>{t}</option>
             ))}
           </Select>
+          {conAprobacion && (
+            <Select aria-label="Aprobación" className="w-auto" value={estadoAprobacion} onChange={(e) => setFiltroAprobacion(e.target.value as EstadoAprobacion | 'no_aplica' | '')}>
+              <option value="">Toda aprobación</option>
+              {Object.entries(etiquetaEstadoAprobacion).map(([valor, t]) => (
+                <option key={valor} value={valor}>{t}</option>
+              ))}
+              <option value="no_aplica">Sin aprobación previa</option>
+            </Select>
+          )}
         </div>
 
         {marcadas.length > 0 && (
