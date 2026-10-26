@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import GraficoRecaudo from '../components/GraficoRecaudo'
 import type { FilaRecaudo } from '../components/GraficoRecaudo'
 import { Badge, Card, CardHeader, StatTile, Vacio } from '../components/ui'
-import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoNovedad, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
+import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion, etiquetaTipoNovedad, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
 import { estadoPago, totalPagado } from '../lib/reglas'
 import { conRit, delMunicipio, IMPUESTOS, impuestoActivo, impuestosVisibles, ritVisible, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
 import { tonoPago } from '../lib/tonos'
@@ -178,7 +178,7 @@ export default function Inicio() {
       saldoPagoIncompleto: saldo(pagoIncompleto),
       recaudo,
       pagadas,
-      porRevisar: declaraciones.filter((d) => d.estadoRevision === 'pendiente').length,
+      porRevisar: declaraciones.filter((d) => d.estadoRevision === 'pendiente').sort((a, b) => b.fechaPresentacion.localeCompare(a.fechaPresentacion)),
       activas: enRit.filter((i) => i.estado === 'activa').length,
       nombres: new Map(inscripciones.map((i) => [i.id, i.nombre])),
     }
@@ -195,7 +195,7 @@ export default function Inicio() {
             detalle={`${datos.activas} inscripciones activas`}
           />
         )}
-        <StatTile etiqueta="Declaraciones por revisar" valor={String(datos.porRevisar)} icono={<Document className="size-5" />} />
+        <StatTile etiqueta="Declaraciones por revisar" valor={String(datos.porRevisar.length)} icono={<Document className="size-5" />} />
         {verRecaudo && (
           <StatTile
             etiqueta={`Recaudo ${ANIO_ACTUAL}`}
@@ -267,6 +267,33 @@ export default function Inicio() {
             )}
           </Card>
         )}
+
+        {/* Sin RIT quedan tres tarjetas: esta ocupa la primera fila para que las de deuda vayan juntas. */}
+        <Card className={conRitVisible ? '' : 'lg:col-span-2'}>
+          <CardHeader titulo="Declaraciones por revisar" descripcion="Las más recientes que aún no tienen revisión." />
+          {datos.porRevisar.length === 0 ? (
+            <Vacio titulo="No hay declaraciones por revisar" />
+          ) : (
+            <ul className="divide-y divide-slate-100">
+              {datos.porRevisar.slice(0, 6).map((d) => (
+                <li key={d.id}>
+                  <Link to={`/declaraciones/${d.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-slate-900">{datos.nombres.get(d.inscripcionId)}</p>
+                      <p className="truncate text-xs text-slate-500">
+                        {d.numero} · {etiquetaImpuesto[d.impuesto]} · {etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <Badge tono="alerta">{etiquetaTipoDeclaracion[d.tipo]}</Badge>
+                      <p className="mt-1 text-xs text-slate-500">{formatoFecha(d.fechaPresentacion)}</p>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
 
         <ListaDeudas
           titulo="Declaraciones no pagadas"
