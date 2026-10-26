@@ -1,6 +1,6 @@
 import { Courthouse } from 'reicon-react'
 import { Navigate, useNavigate } from 'react-router'
-import { Badge, Card } from '../components/ui'
+import { Badge, Card } from '../components/atoms'
 import { etiquetaRol, nombreCompleto } from '../lib/formato'
 import { useDatos } from '../store'
 import type { Rol } from '../types'
