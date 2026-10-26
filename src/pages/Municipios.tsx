@@ -18,6 +18,7 @@ export default function Municipios() {
   const alternarImpuesto = useDatos((s) => s.alternarImpuesto)
   const alternarRit = useDatos((s) => s.alternarRit)
   const alternarValidacionRit = useDatos((s) => s.alternarValidacionRit)
+  const alternarAprobacionPrevia = useDatos((s) => s.alternarAprobacionPrevia)
   const seleccionarMunicipio = useDatos((s) => s.seleccionarMunicipio)
   const navigate = useNavigate()
 
@@ -41,7 +42,7 @@ export default function Municipios() {
 
   return (
     <>
-      <PageHeader titulo="Municipios" descripcion="Municipios que usan el aplicativo: si tienen el RIT, qué formularios gestionan y si cada formulario se valida contra el RIT. Desactivar un municipio le quita el acceso a sus usuarios en la demo." />
+      <PageHeader titulo="Municipios" descripcion="Municipios que usan el aplicativo: si tienen el RIT, qué formularios gestionan, si cada formulario se valida contra el RIT y si el municipio aprueba las declaraciones antes del pago. Desactivar un municipio le quita el acceso a sus usuarios en la demo." />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {municipios.map((m) => {
           const r = resumen.get(m.id)!
@@ -95,22 +96,31 @@ export default function Municipios() {
                             {etiquetaImpuesto[i]}
                           </label>
                           {m.impuestos[i] && (
-                            <label className={`flex items-center gap-2 text-xs ${m.rit ? 'text-slate-600' : 'text-slate-400'}`} title={m.rit ? undefined : 'Requiere el RIT en el aplicativo'}>
-                              <input
-                                type="checkbox"
-                                className="size-3.5 accent-brand-600"
-                                checked={m.rit && m.validarContraRit[i]}
-                                disabled={!m.rit}
-                                onChange={() => alternarValidacionRit(m.id, i)}
-                              />
-                              Validar contra el RIT
-                            </label>
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                              <label className={`flex items-center gap-2 text-xs ${m.rit ? 'text-slate-600' : 'text-slate-400'}`} title={m.rit ? undefined : 'Requiere el RIT en el aplicativo'}>
+                                <input
+                                  type="checkbox"
+                                  className="size-3.5 accent-brand-600"
+                                  checked={m.rit && m.validarContraRit[i]}
+                                  disabled={!m.rit}
+                                  onChange={() => alternarValidacionRit(m.id, i)}
+                                />
+                                Validar contra el RIT
+                              </label>
+                              <label className="flex items-center gap-2 text-xs text-slate-600">
+                                <input type="checkbox" className="size-3.5 accent-brand-600" checked={m.aprobacionPrevia[i]} onChange={() => alternarAprobacionPrevia(m.id, i)} />
+                                Aprobación previa
+                              </label>
+                            </div>
                           )}
                         </li>
                       )
                     })}
                   </ul>
                   {!m.rit && <p className="mt-2 text-xs text-slate-500">Sin el RIT en el aplicativo, los formularios no se validan contra él.</p>}
+                  {IMPUESTOS.some((i) => m.impuestos[i] && m.aprobacionPrevia[i]) && (
+                    <p className="mt-2 text-xs text-slate-500">Con aprobación previa, el contribuyente paga cuando el municipio aprueba. Aplica a lo que se radique desde que se activa.</p>
+                  )}
                 </div>
               </div>
               <div className="mt-5 flex gap-2">
