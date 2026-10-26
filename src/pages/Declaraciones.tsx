@@ -6,7 +6,6 @@ import { Badge, Boton, Card, Input, PageHeader, Select } from '../components/ui'
 import {
   etiquetaEstadoAprobacion,
   etiquetaEstadoPago,
-  etiquetaEstadoRevision,
   etiquetaImpuesto,
   etiquetaPeriodo,
   etiquetaTipoDeclaracion,
@@ -18,9 +17,9 @@ import { estadoPago } from '../lib/reglas'
 import type { SituacionAprobacion } from '../lib/reglas'
 import { impuestosVisibles, useAprobacion, useDeclaraciones, useSesion } from '../lib/sesion'
 import { ayudanteColumnas } from '../lib/tabla'
-import { tonoAprobacion, tonoPago, tonoRevision } from '../lib/tonos'
+import { tonoAprobacion, tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
-import type { Declaracion, EstadoPago, EstadoRevision, Impuesto, TipoDeclaracion } from '../types'
+import type { Declaracion, EstadoPago, Impuesto, TipoDeclaracion } from '../types'
 
 const PESTANAS: { valor: Impuesto | ''; texto: string }[] = [
   { valor: '', texto: 'Todas' },
@@ -111,21 +110,22 @@ const COLUMNAS = col.columns([
     header: 'Pago',
     cell: ({ row: { original: f } }) => <Badge tono={tonoPago[f.pago]}>{etiquetaEstadoPago[f.pago]}</Badge>,
   }),
-  col.accessor((f) => etiquetaEstadoRevision[f.d.estadoRevision], {
-    id: 'revision',
-    header: 'Revisión',
-    // Mientras no se apruebe, lo que importa es la aprobación previa y su plazo.
-    cell: ({ row: { original: { d, aprobacion: a } } }) =>
-      a && (a.estado === 'por_aprobar' || a.estado === 'vencida' || a.estado === 'rechazada') ? (
-        <>
-          <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
-          {a.estado !== 'rechazada' && <p className="mt-1 whitespace-nowrap text-xs text-slate-500">Plazo: {formatoFecha(a.limite)}</p>}
-        </>
-      ) : (
-        <Badge tono={tonoRevision[d.estadoRevision]}>{etiquetaEstadoRevision[d.estadoRevision]}</Badge>
-      ),
-  }),
 ])
+
+/** Solo cuando hay declaraciones con aprobación previa; mientras está pendiente, muestra el plazo. */
+const COLUMNA_APROBACION = col.accessor((f) => (f.aprobacion ? etiquetaEstadoAprobacion[f.aprobacion.estado] : ''), {
+  id: 'aprobacion',
+  header: 'Aprobación',
+  cell: ({ row: { original: { aprobacion: a } } }) =>
+    a ? (
+      <>
+        <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
+        {(a.estado === 'por_aprobar' || a.estado === 'vencida') && <p className="mt-1 whitespace-nowrap text-xs text-slate-500">Plazo: {formatoFecha(a.limite)}</p>}
+      </>
+    ) : (
+      <span className="text-slate-400">No aplica</span>
+    ),
+})
 
 /** Casillas para elegir declaraciones; la del encabezado marca todas las filtradas, no solo la página. */
 function columnaSeleccion(filas: Fila[], seleccion: ReadonlySet<string>, marcar: (ids: string[], marcado: boolean) => void) {
@@ -175,7 +175,6 @@ export default function Declaraciones() {
   const [texto, setTexto] = useState('')
   const [tipo, setTipo] = useState<TipoDeclaracion | ''>('')
   const [pago, setPago] = useState<EstadoPago | ''>('')
-  const [revision, setRevision] = useState<EstadoRevision | ''>('')
 
   const filas = useMemo<Fila[]>(() => {
     const porId = new Map(inscripciones.map((i) => [i.id, i]))
@@ -204,10 +203,9 @@ export default function Declaraciones() {
           d.numero.toLowerCase().includes(busqueda) ||
           String(d.numeroFactura).includes(busqueda)) &&
         (!tipo || d.tipo === tipo) &&
-        (!pago || p === pago) &&
-        (!revision || d.estadoRevision === revision),
+        (!pago || p === pago),
     )
-  }, [filas, impuesto, texto, tipo, pago, revision])
+  }, [filas, impuesto, texto, tipo, pago])
 
   // La selección sobrevive a los filtros, pero solo cuentan y se descargan las declaraciones que siguen visibles.
   const [seleccion, setSeleccion] = useState<ReadonlySet<string>>(new Set())
@@ -222,7 +220,11 @@ export default function Declaraciones() {
       return nueva
     })
   }, [setSeleccion])
-  const columnas = useMemo(() => col.columns([columnaSeleccion(filtradas, seleccion, marcar), ...COLUMNAS]), [filtradas, seleccion, marcar])
+  const conAprobacion = filas.some((f) => f.aprobacion)
+  const columnas = useMemo(
+    () => col.columns([columnaSeleccion(filtradas, seleccion, marcar), ...COLUMNAS, ...(conAprobacion ? [COLUMNA_APROBACION] : [])]),
+    [filtradas, seleccion, marcar, conAprobacion],
+  )
   const marcadas = filtradas.filter((f) => seleccion.has(f.d.id))
 
   const descargarSeleccion = async () => {
@@ -274,12 +276,6 @@ export default function Declaraciones() {
           <Select aria-label="Estado de pago" className="w-auto" value={pago} onChange={(e) => setPago(e.target.value as EstadoPago | '')}>
             <option value="">Todo estado de pago</option>
             {Object.entries(etiquetaEstadoPago).map(([valor, t]) => (
-              <option key={valor} value={valor}>{t}</option>
-            ))}
-          </Select>
-          <Select aria-label="Revisión" className="w-auto" value={revision} onChange={(e) => setRevision(e.target.value as EstadoRevision | '')}>
-            <option value="">Toda revisión</option>
-            {Object.entries(etiquetaEstadoRevision).map(([valor, t]) => (
               <option key={valor} value={valor}>{t}</option>
             ))}
           </Select>
