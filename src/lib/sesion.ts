@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useDatos } from '../store'
-import type { Impuesto, Municipio } from '../types'
+import type { Declaracion, Impuesto, Municipio } from '../types'
+import { aprobacionDe } from './reglas'
 
 export const IMPUESTOS: Impuesto[] = ['ica', 'reteica', 'autorretencion']
 
@@ -63,4 +64,17 @@ export function useDeclaraciones() {
   const declaraciones = useDatos((s) => s.declaraciones)
   const municipios = useDatos((s) => s.municipios)
   return useMemo(() => delMunicipio(declaraciones, municipioId).filter(impuestoActivo(municipios)), [declaraciones, municipios, municipioId])
+}
+
+/** Aprobación previa de cada declaración al día de hoy, según la configuración de su municipio. */
+export function useAprobacion() {
+  const configuraciones = useDatos((s) => s.configuraciones)
+  return useMemo(() => {
+    const hoy = new Date().toISOString().slice(0, 10)
+    const porMunicipio = new Map(configuraciones.map((c) => [c.municipioId, c]))
+    return (d: Declaracion) => {
+      const cfg = porMunicipio.get(d.municipioId)
+      return cfg && aprobacionDe(d, cfg, hoy)
+    }
+  }, [configuraciones])
 }
