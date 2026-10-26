@@ -5,6 +5,7 @@ import type {
   EstadoNovedad,
   EstadoPago,
   Impuesto,
+  Inscripcion,
   Rol,
   Sector,
   TipoDeclaracion,
@@ -34,6 +35,8 @@ export const etiquetaRol: Record<Rol, string> = {
 
 export const nombreCompleto = (u: Pick<Usuario, 'nombres' | 'apellidos'>) => `${u.nombres} ${u.apellidos}`
 
+/** Tipo y número de documento, con el dígito de verificación si lo tiene. */
+export const formatoDocumento = (d: Pick<Inscripcion, 'tipoDocumento' | 'documento' | 'dv'>) => `${d.tipoDocumento} ${d.documento}${d.dv ? `-${d.dv}` : ''}`
 
 export const etiquetaTipoPersona: Record<TipoPersona, string> = {
   natural: 'Persona natural',
