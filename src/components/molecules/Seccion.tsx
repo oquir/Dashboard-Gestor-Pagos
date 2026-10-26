@@ -1,0 +1,13 @@
+import type { ReactNode } from 'react'
+import { Card } from '../atoms'
+import CardHeader from './CardHeader'
+
+/** Tarjeta de formulario: título y campos en dos columnas. */
+export default function Seccion({ titulo, descripcion, children }: { titulo: string; descripcion?: string; children: ReactNode }) {
+  return (
+    <Card>
+      <CardHeader titulo={titulo} descripcion={descripcion} />
+      <div className="grid gap-5 p-5 sm:grid-cols-2">{children}</div>
+    </Card>
+  )
+}
