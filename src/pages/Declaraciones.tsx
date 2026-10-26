@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import Tabla from '../components/Tabla'
 import { Badge, Boton, Card, Input, PageHeader, Select } from '../components/ui'
 import {
+  etiquetaEstadoAprobacion,
   etiquetaEstadoPago,
   etiquetaEstadoRevision,
   etiquetaImpuesto,
@@ -14,9 +15,10 @@ import {
 } from '../lib/formato'
 import { descargarDeclaracionesZip } from '../lib/pdfDeclaracion'
 import { estadoPago } from '../lib/reglas'
-import { impuestosVisibles, useDeclaraciones, useSesion } from '../lib/sesion'
+import type { SituacionAprobacion } from '../lib/reglas'
+import { impuestosVisibles, useAprobacion, useDeclaraciones, useSesion } from '../lib/sesion'
 import { ayudanteColumnas } from '../lib/tabla'
-import { tonoPago, tonoRevision } from '../lib/tonos'
+import { tonoAprobacion, tonoPago, tonoRevision } from '../lib/tonos'
 import { useDatos } from '../store'
 import type { Declaracion, EstadoPago, EstadoRevision, Impuesto, TipoDeclaracion } from '../types'
 
@@ -35,6 +37,7 @@ interface Fila {
   pago: EstadoPago
   /** Radicado de la declaración que corrige, si es una corrección. */
   corrige?: string
+  aprobacion?: SituacionAprobacion
 }
 
 const col = ayudanteColumnas<Fila>()
@@ -111,7 +114,16 @@ const COLUMNAS = col.columns([
   col.accessor((f) => etiquetaEstadoRevision[f.d.estadoRevision], {
     id: 'revision',
     header: 'Revisión',
-    cell: ({ row: { original: { d } } }) => <Badge tono={tonoRevision[d.estadoRevision]}>{etiquetaEstadoRevision[d.estadoRevision]}</Badge>,
+    // Mientras no se apruebe, lo que importa es la aprobación previa y su plazo.
+    cell: ({ row: { original: { d, aprobacion: a } } }) =>
+      a && (a.estado === 'por_aprobar' || a.estado === 'vencida' || a.estado === 'rechazada') ? (
+        <>
+          <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
+          {a.estado !== 'rechazada' && <p className="mt-1 whitespace-nowrap text-xs text-slate-500">Plazo: {formatoFecha(a.limite)}</p>}
+        </>
+      ) : (
+        <Badge tono={tonoRevision[d.estadoRevision]}>{etiquetaEstadoRevision[d.estadoRevision]}</Badge>
+      ),
   }),
 ])
 
@@ -154,6 +166,7 @@ export default function Declaraciones() {
   const municipios = useDatos((s) => s.municipios)
   const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
+  const aprobacion = useAprobacion()
   const [pestana, setImpuesto] = useState<Impuesto | ''>('')
   const visibles = impuestosVisibles(municipios, municipioId)
   const pestanas = PESTANAS.filter((p) => !p.valor || visibles.includes(p.valor))
@@ -175,9 +188,10 @@ export default function Declaraciones() {
         documento: ins ? `${ins.tipoDocumento} ${ins.documento}${ins.dv ? `-${ins.dv}` : ''}` : '',
         pago: estadoPago(d, pagos),
         corrige: d.corrigeA && numeros.get(d.corrigeA),
+        aprobacion: aprobacion(d),
       }
     })
-  }, [declaraciones, inscripciones, pagos])
+  }, [declaraciones, inscripciones, pagos, aprobacion])
 
   const filtradas = useMemo(() => {
     const busqueda = texto.trim().toLowerCase()
