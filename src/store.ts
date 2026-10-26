@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { generarDatos } from './data/generar'
 import { nombreCompleto } from './lib/formato'
-import type { Archivo, ConfigMunicipio, Datos, EstadoNovedad, EstadoRevision, Impuesto, Tarifa, Usuario } from './types'
+import type { Archivo, ConfigMunicipio, Datos, EstadoNovedad, Impuesto, Tarifa, Usuario } from './types'
 
 interface Estado extends Datos {
   usuarioId: string | null
@@ -19,8 +19,7 @@ interface Estado extends Datos {
     observacion: string,
     documentos: Archivo[],
   ) => void
-  revisarDeclaracion: (id: string, estado: EstadoRevision, observacion: string) => void
-  /** Aprueba o rechaza una declaración con aprobación previa; resolverla es también revisarla. */
+  /** Aprueba o rechaza una declaración con aprobación previa. */
   resolverAprobacion: (id: string, estado: 'aprobada' | 'rechazada', observacion: string) => void
   guardarConfiguracion: (config: ConfigMunicipio) => void
   /** Reemplaza las actividades del año gravable con las del Excel cargado. */
@@ -87,18 +86,12 @@ export const useDatos = create<Estado>()(
         }))
       },
 
-      revisarDeclaracion: (id, estado, observacion) =>
-        set((s) => ({
-          declaraciones: s.declaraciones.map((d) => (d.id === id ? { ...d, estadoRevision: estado, observacion: observacion || undefined } : d)),
-        })),
-
       resolverAprobacion: (id, estado, observacion) => {
         const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
         const por = usuario ? nombreCompleto(usuario) : ''
-        const revision: EstadoRevision = estado === 'rechazada' || observacion ? 'con_observaciones' : 'revisada'
         set((s) => ({
           declaraciones: s.declaraciones.map((d) =>
-            d.id === id ? { ...d, aprobacion: { estado, fecha: hoy(), por }, estadoRevision: revision, observacion: observacion || undefined } : d,
+            d.id === id ? { ...d, aprobacion: { estado, fecha: hoy(), por, observacion: observacion || undefined } } : d,
           ),
         }))
       },
@@ -150,6 +143,6 @@ export const useDatos = create<Estado>()(
 
       reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
     }),
-    { name: 'gestor-pagos-demo', version: 19 },
+    { name: 'gestor-pagos-demo', version: 20 },
   ),
 )
