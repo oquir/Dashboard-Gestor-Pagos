@@ -4,10 +4,11 @@ import { Link } from 'react-router'
 import GraficoRecaudo from '../components/GraficoRecaudo'
 import type { FilaRecaudo } from '../components/GraficoRecaudo'
 import { Badge, Card, CardHeader, StatTile, Vacio } from '../components/ui'
-import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion, etiquetaTipoNovedad, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
-import { estadoPago, totalPagado } from '../lib/reglas'
-import { conRit, delMunicipio, IMPUESTOS, impuestoActivo, impuestosVisibles, ritVisible, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
-import { tonoPago } from '../lib/tonos'
+import { etiquetaEstadoAprobacion, etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion, etiquetaTipoNovedad, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
+import { estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
+import type { SituacionAprobacion } from '../lib/reglas'
+import { conRit, delMunicipio, IMPUESTOS, impuestoActivo, impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
+import { tonoAprobacion, tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
 import type { Declaracion, EstadoPago } from '../types'
 
@@ -25,6 +26,9 @@ const VISTAS: { valor: Vista; texto: string }[] = [
 
 /** Columnas de la fila de indicadores según cuántos hay, para que ninguno quede solo en la segunda fila. */
 const COLUMNAS_TARJETAS: Record<number, string> = { 3: 'lg:grid-cols-3', 4: 'xl:grid-cols-4', 5: 'lg:grid-cols-3 xl:grid-cols-5' }
+
+/** Espera la aprobación previa: mientras tanto el contribuyente no puede pagar. */
+const esperaAprobacion = (a: SituacionAprobacion | undefined) => a?.estado === 'por_aprobar' || a?.estado === 'vencida'
 
 const totalFila = (f: FilaRecaudo) => IMPUESTOS.reduce((s, i) => s + f.valores[i], 0)
 
@@ -106,6 +110,7 @@ export default function Inicio() {
   const municipios = useDatos((s) => s.municipios)
   const pagos = useDatos((s) => s.pagos)
   const recaudoHistorico = useDatos((s) => s.recaudoHistorico)
+  const aprobacion = useAprobacion()
   const [anio, setAnio] = useState(ANIO_ACTUAL)
   const [vista, setVista] = useState<Vista>('bimestral')
   const visibles = useMemo(() => impuestosVisibles(municipios, municipioId), [municipios, municipioId])
@@ -162,13 +167,23 @@ export default function Inicio() {
     const pagadas = declaraciones.filter((d) => !reemplazadas.has(d.id) && estadoPago(d, pagos) === 'pagada').length
 
     const deudas: Deuda[] = declaraciones
-      .filter((d) => !reemplazadas.has(d.id) && d.totalAPagar > 0)
+      .filter((d) => !reemplazadas.has(d.id) && d.totalAPagar > 0 && sePuedePagar(aprobacion(d)))
       .map((d) => ({ d, estado: estadoPago(d, pagos), pagado: totalPagado(d.id, pagos) }))
       .filter((f) => f.pagado < f.d.totalAPagar)
       .sort((a, b) => b.d.fechaPresentacion.localeCompare(a.d.fechaPresentacion))
     const noPagadas = deudas.filter((f) => f.pagado === 0)
     const pagoIncompleto = deudas.filter((f) => f.pagado > 0)
     const saldo = (lista: Deuda[]) => lista.reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0)
+
+    // Primero lo que espera la aprobación previa, por plazo; luego lo más reciente.
+    const porRevisar = declaraciones
+      .filter((d) => d.estadoRevision === 'pendiente')
+      .map((d) => ({ d, a: aprobacion(d) }))
+      .sort((x, y) => {
+        const [ex, ey] = [esperaAprobacion(x.a), esperaAprobacion(y.a)]
+        if (ex !== ey) return ex ? -1 : 1
+        return ex ? x.a!.limite.localeCompare(y.a!.limite) : y.d.fechaPresentacion.localeCompare(x.d.fechaPresentacion)
+      })
 
     return {
       pendientes,
@@ -178,11 +193,11 @@ export default function Inicio() {
       saldoPagoIncompleto: saldo(pagoIncompleto),
       recaudo,
       pagadas,
-      porRevisar: declaraciones.filter((d) => d.estadoRevision === 'pendiente').sort((a, b) => b.fechaPresentacion.localeCompare(a.fechaPresentacion)),
+      porRevisar,
       activas: enRit.filter((i) => i.estado === 'activa').length,
       nombres: new Map(inscripciones.map((i) => [i.id, i.nombre])),
     }
-  }, [todasInscripciones, declaraciones, pagos, municipios, municipioId])
+  }, [todasInscripciones, declaraciones, pagos, municipios, municipioId, aprobacion])
 
   return (
     <>
@@ -270,12 +285,19 @@ export default function Inicio() {
 
         {/* Sin RIT quedan tres tarjetas: esta ocupa la primera fila para que las de deuda vayan juntas. */}
         <Card className={conRitVisible ? '' : 'lg:col-span-2'}>
-          <CardHeader titulo="Declaraciones por revisar" descripcion="Las más recientes que aún no tienen revisión." />
+          <CardHeader
+            titulo="Declaraciones por revisar"
+            descripcion={
+              datos.porRevisar.some((x) => esperaAprobacion(x.a))
+                ? 'Primero las que esperan aprobación para poder pagarse, por plazo.'
+                : 'Las más recientes que aún no tienen revisión.'
+            }
+          />
           {datos.porRevisar.length === 0 ? (
             <Vacio titulo="No hay declaraciones por revisar" />
           ) : (
             <ul className="divide-y divide-slate-100">
-              {datos.porRevisar.slice(0, 6).map((d) => (
+              {datos.porRevisar.slice(0, 6).map(({ d, a }) => (
                 <li key={d.id}>
                   <Link to={`/declaraciones/${d.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
                     <div className="min-w-0">
@@ -285,8 +307,17 @@ export default function Inicio() {
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
-                      <Badge tono="alerta">{etiquetaTipoDeclaracion[d.tipo]}</Badge>
-                      <p className="mt-1 text-xs text-slate-500">{formatoFecha(d.fechaPresentacion)}</p>
+                      {a && esperaAprobacion(a) ? (
+                        <>
+                          <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
+                          <p className="mt-1 text-xs text-slate-500">Plazo: {formatoFecha(a.limite)}</p>
+                        </>
+                      ) : (
+                        <>
+                          <Badge tono="alerta">{etiquetaTipoDeclaracion[d.tipo]}</Badge>
+                          <p className="mt-1 text-xs text-slate-500">{formatoFecha(d.fechaPresentacion)}</p>
+                        </>
+                      )}
                     </div>
                   </Link>
                 </li>
