@@ -1,104 +1,11 @@
 import { useMemo } from 'react'
-import { Link } from 'react-router'
-import { CargaAsobancaria, DescargaAsobancaria } from '../components/Asobancaria'
-import Tabla from '../components/Tabla'
-import { Badge, Card, CardHeader, PageHeader, StatTile } from '../components/ui'
-import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
+import { PageHeader, StatTile } from '../components/molecules'
+import { CargaAsobancaria, DescargaAsobancaria, TablaCartera, TablaPagosRecibidos } from '../components/organisms'
+import type { FilaCartera, FilaPago } from '../components/organisms'
+import { formatoCompacto } from '../lib/formato'
 import { estadoPago, totalPagado } from '../lib/reglas'
 import { useDeclaraciones, useVerRecaudo } from '../lib/sesion'
-import { ayudanteColumnas } from '../lib/tabla'
-import { tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
-import type { Declaracion, EstadoPago, Pago } from '../types'
-
-interface FilaCartera {
-  d: Declaracion
-  estado: EstadoPago
-  pagado: number
-  nombre: string
-}
-
-interface FilaPago {
-  p: Pago
-  d: Declaracion
-  nombre: string
-}
-
-const VALOR = { alinear: 'derecha', clase: 'whitespace-nowrap tabular-nums text-slate-700' } as const
-
-const cc = ayudanteColumnas<FilaCartera>()
-
-const COLUMNAS_CARTERA = cc.columns([
-  cc.accessor('nombre', { header: 'Declarante', meta: { clase: 'max-w-64 truncate text-slate-900' } }),
-  cc.accessor((f) => f.d.numero, {
-    id: 'declaracion',
-    header: 'Declaración',
-    meta: { clase: 'whitespace-nowrap' },
-    cell: ({ row: { original: { d } } }) => (
-      <>
-        <Link to={`/declaraciones/${d.id}`} className="font-medium text-slate-900 hover:text-brand-700">{d.numero}</Link>
-        <p className="text-xs text-slate-500">
-          {etiquetaImpuesto[d.impuesto]} · {etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}
-        </p>
-      </>
-    ),
-  }),
-  cc.accessor((f) => f.d.numeroFactura, {
-    id: 'factura',
-    header: 'N.º de factura',
-    meta: { clase: 'whitespace-nowrap tabular-nums text-slate-700' },
-  }),
-  cc.accessor((f) => f.d.totalAPagar, { id: 'total', header: 'Total a pagar', meta: VALOR, cell: ({ getValue }) => formatoPesos(getValue()) }),
-  cc.accessor('pagado', { header: 'Pagado', meta: VALOR, cell: ({ getValue }) => formatoPesos(getValue()) }),
-  cc.accessor((f) => f.d.totalAPagar - f.pagado, {
-    id: 'saldo',
-    header: 'Saldo',
-    meta: { alinear: 'derecha', clase: 'whitespace-nowrap tabular-nums font-medium text-slate-900' },
-    cell: ({ getValue }) => formatoPesos(getValue()),
-  }),
-  cc.accessor((f) => etiquetaEstadoPago[f.estado], {
-    id: 'estado',
-    header: 'Estado',
-    cell: ({ row: { original: f } }) => <Badge tono={tonoPago[f.estado]}>{etiquetaEstadoPago[f.estado]}</Badge>,
-  }),
-])
-
-const cp = ayudanteColumnas<FilaPago>()
-
-const COLUMNAS_PAGOS = cp.columns([
-  cp.accessor((f) => f.p.fecha, {
-    id: 'fecha',
-    header: 'Fecha',
-    meta: { clase: 'whitespace-nowrap text-slate-700' },
-    cell: ({ getValue }) => formatoFecha(getValue()),
-  }),
-  cp.accessor('nombre', { header: 'Declarante', meta: { clase: 'max-w-64 truncate text-slate-900' } }),
-  cp.accessor((f) => f.d.numero, {
-    id: 'declaracion',
-    header: 'Declaración',
-    meta: { clase: 'whitespace-nowrap' },
-    cell: ({ row: { original: { d } } }) => (
-      <>
-        <Link to={`/declaraciones/${d.id}`} className="text-slate-900 hover:text-brand-700">{d.numero}</Link>
-        <span className="text-xs text-slate-500"> · {etiquetaImpuesto[d.impuesto]}</span>
-      </>
-    ),
-  }),
-  cp.accessor((f) => f.d.numeroFactura, {
-    id: 'factura',
-    header: 'N.º de factura',
-    meta: { clase: 'whitespace-nowrap tabular-nums text-slate-700' },
-  }),
-  cp.accessor((f) => f.p.valor, {
-    id: 'valor',
-    header: 'Valor',
-    meta: { alinear: 'derecha', clase: 'whitespace-nowrap tabular-nums text-slate-900' },
-    cell: ({ getValue }) => formatoPesos(getValue()),
-  }),
-])
-
-const ORDEN_CARTERA = [{ id: 'saldo', desc: true }]
-const ORDEN_PAGOS = [{ id: 'fecha', desc: true }]
 
 export default function Pagos() {
   const declaraciones = useDeclaraciones()
@@ -156,31 +63,10 @@ export default function Pagos() {
         <DescargaAsobancaria declaraciones={declaraciones} />
       </div>
 
-      <Card className="mt-6">
-        <CardHeader titulo="Cartera pendiente" descripcion="Declaraciones vigentes con saldo por pagar." />
-        <Tabla
-          datos={datos.cartera}
-          columnas={COLUMNAS_CARTERA}
-          porPagina={10}
-          ordenInicial={ORDEN_CARTERA}
-          idFila={(f) => f.d.id}
-          nombre="declaraciones con saldo"
-          vacio="No hay cartera pendiente"
-        />
-      </Card>
-
-      <Card className="mt-6">
-        <CardHeader titulo="Pagos recibidos" />
-        <Tabla
-          datos={datos.recibidos}
-          columnas={COLUMNAS_PAGOS}
-          porPagina={15}
-          ordenInicial={ORDEN_PAGOS}
-          idFila={(f) => f.p.id}
-          nombre="pagos"
-          vacio="No hay pagos registrados"
-        />
-      </Card>
+      <div className="mt-6 space-y-6">
+        <TablaCartera cartera={datos.cartera} />
+        <TablaPagosRecibidos pagos={datos.recibidos} />
+      </div>
     </>
   )
 }
