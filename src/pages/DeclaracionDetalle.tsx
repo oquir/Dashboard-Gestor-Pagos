@@ -1,10 +1,11 @@
-import { ArrowLeft, TickCircle, Download, AlertTriangle } from 'reicon-react'
+import { ArrowLeft, TickCircle, Download, AlertTriangle, Envelope } from 'reicon-react'
 import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import ListaArchivos from '../components/ListaArchivos'
 import Tabla from '../components/Tabla'
 import { Badge, Boton, Campo, Card, CardHeader, Dato, PageHeader, Select, Textarea, Vacio } from '../components/ui'
 import {
+  etiquetaEstadoAprobacion,
   etiquetaEstadoPago,
   etiquetaEstadoRevision,
   etiquetaImpuesto,
@@ -15,10 +16,11 @@ import {
 } from '../lib/formato'
 import { puede } from '../lib/permisos'
 import { descargarDeclaracion } from '../lib/pdfDeclaracion'
-import { estadoPago, RENGLONES_TOTALES, totalPagado } from '../lib/reglas'
-import { conRit, impuestoActivo, seValidaContraRit, useSesion } from '../lib/sesion'
+import { diasHabilesEntre, estadoPago, RENGLONES_TOTALES, totalPagado } from '../lib/reglas'
+import type { SituacionAprobacion } from '../lib/reglas'
+import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useSesion } from '../lib/sesion'
 import { ayudanteColumnas } from '../lib/tabla'
-import { tonoPago, tonoRevision } from '../lib/tonos'
+import { tonoAprobacion, tonoPago, tonoRevision } from '../lib/tonos'
 import { useDatos } from '../store'
 import type { Declaracion, EstadoRevision, Inscripcion, Renglon } from '../types'
 
@@ -98,6 +100,84 @@ function FormularioRevision({ declaracion }: { declaracion: Declaracion }) {
   )
 }
 
+/** Visto bueno del municipio antes del pago. Al resolverla, al contribuyente le llega un correo. */
+function AprobacionPrevia({ d, situacion, correo, puedeResolver }: { d: Declaracion; situacion: SituacionAprobacion; correo: string; puedeResolver: boolean }) {
+  const resolverAprobacion = useDatos((s) => s.resolverAprobacion)
+  const [observacion, setObservacion] = useState('')
+  const pendiente = situacion.estado === 'por_aprobar' || situacion.estado === 'vencida'
+  const dias = diasHabilesEntre(new Date().toISOString().slice(0, 10), situacion.limite)
+  const descuento = d.renglones.find((r) => r.codigo === '36')?.valor ?? 0
+
+  return (
+    <Card>
+      <CardHeader
+        titulo="Aprobación previa"
+        descripcion="El contribuyente paga cuando el municipio aprueba la declaración."
+        acciones={<Badge tono={tonoAprobacion[situacion.estado]}>{etiquetaEstadoAprobacion[situacion.estado]}</Badge>}
+      />
+      <div className="space-y-4 p-5">
+        <dl className="grid grid-cols-2 gap-4">
+          <Dato etiqueta="Radicada">{formatoFecha(d.fechaPresentacion)}</Dato>
+          <Dato etiqueta="Plazo para aprobar">
+            {formatoFecha(situacion.limite)}
+            {pendiente && (
+              <span className={`block text-xs ${dias < 0 ? 'font-medium text-red-700' : 'text-slate-500'}`}>
+                {dias > 1 ? `Quedan ${dias} días hábiles` : dias === 1 ? 'Queda 1 día hábil' : dias === 0 ? 'Vence hoy' : 'Vencido'}
+              </span>
+            )}
+          </Dato>
+        </dl>
+        <p className="text-xs text-slate-500">
+          Descuento, sanciones e intereses se liquidan con la fecha de radicación, aunque la aprobación llegue después
+          {descuento > 0 ? `: conserva el descuento por pronto pago de ${formatoPesos(descuento)}.` : '.'}
+        </p>
+
+        {pendiente && puedeResolver && (
+          <div className="space-y-3">
+            <Campo etiqueta="Observación" ayuda="Obligatoria para rechazar. Le llega al contribuyente en el correo.">
+              <Textarea rows={3} value={observacion} onChange={(e) => setObservacion(e.target.value)} />
+            </Campo>
+            <div className="flex flex-wrap gap-2">
+              <Boton variante="primario" onClick={() => resolverAprobacion(d.id, 'aprobada', observacion.trim())}>
+                <TickCircle className="size-4" aria-hidden /> Aprobar
+              </Boton>
+              <Boton variante="peligro" disabled={!observacion.trim()} onClick={() => resolverAprobacion(d.id, 'rechazada', observacion.trim())}>
+                Rechazar
+              </Boton>
+            </div>
+          </div>
+        )}
+        {pendiente && !puedeResolver && <p className="text-sm text-slate-600">La aprobación la da la administración municipal.</p>}
+
+        {situacion.reciboHasta && (
+          <div className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">
+            <p className="flex items-center gap-2 font-medium">
+              <Envelope className="size-4" aria-hidden /> Se envió un correo a {correo}
+            </p>
+            <p className="mt-1">
+              {situacion.estado === 'aprobada_automatica'
+                ? `Se aprobó automáticamente al vencer el plazo, el ${formatoFecha(situacion.limite)}.`
+                : `Aprobada por ${situacion.por} el ${formatoFecha(situacion.fecha!)}.`}{' '}
+              Puede pagar en línea, descargar la declaración con código de barras para pagar en el banco o pagar en efectivo en la taquilla del municipio.
+              El recibo vale hasta el {formatoFecha(situacion.reciboHasta)}.
+            </p>
+          </div>
+        )}
+        {situacion.estado === 'rechazada' && (
+          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-800">
+            <p className="flex items-center gap-2 font-medium">
+              <Envelope className="size-4" aria-hidden /> Se envió un correo a {correo}
+            </p>
+            <p className="mt-1">
+              Rechazada por {situacion.por} el {formatoFecha(situacion.fecha!)}: {d.observacion}. El contribuyente debe corregirla y radicarla de nuevo.
+            </p>
+          </div>
+        )}
+      </div>
+    </Card>
+  )
+}
+
 export default function DeclaracionDetalle() {
   const { id } = useParams()
   const { usuario } = useSesion()
@@ -105,6 +185,7 @@ export default function DeclaracionDetalle() {
   const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
   const municipios = useDatos((s) => s.municipios)
+  const aprobacion = useAprobacion()
   const d = declaraciones.find((x) => x.id === id)
 
   if (!d || (usuario?.municipioId && d.municipioId !== usuario.municipioId)) {
@@ -123,6 +204,8 @@ export default function DeclaracionDetalle() {
   const diasMora = Math.round((Date.parse(d.fechaPresentacion) - Date.parse(d.fechaVencimiento)) / 86400000)
   const municipioConRit = conRit(municipios)(d)
   const contraRit = seValidaContraRit(municipios, d)
+  const situacion = aprobacion(d)
+  const porAprobar = situacion?.estado === 'por_aprobar' || situacion?.estado === 'vencida'
 
   return (
     <>
@@ -190,6 +273,8 @@ export default function DeclaracionDetalle() {
         </div>
 
         <div className="space-y-6">
+          {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={ins?.correo ?? ''} puedeResolver={puede(usuario?.rol, 'revisar')} />}
+
           <Card>
             <CardHeader titulo="Datos" />
             <dl className="space-y-4 p-5">
@@ -249,17 +334,20 @@ export default function DeclaracionDetalle() {
             </ul>
           </Card>
 
-          <Card>
-            <CardHeader titulo="Revisión" />
-            {puede(usuario?.rol, 'revisar') ? (
-              <FormularioRevision key={d.id} declaracion={d} />
-            ) : (
-              <div className="p-5 text-sm text-slate-600">
-                {d.observacion ?? 'Sin observaciones.'}
-                <p className="mt-2 text-xs text-slate-500">La revisión la hace la administración municipal.</p>
-              </div>
-            )}
-          </Card>
+          {/* Mientras está por aprobar, aprobar o rechazar es la revisión. */}
+          {!porAprobar && (
+            <Card>
+              <CardHeader titulo="Revisión" />
+              {puede(usuario?.rol, 'revisar') ? (
+                <FormularioRevision key={d.id} declaracion={d} />
+              ) : (
+                <div className="p-5 text-sm text-slate-600">
+                  {d.observacion ?? 'Sin observaciones.'}
+                  <p className="mt-2 text-xs text-slate-500">La revisión la hace la administración municipal.</p>
+                </div>
+              )}
+            </Card>
+          )}
         </div>
       </div>
     </>
