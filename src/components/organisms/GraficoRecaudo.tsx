@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { etiquetaImpuesto, formatoCompacto, formatoPesos } from '../lib/formato'
-import { ayudanteColumnas } from '../lib/tabla'
-import type { Impuesto } from '../types'
+import { etiquetaImpuesto, formatoCompacto, formatoPesos } from '../../lib/formato'
+import { ayudanteColumnas } from '../../lib/tabla'
+import type { Impuesto } from '../../types'
+import { Boton, Card } from '../atoms'
+import { CardHeader } from '../molecules'
 import Tabla from './Tabla'
-import { Boton, Card, CardHeader } from './ui'
 
 export interface FilaRecaudo {
   etiqueta: string
