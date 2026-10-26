@@ -6,7 +6,7 @@ export type Permiso =
   | 'gestionarMunicipios'
   | 'gestionarUsuarios'
   | 'editarConfiguracion'
-  /** Aprobar o rechazar novedades del RIT y revisar declaraciones. */
+  /** Aprobar o rechazar novedades del RIT y declaraciones con aprobación previa. */
   | 'revisar'
   | 'verReportes'
   /** Descargar la plantilla y cargar desde Excel las actividades y tarifas de un año gravable. */
