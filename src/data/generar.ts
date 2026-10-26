@@ -1,6 +1,6 @@
 // Genera los datos de la demo con una semilla fija: siempre salen los mismos.
 import { etiquetaCalidad, nombreCompleto } from '../lib/formato'
-import { porcentajeProntoPago, redondearMil, UVT } from '../lib/reglas'
+import { porcentajeProntoPago, redondearMil, sumarDiasHabiles, UVT } from '../lib/reglas'
 import type {
   Archivo,
   Calidad,
@@ -13,6 +13,7 @@ import type {
   EstadoRevision,
   Impuesto,
   Inscripcion,
+  Municipio,
   Novedad,
   Pago,
   RecaudoMensual,
@@ -393,6 +394,8 @@ export function generarDatos(): Datos {
   const inscripciones: Inscripcion[] = []
   const declaraciones: Declaracion[] = []
   const pagos: Pago[] = []
+  /** Contribuyentes que no declararon el ICA 2025 en plazo. */
+  const omisos: { municipio: Municipio; ins: Inscripcion; perfil: PerfilIca; cfg: ConfigMunicipio; tarifas: Tarifa[] }[] = []
   let consecutivo = 1
 
   const agregarPago = (declaracionId: string, fecha: string, valor: number) => {
@@ -464,6 +467,8 @@ export function generarDatos(): Datos {
           })
           agregarPago(idCorreccion, fecha, aPagar)
         }
+      } else if (ins.estado === 'activa' && puedeDeclararIca) {
+        omisos.push({ municipio, ins, perfil, cfg, tarifas: tarifas2025 })
       }
 
       // Clausura: quien canceló su RIT presenta la fracción de año.
@@ -552,6 +557,25 @@ export function generarDatos(): Datos {
   // Algunos municipios piden anexos con la declaración; no todos los contribuyentes los cargan.
   for (const d of declaraciones) {
     d.adjuntos = ANEXOS[d.impuesto].filter(() => az.prob(d.impuesto === 'ica' ? 0.45 : 0.6)).map((nombre) => ({ nombre, archivo: archivoAleatorio(az, nombre, d.fechaPresentacion) }))
+  }
+
+  // Aprobación previa: los omisos del ICA 2025 se ponen al día en los últimos días hábiles antes de
+  // generar los datos, para que la demo siempre tenga declaraciones por aprobar en plazo y vencidas.
+  // Tienen su propio azar para no cambiar el resto de los datos, y aún no tienen pagos.
+  const azAprobacion = crearAzar(4056)
+  const hoy = new Date().toISOString().slice(0, 10)
+  for (const { municipio, ins, perfil, cfg, tarifas } of omisos) {
+    if (!municipio.aprobacionPrevia.ica) continue
+    const vencimiento = VENCIMIENTO_ICA_2025[municipio.id]
+    const presentacion = sumarDiasHabiles(hoy, -azAprobacion.entero(0, 9))
+    const diasMora = Math.max(Math.round((Date.parse(presentacion) - Date.parse(vencimiento)) / 86400000), 0)
+    const liq = liquidarIca(perfil, ins, cfg, tarifas, diasMora, 0)
+    declaraciones.push({
+      adjuntos: ANEXOS.ica.filter(() => azAprobacion.prob(0.45)).map((nombre) => ({ nombre, archivo: archivoAleatorio(azAprobacion, nombre, presentacion) })),
+      id: `d${declaraciones.length + 1}`, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'inicial',
+      numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
+      totalAPagar: liq.r38, saldoAFavor: liq.r34, estadoRevision: 'pendiente', aprobacion: { estado: 'pendiente' },
+    })
   }
 
   return {
