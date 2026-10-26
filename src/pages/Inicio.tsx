@@ -1,107 +1,17 @@
 import { ClipboardList, Document, AlertTriangle, Wallet } from 'reicon-react'
-import { useMemo, useState } from 'react'
-import { Link } from 'react-router'
-import GraficoRecaudo from '../components/GraficoRecaudo'
-import type { FilaRecaudo } from '../components/GraficoRecaudo'
-import { Badge, Card, CardHeader, Select, StatTile, Vacio } from '../components/ui'
-import { etiquetaEstadoAprobacion, etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoNovedad, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
-import { estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
-import type { SituacionAprobacion } from '../lib/reglas'
-import { conRit, delMunicipio, IMPUESTOS, impuestoActivo, impuestosVisibles, ritVisible, aprobacionVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
-import { tonoAprobacion, tonoPago } from '../lib/tonos'
+import { useMemo } from 'react'
+import { StatTile } from '../components/molecules'
+import { AprobacionesPendientes, ListaDeudas, RecaudoAnual, SolicitudesPendientes } from '../components/organisms'
+import type { Deuda } from '../components/organisms'
+import { formatoCompacto } from '../lib/formato'
+import { esperaAprobacion, estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
+import { aprobacionVisible, conRit, delMunicipio, ritVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
 import { useDatos } from '../store'
-import type { Declaracion, EstadoAprobacion, EstadoPago } from '../types'
 
-const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
-const BIMESTRES = ['Ene–Feb', 'Mar–Abr', 'May–Jun', 'Jul–Ago', 'Sep–Oct', 'Nov–Dic']
 const ANIO_ACTUAL = 2026
-/** El año en curso y los tres anteriores. */
-const ANIOS = [ANIO_ACTUAL, ANIO_ACTUAL - 1, ANIO_ACTUAL - 2, ANIO_ACTUAL - 3]
-
-type Vista = 'bimestral' | 'mensual'
-const VISTAS: { valor: Vista; texto: string }[] = [
-  { valor: 'bimestral', texto: 'Bimestral' },
-  { valor: 'mensual', texto: 'Mensual' },
-]
 
 /** Columnas de la fila de indicadores según cuántos hay, para que ninguno quede solo en la segunda fila. */
 const COLUMNAS_TARJETAS: Record<number, string> = { 2: '', 3: 'lg:grid-cols-3', 4: 'xl:grid-cols-4', 5: 'lg:grid-cols-3 xl:grid-cols-5' }
-
-/** Espera la aprobación previa: mientras tanto el contribuyente no puede pagar. */
-const esperaAprobacion = (a: SituacionAprobacion | undefined) => a?.estado === 'por_aprobar' || a?.estado === 'vencida'
-
-const totalFila = (f: FilaRecaudo) => IMPUESTOS.reduce((s, i) => s + f.valores[i], 0)
-
-function Segmentado<T extends string | number>({ etiqueta, opciones, valor, cambiar }: {
-  etiqueta: string
-  opciones: { valor: T; texto: string }[]
-  valor: T
-  cambiar: (valor: T) => void
-}) {
-  return (
-    <div role="group" aria-label={etiqueta} className="flex gap-1 rounded-lg bg-slate-100 p-1">
-      {opciones.map((o) => (
-        <button
-          key={o.valor}
-          type="button"
-          aria-pressed={valor === o.valor}
-          onClick={() => cambiar(o.valor)}
-          className={`rounded-md px-2.5 py-1 text-sm font-medium tabular-nums transition ${valor === o.valor ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'}`}
-        >
-          {o.texto}
-        </button>
-      ))}
-    </div>
-  )
-}
-
-interface Deuda {
-  d: Declaracion
-  estado: EstadoPago
-  pagado: number
-}
-
-/** Declaraciones con deuda: las seis más recientes, con lo que falta por pagar. */
-function ListaDeudas({ titulo, descripcion, vacio, deudas, nombres }: {
-  titulo: string
-  descripcion: string
-  vacio: string
-  deudas: Deuda[]
-  nombres: Map<string, string>
-}) {
-  return (
-    <Card>
-      <CardHeader titulo={titulo} descripcion={descripcion} acciones={<Badge tono={deudas.length > 0 ? 'peligro' : 'neutral'}>{deudas.length}</Badge>} />
-      {deudas.length === 0 ? (
-        <Vacio titulo={vacio} />
-      ) : (
-        <ul className="divide-y divide-slate-100">
-          {deudas.slice(0, 6).map(({ d, estado, pagado }) => (
-            <li key={d.id}>
-              <Link to={`/declaraciones/${d.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-900">{nombres.get(d.inscripcionId)}</p>
-                  <p className="truncate text-xs text-slate-500">
-                    {d.numero} · {etiquetaImpuesto[d.impuesto]} · {etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}
-                  </p>
-                </div>
-                <div className="shrink-0 text-right">
-                  <Badge tono={tonoPago[estado]}>
-                    {estado === 'ineficaz' && <AlertTriangle className="size-3" aria-hidden />}
-                    {estado === 'ineficaz' ? 'Ineficaz' : etiquetaEstadoPago[estado]}
-                  </Badge>
-                  <p className="mt-1 text-xs tabular-nums text-slate-700">
-                    {pagado > 0 ? `Debe ${formatoPesos(d.totalAPagar - pagado)} de ${formatoPesos(d.totalAPagar)}` : formatoPesos(d.totalAPagar)}
-                  </p>
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </Card>
-  )
-}
 
 export default function Inicio() {
   const { municipioId } = useSesion()
@@ -109,45 +19,9 @@ export default function Inicio() {
   const declaraciones = useDeclaraciones()
   const municipios = useDatos((s) => s.municipios)
   const pagos = useDatos((s) => s.pagos)
-  const recaudoHistorico = useDatos((s) => s.recaudoHistorico)
   const aprobacion = useAprobacion()
-  const [anio, setAnio] = useState(ANIO_ACTUAL)
-  const [vista, setVista] = useState<Vista>('bimestral')
-  const [filtroAprobacion, setFiltroAprobacion] = useState<EstadoAprobacion | 'pendientes' | ''>('pendientes')
-  const visibles = useMemo(() => impuestosVisibles(municipios, municipioId), [municipios, municipioId])
   const conRitVisible = ritVisible(municipios, municipioId)
   const verRecaudo = useVerRecaudo()
-
-  // Recaudo del año elegido, mes a mes: el año en curso sale de los pagos; los anteriores, del histórico.
-  const meses = useMemo(() => {
-    const filas: FilaRecaudo[] = MESES.map((etiqueta) => ({ etiqueta, valores: { ica: 0, reteica: 0, autorretencion: 0 } }))
-    if (anio === ANIO_ACTUAL) {
-      const porId = new Map(declaraciones.map((d) => [d.id, d]))
-      for (const p of pagos) {
-        const d = porId.get(p.declaracionId)
-        if (d && p.fecha.startsWith(String(anio))) filas[Number(p.fecha.slice(5, 7)) - 1].valores[d.impuesto] += p.valor
-      }
-    } else {
-      const activo = impuestoActivo(municipios)
-      for (const r of delMunicipio(recaudoHistorico, municipioId)) {
-        if (r.anio !== anio) continue
-        for (const i of IMPUESTOS) if (activo({ municipioId: r.municipioId, impuesto: i })) filas[r.mes - 1].valores[i] += r.valores[i]
-      }
-    }
-    return filas
-  }, [anio, declaraciones, pagos, recaudoHistorico, municipios, municipioId])
-
-  const filasGrafico = useMemo(() => {
-    const filas =
-      vista === 'mensual'
-        ? meses
-        : BIMESTRES.map((etiqueta, b) => {
-            const [a, c] = [meses[b * 2], meses[b * 2 + 1]]
-            return { etiqueta, valores: { ica: a.valores.ica + c.valores.ica, reteica: a.valores.reteica + c.valores.reteica, autorretencion: a.valores.autorretencion + c.valores.autorretencion } }
-          })
-    // En el año en curso la gráfica llega hasta el último periodo con recaudo.
-    return anio === ANIO_ACTUAL ? filas.slice(0, filas.findLastIndex((f) => totalFila(f) > 0) + 1) : filas
-  }, [meses, vista, anio])
 
   const datos = useMemo(() => {
     const inscripciones = delMunicipio(todasInscripciones, municipioId)
@@ -206,9 +80,6 @@ export default function Inicio() {
   // Si 1cero1 apaga la aprobación previa, lo que quedó pendiente se sigue mostrando hasta resolverlo.
   const conAprobacion = aprobacionVisible(municipios, municipioId) || datos.porAprobar.length > 0
   const vencidas = datos.porAprobar.filter((x) => x.a.estado === 'vencida').length
-  const listaAprobacion = datos.aprobaciones.filter((x) =>
-    filtroAprobacion === 'pendientes' ? esperaAprobacion(x.a) : !filtroAprobacion || x.a.estado === filtroAprobacion,
-  )
   const tarjetas = 2 + Number(conRitVisible) + Number(conAprobacion) + Number(verRecaudo)
   // Con un número impar de listas, la primera ocupa toda la fila para que las de deuda vayan juntas.
   const primeraAncha = (Number(conRitVisible) + Number(conAprobacion)) % 2 === 1 ? 'lg:col-span-2' : ''
@@ -262,87 +133,14 @@ export default function Inicio() {
 
       {verRecaudo && (
         <div className="mt-6">
-          <GraficoRecaudo
-            titulo={`Recaudo ${anio} por ${vista === 'mensual' ? 'mes' : 'bimestre'}`}
-            descripcion="Pagos recibidos según su fecha, por impuesto."
-            filas={filasGrafico}
-            impuestos={visibles}
-            controles={
-              <>
-                <Segmentado etiqueta="Periodicidad" opciones={VISTAS} valor={vista} cambiar={setVista} />
-                <Segmentado etiqueta="Año" opciones={ANIOS.map((a) => ({ valor: a, texto: String(a) }))} valor={anio} cambiar={setAnio} />
-              </>
-            }
-          />
+          <RecaudoAnual anioActual={ANIO_ACTUAL} />
         </div>
       )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        {conRitVisible && (
-          <Card className={primeraAncha}>
-            <CardHeader titulo="Solicitudes pendientes del RIT" descripcion="Inscripciones, actualizaciones y cancelaciones por revisar." />
-            {datos.pendientes.length === 0 ? (
-              <Vacio titulo="No hay solicitudes pendientes" />
-            ) : (
-              <ul className="divide-y divide-slate-100">
-                {datos.pendientes.slice(0, 6).map(({ ins, novedad }) => (
-                  <li key={novedad.id}>
-                    <Link to={`/rit/${ins.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-slate-900">{ins.nombre}</p>
-                        <p className="truncate text-xs text-slate-500">{novedad.descripcion}</p>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <Badge tono="alerta">{etiquetaTipoNovedad[novedad.tipo]}</Badge>
-                        <p className="mt-1 text-xs text-slate-500">{formatoFecha(novedad.fecha)}</p>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-        )}
+        {conRitVisible && <SolicitudesPendientes pendientes={datos.pendientes} className={primeraAncha} />}
 
-        {conAprobacion && (
-          <Card className={conRitVisible ? '' : primeraAncha}>
-            <CardHeader
-              titulo="Aprobación previa"
-              descripcion="El contribuyente paga cuando se aprueban. Lo pendiente va primero, por plazo."
-              acciones={
-                <Select aria-label="Aprobación" className="w-auto" value={filtroAprobacion} onChange={(e) => setFiltroAprobacion(e.target.value as EstadoAprobacion | 'pendientes' | '')}>
-                  <option value="pendientes">Pendientes</option>
-                  {Object.entries(etiquetaEstadoAprobacion).map(([valor, t]) => (
-                    <option key={valor} value={valor}>{t}</option>
-                  ))}
-                  <option value="">Toda aprobación</option>
-                </Select>
-              }
-            />
-            {listaAprobacion.length === 0 ? (
-              <Vacio titulo={filtroAprobacion === 'pendientes' ? 'No hay declaraciones por aprobar' : 'No hay declaraciones con esa aprobación'} />
-            ) : (
-              <ul className="divide-y divide-slate-100">
-                {listaAprobacion.slice(0, 6).map(({ d, a }) => (
-                  <li key={d.id}>
-                    <Link to={`/declaraciones/${d.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-slate-900">{datos.nombres.get(d.inscripcionId)}</p>
-                        <p className="truncate text-xs text-slate-500">
-                          {d.numero} · {etiquetaImpuesto[d.impuesto]} · {etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}
-                        </p>
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
-                        <p className="mt-1 text-xs text-slate-500">{esperaAprobacion(a) ? `Plazo: ${formatoFecha(a.limite)}` : formatoFecha(a.fecha ?? a.limite)}</p>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-        )}
+        {conAprobacion && <AprobacionesPendientes aprobaciones={datos.aprobaciones} nombres={datos.nombres} className={conRitVisible ? '' : primeraAncha} />}
 
         <ListaDeudas
           titulo="Declaraciones no pagadas"
