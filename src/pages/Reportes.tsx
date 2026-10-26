@@ -20,8 +20,8 @@ import {
   formatoPesos,
 } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { estadoPago, totalPagado } from '../lib/reglas'
-import { conRit, delMunicipio, impuestosVisibles, ritVisible, useDeclaraciones, useSesion } from '../lib/sesion'
+import { estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
+import { conRit, delMunicipio, impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useSesion } from '../lib/sesion'
 import { ayudanteColumnas } from '../lib/tabla'
 import { useDatos } from '../store'
 import type { Impuesto, Inscripcion } from '../types'
@@ -149,6 +149,7 @@ export default function Reportes() {
   const todasInscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
   const municipios = useDatos((s) => s.municipios)
+  const aprobacion = useAprobacion()
   const [pestana, setPestana] = useState<IdReporte>('declaraciones')
   const [desde, setDesde] = useState(`${hoy().slice(0, 4)}-01-01`)
   const [hasta, setHasta] = useState(hoy)
@@ -187,7 +188,8 @@ export default function Reportes() {
 
     const cartera = declaraciones.flatMap((d) => {
       const pagado = totalPagado(d.id, pagos)
-      if (reemplazadas.has(d.id) || d.totalAPagar <= 0 || pagado >= d.totalAPagar) return []
+      // Lo que aún espera la aprobación previa no se puede pagar: no es cartera.
+      if (reemplazadas.has(d.id) || d.totalAPagar <= 0 || pagado >= d.totalAPagar || !sePuedePagar(aprobacion(d))) return []
       return [{ d, ins: porId.get(d.inscripcionId), pagado, saldo: d.totalAPagar - pagado, estado: estadoPago(d, pagos) }]
     })
 
@@ -269,7 +271,7 @@ export default function Reportes() {
         ],
       },
     }
-  }, [declaraciones, todasInscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido])
+  }, [declaraciones, todasInscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion])
 
   if (!puede(usuario?.rol, 'verReportes')) return <Navigate to="/" replace />
 
