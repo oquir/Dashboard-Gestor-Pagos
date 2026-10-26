@@ -117,3 +117,5 @@ export const redondearMil =(valor: number) => Math.round(valor / 1000) * 1000
 /** Renglones de subtotal y total de la liquidación (se resaltan en pantalla y en el PDF). */
 export const RENGLONES_TOTALES = new Set(['16', '25', '33', '34', '38', '18', 'T'])
 
+/** El trámite más reciente del RIT: inscripción, actualización o cancelación. */
+export const ultimoTramite = (i: Inscripcion) => i.novedades.reduce((ultimo, n) => (n.fecha >= ultimo.fecha ? n : ultimo))
