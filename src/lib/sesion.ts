@@ -46,6 +46,10 @@ export const impuestosVisibles = (municipios: Municipio[], municipioId: string |
 export const ritVisible = (municipios: Municipio[], municipioId: string | null) =>
   municipios.some((m) => (municipioId === null || m.id === municipioId) && m.rit)
 
+/** La aprobación previa se ve si algún formulario activo del municipio elegido la tiene, o de cualquiera cuando 1cero1 mira todos. */
+export const aprobacionVisible = (municipios: Municipio[], municipioId: string | null) =>
+  municipios.some((m) => (municipioId === null || m.id === municipioId) && IMPUESTOS.some((i) => m.impuestos[i] && m.aprobacionPrevia[i]))
+
 /** Filtro: el municipio del registro tiene el RIT en el aplicativo. */
 export function conRit(municipios: Municipio[]) {
   const ids = new Set(municipios.filter((m) => m.rit).map((m) => m.id))
