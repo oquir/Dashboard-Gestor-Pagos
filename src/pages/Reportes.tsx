@@ -11,7 +11,6 @@ import {
   etiquetaCalidad,
   etiquetaEstadoInscripcion,
   etiquetaEstadoPago,
-  etiquetaEstadoRevision,
   etiquetaImpuesto,
   etiquetaPeriodo,
   etiquetaTipoDeclaracion,
@@ -52,7 +51,7 @@ interface Grafica {
 }
 
 const REPORTES: { id: IdReporte; pestana: string; titulo: string; descripcion: string; porFechas: boolean }[] = [
-  { id: 'declaraciones', pestana: 'Declaraciones', titulo: 'Declaraciones presentadas', descripcion: 'Declaraciones presentadas en el rango, con su liquidación, pago y revisión.', porFechas: true },
+  { id: 'declaraciones', pestana: 'Declaraciones', titulo: 'Declaraciones presentadas', descripcion: 'Declaraciones presentadas en el rango, con su liquidación y su pago.', porFechas: true },
   { id: 'recaudo', pestana: 'Recaudo', titulo: 'Recaudo', descripcion: 'Pagos recibidos en el rango, uno por fila, con la declaración que pagan.', porFechas: true },
   { id: 'cartera', pestana: 'Cartera', titulo: 'Cartera pendiente', descripcion: 'Declaraciones vigentes con saldo por pagar, al día de hoy.', porFechas: false },
   { id: 'rit', pestana: 'RIT', titulo: 'Inscritos en el RIT', descripcion: 'Inscripciones con sus datos de contacto, calidades y actividad principal, al día de hoy.', porFechas: false },
@@ -73,7 +72,7 @@ const ESTADO_PAGO: Columna = { titulo: 'Estado de pago', ancho: 24 }
 const COLUMNAS: Record<IdReporte, Columna[]> = {
   declaraciones: [
     MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, { titulo: 'Tipo', ancho: 12 }, DECLARANTE, DOCUMENTO,
-    { titulo: 'Presentación', ancho: 13, formato: 'fecha' }, VENCIMIENTO, TOTAL, PAGADO, ESTADO_PAGO, { titulo: 'Revisión', ancho: 18 },
+    { titulo: 'Presentación', ancho: 13, formato: 'fecha' }, VENCIMIENTO, TOTAL, PAGADO, ESTADO_PAGO,
   ],
   recaudo: [
     MUNICIPIO, { titulo: 'Fecha de pago', ancho: 13, formato: 'fecha' }, RADICADO, FACTURA, IMPUESTO, PERIODO, DECLARANTE, DOCUMENTO,
@@ -200,12 +199,12 @@ export default function Reportes() {
         filas: presentadas.map(({ d, ins, pagado, estado }) => [
           nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo),
           etiquetaTipoDeclaracion[d.tipo], ins?.nombre ?? '', documento(ins), d.fechaPresentacion, d.fechaVencimiento, d.totalAPagar,
-          pagado, etiquetaEstadoPago[estado], etiquetaEstadoRevision[d.estadoRevision],
+          pagado, etiquetaEstadoPago[estado],
         ]),
         graficas: [
           { titulo: 'Por impuesto', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: porImpuesto(presentadas, (f) => f.d.impuesto) },
           { titulo: 'Por estado de pago', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: agrupar(presentadas, etiquetaEstadoPago, (f) => f.estado) },
-          { titulo: 'Por revisión', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: agrupar(presentadas, etiquetaEstadoRevision, (f) => f.d.estadoRevision) },
+          { titulo: 'Por tipo de declaración', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: agrupar(presentadas, etiquetaTipoDeclaracion, (f) => f.d.tipo) },
         ],
       },
       recaudo: {
