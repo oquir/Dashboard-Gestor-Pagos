@@ -10,7 +10,6 @@ import type {
   DatosRit,
   Declaracion,
   EstadoInscripcion,
-  EstadoRevision,
   Impuesto,
   Inscripcion,
   Municipio,
@@ -67,17 +66,12 @@ const menor = (a: string, b: string) => (a < b ? a : b)
 const fechaAleatoria = (az: Azar, desde: string, hasta: string) =>
   sumarDias(desde, az.entero(0, Math.round((Date.parse(hasta) - Date.parse(desde)) / 86400000)))
 
-const OBSERVACIONES = [
-  'Las retenciones del renglón 27 no coinciden con la información exógena de los agentes.',
-  'Revisar la tarifa aplicada a la actividad principal.',
-  'El renglón 28 no cuadra con las autorretenciones declaradas en el año.',
-  'Los ingresos fuera del municipio no tienen soporte de territorialidad.',
-]
-
-function estadoRevisionAleatorio(az: Azar, probPendiente: number): { estado: EstadoRevision; observacion?: string } {
-  if (az.prob(probPendiente)) return { estado: 'pendiente' }
-  if (az.prob(0.15)) return { estado: 'con_observaciones', observacion: az.elegir(OBSERVACIONES) }
-  return { estado: 'revisada' }
+/**
+ * Cada declaración sorteaba un estado de revisión, que ya no existe. Se conservan esos sorteos
+ * para que el resto de los datos de la demo no cambie.
+ */
+function sorteoDeRevision(az: Azar, probPendiente: number) {
+  if (!az.prob(probPendiente) && az.prob(0.15)) az.num()
 }
 
 // --- RIT ---
@@ -436,13 +430,13 @@ export function generarDatos(): Datos {
         // Solo conserva el descuento quien paga todo y está a paz y salvo; el porcentaje sale del tramo de la fecha de pago.
         const descuento = patron === 'total' && az.prob(0.6) ? porcentajeProntoPago(cfg, 2025, presentacion) : 0
         const liq = liquidarIca(perfil, ins, cfg, tarifas2025, diasMora, descuento)
-        const revision = estadoRevisionAleatorio(az, 0.3)
+        sorteoDeRevision(az, 0.3)
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
           adjuntos: [],
           id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'inicial',
           numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
-          totalAPagar: liq.r38, saldoAFavor: liq.r34, estadoRevision: revision.estado, observacion: revision.observacion,
+          totalAPagar: liq.r38, saldoAFavor: liq.r34,
         })
         if (patron === 'total') agregarPago(id, presentacion, liq.r38)
         if (patron === 'parcial') agregarPago(id, presentacion, redondearMil(liq.r38 * (0.4 + az.num() * 0.3)))
@@ -463,7 +457,7 @@ export function generarDatos(): Datos {
             id: idCorreccion, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'correccion',
             corrigeA: id, numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: fecha, fechaVencimiento: vencimiento,
             renglones: [...nueva.renglones, { codigo: '—', concepto: 'Menos lo pagado con la declaración que se corrige', valor: pagado }],
-            totalAPagar: aPagar, saldoAFavor: nueva.r34, estadoRevision: 'pendiente',
+            totalAPagar: aPagar, saldoAFavor: nueva.r34,
           })
           agregarPago(idCorreccion, fecha, aPagar)
         }
@@ -482,7 +476,7 @@ export function generarDatos(): Datos {
           adjuntos: [],
           id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2026, periodo: 1, tipo: 'clausura',
           fechaCierre: cierre, numero: numero('ICA', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: sumarDias(cierre, 60),
-          renglones: liq.renglones, totalAPagar: liq.r38, saldoAFavor: liq.r34, estadoRevision: 'revisada',
+          renglones: liq.renglones, totalAPagar: liq.r38, saldoAFavor: liq.r34,
         })
         agregarPago(id, presentacion, liq.r38)
       }
@@ -539,14 +533,14 @@ export function generarDatos(): Datos {
             { codigo: 'I', concepto: 'Intereses de mora', valor: intereses },
             { codigo: 'T', concepto: 'Total a pagar', valor: total },
           )
-          const revision = estadoRevisionAleatorio(az, bimestre === 4 ? 0.7 : 0.1)
+          sorteoDeRevision(az, bimestre === 4 ? 0.7 : 0.1)
           const id = `d${declaraciones.length + 1}`
           const esRete = calidad === 'agente_retenedor'
           declaraciones.push({
             adjuntos: [],
             id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: esRete ? 'reteica' : 'autorretencion', vigencia: 2026, periodo: bimestre,
             tipo: 'inicial', numero: numero(esRete ? 'RET' : 'AUT', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento,
-            renglones, totalAPagar: total, saldoAFavor: 0, estadoRevision: revision.estado, observacion: revision.observacion,
+            renglones, totalAPagar: total, saldoAFavor: 0,
           })
           if (az.prob(esRete ? 0.9 : 0.95)) agregarPago(id, presentacion, total)
         }
@@ -574,7 +568,7 @@ export function generarDatos(): Datos {
       adjuntos: ANEXOS.ica.filter(() => azAprobacion.prob(0.45)).map((nombre) => ({ nombre, archivo: archivoAleatorio(azAprobacion, nombre, presentacion) })),
       id: `d${declaraciones.length + 1}`, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'inicial',
       numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
-      totalAPagar: liq.r38, saldoAFavor: liq.r34, estadoRevision: 'pendiente', aprobacion: { estado: 'pendiente' },
+      totalAPagar: liq.r38, saldoAFavor: liq.r34, aprobacion: { estado: 'pendiente' },
     })
   }
 
