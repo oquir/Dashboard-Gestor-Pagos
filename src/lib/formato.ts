@@ -23,6 +23,9 @@ export const formatoFecha = (iso: string) => fecha.format(new Date(`${iso}T12:00
 /** Para comparar textos sin importar tildes, mayúsculas ni espacios de los extremos. */
 export const normalizar = (texto: string) => texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').trim().toLowerCase()
 
+/** Meses abreviados, para las gráficas. */
+export const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+
 export const etiquetaRol: Record<Rol, string> = {
   '1cero1': '1cero1',
   admin_municipio: 'Administrador municipio',
@@ -30,6 +33,7 @@ export const etiquetaRol: Record<Rol, string> = {
 }
 
 export const nombreCompleto = (u: Pick<Usuario, 'nombres' | 'apellidos'>) => `${u.nombres} ${u.apellidos}`
+
 
 export const etiquetaTipoPersona: Record<TipoPersona, string> = {
   natural: 'Persona natural',
