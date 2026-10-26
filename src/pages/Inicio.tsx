@@ -3,14 +3,14 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import GraficoRecaudo from '../components/GraficoRecaudo'
 import type { FilaRecaudo } from '../components/GraficoRecaudo'
-import { Badge, Card, CardHeader, StatTile, Vacio } from '../components/ui'
+import { Badge, Card, CardHeader, Select, StatTile, Vacio } from '../components/ui'
 import { etiquetaEstadoAprobacion, etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoNovedad, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
 import { estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
 import type { SituacionAprobacion } from '../lib/reglas'
 import { conRit, delMunicipio, IMPUESTOS, impuestoActivo, impuestosVisibles, ritVisible, aprobacionVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
 import { tonoAprobacion, tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
-import type { Declaracion, EstadoPago } from '../types'
+import type { Declaracion, EstadoAprobacion, EstadoPago } from '../types'
 
 const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 const BIMESTRES = ['Ene–Feb', 'Mar–Abr', 'May–Jun', 'Jul–Ago', 'Sep–Oct', 'Nov–Dic']
@@ -113,6 +113,7 @@ export default function Inicio() {
   const aprobacion = useAprobacion()
   const [anio, setAnio] = useState(ANIO_ACTUAL)
   const [vista, setVista] = useState<Vista>('bimestral')
+  const [filtroAprobacion, setFiltroAprobacion] = useState<EstadoAprobacion | 'pendientes' | ''>('pendientes')
   const visibles = useMemo(() => impuestosVisibles(municipios, municipioId), [municipios, municipioId])
   const conRitVisible = ritVisible(municipios, municipioId)
   const verRecaudo = useVerRecaudo()
@@ -174,13 +175,18 @@ export default function Inicio() {
     const pagoIncompleto = deudas.filter((f) => f.pagado > 0)
     const saldo = (lista: Deuda[]) => lista.reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0)
 
-    // Lo que espera la aprobación previa, primero lo de plazo más corto.
-    const porAprobar = declaraciones
+    // Lo pendiente va primero, por plazo; lo resuelto, de lo más reciente a lo más antiguo.
+    const aprobaciones = declaraciones
       .flatMap((d) => {
         const a = aprobacion(d)
-        return a && esperaAprobacion(a) ? [{ d, a }] : []
+        return a ? [{ d, a }] : []
       })
-      .sort((x, y) => x.a.limite.localeCompare(y.a.limite))
+      .sort((x, y) => {
+        const [ex, ey] = [esperaAprobacion(x.a), esperaAprobacion(y.a)]
+        if (ex !== ey) return ex ? -1 : 1
+        return ex ? x.a.limite.localeCompare(y.a.limite) : (y.a.fecha ?? '').localeCompare(x.a.fecha ?? '')
+      })
+    const porAprobar = aprobaciones.filter((x) => esperaAprobacion(x.a))
 
     return {
       pendientes,
@@ -190,6 +196,7 @@ export default function Inicio() {
       saldoPagoIncompleto: saldo(pagoIncompleto),
       recaudo,
       pagadas,
+      aprobaciones,
       porAprobar,
       activas: enRit.filter((i) => i.estado === 'activa').length,
       nombres: new Map(inscripciones.map((i) => [i.id, i.nombre])),
@@ -199,6 +206,9 @@ export default function Inicio() {
   // Si 1cero1 apaga la aprobación previa, lo que quedó pendiente se sigue mostrando hasta resolverlo.
   const conAprobacion = aprobacionVisible(municipios, municipioId) || datos.porAprobar.length > 0
   const vencidas = datos.porAprobar.filter((x) => x.a.estado === 'vencida').length
+  const listaAprobacion = datos.aprobaciones.filter((x) =>
+    filtroAprobacion === 'pendientes' ? esperaAprobacion(x.a) : !filtroAprobacion || x.a.estado === filtroAprobacion,
+  )
   const tarjetas = 2 + Number(conRitVisible) + Number(conAprobacion) + Number(verRecaudo)
   // Con un número impar de listas, la primera ocupa toda la fila para que las de deuda vayan juntas.
   const primeraAncha = (Number(conRitVisible) + Number(conAprobacion)) % 2 === 1 ? 'lg:col-span-2' : ''
@@ -296,12 +306,24 @@ export default function Inicio() {
 
         {conAprobacion && (
           <Card className={conRitVisible ? '' : primeraAncha}>
-            <CardHeader titulo="Declaraciones por aprobar" descripcion="El contribuyente paga cuando se aprueban. Primero las de plazo más corto." />
-            {datos.porAprobar.length === 0 ? (
-              <Vacio titulo="No hay declaraciones por aprobar" />
+            <CardHeader
+              titulo="Aprobación previa"
+              descripcion="El contribuyente paga cuando se aprueban. Lo pendiente va primero, por plazo."
+              acciones={
+                <Select aria-label="Aprobación" className="w-auto" value={filtroAprobacion} onChange={(e) => setFiltroAprobacion(e.target.value as EstadoAprobacion | 'pendientes' | '')}>
+                  <option value="pendientes">Pendientes</option>
+                  {Object.entries(etiquetaEstadoAprobacion).map(([valor, t]) => (
+                    <option key={valor} value={valor}>{t}</option>
+                  ))}
+                  <option value="">Toda aprobación</option>
+                </Select>
+              }
+            />
+            {listaAprobacion.length === 0 ? (
+              <Vacio titulo={filtroAprobacion === 'pendientes' ? 'No hay declaraciones por aprobar' : 'No hay declaraciones con esa aprobación'} />
             ) : (
               <ul className="divide-y divide-slate-100">
-                {datos.porAprobar.slice(0, 6).map(({ d, a }) => (
+                {listaAprobacion.slice(0, 6).map(({ d, a }) => (
                   <li key={d.id}>
                     <Link to={`/declaraciones/${d.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
                       <div className="min-w-0">
@@ -312,7 +334,7 @@ export default function Inicio() {
                       </div>
                       <div className="shrink-0 text-right">
                         <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
-                        <p className="mt-1 text-xs text-slate-500">Plazo: {formatoFecha(a.limite)}</p>
+                        <p className="mt-1 text-xs text-slate-500">{esperaAprobacion(a) ? `Plazo: ${formatoFecha(a.limite)}` : formatoFecha(a.fecha ?? a.limite)}</p>
                       </div>
                     </Link>
                   </li>
