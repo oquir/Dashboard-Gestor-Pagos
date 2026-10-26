@@ -1,8 +1,9 @@
 import { Download, Zip, Document } from 'reicon-react'
-import { descargarArchivo, descargarZip, formatoTamano } from '../lib/archivos'
-import type { ItemArchivo } from '../lib/archivos'
-import { formatoFecha } from '../lib/formato'
-import { Boton, CardHeader } from './ui'
+import { descargarArchivo, descargarZip, formatoTamano } from '../../lib/archivos'
+import type { ItemArchivo } from '../../lib/archivos'
+import { formatoFecha } from '../../lib/formato'
+import { Boton } from '../atoms'
+import { CardHeader } from '../molecules'
 
 interface Props {
   titulo: string
