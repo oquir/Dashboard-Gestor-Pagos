@@ -27,16 +27,18 @@ interface Hoja {
   anchos: number[]
   /** Columnas con formato de texto, para que Excel no le quite los ceros a la izquierda a un código. */
   columnasTexto?: number[]
+  /** Columnas de valores en pesos, con separador de miles. */
+  columnasPesos?: number[]
   /** Lista desplegable con los valores permitidos en una columna. */
   lista?: { columna: number; valores: string[] }
 }
 
-// Estilos: 0 normal, 1 encabezado en negrilla, 2 texto (formato @).
-const ESTILOS = `<styleSheet xmlns="${NS}"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs></styleSheet>`
+// Estilos: 0 normal, 1 encabezado en negrilla, 2 texto (formato @), 3 miles (formato #,##0).
+const ESTILOS = `<styleSheet xmlns="${NS}"><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/><xf numFmtId="49" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs></styleSheet>`
 
-export function crearXlsx({ nombre, filas, anchos, columnasTexto = [], lista }: Hoja) {
+export function crearXlsx({ nombre, filas, anchos, columnasTexto = [], columnasPesos = [], lista }: Hoja) {
   const celda = (valor: string | number, fila: number, columna: number) => {
-    const estilo = fila === 0 ? 1 : columnasTexto.includes(columna) ? 2 : 0
+    const estilo = fila === 0 ? 1 : columnasTexto.includes(columna) ? 2 : columnasPesos.includes(columna) ? 3 : 0
     const atributos = `r="${letraColumna(columna)}${fila + 1}"${estilo ? ` s="${estilo}"` : ''}`
     return typeof valor === 'number'
       ? `<c ${atributos}><v>${valor}</v></c>`
