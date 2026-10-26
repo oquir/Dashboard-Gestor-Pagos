@@ -4,10 +4,10 @@ import { Link } from 'react-router'
 import GraficoRecaudo from '../components/GraficoRecaudo'
 import type { FilaRecaudo } from '../components/GraficoRecaudo'
 import { Badge, Card, CardHeader, StatTile, Vacio } from '../components/ui'
-import { etiquetaEstadoAprobacion, etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion, etiquetaTipoNovedad, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
+import { etiquetaEstadoAprobacion, etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoNovedad, formatoCompacto, formatoFecha, formatoPesos } from '../lib/formato'
 import { estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
 import type { SituacionAprobacion } from '../lib/reglas'
-import { conRit, delMunicipio, IMPUESTOS, impuestoActivo, impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
+import { conRit, delMunicipio, IMPUESTOS, impuestoActivo, impuestosVisibles, ritVisible, aprobacionVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
 import { tonoAprobacion, tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
 import type { Declaracion, EstadoPago } from '../types'
@@ -25,7 +25,7 @@ const VISTAS: { valor: Vista; texto: string }[] = [
 ]
 
 /** Columnas de la fila de indicadores según cuántos hay, para que ninguno quede solo en la segunda fila. */
-const COLUMNAS_TARJETAS: Record<number, string> = { 3: 'lg:grid-cols-3', 4: 'xl:grid-cols-4', 5: 'lg:grid-cols-3 xl:grid-cols-5' }
+const COLUMNAS_TARJETAS: Record<number, string> = { 2: '', 3: 'lg:grid-cols-3', 4: 'xl:grid-cols-4', 5: 'lg:grid-cols-3 xl:grid-cols-5' }
 
 /** Espera la aprobación previa: mientras tanto el contribuyente no puede pagar. */
 const esperaAprobacion = (a: SituacionAprobacion | undefined) => a?.estado === 'por_aprobar' || a?.estado === 'vencida'
@@ -116,7 +116,6 @@ export default function Inicio() {
   const visibles = useMemo(() => impuestosVisibles(municipios, municipioId), [municipios, municipioId])
   const conRitVisible = ritVisible(municipios, municipioId)
   const verRecaudo = useVerRecaudo()
-  const tarjetas = 3 + Number(conRitVisible) + Number(verRecaudo)
 
   // Recaudo del año elegido, mes a mes: el año en curso sale de los pagos; los anteriores, del histórico.
   const meses = useMemo(() => {
@@ -175,15 +174,13 @@ export default function Inicio() {
     const pagoIncompleto = deudas.filter((f) => f.pagado > 0)
     const saldo = (lista: Deuda[]) => lista.reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0)
 
-    // Primero lo que espera la aprobación previa, por plazo; luego lo más reciente.
-    const porRevisar = declaraciones
-      .filter((d) => d.estadoRevision === 'pendiente')
-      .map((d) => ({ d, a: aprobacion(d) }))
-      .sort((x, y) => {
-        const [ex, ey] = [esperaAprobacion(x.a), esperaAprobacion(y.a)]
-        if (ex !== ey) return ex ? -1 : 1
-        return ex ? x.a!.limite.localeCompare(y.a!.limite) : y.d.fechaPresentacion.localeCompare(x.d.fechaPresentacion)
+    // Lo que espera la aprobación previa, primero lo de plazo más corto.
+    const porAprobar = declaraciones
+      .flatMap((d) => {
+        const a = aprobacion(d)
+        return a && esperaAprobacion(a) ? [{ d, a }] : []
       })
+      .sort((x, y) => x.a.limite.localeCompare(y.a.limite))
 
     return {
       pendientes,
@@ -193,11 +190,18 @@ export default function Inicio() {
       saldoPagoIncompleto: saldo(pagoIncompleto),
       recaudo,
       pagadas,
-      porRevisar,
+      porAprobar,
       activas: enRit.filter((i) => i.estado === 'activa').length,
       nombres: new Map(inscripciones.map((i) => [i.id, i.nombre])),
     }
   }, [todasInscripciones, declaraciones, pagos, municipios, municipioId, aprobacion])
+
+  // Si 1cero1 apaga la aprobación previa, lo que quedó pendiente se sigue mostrando hasta resolverlo.
+  const conAprobacion = aprobacionVisible(municipios, municipioId) || datos.porAprobar.length > 0
+  const vencidas = datos.porAprobar.filter((x) => x.a.estado === 'vencida').length
+  const tarjetas = 2 + Number(conRitVisible) + Number(conAprobacion) + Number(verRecaudo)
+  // Con un número impar de listas, la primera ocupa toda la fila para que las de deuda vayan juntas.
+  const primeraAncha = (Number(conRitVisible) + Number(conAprobacion)) % 2 === 1 ? 'lg:col-span-2' : ''
 
   return (
     <>
@@ -210,7 +214,14 @@ export default function Inicio() {
             detalle={`${datos.activas} inscripciones activas`}
           />
         )}
-        <StatTile etiqueta="Declaraciones por revisar" valor={String(datos.porRevisar.length)} icono={<Document className="size-5" />} />
+        {conAprobacion && (
+          <StatTile
+            etiqueta="Declaraciones por aprobar"
+            valor={String(datos.porAprobar.length)}
+            icono={<Document className="size-5" />}
+            detalle={vencidas > 0 ? <span className="text-red-700">{vencidas} con el plazo vencido</span> : 'Dentro del plazo'}
+          />
+        )}
         {verRecaudo && (
           <StatTile
             etiqueta={`Recaudo ${ANIO_ACTUAL}`}
@@ -258,7 +269,7 @@ export default function Inicio() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {conRitVisible && (
-          <Card>
+          <Card className={primeraAncha}>
             <CardHeader titulo="Solicitudes pendientes del RIT" descripcion="Inscripciones, actualizaciones y cancelaciones por revisar." />
             {datos.pendientes.length === 0 ? (
               <Vacio titulo="No hay solicitudes pendientes" />
@@ -283,48 +294,33 @@ export default function Inicio() {
           </Card>
         )}
 
-        {/* Sin RIT quedan tres tarjetas: esta ocupa la primera fila para que las de deuda vayan juntas. */}
-        <Card className={conRitVisible ? '' : 'lg:col-span-2'}>
-          <CardHeader
-            titulo="Declaraciones por revisar"
-            descripcion={
-              datos.porRevisar.some((x) => esperaAprobacion(x.a))
-                ? 'Primero las que esperan aprobación para poder pagarse, por plazo.'
-                : 'Las más recientes que aún no tienen revisión.'
-            }
-          />
-          {datos.porRevisar.length === 0 ? (
-            <Vacio titulo="No hay declaraciones por revisar" />
-          ) : (
-            <ul className="divide-y divide-slate-100">
-              {datos.porRevisar.slice(0, 6).map(({ d, a }) => (
-                <li key={d.id}>
-                  <Link to={`/declaraciones/${d.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-900">{datos.nombres.get(d.inscripcionId)}</p>
-                      <p className="truncate text-xs text-slate-500">
-                        {d.numero} · {etiquetaImpuesto[d.impuesto]} · {etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}
-                      </p>
-                    </div>
-                    <div className="shrink-0 text-right">
-                      {a && esperaAprobacion(a) ? (
-                        <>
-                          <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
-                          <p className="mt-1 text-xs text-slate-500">Plazo: {formatoFecha(a.limite)}</p>
-                        </>
-                      ) : (
-                        <>
-                          <Badge tono="alerta">{etiquetaTipoDeclaracion[d.tipo]}</Badge>
-                          <p className="mt-1 text-xs text-slate-500">{formatoFecha(d.fechaPresentacion)}</p>
-                        </>
-                      )}
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
+        {conAprobacion && (
+          <Card className={conRitVisible ? '' : primeraAncha}>
+            <CardHeader titulo="Declaraciones por aprobar" descripcion="El contribuyente paga cuando se aprueban. Primero las de plazo más corto." />
+            {datos.porAprobar.length === 0 ? (
+              <Vacio titulo="No hay declaraciones por aprobar" />
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {datos.porAprobar.slice(0, 6).map(({ d, a }) => (
+                  <li key={d.id}>
+                    <Link to={`/declaraciones/${d.id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium text-slate-900">{datos.nombres.get(d.inscripcionId)}</p>
+                        <p className="truncate text-xs text-slate-500">
+                          {d.numero} · {etiquetaImpuesto[d.impuesto]} · {etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}
+                        </p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
+                        <p className="mt-1 text-xs text-slate-500">Plazo: {formatoFecha(a.limite)}</p>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Card>
+        )}
 
         <ListaDeudas
           titulo="Declaraciones no pagadas"
