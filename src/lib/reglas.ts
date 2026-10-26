@@ -82,6 +82,7 @@ export interface SituacionAprobacion {
   /** Día en que se resolvió; en la aprobación automática, el día límite. */
   fecha?: string
   por?: string
+  observacion?: string
   /** Hasta cuándo vale el recibo de pago que se envía al aprobar. */
   reciboHasta?: string
 }
@@ -99,8 +100,8 @@ export function aprobacionDe(d: Declaracion, cfg: ConfigMunicipio, hoy: string):
   const limite = d.fechaPresentacion <= d.fechaVencimiento && d.fechaVencimiento < plazo ? d.fechaVencimiento : plazo
   const reciboHasta = (fecha: string) => sumarDiasHabiles(fecha, vigenciaReciboDiasHabiles)
   const a = d.aprobacion
-  if (a.estado === 'aprobada') return { estado: 'aprobada', limite, fecha: a.fecha, por: a.por, reciboHasta: reciboHasta(a.fecha) }
-  if (a.estado === 'rechazada') return { estado: 'rechazada', limite, fecha: a.fecha, por: a.por }
+  if (a.estado === 'aprobada') return { ...a, limite, reciboHasta: reciboHasta(a.fecha) }
+  if (a.estado === 'rechazada') return { ...a, limite }
   if (hoy <= limite) return { estado: 'por_aprobar', limite }
   return alVencer === 'aprobar' ? { estado: 'aprobada_automatica', limite, fecha: limite, reciboHasta: reciboHasta(limite) } : { estado: 'vencida', limite }
 }
