@@ -3,11 +3,10 @@ import { useState } from 'react'
 import { Link, useParams } from 'react-router'
 import ListaArchivos from '../components/ListaArchivos'
 import Tabla from '../components/Tabla'
-import { Badge, Boton, Campo, Card, CardHeader, Dato, PageHeader, Select, Textarea, Vacio } from '../components/ui'
+import { Badge, Boton, Campo, Card, CardHeader, Dato, PageHeader, Textarea, Vacio } from '../components/ui'
 import {
   etiquetaEstadoAprobacion,
   etiquetaEstadoPago,
-  etiquetaEstadoRevision,
   etiquetaImpuesto,
   etiquetaPeriodo,
   etiquetaTipoDeclaracion,
@@ -20,9 +19,9 @@ import { diasHabilesEntre, estadoPago, RENGLONES_TOTALES, totalPagado } from '..
 import type { SituacionAprobacion } from '../lib/reglas'
 import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useSesion } from '../lib/sesion'
 import { ayudanteColumnas } from '../lib/tabla'
-import { tonoAprobacion, tonoPago, tonoRevision } from '../lib/tonos'
+import { tonoAprobacion, tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
-import type { Declaracion, EstadoRevision, Inscripcion, Renglon } from '../types'
+import type { Declaracion, Inscripcion, Renglon } from '../types'
 
 const col = ayudanteColumnas<Renglon>()
 
@@ -38,7 +37,7 @@ const COLUMNAS_RENGLONES = col.columns([
   }),
 ])
 
-/** Cruces automáticos que el funcionario ve antes de dar la declaración por revisada. */
+/** Cruces automáticos que el funcionario ve antes de aprobar la declaración. */
 function validaciones(d: Declaracion, ins: Inscripcion | undefined, contraRit: boolean) {
   const resultado: { ok: boolean; texto: string }[] = []
   const valor = (codigo: string) => d.renglones.find((r) => r.codigo === codigo)?.valor ?? 0
@@ -69,35 +68,6 @@ function validaciones(d: Declaracion, ins: Inscripcion | undefined, contraRit: b
   if (d.tipo === 'correccion') resultado.push({ ok: Boolean(d.corrigeA), texto: 'Indica la declaración que corrige' })
   if (d.tipo === 'clausura') resultado.push({ ok: Boolean(d.fechaCierre), texto: 'Indica la fecha exacta de cierre' })
   return resultado
-}
-
-function FormularioRevision({ declaracion }: { declaracion: Declaracion }) {
-  const revisarDeclaracion = useDatos((s) => s.revisarDeclaracion)
-  const [estado, setEstado] = useState<EstadoRevision>(declaracion.estadoRevision === 'pendiente' ? 'revisada' : declaracion.estadoRevision)
-  const [observacion, setObservacion] = useState(declaracion.observacion ?? '')
-  const [guardado, setGuardado] = useState(false)
-  const falta = estado === 'con_observaciones' && !observacion.trim()
-
-  return (
-    <div className="space-y-3 p-5">
-      <Campo etiqueta="Resultado">
-        <Select value={estado} onChange={(e) => { setEstado(e.target.value as EstadoRevision); setGuardado(false) }}>
-          <option value="revisada">Revisada sin observaciones</option>
-          <option value="con_observaciones">Con observaciones</option>
-          <option value="pendiente">Dejar por revisar</option>
-        </Select>
-      </Campo>
-      <Campo etiqueta="Observación" error={falta ? 'Escribe la observación.' : undefined}>
-        <Textarea rows={3} value={observacion} onChange={(e) => { setObservacion(e.target.value); setGuardado(false) }} />
-      </Campo>
-      <div className="flex items-center gap-3">
-        <Boton variante="primario" disabled={falta} onClick={() => { revisarDeclaracion(declaracion.id, estado, observacion.trim()); setGuardado(true) }}>
-          Guardar revisión
-        </Boton>
-        {guardado && <span className="text-sm text-emerald-700">Guardado</span>}
-      </div>
-    </div>
-  )
 }
 
 /** Visto bueno del municipio antes del pago. Al resolverla, al contribuyente le llega un correo. */
@@ -161,6 +131,7 @@ function AprobacionPrevia({ d, situacion, correo, puedeResolver }: { d: Declarac
               Puede pagar en línea, descargar la declaración con código de barras para pagar en el banco o pagar en efectivo en la taquilla del municipio.
               El recibo vale hasta el {formatoFecha(situacion.reciboHasta)}.
             </p>
+            {situacion.observacion && <p className="mt-1">Observación: {situacion.observacion}</p>}
           </div>
         )}
         {situacion.estado === 'rechazada' && (
@@ -169,7 +140,7 @@ function AprobacionPrevia({ d, situacion, correo, puedeResolver }: { d: Declarac
               <Envelope className="size-4" aria-hidden /> Se envió un correo a {correo}
             </p>
             <p className="mt-1">
-              Rechazada por {situacion.por} el {formatoFecha(situacion.fecha!)}: {d.observacion}. El contribuyente debe corregirla y radicarla de nuevo.
+              Rechazada por {situacion.por} el {formatoFecha(situacion.fecha!)}: {situacion.observacion}. El contribuyente debe corregirla y radicarla de nuevo.
             </p>
           </div>
         )}
@@ -205,7 +176,6 @@ export default function DeclaracionDetalle() {
   const municipioConRit = conRit(municipios)(d)
   const contraRit = seValidaContraRit(municipios, d)
   const situacion = aprobacion(d)
-  const porAprobar = situacion?.estado === 'por_aprobar' || situacion?.estado === 'vencida'
 
   return (
     <>
@@ -219,7 +189,6 @@ export default function DeclaracionDetalle() {
           <>
             <Badge tono="info">{etiquetaTipoDeclaracion[d.tipo]}</Badge>
             <Badge tono={tonoPago[estado]}>{etiquetaEstadoPago[estado]}</Badge>
-            <Badge tono={tonoRevision[d.estadoRevision]}>{etiquetaEstadoRevision[d.estadoRevision]}</Badge>
           </>
         }
       />
@@ -333,21 +302,6 @@ export default function DeclaracionDetalle() {
               ))}
             </ul>
           </Card>
-
-          {/* Mientras está por aprobar, aprobar o rechazar es la revisión. */}
-          {!porAprobar && (
-            <Card>
-              <CardHeader titulo="Revisión" />
-              {puede(usuario?.rol, 'revisar') ? (
-                <FormularioRevision key={d.id} declaracion={d} />
-              ) : (
-                <div className="p-5 text-sm text-slate-600">
-                  {d.observacion ?? 'Sin observaciones.'}
-                  <p className="mt-2 text-xs text-slate-500">La revisión la hace la administración municipal.</p>
-                </div>
-              )}
-            </Card>
-          )}
         </div>
       </div>
     </>
