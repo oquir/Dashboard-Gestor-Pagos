@@ -1,153 +1,14 @@
-import { ArrowLeft, TickCircle, Download, AlertTriangle, Envelope } from 'reicon-react'
-import { useState } from 'react'
 import { Link, useParams } from 'react-router'
-import ListaArchivos from '../components/ListaArchivos'
-import Tabla from '../components/Tabla'
-import { Badge, Boton, Campo, Card, CardHeader, Dato, PageHeader, Textarea, Vacio } from '../components/ui'
-import {
-  etiquetaEstadoAprobacion,
-  etiquetaEstadoPago,
-  etiquetaImpuesto,
-  etiquetaPeriodo,
-  etiquetaTipoDeclaracion,
-  formatoFecha,
-  formatoPesos,
-} from '../lib/formato'
+import { Badge, Card } from '../components/atoms'
+import { Aviso, Vacio } from '../components/molecules'
+import { AprobacionPrevia, DatosDeclaracion, Liquidacion, ListaArchivos, PagosDeclaracion, ValidacionesDeclaracion } from '../components/organisms'
+import { PlantillaDetalle } from '../components/templates'
+import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { descargarDeclaracion } from '../lib/pdfDeclaracion'
-import { diasHabilesEntre, estadoPago, RENGLONES_TOTALES, totalPagado } from '../lib/reglas'
-import type { SituacionAprobacion } from '../lib/reglas'
+import { estadoPago } from '../lib/reglas'
 import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useSesion } from '../lib/sesion'
-import { ayudanteColumnas } from '../lib/tabla'
-import { tonoAprobacion, tonoPago } from '../lib/tonos'
+import { tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
-import type { Declaracion, Inscripcion, Renglon } from '../types'
-
-const col = ayudanteColumnas<Renglon>()
-
-// Sin ordenamiento: la liquidación se lee en el orden del formulario.
-const COLUMNAS_RENGLONES = col.columns([
-  col.accessor('codigo', { header: 'Renglón', enableSorting: false, meta: { clase: 'w-20 tabular-nums text-slate-500' } }),
-  col.accessor('concepto', { header: 'Concepto', enableSorting: false, meta: { clase: 'text-slate-700' } }),
-  col.accessor('valor', {
-    header: 'Valor',
-    enableSorting: false,
-    meta: { alinear: 'derecha', clase: 'whitespace-nowrap tabular-nums text-slate-900' },
-    cell: ({ getValue }) => formatoPesos(getValue()),
-  }),
-])
-
-/** Cruces automáticos que el funcionario ve antes de aprobar la declaración. */
-function validaciones(d: Declaracion, ins: Inscripcion | undefined, contraRit: boolean) {
-  const resultado: { ok: boolean; texto: string }[] = []
-  const valor = (codigo: string) => d.renglones.find((r) => r.codigo === codigo)?.valor ?? 0
-  const tiene = (calidad: string) => ins?.calidades.some((c) => c.calidad === calidad) ?? false
-
-  // Cruces con el RIT: solo si el municipio tiene el RIT y la validación activa en este formulario.
-  if (contraRit) {
-    if (d.impuesto === 'reteica') {
-      resultado.push({ ok: tiene('agente_retenedor'), texto: 'El declarante tiene la calidad de agente retenedor en el RIT' })
-    }
-    if (d.impuesto === 'autorretencion') {
-      resultado.push({ ok: tiene('autorretenedor'), texto: 'El declarante está designado como autorretenedor en el RIT' })
-    }
-    if (d.impuesto === 'ica') {
-      resultado.push({ ok: !ins?.regimenSimple, texto: 'El declarante no está en el SIMPLE según el RIT (allí el ICA se declara ante la DIAN)' })
-      if (valor('28') > 0) resultado.push({ ok: tiene('autorretenedor'), texto: 'Las autorretenciones (renglón 28) corresponden a un autorretenedor del RIT' })
-    }
-  }
-  if (d.tipo !== 'clausura') {
-    const extemporanea = d.fechaPresentacion > d.fechaVencimiento
-    const sancion = valor('31') + valor('S')
-    resultado.push(
-      extemporanea
-        ? { ok: sancion > 0, texto: 'Presentada después del vencimiento: liquida sanción por extemporaneidad' }
-        : { ok: true, texto: 'Presentada dentro del plazo' },
-    )
-  }
-  if (d.tipo === 'correccion') resultado.push({ ok: Boolean(d.corrigeA), texto: 'Indica la declaración que corrige' })
-  if (d.tipo === 'clausura') resultado.push({ ok: Boolean(d.fechaCierre), texto: 'Indica la fecha exacta de cierre' })
-  return resultado
-}
-
-/** Visto bueno del municipio antes del pago. Al resolverla, al contribuyente le llega un correo. */
-function AprobacionPrevia({ d, situacion, correo, puedeResolver }: { d: Declaracion; situacion: SituacionAprobacion; correo: string; puedeResolver: boolean }) {
-  const resolverAprobacion = useDatos((s) => s.resolverAprobacion)
-  const [observacion, setObservacion] = useState('')
-  const pendiente = situacion.estado === 'por_aprobar' || situacion.estado === 'vencida'
-  const dias = diasHabilesEntre(new Date().toISOString().slice(0, 10), situacion.limite)
-  const descuento = d.renglones.find((r) => r.codigo === '36')?.valor ?? 0
-
-  return (
-    <Card>
-      <CardHeader
-        titulo="Aprobación previa"
-        descripcion="El contribuyente paga cuando el municipio aprueba la declaración."
-        acciones={<Badge tono={tonoAprobacion[situacion.estado]}>{etiquetaEstadoAprobacion[situacion.estado]}</Badge>}
-      />
-      <div className="space-y-4 p-5">
-        <dl className="grid grid-cols-2 gap-4">
-          <Dato etiqueta="Radicada">{formatoFecha(d.fechaPresentacion)}</Dato>
-          <Dato etiqueta="Plazo para aprobar">
-            {formatoFecha(situacion.limite)}
-            {pendiente && (
-              <span className={`block text-xs ${dias < 0 ? 'font-medium text-red-700' : 'text-slate-500'}`}>
-                {dias > 1 ? `Quedan ${dias} días hábiles` : dias === 1 ? 'Queda 1 día hábil' : dias === 0 ? 'Vence hoy' : 'Vencido'}
-              </span>
-            )}
-          </Dato>
-        </dl>
-        <p className="text-xs text-slate-500">
-          Descuento, sanciones e intereses se liquidan con la fecha de radicación, aunque la aprobación llegue después
-          {descuento > 0 ? `: conserva el descuento por pronto pago de ${formatoPesos(descuento)}.` : '.'}
-        </p>
-
-        {pendiente && puedeResolver && (
-          <div className="space-y-3">
-            <Campo etiqueta="Observación" ayuda="Obligatoria para rechazar. Le llega al contribuyente en el correo.">
-              <Textarea rows={3} value={observacion} onChange={(e) => setObservacion(e.target.value)} />
-            </Campo>
-            <div className="flex flex-wrap gap-2">
-              <Boton variante="primario" onClick={() => resolverAprobacion(d.id, 'aprobada', observacion.trim())}>
-                <TickCircle className="size-4" aria-hidden /> Aprobar
-              </Boton>
-              <Boton variante="peligro" disabled={!observacion.trim()} onClick={() => resolverAprobacion(d.id, 'rechazada', observacion.trim())}>
-                Rechazar
-              </Boton>
-            </div>
-          </div>
-        )}
-        {pendiente && !puedeResolver && <p className="text-sm text-slate-600">La aprobación la da la administración municipal.</p>}
-
-        {situacion.reciboHasta && (
-          <div className="rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">
-            <p className="flex items-center gap-2 font-medium">
-              <Envelope className="size-4" aria-hidden /> Se envió un correo a {correo}
-            </p>
-            <p className="mt-1">
-              {situacion.estado === 'aprobada_automatica'
-                ? `Se aprobó automáticamente al vencer el plazo, el ${formatoFecha(situacion.limite)}.`
-                : `Aprobada por ${situacion.por} el ${formatoFecha(situacion.fecha!)}.`}{' '}
-              Puede pagar en línea, descargar la declaración con código de barras para pagar en el banco o pagar en efectivo en la taquilla del municipio.
-              El recibo vale hasta el {formatoFecha(situacion.reciboHasta)}.
-            </p>
-            {situacion.observacion && <p className="mt-1">Observación: {situacion.observacion}</p>}
-          </div>
-        )}
-        {situacion.estado === 'rechazada' && (
-          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-800">
-            <p className="flex items-center gap-2 font-medium">
-              <Envelope className="size-4" aria-hidden /> Se envió un correo a {correo}
-            </p>
-            <p className="mt-1">
-              Rechazada por {situacion.por} el {formatoFecha(situacion.fecha!)}: {situacion.observacion}. El contribuyente debe corregirla y radicarla de nuevo.
-            </p>
-          </div>
-        )}
-      </div>
-    </Card>
-  )
-}
 
 export default function DeclaracionDetalle() {
   const { id } = useParams()
@@ -167,106 +28,41 @@ export default function DeclaracionDetalle() {
   }
 
   const ins = inscripciones.find((i) => i.id === d.inscripcionId)
-  const pagosDeEsta = pagos.filter((p) => p.declaracionId === d.id)
-  const pagado = totalPagado(d.id, pagos)
   const estado = estadoPago(d, pagos)
   const corregida = d.corrigeA ? declaraciones.find((x) => x.id === d.corrigeA) : undefined
   const reemplazo = declaraciones.find((x) => x.corrigeA === d.id)
-  const diasMora = Math.round((Date.parse(d.fechaPresentacion) - Date.parse(d.fechaVencimiento)) / 86400000)
   const municipioConRit = conRit(municipios)(d)
-  const contraRit = seValidaContraRit(municipios, d)
   const situacion = aprobacion(d)
 
   return (
-    <>
-      <Link to="/declaraciones" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900">
-        <ArrowLeft className="size-4" aria-hidden /> Declaraciones
-      </Link>
-      <PageHeader
-        titulo={`${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}`}
-        descripcion={`Radicado ${d.numero}`}
-        acciones={
-          <>
-            <Badge tono="info">{etiquetaTipoDeclaracion[d.tipo]}</Badge>
-            <Badge tono={tonoPago[estado]}>{etiquetaEstadoPago[estado]}</Badge>
-          </>
-        }
-      />
-
-      {reemplazo && (
-        <p className="mb-6 rounded-lg bg-brand-50 px-4 py-3 text-sm text-brand-800">
-          Esta declaración fue reemplazada por la corrección{' '}
-          <Link className="font-medium underline" to={`/declaraciones/${reemplazo.id}`}>{reemplazo.numero}</Link>.
-        </p>
-      )}
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <Card>
-            <CardHeader
-              titulo="Liquidación"
-              descripcion="Valores redondeados al múltiplo de mil más cercano."
-              acciones={
-                <Boton variante="secundario" onClick={() => descargarDeclaracion(d, useDatos.getState())}>
-                  <Download className="size-4" aria-hidden /> Descargar PDF
-                </Boton>
-              }
-            />
-            <Tabla datos={d.renglones} columnas={COLUMNAS_RENGLONES} densa claseFila={(r) => (RENGLONES_TOTALES.has(r.codigo) ? 'bg-slate-50 font-semibold' : '')} />
-          </Card>
-
-          <Card>
-            <CardHeader
-              titulo="Pagos"
-              descripcion={d.impuesto === 'ica' ? 'El ICA anual admite pago parcial.' : 'Sin pago total, esta declaración no produce efecto (es ineficaz).'}
-            />
-            {pagosDeEsta.length === 0 ? (
-              <Vacio titulo="No hay pagos registrados" />
-            ) : (
-              <ul className="divide-y divide-slate-100">
-                {pagosDeEsta.map((p) => (
-                  <li key={p.id} className="flex items-center justify-between px-5 py-3 text-sm">
-                    <span className="text-slate-700">
-                      {formatoFecha(p.fecha)} · {p.medio}
-                    </span>
-                    <span className="tabular-nums text-slate-900">{formatoPesos(p.valor)}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <dl className="grid grid-cols-2 gap-4 border-t border-slate-100 p-5">
-              <Dato etiqueta="Total pagado">{formatoPesos(pagado)}</Dato>
-              <Dato etiqueta="Saldo pendiente">{formatoPesos(Math.max(d.totalAPagar - pagado, 0))}</Dato>
-            </dl>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
+    <PlantillaDetalle
+      volver={{ a: '/declaraciones', texto: 'Declaraciones' }}
+      titulo={`${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}`}
+      descripcion={`Radicado ${d.numero}`}
+      acciones={
+        <>
+          <Badge tono="info">{etiquetaTipoDeclaracion[d.tipo]}</Badge>
+          <Badge tono={tonoPago[estado]}>{etiquetaEstadoPago[estado]}</Badge>
+        </>
+      }
+      aviso={
+        reemplazo && (
+          <Aviso tono="info">
+            Esta declaración fue reemplazada por la corrección{' '}
+            <Link className="font-medium underline" to={`/declaraciones/${reemplazo.id}`}>{reemplazo.numero}</Link>.
+          </Aviso>
+        )
+      }
+      principal={
+        <>
+          <Liquidacion d={d} />
+          <PagosDeclaracion d={d} pagos={pagos} />
+        </>
+      }
+      lateral={
+        <>
           {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={ins?.correo ?? ''} puedeResolver={puede(usuario?.rol, 'revisar')} />}
-
-          <Card>
-            <CardHeader titulo="Datos" />
-            <dl className="space-y-4 p-5">
-              <Dato etiqueta="Declarante">
-                {!ins ? '—' : municipioConRit ? <Link className="font-medium text-brand-700 hover:underline" to={`/rit/${ins.id}`}>{ins.nombre}</Link> : ins.nombre}
-              </Dato>
-              <Dato etiqueta="Número de factura">
-                <span className="tabular-nums">{d.numeroFactura}</span>
-              </Dato>
-              <Dato etiqueta="Vencimiento">{formatoFecha(d.fechaVencimiento)}</Dato>
-              <Dato etiqueta="Presentación">
-                {formatoFecha(d.fechaPresentacion)}
-                {d.tipo !== 'clausura' && diasMora > 0 && <span className="text-amber-700"> · {diasMora} días tarde</span>}
-              </Dato>
-              {d.fechaCierre && <Dato etiqueta="Fecha de cierre">{formatoFecha(d.fechaCierre)}</Dato>}
-              {corregida && (
-                <Dato etiqueta="Corrige a">
-                  <Link className="font-medium text-brand-700 hover:underline" to={`/declaraciones/${corregida.id}`}>{corregida.numero}</Link>
-                </Dato>
-              )}
-            </dl>
-          </Card>
-
+          <DatosDeclaracion d={d} ins={ins} corregida={corregida} enlazarRit={municipioConRit} />
           <Card>
             <ListaArchivos
               titulo="Archivos adjuntos"
@@ -277,33 +73,9 @@ export default function DeclaracionDetalle() {
               vacio="No cargó archivos."
             />
           </Card>
-
-          <Card>
-            <CardHeader
-              titulo="Validaciones"
-              descripcion={
-                contraRit
-                  ? undefined
-                  : municipioConRit
-                    ? 'Este formulario no se valida contra el RIT.'
-                    : 'El municipio no tiene el RIT en el aplicativo: no hay cruces contra el RIT.'
-              }
-            />
-            <ul className="space-y-2 p-5">
-              {validaciones(d, ins, contraRit).map((v) => (
-                <li key={v.texto} className="flex items-start gap-2 text-sm">
-                  {v.ok ? (
-                    <TickCircle className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-label="Cumple" />
-                  ) : (
-                    <AlertTriangle className="mt-0.5 size-4 shrink-0 text-red-600" aria-label="Inconsistencia" />
-                  )}
-                  <span className={v.ok ? 'text-slate-700' : 'font-medium text-red-700'}>{v.texto}</span>
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </div>
-      </div>
-    </>
+          <ValidacionesDeclaracion d={d} ins={ins} contraRit={seValidaContraRit(municipios, d)} municipioConRit={municipioConRit} />
+        </>
+      }
+    />
   )
 }
