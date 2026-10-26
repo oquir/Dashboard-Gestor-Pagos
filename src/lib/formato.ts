@@ -1,5 +1,6 @@
 import type {
   Calidad,
+  EstadoAprobacion,
   EstadoInscripcion,
   EstadoNovedad,
   EstadoPago,
@@ -87,6 +88,14 @@ export const etiquetaEstadoRevision: Record<EstadoRevision, string> = {
   pendiente: 'Por revisar',
   revisada: 'Revisada',
   con_observaciones: 'Con observaciones',
+}
+
+export const etiquetaEstadoAprobacion: Record<EstadoAprobacion, string> = {
+  por_aprobar: 'Por aprobar',
+  vencida: 'Aprobación vencida',
+  aprobada: 'Aprobada',
+  aprobada_automatica: 'Aprobada automáticamente',
+  rechazada: 'Rechazada',
 }
 
 export const etiquetaEstadoPago: Record<EstadoPago, string> = {
