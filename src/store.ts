@@ -20,6 +20,8 @@ interface Estado extends Datos {
     documentos: Archivo[],
   ) => void
   revisarDeclaracion: (id: string, estado: EstadoRevision, observacion: string) => void
+  /** Aprueba o rechaza una declaración con aprobación previa; resolverla es también revisarla. */
+  resolverAprobacion: (id: string, estado: 'aprobada' | 'rechazada', observacion: string) => void
   guardarConfiguracion: (config: ConfigMunicipio) => void
   /** Reemplaza las actividades del año gravable con las del Excel cargado. */
   cargarActividades: (municipioId: string, vigencia: number, tarifas: Tarifa[], archivo: string) => void
@@ -31,6 +33,8 @@ interface Estado extends Datos {
   alternarRit: (municipioId: string) => void
   /** Activa o desactiva la validación contra el RIT de un formulario del municipio. */
   alternarValidacionRit: (municipioId: string, impuesto: Impuesto) => void
+  /** Activa o desactiva la aprobación previa de un formulario; aplica a lo que se radique desde entonces. */
+  alternarAprobacionPrevia: (municipioId: string, impuesto: Impuesto) => void
   reiniciarDemo: () => void
 }
 
@@ -88,6 +92,17 @@ export const useDatos = create<Estado>()(
           declaraciones: s.declaraciones.map((d) => (d.id === id ? { ...d, estadoRevision: estado, observacion: observacion || undefined } : d)),
         })),
 
+      resolverAprobacion: (id, estado, observacion) => {
+        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
+        const por = usuario ? nombreCompleto(usuario) : ''
+        const revision: EstadoRevision = estado === 'rechazada' || observacion ? 'con_observaciones' : 'revisada'
+        set((s) => ({
+          declaraciones: s.declaraciones.map((d) =>
+            d.id === id ? { ...d, aprobacion: { estado, fecha: hoy(), por }, estadoRevision: revision, observacion: observacion || undefined } : d,
+          ),
+        }))
+      },
+
       guardarConfiguracion: (config) =>
         set((s) => ({
           configuraciones: s.configuraciones.map((c) => (c.municipioId === config.municipioId ? config : c)),
@@ -126,8 +141,15 @@ export const useDatos = create<Estado>()(
           ),
         })),
 
+      alternarAprobacionPrevia: (municipioId, impuesto) =>
+        set((s) => ({
+          municipios: s.municipios.map((m) =>
+            m.id === municipioId ? { ...m, aprobacionPrevia: { ...m.aprobacionPrevia, [impuesto]: !m.aprobacionPrevia[impuesto] } } : m,
+          ),
+        })),
+
       reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
     }),
-    { name: 'gestor-pagos-demo', version: 18 },
+    { name: 'gestor-pagos-demo', version: 19 },
   ),
 )
