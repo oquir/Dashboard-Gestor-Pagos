@@ -1,10 +1,9 @@
-import { Location } from 'reicon-react'
 import { useMemo } from 'react'
-import { Navigate, useNavigate } from 'react-router'
-import { Badge, Boton, Card, PageHeader } from '../components/ui'
-import { etiquetaImpuesto, formatoCompacto } from '../lib/formato'
+import { Navigate } from 'react-router'
+import { PageHeader } from '../components/molecules'
+import { TarjetaMunicipio } from '../components/organisms'
 import { puede } from '../lib/permisos'
-import { IMPUESTOS, impuestoActivo, useSesion } from '../lib/sesion'
+import { impuestoActivo, useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
 
 export default function Municipios() {
@@ -14,13 +13,6 @@ export default function Municipios() {
   const declaraciones = useDatos((s) => s.declaraciones)
   const pagos = useDatos((s) => s.pagos)
   const usuarios = useDatos((s) => s.usuarios)
-  const alternarMunicipio = useDatos((s) => s.alternarMunicipio)
-  const alternarImpuesto = useDatos((s) => s.alternarImpuesto)
-  const alternarRit = useDatos((s) => s.alternarRit)
-  const alternarValidacionRit = useDatos((s) => s.alternarValidacionRit)
-  const alternarAprobacionPrevia = useDatos((s) => s.alternarAprobacionPrevia)
-  const seleccionarMunicipio = useDatos((s) => s.seleccionarMunicipio)
-  const navigate = useNavigate()
 
   const resumen = useMemo(() => {
     const visibles = declaraciones.filter(impuestoActivo(municipios))
@@ -44,96 +36,9 @@ export default function Municipios() {
     <>
       <PageHeader titulo="Municipios" descripcion="Municipios que usan el aplicativo: si tienen el RIT, qué formularios gestionan, si cada formulario se valida contra el RIT y si el municipio aprueba las declaraciones antes del pago. Desactivar un municipio le quita el acceso a sus usuarios en la demo." />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {municipios.map((m) => {
-          const r = resumen.get(m.id)!
-          return (
-            <Card key={m.id} className={`p-5 ${m.activo ? '' : 'opacity-60'}`}>
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold text-slate-900">{m.nombre}</p>
-                  <p className="flex items-center gap-1 text-sm text-slate-500">
-                    <Location className="size-3.5" aria-hidden /> {m.departamento} · DANE {m.codigoDane}
-                  </p>
-                </div>
-                <Badge tono={m.activo ? 'exito' : 'neutral'}>{m.activo ? 'Activo' : 'Inactivo'}</Badge>
-              </div>
-              <dl className="mt-5 grid grid-cols-2 gap-4">
-                <div>
-                  <dt className="text-xs text-slate-500">Inscripciones activas</dt>
-                  <dd className="text-lg font-semibold text-slate-900">{m.rit ? r.activas : <span className="text-sm font-normal text-slate-500">Sin RIT</span>}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-slate-500">Declaraciones</dt>
-                  <dd className="text-lg font-semibold text-slate-900">{r.declaraciones}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-slate-500">Recaudo 2026</dt>
-                  <dd className="text-lg font-semibold text-slate-900">${formatoCompacto(r.recaudo)}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs text-slate-500">Usuarios activos</dt>
-                  <dd className="text-lg font-semibold text-slate-900">{r.usuarios}</dd>
-                </div>
-              </dl>
-              <div className="mt-5 space-y-4 border-t border-slate-100 pt-4">
-                <label className="flex items-start gap-2">
-                  <input type="checkbox" className="mt-0.5 size-4 accent-brand-600" checked={m.rit} onChange={() => alternarRit(m.id)} />
-                  <span>
-                    <span className="block text-sm font-medium text-slate-700">RIT en el aplicativo</span>
-                    <span className="block text-xs text-slate-500">Inscripciones, actualizaciones y cancelaciones.</span>
-                  </span>
-                </label>
-
-                <div role="group" aria-label={`Formularios de ${m.nombre}`}>
-                  <p className="text-xs text-slate-500">Formularios</p>
-                  <ul className="mt-2 space-y-2">
-                    {IMPUESTOS.map((i) => {
-                      const unicoActivo = m.impuestos[i] && IMPUESTOS.filter((x) => m.impuestos[x]).length === 1
-                      return (
-                        <li key={i} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
-                          <label className="flex items-center gap-2 text-sm text-slate-700" title={unicoActivo ? 'Debe quedar al menos un formulario activo' : undefined}>
-                            <input type="checkbox" className="size-4 accent-brand-600" checked={m.impuestos[i]} disabled={unicoActivo} onChange={() => alternarImpuesto(m.id, i)} />
-                            {etiquetaImpuesto[i]}
-                          </label>
-                          {m.impuestos[i] && (
-                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                              <label className={`flex items-center gap-2 text-xs ${m.rit ? 'text-slate-600' : 'text-slate-400'}`} title={m.rit ? undefined : 'Requiere el RIT en el aplicativo'}>
-                                <input
-                                  type="checkbox"
-                                  className="size-3.5 accent-brand-600"
-                                  checked={m.rit && m.validarContraRit[i]}
-                                  disabled={!m.rit}
-                                  onChange={() => alternarValidacionRit(m.id, i)}
-                                />
-                                Validar contra el RIT
-                              </label>
-                              <label className="flex items-center gap-2 text-xs text-slate-600">
-                                <input type="checkbox" className="size-3.5 accent-brand-600" checked={m.aprobacionPrevia[i]} onChange={() => alternarAprobacionPrevia(m.id, i)} />
-                                Aprobación previa
-                              </label>
-                            </div>
-                          )}
-                        </li>
-                      )
-                    })}
-                  </ul>
-                  {!m.rit && <p className="mt-2 text-xs text-slate-500">Sin el RIT en el aplicativo, los formularios no se validan contra él.</p>}
-                  {IMPUESTOS.some((i) => m.impuestos[i] && m.aprobacionPrevia[i]) && (
-                    <p className="mt-2 text-xs text-slate-500">Con aprobación previa, el contribuyente paga cuando el municipio aprueba. Aplica a lo que se radique desde que se activa.</p>
-                  )}
-                </div>
-              </div>
-              <div className="mt-5 flex gap-2">
-                <Boton variante="secundario" onClick={() => { seleccionarMunicipio(m.id); navigate('/') }}>
-                  Ver tablero
-                </Boton>
-                <Boton variante="fantasma" onClick={() => alternarMunicipio(m.id)}>
-                  {m.activo ? 'Desactivar' : 'Activar'}
-                </Boton>
-              </div>
-            </Card>
-          )
-        })}
+        {municipios.map((m) => (
+          <TarjetaMunicipio key={m.id} municipio={m} resumen={resumen.get(m.id)!} />
+        ))}
       </div>
     </>
   )
