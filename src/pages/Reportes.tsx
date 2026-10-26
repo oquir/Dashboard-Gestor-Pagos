@@ -4,7 +4,7 @@ import { Navigate } from 'react-router'
 import GraficoBarras from '../components/GraficoBarras'
 import type { Barra } from '../components/GraficoBarras'
 import Tabla from '../components/Tabla'
-import { Boton, Campo, Card, CardHeader, Input, PageHeader } from '../components/ui'
+import { Boton, Campo, Card, CardHeader, Input, PageHeader, Select } from '../components/ui'
 import { descargarBlob } from '../lib/archivos'
 import { crearXlsx } from '../lib/excel'
 import {
@@ -24,7 +24,7 @@ import { estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
 import { conRit, delMunicipio, impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useSesion } from '../lib/sesion'
 import { ayudanteColumnas } from '../lib/tabla'
 import { useDatos } from '../store'
-import type { Impuesto, Inscripcion } from '../types'
+import type { EstadoAprobacion, Impuesto, Inscripcion } from '../types'
 
 const hoy = () => new Date().toISOString().slice(0, 10)
 const documento = (i: Inscripcion | undefined) => (i ? `${i.tipoDocumento} ${i.documento}${i.dv ? `-${i.dv}` : ''}` : '')
@@ -159,6 +159,10 @@ export default function Reportes() {
   const [desde, setDesde] = useState(`${hoy().slice(0, 4)}-01-01`)
   const [hasta, setHasta] = useState(hoy)
   const rangoInvalido = !desde || !hasta || desde > hasta
+  const [filtroAprobacion, setFiltroAprobacion] = useState<EstadoAprobacion | 'no_aplica' | ''>('')
+  // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
+  const conAprobacion = declaraciones.some((d) => d.aprobacion)
+  const estadoAprobacion = conAprobacion ? filtroAprobacion : ''
 
   // El RIT solo existe donde el municipio lo tiene en el aplicativo.
   const conRitVisible = ritVisible(municipios, municipioId)
@@ -183,6 +187,7 @@ export default function Reportes() {
     const presentadas = declaraciones
       .filter((d) => enRango(d.fechaPresentacion))
       .map((d) => ({ d, ins: porId.get(d.inscripcionId), pagado: totalPagado(d.id, pagos), estado: estadoPago(d, pagos), a: aprobacion(d) }))
+      .filter((f) => !estadoAprobacion || (f.a?.estado ?? 'no_aplica') === estadoAprobacion)
 
     const recibidos = pagos.flatMap((p) => {
       const d = declaracionPorId.get(p.declaracionId)
@@ -276,12 +281,12 @@ export default function Reportes() {
         ],
       },
     }
-  }, [declaraciones, todasInscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion])
+  }, [declaraciones, todasInscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, estadoAprobacion])
 
   if (!puede(usuario?.rol, 'verReportes')) return <Navigate to="/" replace />
 
   const { filas, graficas } = datos[reporte.id]
-  const sinAprobacion = reporte.id === 'declaraciones' && !declaraciones.some((d) => d.aprobacion)
+  const sinAprobacion = reporte.id === 'declaraciones' && !conAprobacion
   const definicion = sinAprobacion ? SIN_APROBACION : COLUMNAS[reporte.id]
 
   const descargar = () => {
@@ -322,6 +327,17 @@ export default function Reportes() {
             <Campo etiqueta="Hasta">
               <Input type="date" min={desde} max={hoy()} value={hasta} onChange={(e) => setHasta(e.target.value)} />
             </Campo>
+            {reporte.id === 'declaraciones' && conAprobacion && (
+              <Campo etiqueta="Aprobación">
+                <Select value={estadoAprobacion} onChange={(e) => setFiltroAprobacion(e.target.value as EstadoAprobacion | 'no_aplica' | '')}>
+                  <option value="">Toda aprobación</option>
+                  {Object.entries(etiquetaEstadoAprobacion).map(([valor, t]) => (
+                    <option key={valor} value={valor}>{t}</option>
+                  ))}
+                  <option value="no_aplica">Sin aprobación previa</option>
+                </Select>
+              </Campo>
+            )}
           </div>
         ) : (
           <p className="text-sm text-slate-500">Datos al día de hoy.</p>
