@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { formatoCompacto, formatoPesos } from '../lib/formato'
-import { Card, CardHeader, Vacio } from './ui'
+import { formatoCompacto, formatoPesos } from '../../lib/formato'
+import { Card } from '../atoms'
+import { CardHeader, Vacio } from '../molecules'
 
 export interface Barra {
   etiqueta: string
