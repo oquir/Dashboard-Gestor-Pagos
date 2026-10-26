@@ -1,5 +1,5 @@
 // Reglas del dominio que usa el dashboard (ver docs/Dominio-ICA.md, secciones 5 y 6).
-import type { ActividadesVigencia, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoPago, Pago, Sector, Tarifa } from '../types'
+import type { ActividadesVigencia, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoPago, Inscripcion, Pago, Sector, Tarifa } from '../types'
 
 /** UVT 2026 (dato que caduca, sección 7 del dominio). */
 export const UVT = 52374
@@ -109,7 +109,11 @@ export function aprobacionDe(d: Declaracion, cfg: ConfigMunicipio, hoy: string):
 /** Mientras no se apruebe, el contribuyente no puede pagar: la declaración aún no es deuda. */
 export const sePuedePagar = (a: SituacionAprobacion | undefined) => !a || a.estado === 'aprobada' || a.estado === 'aprobada_automatica'
 
+/** Espera la aprobación previa: mientras tanto el contribuyente no puede pagar. */
+export const esperaAprobacion = (a: SituacionAprobacion | undefined) => a?.estado === 'por_aprobar' || a?.estado === 'vencida'
+
 export const redondearMil =(valor: number) => Math.round(valor / 1000) * 1000
 
 /** Renglones de subtotal y total de la liquidación (se resaltan en pantalla y en el PDF). */
 export const RENGLONES_TOTALES = new Set(['16', '25', '33', '34', '38', '18', 'T'])
+
