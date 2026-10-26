@@ -1,5 +1,5 @@
 // Color de cada estado. Siempre va con su texto: el color nunca informa solo.
-import type { EstadoInscripcion, EstadoNovedad, EstadoPago, EstadoRevision } from '../types'
+import type { EstadoAprobacion, EstadoInscripcion, EstadoNovedad, EstadoPago, EstadoRevision } from '../types'
 
 export type Tono = 'neutral' | 'info' | 'exito' | 'alerta' | 'peligro'
 
@@ -20,6 +20,14 @@ export const tonoRevision: Record<EstadoRevision, Tono> = {
   pendiente: 'alerta',
   revisada: 'exito',
   con_observaciones: 'info',
+}
+
+export const tonoAprobacion: Record<EstadoAprobacion, Tono> = {
+  por_aprobar: 'alerta',
+  vencida: 'peligro',
+  aprobada: 'exito',
+  aprobada_automatica: 'exito',
+  rechazada: 'peligro',
 }
 
 export const tonoPago: Record<EstadoPago, Tono> = {
