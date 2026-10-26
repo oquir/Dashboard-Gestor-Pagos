@@ -1,5 +1,5 @@
 // Reglas del dominio que usa el dashboard (ver docs/Dominio-ICA.md, secciones 5 y 6).
-import type { ActividadesVigencia, ConfigMunicipio, Declaracion, EstadoPago, Pago, Sector, Tarifa } from '../types'
+import type { ActividadesVigencia, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoPago, Pago, Sector, Tarifa } from '../types'
 
 /** UVT 2026 (dato que caduca, sección 7 del dominio). */
 export const UVT = 52374
@@ -56,6 +56,57 @@ export function porcentajeProntoPago(cfg: ConfigMunicipio, vigencia: number, fec
   const tramos = cfg.prontoPago.porVigencia.find((v) => v.vigencia === vigencia)?.tramos ?? []
   return tramos.find((t) => t.desde <= fecha && fecha <= t.hasta)?.porcentaje ?? 0
 }
+
+/** Suma días hábiles (resta, si son negativos): de lunes a viernes. La demo no descuenta los festivos. */
+export function sumarDiasHabiles(iso: string, dias: number) {
+  const d = new Date(`${iso}T12:00:00Z`)
+  for (let faltan = Math.abs(dias); faltan > 0; ) {
+    d.setUTCDate(d.getUTCDate() + Math.sign(dias))
+    if (d.getUTCDay() % 6 !== 0) faltan--
+  }
+  return d.toISOString().slice(0, 10)
+}
+
+/** Días hábiles que faltan de `desde` a `hasta`; 0 si es el mismo día, negativo si ya pasó. */
+export function diasHabilesEntre(desde: string, hasta: string): number {
+  if (hasta < desde) return -diasHabilesEntre(hasta, desde)
+  let dias = 0
+  while (sumarDiasHabiles(desde, dias + 1) <= hasta) dias++
+  return dias
+}
+
+export interface SituacionAprobacion {
+  estado: EstadoAprobacion
+  /** Último día para aprobar o rechazar. */
+  limite: string
+  /** Día en que se resolvió; en la aprobación automática, el día límite. */
+  fecha?: string
+  por?: string
+  /** Hasta cuándo vale el recibo de pago que se envía al aprobar. */
+  reciboHasta?: string
+}
+
+/**
+ * Aprobación previa de la declaración al día de hoy. El plazo cuenta desde la radicación y, si
+ * se radicó a tiempo, no pasa del vencimiento. Vencido el plazo sin revisión, el municipio decide
+ * si se aprueba sola o solo se alerta. Descuento, sanciones e intereses se liquidan con la fecha
+ * de radicación: la demora del municipio no se le cobra al contribuyente.
+ */
+export function aprobacionDe(d: Declaracion, cfg: ConfigMunicipio, hoy: string): SituacionAprobacion | undefined {
+  if (!d.aprobacion) return undefined
+  const { plazoDiasHabiles, alVencer, vigenciaReciboDiasHabiles } = cfg.aprobacionPrevia
+  const plazo = sumarDiasHabiles(d.fechaPresentacion, plazoDiasHabiles)
+  const limite = d.fechaPresentacion <= d.fechaVencimiento && d.fechaVencimiento < plazo ? d.fechaVencimiento : plazo
+  const reciboHasta = (fecha: string) => sumarDiasHabiles(fecha, vigenciaReciboDiasHabiles)
+  const a = d.aprobacion
+  if (a.estado === 'aprobada') return { estado: 'aprobada', limite, fecha: a.fecha, por: a.por, reciboHasta: reciboHasta(a.fecha) }
+  if (a.estado === 'rechazada') return { estado: 'rechazada', limite, fecha: a.fecha, por: a.por }
+  if (hoy <= limite) return { estado: 'por_aprobar', limite }
+  return alVencer === 'aprobar' ? { estado: 'aprobada_automatica', limite, fecha: limite, reciboHasta: reciboHasta(limite) } : { estado: 'vencida', limite }
+}
+
+/** Mientras no se apruebe, el contribuyente no puede pagar: la declaración aún no es deuda. */
+export const sePuedePagar = (a: SituacionAprobacion | undefined) => !a || a.estado === 'aprobada' || a.estado === 'aprobada_automatica'
 
 export const redondearMil =(valor: number) => Math.round(valor / 1000) * 1000
 
