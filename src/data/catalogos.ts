@@ -9,18 +9,21 @@ export const MUNICIPIOS: Municipio[] = [
     impuestos: { ica: true, reteica: false, autorretencion: false },
     rit: true,
     validarContraRit: { ica: true, reteica: true, autorretencion: true },
+    aprobacionPrevia: { ica: false, reteica: false, autorretencion: false },
   },
   {
     id: 'm2', nombre: 'Puerto Esperanza', departamento: 'Bolívar', codigoDane: '13901', activo: true,
     impuestos: { ica: true, reteica: true, autorretencion: false },
     rit: true,
     validarContraRit: { ica: true, reteica: true, autorretencion: true },
+    aprobacionPrevia: { ica: true, reteica: false, autorretencion: false },
   },
   {
     id: 'm3', nombre: 'Santa Rosa de los Andes', departamento: 'Santander', codigoDane: '68901', activo: true,
     impuestos: { ica: true, reteica: true, autorretencion: true },
     rit: true,
     validarContraRit: { ica: true, reteica: true, autorretencion: true },
+    aprobacionPrevia: { ica: false, reteica: false, autorretencion: false },
   },
 ]
 
@@ -120,6 +123,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     autorretencion: { modalidad: 'porcentaje', porcentaje: 50 },
     sanciones: { ...SANCIONES_LEY },
     plazoInscripcionMeses: 2,
+    aprobacionPrevia: { plazoDiasHabiles: 5, alVencer: 'aprobar', vigenciaReciboDiasHabiles: 5 },
   },
   {
     municipioId: 'm2',
@@ -148,6 +152,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     autorretencion: { modalidad: 'plena', porcentaje: 100 },
     sanciones: { ...SANCIONES_LEY },
     plazoInscripcionMeses: 2,
+    aprobacionPrevia: { plazoDiasHabiles: 5, alVencer: 'aprobar', vigenciaReciboDiasHabiles: 5 },
   },
   {
     municipioId: 'm3',
@@ -165,6 +170,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     // Ejemplo de municipio que rebajó las sanciones de ley.
     sanciones: { extemporaneidad: 4, extemporaneidadEmplazamiento: 8, correccion: 8, correccionEmplazamiento: 16, minimaUvt: 10 },
     plazoInscripcionMeses: 3,
+    aprobacionPrevia: { plazoDiasHabiles: 5, alVencer: 'aprobar', vigenciaReciboDiasHabiles: 5 },
   },
 ]
 
