@@ -14,6 +14,8 @@ export interface Municipio {
   rit: boolean
   /** Por formulario: antes de diligenciarlo se validan los datos del declarante contra el RIT. */
   validarContraRit: Record<Impuesto, boolean>
+  /** Por formulario: el municipio aprueba la declaración antes de que se pueda pagar; lo activa 1cero1. */
+  aprobacionPrevia: Record<Impuesto, boolean>
 }
 
 export interface Usuario {
@@ -178,7 +180,17 @@ export interface Declaracion {
   observacion?: string
   /** Anexos que el municipio pide cargar con la declaración. */
   adjuntos: Adjunto[]
+  aprobacion?: Aprobacion
 }
+
+/**
+ * Aprobación previa: el visto bueno del municipio antes de que el contribuyente pague. Solo la tienen
+ * las declaraciones radicadas con la aprobación previa activa en su formulario.
+ */
+export type Aprobacion = { estado: 'pendiente' } | { estado: 'aprobada' | 'rechazada'; fecha: string; por: string }
+
+/** Estado de la aprobación previa al día de hoy: vencido el plazo, queda vencida o se aprueba sola (lib/reglas). */
+export type EstadoAprobacion = 'por_aprobar' | 'vencida' | 'aprobada' | 'aprobada_automatica' | 'rechazada'
 
 export interface Pago {
   id: string
@@ -245,6 +257,15 @@ export interface ConfigMunicipio {
     minimaUvt: number
   }
   plazoInscripcionMeses: number
+  /** Aplica a los formularios con la aprobación previa activa. */
+  aprobacionPrevia: {
+    /** Días hábiles desde la radicación para aprobar o rechazar. */
+    plazoDiasHabiles: number
+    /** Si se vence el plazo sin revisión: se aprueba sola o solo se alerta. */
+    alVencer: 'aprobar' | 'alertar'
+    /** Días hábiles que vale el recibo de pago desde la aprobación. */
+    vigenciaReciboDiasHabiles: number
+  }
 }
 
 /** Recaudo consolidado de un mes de años anteriores: la demo solo trae pagos uno a uno del año en curso. */
