@@ -293,6 +293,12 @@ Lo que el dominio les exige a los cuatro frentes del dashboard: las inscripcione
 - **Valores**: redondeados al múltiplo de mil más cercano (regla del FUN; la ReteICA de Medellín hace lo mismo).
 - **Omisos**: en Medellín, un agente sin retenciones en el bimestre no declara en ceros, así que no se le puede marcar como omiso por ese bimestre. Si el municipio exige la declaración en ceros es un parámetro (sección 6.4).
 - **Cruces posibles**: el renglón 28 del ICA anual frente a las autorretenciones que el mismo contribuyente declaró y pagó en el año gravable; el 27, que viene de certificados de terceros, solo frente a la información exógena de los agentes (sección 3).
+- **Aprobación previa** (opcional; la activa 1cero1 por formulario y municipio): el municipio da el visto bueno antes de que el contribuyente pague. **No es una figura de la ley**: la declaración es una liquidación privada que produce efectos al presentarse, y la revisión de la administración es posterior (fiscalización y firmeza, art. 714 ET, aplicable por el art. 59 de la Ley 788). Por eso la demora del municipio no se le puede cobrar al contribuyente. Reglas del mock:
+  - Descuento por pronto pago, extemporaneidad e intereses se liquidan con la **fecha de radicación**, no con la de aprobación.
+  - El plazo para aprobar se cuenta en días hábiles desde la radicación y, si se radicó a tiempo, no pasa del vencimiento. En ReteICA y autorretención esto importa más: sin pago total la declaración es ineficaz (art. 580-1).
+  - Si se vence el plazo sin revisión, el municipio elige si se aprueba automáticamente o solo se alerta.
+  - Al aprobar se envía un correo con las formas de pago (en línea, código de barras en banco o taquilla). El recibo conserva las condiciones de la radicación durante su vigencia.
+  - Rechazar solo tiene base clara en las causales del art. 580 ET (declaración que se tiene por no presentada). Un error de tarifa o de base se arregla con corrección (arts. 588 y 589).
 
 ### 6.3 Pagos
 
@@ -339,6 +345,7 @@ Todos verificados el 2026-09-22. Revisar antes de reutilizarlos.
 - No se leyó completo ningún formulario de **autorretención** (el de Medellín es un manual de portal sin renglones numerados).
 - Umbral exacto a partir del cual un contribuyente declara bimestralmente en Bogotá: no verificado.
 - Lo incorporado el 2026-09-24 (tipos de declaración y clausura, descuento por pronto pago, reglas de sistema de sanciones) no trae fuente citada; confirmar con el estatuto de cada municipio.
+- **Aprobación previa** (sección 6.2): no se encontró norma que la regule. El plazo, el efecto del silencio y la vigencia del recibo los decide cada municipio; confirmar en su estatuto o en un acto de la Secretaría de Hacienda.
 - **Descuento por pronto pago** (sección 2): no hay norma nacional; el rango, el paz y salvo, la base, la pérdida del beneficio y el trato en correcciones deben confirmarse en el acuerdo de cada municipio.
 - **Clausura** (sección 2): confirmar en cada municipio si la cancelación del RIT es automática o requiere verificación.
 - **Corrección a la baja** (sección 5): confirmar si cada municipio usa el proyecto de corrección clásico del art. 589 o la corrección directa introducida por la Ley 1819 de 2016.
