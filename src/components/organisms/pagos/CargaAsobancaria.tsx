@@ -1,11 +1,9 @@
-import { Document, DocumentDownload, DocumentUpload, TickCircle } from 'reicon-react'
+import { Document, DocumentUpload, TickCircle } from 'reicon-react'
 import { useEffect, useRef, useState } from 'react'
-import { descargarAsobancaria, fechaDeRecaudo } from '../lib/asobancaria'
-import { formatoFecha, formatoPesos } from '../lib/formato'
-import type { Declaracion } from '../types'
-import { Boton, Campo, Card, CardHeader, Input } from './ui'
-
-const hoy = () => new Date().toISOString().slice(0, 10)
+import { fechaDeRecaudo } from '../../../lib/asobancaria'
+import { formatoFecha, formatoPesos } from '../../../lib/formato'
+import { Boton, Card } from '../../atoms'
+import { Aviso, CardHeader, SelectorArchivo } from '../../molecules'
 
 const PASOS = ['Leyendo el archivo…', 'Validando el formato Asobancaria 2001…', 'Cruzando las referencias con los números de factura…']
 const DURACION_MS = 2500
@@ -37,7 +35,7 @@ function simular(archivo: string, fecha: string | undefined): Resultado {
  * Los pagos con código de barras no los notifica el banco: el municipio carga el archivo
  * de recaudo de cada día y sus referencias se cruzan con los números de factura.
  */
-export function CargaAsobancaria() {
+export default function CargaAsobancaria() {
   const [archivo, setArchivo] = useState<File | null>(null)
   const [avance, setAvance] = useState<number | null>(null)
   const [resultado, setResultado] = useState<Resultado | null>(null)
@@ -83,19 +81,15 @@ export function CargaAsobancaria() {
               )}
             </p>
           ) : (
-            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus-within:ring-2 focus-within:ring-brand-500 hover:border-brand-500 hover:text-brand-700">
-              <DocumentUpload className="size-4" aria-hidden /> Elegir archivo
-              <input
-                type="file"
-                accept=".txt"
-                className="sr-only"
-                onChange={(e) => {
-                  setArchivo(e.target.files?.[0] ?? null)
-                  setResultado(null)
-                  e.target.value = ''
-                }}
-              />
-            </label>
+            <SelectorArchivo
+              texto="Elegir archivo"
+              accept=".txt"
+              onChange={(e) => {
+                setArchivo(e.target.files?.[0] ?? null)
+                setResultado(null)
+                e.target.value = ''
+              }}
+            />
           )}
         </div>
 
@@ -109,43 +103,21 @@ export function CargaAsobancaria() {
         )}
 
         {resultado && (
-          <div role="status" className="flex gap-2 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            <TickCircle className="mt-0.5 size-4 shrink-0" aria-hidden />
-            <div>
-              <p className="font-medium">
-                Se cargó {resultado.archivo}
-                {resultado.fecha && `, con el recaudo del ${formatoFecha(resultado.fecha)}`}.
-              </p>
-              <p className="mt-0.5">
-                Se identificaron {resultado.pagos} pagos por {formatoPesos(resultado.valor)}: {resultado.totales} totales y{' '}
-                {resultado.pagos - resultado.totales} parciales.
-                {resultado.sinCruce > 0 && ` ${resultado.sinCruce} referencias no coinciden con ningún número de factura.`}
-              </p>
-            </div>
-          </div>
+          <Aviso tono="exito" icono={TickCircle} rol="status">
+            <p className="font-medium">
+              Se cargó {resultado.archivo}
+              {resultado.fecha && `, con el recaudo del ${formatoFecha(resultado.fecha)}`}.
+            </p>
+            <p className="mt-0.5">
+              Se identificaron {resultado.pagos} pagos por {formatoPesos(resultado.valor)}: {resultado.totales} totales y{' '}
+              {resultado.pagos - resultado.totales} parciales.
+              {resultado.sinCruce > 0 && ` ${resultado.sinCruce} referencias no coinciden con ningún número de factura.`}
+            </p>
+          </Aviso>
         )}
 
         <Boton variante="primario" disabled={!archivo || cargando} onClick={cargar}>
           <DocumentUpload className="size-4" aria-hidden /> {cargando ? 'Cargando…' : 'Cargar archivo'}
-        </Boton>
-      </div>
-    </Card>
-  )
-}
-
-/** Archivo de recaudo de un solo día; en la demo trae datos de prueba. */
-export function DescargaAsobancaria({ declaraciones }: { declaraciones: Declaracion[] }) {
-  const [fecha, setFecha] = useState(hoy)
-
-  return (
-    <Card>
-      <CardHeader titulo="Descargar Asobancaria 2001" descripcion="El archivo de recaudo de un día. Se descarga un solo día a la vez." />
-      <div className="space-y-4 p-5">
-        <Campo etiqueta="Fecha de recaudo">
-          <Input type="date" max={hoy()} value={fecha} onChange={(e) => setFecha(e.target.value)} />
-        </Campo>
-        <Boton variante="primario" disabled={!fecha} onClick={() => descargarAsobancaria(fecha, declaraciones)}>
-          <DocumentDownload className="size-4" aria-hidden /> Descargar archivo
         </Boton>
       </div>
     </Card>
