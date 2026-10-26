@@ -9,6 +9,7 @@ import { descargarBlob } from '../lib/archivos'
 import { crearXlsx } from '../lib/excel'
 import {
   etiquetaCalidad,
+  etiquetaEstadoAprobacion,
   etiquetaEstadoInscripcion,
   etiquetaEstadoPago,
   etiquetaImpuesto,
@@ -68,11 +69,12 @@ const VENCIMIENTO: Columna = { titulo: 'Vencimiento', ancho: 13, formato: 'fecha
 const TOTAL: Columna = { titulo: 'Total a pagar', ancho: 16, formato: 'pesos' }
 const PAGADO: Columna = { titulo: 'Pagado', ancho: 16, formato: 'pesos' }
 const ESTADO_PAGO: Columna = { titulo: 'Estado de pago', ancho: 24 }
+const APROBACION: Columna = { titulo: 'Aprobación', ancho: 26 }
 
 const COLUMNAS: Record<IdReporte, Columna[]> = {
   declaraciones: [
     MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, { titulo: 'Tipo', ancho: 12 }, DECLARANTE, DOCUMENTO,
-    { titulo: 'Presentación', ancho: 13, formato: 'fecha' }, VENCIMIENTO, TOTAL, PAGADO, ESTADO_PAGO,
+    { titulo: 'Presentación', ancho: 13, formato: 'fecha' }, VENCIMIENTO, TOTAL, PAGADO, ESTADO_PAGO, APROBACION,
   ],
   recaudo: [
     MUNICIPIO, { titulo: 'Fecha de pago', ancho: 13, formato: 'fecha' }, RADICADO, FACTURA, IMPUESTO, PERIODO, DECLARANTE, DOCUMENTO,
@@ -112,6 +114,10 @@ const columnasTabla = (columnas: Columna[]) =>
 
 /** Columnas de la tabla de cada reporte, fijas como pide TanStack Table. */
 const TABLAS = Object.fromEntries(Object.entries(COLUMNAS).map(([id, c]) => [id, columnasTabla(c)])) as Record<IdReporte, ReturnType<typeof columnasTabla>>
+
+/** Sin declaraciones con aprobación previa, el reporte de declaraciones va sin esa columna, que es la última. */
+const SIN_APROBACION = COLUMNAS.declaraciones.slice(0, -1)
+const TABLA_SIN_APROBACION = columnasTabla(SIN_APROBACION)
 
 /** Cuenta o suma por categoría, en el orden de las etiquetas. */
 function agrupar<T, K extends string>(items: T[], etiquetas: Record<K, string>, clave: (item: T) => K, valor: (item: T) => number = () => 1): Barra[] {
@@ -176,7 +182,7 @@ export default function Reportes() {
 
     const presentadas = declaraciones
       .filter((d) => enRango(d.fechaPresentacion))
-      .map((d) => ({ d, ins: porId.get(d.inscripcionId), pagado: totalPagado(d.id, pagos), estado: estadoPago(d, pagos) }))
+      .map((d) => ({ d, ins: porId.get(d.inscripcionId), pagado: totalPagado(d.id, pagos), estado: estadoPago(d, pagos), a: aprobacion(d) }))
 
     const recibidos = pagos.flatMap((p) => {
       const d = declaracionPorId.get(p.declaracionId)
@@ -196,10 +202,10 @@ export default function Reportes() {
 
     return {
       declaraciones: {
-        filas: presentadas.map(({ d, ins, pagado, estado }) => [
+        filas: presentadas.map(({ d, ins, pagado, estado, a }) => [
           nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo),
           etiquetaTipoDeclaracion[d.tipo], ins?.nombre ?? '', documento(ins), d.fechaPresentacion, d.fechaVencimiento, d.totalAPagar,
-          pagado, etiquetaEstadoPago[estado],
+          pagado, etiquetaEstadoPago[estado], a ? etiquetaEstadoAprobacion[a.estado] : 'No aplica',
         ]),
         graficas: [
           { titulo: 'Por impuesto', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: porImpuesto(presentadas, (f) => f.d.impuesto) },
@@ -275,12 +281,13 @@ export default function Reportes() {
   if (!puede(usuario?.rol, 'verReportes')) return <Navigate to="/" replace />
 
   const { filas, graficas } = datos[reporte.id]
+  const sinAprobacion = reporte.id === 'declaraciones' && !declaraciones.some((d) => d.aprobacion)
+  const definicion = sinAprobacion ? SIN_APROBACION : COLUMNAS[reporte.id]
 
   const descargar = () => {
-    const definicion = COLUMNAS[reporte.id]
     const libro = crearXlsx({
       nombre: reporte.titulo,
-      filas: [definicion.map((c) => c.titulo), ...filas],
+      filas: [definicion.map((c) => c.titulo), ...(sinAprobacion ? filas.map((f) => f.slice(0, -1)) : filas)],
       anchos: definicion.map((c) => c.ancho),
       columnasPesos: definicion.flatMap((c, i) => (c.formato === 'pesos' ? [i] : [])),
     })
@@ -340,7 +347,7 @@ export default function Reportes() {
         <Tabla
           key={reporte.id}
           datos={filas}
-          columnas={TABLAS[reporte.id]}
+          columnas={sinAprobacion ? TABLA_SIN_APROBACION : TABLAS[reporte.id]}
           porPagina={10}
           nombre={filas.length === 1 ? 'registro' : 'registros'}
           vacio={reporte.porFechas && rangoInvalido ? 'Corrige el rango de fechas' : 'No hay registros para mostrar'}
