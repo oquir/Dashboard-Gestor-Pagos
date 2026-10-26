@@ -146,7 +146,6 @@ export type DatosRit = Pick<
 
 export type Impuesto = 'ica' | 'reteica' | 'autorretencion'
 export type TipoDeclaracion = 'inicial' | 'correccion' | 'clausura'
-export type EstadoRevision = 'pendiente' | 'revisada' | 'con_observaciones'
 export type EstadoPago = 'pagada' | 'parcial' | 'sin_pago' | 'saldo_a_favor' | 'ineficaz'
 
 export interface Renglon {
@@ -176,8 +175,6 @@ export interface Declaracion {
   renglones: Renglon[]
   totalAPagar: number
   saldoAFavor: number
-  estadoRevision: EstadoRevision
-  observacion?: string
   /** Anexos que el municipio pide cargar con la declaración. */
   adjuntos: Adjunto[]
   aprobacion?: Aprobacion
@@ -187,7 +184,10 @@ export interface Declaracion {
  * Aprobación previa: el visto bueno del municipio antes de que el contribuyente pague. Solo la tienen
  * las declaraciones radicadas con la aprobación previa activa en su formulario.
  */
-export type Aprobacion = { estado: 'pendiente' } | { estado: 'aprobada' | 'rechazada'; fecha: string; por: string }
+export type Aprobacion =
+  | { estado: 'pendiente' }
+  /** La observación le llega al contribuyente en el correo; al rechazar es obligatoria. */
+  | { estado: 'aprobada' | 'rechazada'; fecha: string; por: string; observacion?: string }
 
 /** Estado de la aprobación previa al día de hoy: vencido el plazo, queda vencida o se aprueba sola (lib/reglas). */
 export type EstadoAprobacion = 'por_aprobar' | 'vencida' | 'aprobada' | 'aprobada_automatica' | 'rechazada'
