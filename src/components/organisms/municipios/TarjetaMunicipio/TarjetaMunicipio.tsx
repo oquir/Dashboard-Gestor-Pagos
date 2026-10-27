@@ -1,10 +1,10 @@
-import { Location } from 'reicon-react'
+import { InfoCircle, Location } from 'reicon-react'
 import { useNavigate } from 'react-router'
-import { etiquetaImpuesto, formatoCompacto } from '../../../../lib/formato'
-import { IMPUESTOS } from '../../../../lib/sesion'
+import { etiquetaFormulario, etiquetaImpuesto, formatoCompacto, formatoFecha } from '../../../../lib/formato'
+import { formulariosDe, IMPUESTOS } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import { Badge, Boton, Card, Casilla } from '../../../atoms'
-import { Cifra, Interruptor } from '../../../molecules'
+import { Aviso, Cifra, Interruptor } from '../../../molecules'
 import type { TarjetaMunicipioProps } from './types'
 
 /** Un municipio para 1cero1: sus cifras, lo que tiene activo en el aplicativo y el acceso a su tablero. */
@@ -17,6 +17,8 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
   const alternarCargaAsobancaria = useDatos((s) => s.alternarCargaAsobancaria)
   const seleccionarMunicipio = useDatos((s) => s.seleccionarMunicipio)
   const navigate = useNavigate()
+  const desactivados = useDatos((s) => s.configuraciones.find((c) => c.municipioId === m.id)?.formulariosDesactivados)
+  const porElMunicipio = formulariosDe(m).flatMap((f) => (desactivados?.[f] ? [{ f, ...desactivados[f] }] : []))
 
   return (
     <Card className={`p-5 ${m.activo ? '' : 'opacity-60'}`}>
@@ -76,6 +78,19 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
             <p className="mt-2 text-xs text-slate-500">Con aprobación previa, el contribuyente paga cuando el municipio aprueba. Aplica a lo que se radique desde que se activa.</p>
           )}
         </div>
+
+        {porElMunicipio.length > 0 && (
+          <Aviso tono="alerta" icono={InfoCircle}>
+            <p className="font-medium">Desactivados por el municipio</p>
+            <ul className="mt-1 space-y-1 text-xs">
+              {porElMunicipio.map((d) => (
+                <li key={d.f}>
+                  <span className="font-medium">{etiquetaFormulario[d.f]}</span>: {d.motivo} ({formatoFecha(d.fecha)}, {d.por})
+                </li>
+              ))}
+            </ul>
+          </Aviso>
+        )}
       </div>
       <div className="mt-5 flex gap-2">
         <Boton variante="secundario" onClick={() => { seleccionarMunicipio(m.id); navigate('/') }}>
