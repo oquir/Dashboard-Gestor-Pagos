@@ -1,5 +1,5 @@
 import { ElegirMunicipio, PageHeader } from '../components/molecules'
-import { FormularioConfiguracion } from '../components/organisms'
+import { BuscadorMunicipios, FormularioConfiguracion } from '../components/organisms'
 import { puede } from '../lib/permisos'
 import { useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
@@ -21,10 +21,11 @@ export default function Configuracion() {
             : undefined
         }
       />
+      <BuscadorMunicipios todos={false} />
       {config ? (
         <FormularioConfiguracion key={config.municipioId} config={config} editable={editable} />
       ) : (
-        <ElegirMunicipio descripcion="Selecciona en la barra superior el municipio que quieres configurar." />
+        <ElegirMunicipio descripcion="Búscalo arriba por su nombre para ver y cambiar su configuración." />
       )}
     </>
   )
