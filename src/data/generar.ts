@@ -586,13 +586,13 @@ export function generarDatos(): Datos {
   }
 }
 
-/** Un cheque de gerencia en canje en cada municipio que los recibe. No usa el azar, para no cambiar el resto de los datos. */
+/** Un cheque de gerencia en canje en cada municipio que los recibe en algún formulario. No usa el azar, para no cambiar el resto de los datos. */
 function generarCheques(declaraciones: Declaracion[], pagos: Pago[]): Cheque[] {
   const reemplazadas = new Set(declaraciones.map((d) => d.corrigeA).filter(Boolean))
   const conPago = new Set(pagos.map((p) => p.declaracionId))
-  return MUNICIPIOS.filter((m) => m.pagoVentanilla && m.pagoCheque).flatMap((m, i) => {
+  return MUNICIPIOS.flatMap((m, i) => {
     const d = declaraciones.find(
-      (x) => x.municipioId === m.id && m.impuestos[x.impuesto] && x.totalAPagar > 0 && !x.aprobacion && !reemplazadas.has(x.id) && !conPago.has(x.id),
+      (x) => x.municipioId === m.id && m.impuestos[x.impuesto] && m.pagoCheque[x.impuesto] && x.totalAPagar > 0 && !x.aprobacion && !reemplazadas.has(x.id) && !conPago.has(x.id),
     )
     const funcionario = USUARIOS.find((u) => u.municipioId === m.id && u.rol === 'funcionario')
     if (!d || !funcionario) return []
