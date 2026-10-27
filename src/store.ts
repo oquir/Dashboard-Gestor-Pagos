@@ -35,6 +35,8 @@ interface Estado extends Datos {
   alternarValidacionRit: (municipioId: string, impuesto: Impuesto) => void
   /** Activa o desactiva la aprobación previa de un formulario; aplica a lo que se radique desde entonces. */
   alternarAprobacionPrevia: (municipioId: string, impuesto: Impuesto) => void
+  /** Habilita o quita la carga del Asobancaria 2001 en el municipio, para todos sus pagos con código de barras. */
+  alternarCargaAsobancaria: (municipioId: string) => void
   reiniciarDemo: () => void
 }
 
@@ -140,8 +142,11 @@ export const useDatos = create<Estado>()(
           ),
         })),
 
+      alternarCargaAsobancaria: (municipioId) =>
+        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, cargaAsobancaria: !m.cargaAsobancaria } : m)) })),
+
       reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
     }),
-    { name: 'gestor-pagos-demo', version: 20 },
+    { name: 'gestor-pagos-demo', version: 21 },
   ),
 )
