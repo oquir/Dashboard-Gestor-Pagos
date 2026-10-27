@@ -22,6 +22,12 @@ export interface FilaPago {
   nombre: string
 }
 
+/** Medios que el municipio recibe en su ventanilla para un formulario. */
+export interface MediosVentanilla {
+  efectivo: boolean
+  cheque: boolean
+}
+
 /** Fila de los cheques en canje. */
 export interface FilaCheque {
   c: Cheque

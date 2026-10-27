@@ -18,10 +18,10 @@ export interface Municipio {
   aprobacionPrevia: Record<Impuesto, boolean>
   /** El municipio carga el Asobancaria 2001 de los pagos con código de barras; aplica a todos sus pagos y lo activa 1cero1. */
   cargaAsobancaria: boolean
-  /** El municipio registra los pagos en efectivo que recibe en su ventanilla; lo activa 1cero1. */
-  pagoVentanilla: boolean
-  /** En la ventanilla también se reciben cheques de gerencia; requiere el pago en ventanilla y lo activa 1cero1. */
-  pagoCheque: boolean
+  /** Por formulario: el municipio recibe en su ventanilla el pago en efectivo; lo activa 1cero1. */
+  pagoEfectivo: Record<Impuesto, boolean>
+  /** Por formulario: el municipio recibe en su ventanilla cheques de gerencia; lo activa 1cero1. */
+  pagoCheque: Record<Impuesto, boolean>
 }
 
 export interface Usuario {
