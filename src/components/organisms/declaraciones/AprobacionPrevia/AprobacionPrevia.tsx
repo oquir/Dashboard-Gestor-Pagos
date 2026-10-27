@@ -10,7 +10,7 @@ import { Aviso, Campo, CardHeader, Dato } from '../../../molecules'
 import type { AprobacionPreviaProps } from './types'
 
 /** Visto bueno del municipio antes del pago. Al resolverla, al contribuyente le llega un correo. */
-export default function AprobacionPrevia({ d, situacion, correo, puedeResolver }: AprobacionPreviaProps) {
+export default function AprobacionPrevia({ d, situacion, correo, puedeResolver, pagoVentanilla }: AprobacionPreviaProps) {
   const resolverAprobacion = useDatos((s) => s.resolverAprobacion)
   const [observacion, setObservacion] = useState('')
   const pendiente = esperaAprobacion(situacion)
@@ -65,7 +65,9 @@ export default function AprobacionPrevia({ d, situacion, correo, puedeResolver }
               {situacion.estado === 'aprobada_automatica'
                 ? `Se aprobó automáticamente al vencer el plazo, el ${formatoFecha(situacion.limite)}.`
                 : `Aprobada por ${situacion.por} el ${formatoFecha(situacion.fecha!)}.`}{' '}
-              Puede pagar en línea, descargar la declaración con código de barras para pagar en el banco o pagar en efectivo en la taquilla del municipio.
+              {pagoVentanilla
+                ? 'Puede pagar en línea, descargar la declaración con código de barras para pagar en el banco o pagar en efectivo en la ventanilla del municipio.'
+                : 'Puede pagar en línea o descargar la declaración con código de barras para pagar en el banco.'}
               El recibo vale hasta el {formatoFecha(situacion.reciboHasta)}.
             </p>
             {situacion.observacion && <p className="mt-1">Observación: {situacion.observacion}</p>}

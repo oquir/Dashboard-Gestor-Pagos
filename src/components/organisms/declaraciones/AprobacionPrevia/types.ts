@@ -6,4 +6,6 @@ export interface AprobacionPreviaProps {
   situacion: SituacionAprobacion
   correo: string
   puedeResolver: boolean
+  /** El municipio recibe pagos en efectivo en su ventanilla. */
+  pagoVentanilla: boolean
 }
