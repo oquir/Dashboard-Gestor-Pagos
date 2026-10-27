@@ -12,6 +12,7 @@ export const MUNICIPIOS: Municipio[] = [
     aprobacionPrevia: { ica: false, reteica: false, autorretencion: false },
     cargaAsobancaria: true,
     pagoVentanilla: true,
+    pagoCheque: true,
   },
   {
     id: 'm2', nombre: 'Puerto Esperanza', departamento: 'Bolívar', codigoDane: '13901', activo: true,
@@ -21,6 +22,7 @@ export const MUNICIPIOS: Municipio[] = [
     aprobacionPrevia: { ica: true, reteica: false, autorretencion: false },
     cargaAsobancaria: false,
     pagoVentanilla: true,
+    pagoCheque: false,
   },
   {
     id: 'm3', nombre: 'Santa Rosa de los Andes', departamento: 'Santander', codigoDane: '68901', activo: true,
@@ -30,6 +32,7 @@ export const MUNICIPIOS: Municipio[] = [
     aprobacionPrevia: { ica: false, reteica: false, autorretencion: false },
     cargaAsobancaria: true,
     pagoVentanilla: false,
+    pagoCheque: false,
   },
 ]
 
@@ -131,6 +134,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     plazoInscripcionMeses: 2,
     aprobacionPrevia: { plazoDiasHabiles: 5, alVencer: 'aprobar', vigenciaReciboDiasHabiles: 5 },
     formulariosDesactivados: {},
+    chequeParcial: false,
   },
   {
     municipioId: 'm2',
@@ -161,6 +165,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     plazoInscripcionMeses: 2,
     aprobacionPrevia: { plazoDiasHabiles: 5, alVencer: 'aprobar', vigenciaReciboDiasHabiles: 5 },
     formulariosDesactivados: {},
+    chequeParcial: false,
   },
   {
     municipioId: 'm3',
@@ -182,6 +187,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     formulariosDesactivados: {
       autorretencion: { motivo: 'El concejo está tramitando el nuevo porcentaje de autorretención; se reactiva cuando se sancione el acuerdo.', fecha: '2026-10-14', por: 'Jorge Pardo' },
     },
+    chequeParcial: false,
   },
 ]
 
