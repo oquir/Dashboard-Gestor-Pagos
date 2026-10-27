@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useDatos } from '../store'
-import type { Declaracion, Formulario, Impuesto, Municipio } from '../types'
+import type { Declaracion, Formulario, Impuesto, MediosVentanilla, Municipio } from '../types'
 import { aprobacionDe } from './reglas'
 
 export const IMPUESTOS: Impuesto[] = ['ica', 'reteica', 'autorretencion']
@@ -57,8 +57,14 @@ export const aprobacionVisible = (municipios: Municipio[], municipioId: string |
 export const cargaAsobancariaVisible = (municipios: Municipio[], municipioId: string | null) =>
   municipios.some((m) => (municipioId === null || m.id === municipioId) && m.cargaAsobancaria)
 
-/** El municipio recibe cheques de gerencia: además del cheque, debe tener el pago en ventanilla. */
-export const recibeCheques = (m: Municipio | undefined) => Boolean(m?.pagoVentanilla && m.pagoCheque)
+/** Medios que el municipio recibe en su ventanilla para el formulario de ese impuesto. */
+export const ventanillaDe = (m: Municipio | undefined, impuesto: Impuesto): MediosVentanilla => ({
+  efectivo: Boolean(m?.pagoEfectivo[impuesto]),
+  cheque: Boolean(m?.pagoCheque[impuesto]),
+})
+
+/** El municipio recibe cheques de gerencia en alguno de sus formularios activos. */
+export const recibeCheques = (m: Municipio | undefined) => IMPUESTOS.some((i) => m?.impuestos[i] && m.pagoCheque[i])
 
 /** Los cheques se ven si el municipio elegido los recibe, o si alguno los recibe cuando 1cero1 mira todos. */
 export const chequesVisibles = (municipios: Municipio[], municipioId: string | null) =>
