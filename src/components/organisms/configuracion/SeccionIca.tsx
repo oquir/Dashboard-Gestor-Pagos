@@ -31,7 +31,7 @@ export default function SeccionIca({ b, cambiar, editable, errores }: EdicionCon
           onChange={(v) => cambiar({ sobretasaBomberil: { ...b.sobretasaBomberil, activa: v } })}
         />
         {b.sobretasaBomberil.activa && (
-          <div className="ml-7">
+          <div className="ml-12">
             <Campo etiqueta="Porcentaje de la sobretasa (% del ICA)" error={errores.sobretasa}>
               <Input type="number" min={0} step="0.1" disabled={!editable} value={b.sobretasaBomberil.porcentaje} onChange={(e) => cambiar({ sobretasaBomberil: { ...b.sobretasaBomberil, porcentaje: numero(e.target.value) } })} />
             </Campo>
