@@ -57,6 +57,13 @@ export const aprobacionVisible = (municipios: Municipio[], municipioId: string |
 export const cargaAsobancariaVisible = (municipios: Municipio[], municipioId: string | null) =>
   municipios.some((m) => (municipioId === null || m.id === municipioId) && m.cargaAsobancaria)
 
+/** El municipio recibe cheques de gerencia: además del cheque, debe tener el pago en ventanilla. */
+export const recibeCheques = (m: Municipio | undefined) => Boolean(m?.pagoVentanilla && m.pagoCheque)
+
+/** Los cheques se ven si el municipio elegido los recibe, o si alguno los recibe cuando 1cero1 mira todos. */
+export const chequesVisibles = (municipios: Municipio[], municipioId: string | null) =>
+  municipios.some((m) => (municipioId === null || m.id === municipioId) && recibeCheques(m))
+
 /** Filtro: el municipio del registro tiene el RIT en el aplicativo. */
 export function conRit(municipios: Municipio[]) {
   const ids = new Set(municipios.filter((m) => m.rit).map((m) => m.id))
