@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Card } from '../../components/atoms'
 import { BarraFiltros, Buscador, Filtro, PageHeader, Segmentado } from '../../components/molecules'
-import { SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
+import { BuscadorMunicipios, SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
 import { OPCIONES_APROBACION } from '../../constants'
 import { formatoDocumento } from '../../lib/formato'
 import { estadoPago } from '../../lib/reglas'
@@ -83,6 +83,7 @@ export default function Declaraciones() {
         titulo="Declaraciones"
         descripcion="ICA anual (formulario único nacional), retención (ReteICA) y autorretención (AutoReteICA). Las de ReteICA y AutoReteICA sin pago total son ineficaces."
       />
+      <BuscadorMunicipios />
 
       <Segmentado
         etiqueta="Impuesto"
