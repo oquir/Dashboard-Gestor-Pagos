@@ -14,6 +14,7 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
   const alternarRit = useDatos((s) => s.alternarRit)
   const alternarValidacionRit = useDatos((s) => s.alternarValidacionRit)
   const alternarAprobacionPrevia = useDatos((s) => s.alternarAprobacionPrevia)
+  const alternarCargaAsobancaria = useDatos((s) => s.alternarCargaAsobancaria)
   const seleccionarMunicipio = useDatos((s) => s.seleccionarMunicipio)
   const navigate = useNavigate()
 
@@ -36,6 +37,12 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
       </dl>
       <div className="mt-5 space-y-4 border-t border-slate-100 pt-4">
         <Interruptor etiqueta="RIT en el aplicativo" ayuda="Inscripciones, actualizaciones y cancelaciones." valor={m.rit} onChange={() => alternarRit(m.id)} />
+        <Interruptor
+          etiqueta="Carga de Asobancaria 2001"
+          ayuda="El municipio carga el recaudo de los pagos con código de barras, que el banco no notifica. Aplica a todos sus pagos."
+          valor={m.cargaAsobancaria}
+          onChange={() => alternarCargaAsobancaria(m.id)}
+        />
 
         <div role="group" aria-label={`Formularios de ${m.nombre}`}>
           <p className="text-xs text-slate-500">Formularios</p>
