@@ -37,6 +37,10 @@ interface Estado extends Datos {
   alternarAprobacionPrevia: (municipioId: string, impuesto: Impuesto) => void
   /** Habilita o quita la carga del Asobancaria 2001 en el municipio, para todos sus pagos con código de barras. */
   alternarCargaAsobancaria: (municipioId: string) => void
+  /** Habilita o quita en el municipio el registro de pagos en efectivo en su ventanilla. */
+  alternarPagoVentanilla: (municipioId: string) => void
+  /** Registra un pago en efectivo recibido hoy en la ventanilla del municipio: el total o parte del saldo. */
+  registrarPagoVentanilla: (declaracionId: string, valor: number, recibo: string) => void
   reiniciarDemo: () => void
 }
 
@@ -144,9 +148,29 @@ export const useDatos = create<Estado>()(
 
       alternarCargaAsobancaria: (municipioId) =>
         set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, cargaAsobancaria: !m.cargaAsobancaria } : m)) })),
+      alternarPagoVentanilla: (municipioId) =>
+        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, pagoVentanilla: !m.pagoVentanilla } : m)) })),
+
+      registrarPagoVentanilla: (declaracionId, valor, recibo) => {
+        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
+        set((s) => ({
+          pagos: [
+            ...s.pagos,
+            {
+              id: `p${s.pagos.length + 1}`,
+              declaracionId,
+              fecha: hoy(),
+              valor,
+              medio: 'Ventanilla del municipio',
+              recibo,
+              registradoPor: usuario ? nombreCompleto(usuario) : undefined,
+            },
+          ],
+        }))
+      },
 
       reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
     }),
-    { name: 'gestor-pagos-demo', version: 22 },
+    { name: 'gestor-pagos-demo', version: 23 },
   ),
 )
