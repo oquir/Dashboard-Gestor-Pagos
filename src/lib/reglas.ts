@@ -1,5 +1,5 @@
 // Reglas del dominio que usa el dashboard (ver docs/Dominio-ICA.md, secciones 5 y 6).
-import type { ActividadesVigencia, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoPago, Inscripcion, Pago, Sector, Tarifa } from '../types'
+import type { ActividadesVigencia, Cheque, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoPago, Inscripcion, Pago, Sector, Tarifa } from '../types'
 
 /** UVT 2026 (dato que caduca, sección 7 del dominio). */
 export const UVT = 52374
@@ -35,6 +35,14 @@ export const actividadesDe = (cargas: ActividadesVigencia[], municipioId: string
 export function totalPagado(declaracionId: string, pagos: Pago[]) {
   return pagos.filter((p) => p.declaracionId === declaracionId).reduce((suma, p) => suma + p.valor, 0)
 }
+
+/** Lo que está en cheques de gerencia en canje: aún no es pago, pero tampoco se puede volver a cobrar. */
+export function totalEnCanje(declaracionId: string, cheques: Cheque[]) {
+  return cheques.filter((c) => c.declaracionId === declaracionId && c.estado === 'en_canje').reduce((suma, c) => suma + c.valor, 0)
+}
+
+/** Sanción por cheque devuelto sin causa justificada (art. 731 del Código de Comercio); en la demo solo se avisa. */
+export const SANCION_CHEQUE_DEVUELTO = 0.2
 
 /**
  * ICA anual admite pago parcial y saldo a favor; ReteICA y autorretención
