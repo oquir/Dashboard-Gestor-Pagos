@@ -1,9 +1,12 @@
 import { useMemo } from 'react'
 import { useDatos } from '../store'
-import type { Declaracion, Impuesto, Municipio } from '../types'
+import type { Declaracion, Formulario, Impuesto, Municipio } from '../types'
 import { aprobacionDe } from './reglas'
 
 export const IMPUESTOS: Impuesto[] = ['ica', 'reteica', 'autorretencion']
+
+/** Formularios que 1cero1 tiene activos en el municipio: el RIT y los de sus impuestos. */
+export const formulariosDe = (m: Municipio): Formulario[] => [...(m.rit ? ['rit' as const] : []), ...IMPUESTOS.filter((i) => m.impuestos[i])]
 
 /**
  * Usuario en sesión y municipio que está viendo. Los roles municipales solo ven
