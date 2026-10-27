@@ -5,8 +5,8 @@ import { AprobacionPrevia, DatosDeclaracion, Liquidacion, ListaArchivos, PagosDe
 import { PlantillaDetalle } from '../components/templates'
 import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
-import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useSesion } from '../lib/sesion'
+import { estadoPago, sePuedePagar, totalEnCanje, totalPagado } from '../lib/reglas'
+import { conRit, impuestoActivo, recibeCheques, seValidaContraRit, useAprobacion, useSesion } from '../lib/sesion'
 import { tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
 
@@ -16,7 +16,9 @@ export default function DeclaracionDetalle() {
   const declaraciones = useDatos((s) => s.declaraciones)
   const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
+  const cheques = useDatos((s) => s.cheques)
   const municipios = useDatos((s) => s.municipios)
+  const configuraciones = useDatos((s) => s.configuraciones)
   const aprobacion = useAprobacion()
   const d = declaraciones.find((x) => x.id === id)
 
@@ -33,7 +35,11 @@ export default function DeclaracionDetalle() {
   const reemplazo = declaraciones.find((x) => x.corrigeA === d.id)
   const municipioConRit = conRit(municipios)(d)
   const situacion = aprobacion(d)
-  const ventanilla = municipios.find((m) => m.id === d.municipioId)?.pagoVentanilla ?? false
+  const municipio = municipios.find((m) => m.id === d.municipioId)
+  const ventanilla = municipio?.pagoVentanilla ?? false
+  const chequeParcial = configuraciones.find((c) => c.municipioId === d.municipioId)?.chequeParcial ?? false
+  // Lo que está en canje no se vuelve a cobrar mientras el banco responde.
+  const saldo = Math.max(d.totalAPagar - totalPagado(d.id, pagos) - totalEnCanje(d.id, cheques), 0)
   // En ventanilla solo se recibe lo que ya es deuda: ni lo reemplazado por una corrección ni lo que espera aprobación.
   const recibeVentanilla = ventanilla && puede(usuario?.rol, 'registrarPagoVentanilla') && !reemplazo && sePuedePagar(situacion)
 
@@ -59,8 +65,8 @@ export default function DeclaracionDetalle() {
       principal={
         <>
           <Liquidacion d={d} />
-          <PagosDeclaracion d={d} pagos={pagos} />
-          {recibeVentanilla && <PagoVentanilla key={d.id} d={d} saldo={Math.max(d.totalAPagar - totalPagado(d.id, pagos), 0)} />}
+          <PagosDeclaracion d={d} pagos={pagos} cheques={cheques} />
+          {recibeVentanilla && <PagoVentanilla key={d.id} d={d} saldo={saldo} cheque={recibeCheques(municipio)} chequeParcial={chequeParcial} />}
         </>
       }
       lateral={
