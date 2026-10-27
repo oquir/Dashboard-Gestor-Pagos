@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Navigate } from 'react-router'
 import { Boton } from '../components/atoms'
 import { PageHeader } from '../components/molecules'
-import { NuevoUsuario, TablaUsuarios } from '../components/organisms'
+import { BuscadorMunicipios, NuevoUsuario, TablaUsuarios } from '../components/organisms'
 import { puede } from '../lib/permisos'
 import { delMunicipio, useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
@@ -30,6 +30,7 @@ export default function Usuarios() {
           )
         }
       />
+      <BuscadorMunicipios />
       {creando && <NuevoUsuario alTerminar={() => setCreando(false)} />}
       <TablaUsuarios usuarios={lista} />
     </>
