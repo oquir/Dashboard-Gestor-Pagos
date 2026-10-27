@@ -1,7 +1,7 @@
 import { Save } from 'reicon-react'
 import { useState } from 'react'
 import { erroresConfiguracion } from '../../../../lib/configuracion'
-import { formulariosDe, IMPUESTOS } from '../../../../lib/sesion'
+import { formulariosDe, IMPUESTOS, recibeCheques } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import type { ConfigMunicipio } from '../../../../types'
 import { Boton } from '../../../atoms'
@@ -9,6 +9,7 @@ import SeccionAprobacionPrevia from '../SeccionAprobacionPrevia'
 import SeccionFormularios from '../SeccionFormularios'
 import SeccionFuncionarios from '../SeccionFuncionarios'
 import SeccionIca from '../SeccionIca'
+import SeccionPagos from '../SeccionPagos'
 import SeccionProcedimiento from '../SeccionProcedimiento'
 import SeccionRetencion from '../SeccionRetencion'
 import SeccionSanciones from '../SeccionSanciones'
@@ -41,6 +42,7 @@ export default function FormularioConfiguracion({ config, editable }: Formulario
       {(impuestos.reteica || impuestos.autorretencion) && <SeccionRetencion {...edicion} impuestos={impuestos} />}
       {impuestos.ica && <SeccionIca {...edicion} />}
       <SeccionProcedimiento {...edicion} conRit={conRit} />
+      {recibeCheques(municipio) && <SeccionPagos {...edicion} />}
       {conAprobacion.length > 0 && <SeccionAprobacionPrevia {...edicion} impuestos={conAprobacion} />}
       <SeccionFuncionarios {...edicion} />
       <SeccionSanciones {...edicion} />
