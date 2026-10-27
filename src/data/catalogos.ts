@@ -11,6 +11,7 @@ export const MUNICIPIOS: Municipio[] = [
     validarContraRit: { ica: true, reteica: true, autorretencion: true },
     aprobacionPrevia: { ica: false, reteica: false, autorretencion: false },
     cargaAsobancaria: true,
+    pagoVentanilla: true,
   },
   {
     id: 'm2', nombre: 'Puerto Esperanza', departamento: 'Bolívar', codigoDane: '13901', activo: true,
@@ -19,6 +20,7 @@ export const MUNICIPIOS: Municipio[] = [
     validarContraRit: { ica: true, reteica: true, autorretencion: true },
     aprobacionPrevia: { ica: true, reteica: false, autorretencion: false },
     cargaAsobancaria: false,
+    pagoVentanilla: true,
   },
   {
     id: 'm3', nombre: 'Santa Rosa de los Andes', departamento: 'Santander', codigoDane: '68901', activo: true,
@@ -27,6 +29,7 @@ export const MUNICIPIOS: Municipio[] = [
     validarContraRit: { ica: true, reteica: true, autorretencion: true },
     aprobacionPrevia: { ica: false, reteica: false, autorretencion: false },
     cargaAsobancaria: true,
+    pagoVentanilla: false,
   },
 ]
 
