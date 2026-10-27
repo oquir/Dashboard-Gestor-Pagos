@@ -1,5 +1,5 @@
 // Moléculas: grupos pequeños de átomos con una sola función, como un campo con su etiqueta o un buscador.
-// Entre moléculas se importan por su archivo, no desde este índice.
+// Entre moléculas se importan por su ruta, no desde este índice.
 export { default as Aviso } from './Aviso'
 export { default as BarraFiltros } from './BarraFiltros'
 export { default as Buscador } from './Buscador'
