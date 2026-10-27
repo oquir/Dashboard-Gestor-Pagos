@@ -35,6 +35,7 @@ export { default as TablaInscripciones } from './inscripciones/TablaInscripcione
 export { default as TarjetaMunicipio } from './municipios/TarjetaMunicipio'
 
 export { default as CargaAsobancaria } from './pagos/CargaAsobancaria'
+export { default as ChequesEnCanje } from './pagos/ChequesEnCanje'
 export { default as DescargaAsobancaria } from './pagos/DescargaAsobancaria'
 export { default as PagoVentanilla } from './pagos/PagoVentanilla'
 export { default as TablaCartera } from './pagos/TablaCartera'
