@@ -6,7 +6,7 @@ import { PlantillaDetalle } from '../components/templates'
 import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion } from '../lib/formato'
 import { puede } from '../lib/permisos'
 import { estadoPago, sePuedePagar, totalEnCanje, totalPagado } from '../lib/reglas'
-import { conRit, impuestoActivo, recibeCheques, seValidaContraRit, useAprobacion, useSesion } from '../lib/sesion'
+import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useSesion, ventanillaDe } from '../lib/sesion'
 import { tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
 
@@ -36,12 +36,13 @@ export default function DeclaracionDetalle() {
   const municipioConRit = conRit(municipios)(d)
   const situacion = aprobacion(d)
   const municipio = municipios.find((m) => m.id === d.municipioId)
-  const ventanilla = municipio?.pagoVentanilla ?? false
+  // Efectivo y cheque se activan por formulario: solo se ofrece lo que tiene el de esta declaración.
+  const ventanilla = ventanillaDe(municipio, d.impuesto)
   const chequeParcial = configuraciones.find((c) => c.municipioId === d.municipioId)?.chequeParcial ?? false
   // Lo que está en canje no se vuelve a cobrar mientras el banco responde.
   const saldo = Math.max(d.totalAPagar - totalPagado(d.id, pagos) - totalEnCanje(d.id, cheques), 0)
   // En ventanilla solo se recibe lo que ya es deuda: ni lo reemplazado por una corrección ni lo que espera aprobación.
-  const recibeVentanilla = ventanilla && puede(usuario?.rol, 'registrarPagoVentanilla') && !reemplazo && sePuedePagar(situacion)
+  const recibeVentanilla = (ventanilla.efectivo || ventanilla.cheque) && puede(usuario?.rol, 'registrarPagoVentanilla') && !reemplazo && sePuedePagar(situacion)
 
   return (
     <PlantillaDetalle
@@ -66,12 +67,12 @@ export default function DeclaracionDetalle() {
         <>
           <Liquidacion d={d} />
           <PagosDeclaracion d={d} pagos={pagos} cheques={cheques} />
-          {recibeVentanilla && <PagoVentanilla key={d.id} d={d} saldo={saldo} cheque={recibeCheques(municipio)} chequeParcial={chequeParcial} />}
+          {recibeVentanilla && <PagoVentanilla key={d.id} d={d} saldo={saldo} medios={ventanilla} chequeParcial={chequeParcial} />}
         </>
       }
       lateral={
         <>
-          {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={ins?.correo ?? ''} puedeResolver={puede(usuario?.rol, 'revisar')} pagoVentanilla={ventanilla} />}
+          {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={ins?.correo ?? ''} puedeResolver={puede(usuario?.rol, 'revisar')} ventanilla={ventanilla} />}
           <DatosDeclaracion d={d} ins={ins} corregida={corregida} enlazarRit={municipioConRit} />
           <Card>
             <ListaArchivos
