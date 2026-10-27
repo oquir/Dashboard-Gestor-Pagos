@@ -1,7 +1,7 @@
 import { ClipboardList, Document, AlertTriangle, Wallet } from 'reicon-react'
 import { useMemo } from 'react'
 import { StatTile } from '../../components/molecules'
-import { AprobacionesPendientes, ListaDeudas, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
+import { AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
 import { formatoCompacto } from '../../lib/formato'
 import { esperaAprobacion, estadoPago, sePuedePagar, totalPagado } from '../../lib/reglas'
 import { aprobacionVisible, conRit, delMunicipio, ritVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../../lib/sesion'
@@ -82,6 +82,7 @@ export default function Inicio() {
 
   return (
     <>
+      <BuscadorMunicipios />
       <div className={`grid gap-4 sm:grid-cols-2 ${COLUMNAS_TARJETAS[tarjetas]}`}>
         {conRitVisible && (
           <StatTile
