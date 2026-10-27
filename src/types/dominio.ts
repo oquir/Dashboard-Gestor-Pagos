@@ -16,6 +16,8 @@ export interface Municipio {
   validarContraRit: Record<Impuesto, boolean>
   /** Por formulario: el municipio aprueba la declaración antes de que se pueda pagar; lo activa 1cero1. */
   aprobacionPrevia: Record<Impuesto, boolean>
+  /** El municipio carga el Asobancaria 2001 de los pagos con código de barras; aplica a todos sus pagos y lo activa 1cero1. */
+  cargaAsobancaria: boolean
 }
 
 export interface Usuario {
