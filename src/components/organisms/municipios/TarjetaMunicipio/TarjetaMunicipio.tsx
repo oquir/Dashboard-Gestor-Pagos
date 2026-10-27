@@ -15,7 +15,7 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
   const alternarValidacionRit = useDatos((s) => s.alternarValidacionRit)
   const alternarAprobacionPrevia = useDatos((s) => s.alternarAprobacionPrevia)
   const alternarCargaAsobancaria = useDatos((s) => s.alternarCargaAsobancaria)
-  const alternarPagoVentanilla = useDatos((s) => s.alternarPagoVentanilla)
+  const alternarPagoEfectivo = useDatos((s) => s.alternarPagoEfectivo)
   const alternarPagoCheque = useDatos((s) => s.alternarPagoCheque)
   const seleccionarMunicipio = useDatos((s) => s.seleccionarMunicipio)
   const navigate = useNavigate()
@@ -47,37 +47,19 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
           valor={m.cargaAsobancaria}
           onChange={() => alternarCargaAsobancaria(m.id)}
         />
-        <Interruptor
-          etiqueta="Pago en ventanilla"
-          ayuda="El municipio registra los pagos en efectivo que recibe en su ventanilla: el total de la declaración o lo que falta."
-          valor={m.pagoVentanilla}
-          onChange={() => alternarPagoVentanilla(m.id)}
-        />
-        <Interruptor
-          etiqueta="Pago con cheque de gerencia"
-          ayuda={
-            m.pagoVentanilla
-              ? 'Se recibe en la ventanilla y cuenta como pago cuando el municipio confirma que el banco lo pagó.'
-              : 'Requiere el pago en ventanilla.'
-          }
-          valor={recibeCheques(m)}
-          deshabilitado={!m.pagoVentanilla}
-          onChange={() => alternarPagoCheque(m.id)}
-        />
-
         <div role="group" aria-label={`Formularios de ${m.nombre}`}>
           <p className="text-xs text-slate-500">Formularios</p>
-          <ul className="mt-2 space-y-2">
+          <ul className="mt-2 space-y-3">
             {IMPUESTOS.map((i) => {
               const unicoActivo = m.impuestos[i] && IMPUESTOS.filter((x) => m.impuestos[x]).length === 1
               return (
-                <li key={i} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+                <li key={i}>
                   <label className="flex items-center gap-2 text-sm text-slate-700" title={unicoActivo ? 'Debe quedar al menos un formulario activo' : undefined}>
                     <Casilla checked={m.impuestos[i]} disabled={unicoActivo} onChange={() => alternarImpuesto(m.id, i)} />
                     {etiquetaImpuesto[i]}
                   </label>
                   {m.impuestos[i] && (
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <div className="mt-1 ml-6 flex flex-wrap items-center gap-x-4 gap-y-1">
                       <label className={`flex items-center gap-2 text-xs ${m.rit ? 'text-slate-600' : 'text-slate-400'}`} title={m.rit ? undefined : 'Requiere el RIT en el aplicativo'}>
                         <Casilla pequena checked={m.rit && m.validarContraRit[i]} disabled={!m.rit} onChange={() => alternarValidacionRit(m.id, i)} />
                         Validar contra el RIT
@@ -85,6 +67,14 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
                       <label className="flex items-center gap-2 text-xs text-slate-600">
                         <Casilla pequena checked={m.aprobacionPrevia[i]} onChange={() => alternarAprobacionPrevia(m.id, i)} />
                         Aprobación previa
+                      </label>
+                      <label className="flex items-center gap-2 text-xs text-slate-600">
+                        <Casilla pequena checked={m.pagoEfectivo[i]} onChange={() => alternarPagoEfectivo(m.id, i)} />
+                        Efectivo en ventanilla
+                      </label>
+                      <label className="flex items-center gap-2 text-xs text-slate-600">
+                        <Casilla pequena checked={m.pagoCheque[i]} onChange={() => alternarPagoCheque(m.id, i)} />
+                        Cheque de gerencia
                       </label>
                     </div>
                   )}
@@ -95,6 +85,9 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
           {!m.rit && <p className="mt-2 text-xs text-slate-500">Sin el RIT en el aplicativo, los formularios no se validan contra él.</p>}
           {IMPUESTOS.some((i) => m.impuestos[i] && m.aprobacionPrevia[i]) && (
             <p className="mt-2 text-xs text-slate-500">Con aprobación previa, el contribuyente paga cuando el municipio aprueba. Aplica a lo que se radique desde que se activa.</p>
+          )}
+          {recibeCheques(m) && (
+            <p className="mt-2 text-xs text-slate-500">El cheque de gerencia se recibe en la ventanilla y cuenta como pago cuando el municipio confirma que el banco lo pagó.</p>
           )}
         </div>
 
