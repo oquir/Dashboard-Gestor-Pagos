@@ -1,6 +1,6 @@
 import { numero } from '../../../lib/configuracion'
-import type { EdicionConfiguracion } from '../../../lib/configuracion'
 import { ANTICIPO_MAXIMO } from '../../../lib/reglas'
+import type { EdicionConfiguracion } from '../../../types'
 import { Input } from '../../atoms'
 import { Campo, Interruptor, Seccion } from '../../molecules'
 import ProntoPago from './ProntoPago'

@@ -1,5 +1,5 @@
 // Organismos: secciones completas de la interfaz, hechas de moléculas y átomos. Pueden leer y cambiar los datos de la demo.
-// Los genéricos van en la raíz; los de cada tema, en su carpeta. Entre organismos se importan por su archivo, no desde este índice.
+// Los genéricos van en la raíz; los de cada tema, en su carpeta. Entre organismos se importan por su ruta, no desde este índice.
 export { default as BarraSuperior } from './BarraSuperior'
 export { default as GraficoBarras } from './GraficoBarras'
 export { default as GraficoRecaudo } from './GraficoRecaudo'
@@ -17,12 +17,10 @@ export { default as Liquidacion } from './declaraciones/Liquidacion'
 export { default as PagosDeclaracion } from './declaraciones/PagosDeclaracion'
 export { default as SeleccionDeclaraciones } from './declaraciones/SeleccionDeclaraciones'
 export { default as TablaDeclaraciones } from './declaraciones/TablaDeclaraciones'
-export type { FilaDeclaracion } from './declaraciones/TablaDeclaraciones'
 export { default as ValidacionesDeclaracion } from './declaraciones/ValidacionesDeclaracion'
 
 export { default as AprobacionesPendientes } from './inicio/AprobacionesPendientes'
 export { default as ListaDeudas } from './inicio/ListaDeudas'
-export type { Deuda } from './inicio/ListaDeudas'
 export { default as RecaudoAnual } from './inicio/RecaudoAnual'
 export { default as SolicitudesPendientes } from './inicio/SolicitudesPendientes'
 
@@ -39,9 +37,7 @@ export { default as TarjetaMunicipio } from './municipios/TarjetaMunicipio'
 export { default as CargaAsobancaria } from './pagos/CargaAsobancaria'
 export { default as DescargaAsobancaria } from './pagos/DescargaAsobancaria'
 export { default as TablaCartera } from './pagos/TablaCartera'
-export type { FilaCartera } from './pagos/TablaCartera'
 export { default as TablaPagosRecibidos } from './pagos/TablaPagosRecibidos'
-export type { FilaPago } from './pagos/TablaPagosRecibidos'
 
 export { default as TablaReporte } from './reportes/TablaReporte'
 

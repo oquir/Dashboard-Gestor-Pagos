@@ -1,4 +1,4 @@
-import type { EdicionConfiguracion } from '../../../lib/configuracion'
+import type { EdicionConfiguracion } from '../../../types'
 import { Interruptor, Seccion } from '../../molecules'
 
 /** Lo que ven los funcionarios del municipio. */
