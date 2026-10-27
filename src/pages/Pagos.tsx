@@ -1,18 +1,20 @@
 import { useMemo } from 'react'
 import { PageHeader, StatTile } from '../components/molecules'
-import { CargaAsobancaria, DescargaAsobancaria, TablaCartera, TablaPagosRecibidos } from '../components/organisms'
+import { CargaAsobancaria, ChequesEnCanje, DescargaAsobancaria, TablaCartera, TablaPagosRecibidos } from '../components/organisms'
 import { formatoCompacto } from '../lib/formato'
+import { puede } from '../lib/permisos'
 import { estadoPago, totalPagado } from '../lib/reglas'
-import { cargaAsobancariaVisible, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
+import { cargaAsobancariaVisible, chequesVisibles, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
 import { useDatos } from '../store'
-import type { FilaCartera, FilaPago } from '../types'
+import type { FilaCartera, FilaCheque, FilaPago } from '../types'
 
 export default function Pagos() {
   const declaraciones = useDeclaraciones()
   const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
+  const cheques = useDatos((s) => s.cheques)
   const verRecaudo = useVerRecaudo()
-  const { municipioId } = useSesion()
+  const { usuario, municipioId } = useSesion()
   const municipios = useDatos((s) => s.municipios)
   const verCarga = cargaAsobancariaVisible(municipios, municipioId)
 
@@ -31,16 +33,22 @@ export default function Pagos() {
       return d ? [{ p, d, nombre: nombres.get(d.inscripcionId) ?? '' }] : []
     })
 
+    const enCanje: FilaCheque[] = cheques.flatMap((c) => {
+      const d = porId.get(c.declaracionId)
+      return d && c.estado === 'en_canje' ? [{ c, d, nombre: nombres.get(d.inscripcionId) ?? '' }] : []
+    })
+
     const ineficaces = cartera.filter((f) => f.estado === 'ineficaz')
     return {
       cartera,
       recibidos,
+      enCanje,
       ineficaces,
       recaudo2026: recibidos.filter((r) => r.p.fecha.startsWith('2026')).reduce((s, r) => s + r.p.valor, 0),
       saldoIca: cartera.filter((f) => f.d.impuesto === 'ica').reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0),
       saldoIneficaces: ineficaces.reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0),
     }
-  }, [declaraciones, inscripciones, pagos])
+  }, [declaraciones, inscripciones, pagos, cheques])
 
   return (
     <>
@@ -67,6 +75,10 @@ export default function Pagos() {
       </div>
 
       <div className="mt-6 space-y-6">
+        {/* Si 1cero1 quita los cheques, los que quedaron en canje se siguen resolviendo. */}
+        {(chequesVisibles(municipios, municipioId) || datos.enCanje.length > 0) && (
+          <ChequesEnCanje cheques={datos.enCanje} puedeResolver={puede(usuario?.rol, 'registrarPagoVentanilla')} />
+        )}
         <TablaCartera cartera={datos.cartera} />
         <TablaPagosRecibidos pagos={datos.recibidos} />
       </div>
