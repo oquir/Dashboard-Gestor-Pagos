@@ -1,11 +1,11 @@
 import { Link, useParams } from 'react-router'
 import { Badge, Card } from '../components/atoms'
 import { Aviso, Vacio } from '../components/molecules'
-import { AprobacionPrevia, DatosDeclaracion, Liquidacion, ListaArchivos, PagosDeclaracion, ValidacionesDeclaracion } from '../components/organisms'
+import { AprobacionPrevia, DatosDeclaracion, Liquidacion, ListaArchivos, PagosDeclaracion, PagoVentanilla, ValidacionesDeclaracion } from '../components/organisms'
 import { PlantillaDetalle } from '../components/templates'
 import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { estadoPago } from '../lib/reglas'
+import { estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
 import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useSesion } from '../lib/sesion'
 import { tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
@@ -33,6 +33,9 @@ export default function DeclaracionDetalle() {
   const reemplazo = declaraciones.find((x) => x.corrigeA === d.id)
   const municipioConRit = conRit(municipios)(d)
   const situacion = aprobacion(d)
+  const ventanilla = municipios.find((m) => m.id === d.municipioId)?.pagoVentanilla ?? false
+  // En ventanilla solo se recibe lo que ya es deuda: ni lo reemplazado por una corrección ni lo que espera aprobación.
+  const recibeVentanilla = ventanilla && puede(usuario?.rol, 'registrarPagoVentanilla') && !reemplazo && sePuedePagar(situacion)
 
   return (
     <PlantillaDetalle
@@ -57,11 +60,12 @@ export default function DeclaracionDetalle() {
         <>
           <Liquidacion d={d} />
           <PagosDeclaracion d={d} pagos={pagos} />
+          {recibeVentanilla && <PagoVentanilla key={d.id} d={d} saldo={Math.max(d.totalAPagar - totalPagado(d.id, pagos), 0)} />}
         </>
       }
       lateral={
         <>
-          {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={ins?.correo ?? ''} puedeResolver={puede(usuario?.rol, 'revisar')} />}
+          {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={ins?.correo ?? ''} puedeResolver={puede(usuario?.rol, 'revisar')} pagoVentanilla={ventanilla} />}
           <DatosDeclaracion d={d} ins={ins} corregida={corregida} enlazarRit={municipioConRit} />
           <Card>
             <ListaArchivos
