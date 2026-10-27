@@ -51,5 +51,8 @@ export function erroresConfiguracion(b: ConfigMunicipio) {
   }
   if (b.aprobacionPrevia.plazoDiasHabiles < 1) errores.plazoAprobacion = 'Debe ser de al menos 1 día hábil.'
   if (b.aprobacionPrevia.vigenciaReciboDiasHabiles < 1) errores.vigenciaRecibo = 'Debe ser de al menos 1 día hábil.'
+  for (const [formulario, desactivado] of Object.entries(b.formulariosDesactivados)) {
+    if (!desactivado.motivo.trim()) errores[`motivo-${formulario}`] = 'Indica por qué se desactiva el formulario.'
+  }
   return errores
 }
