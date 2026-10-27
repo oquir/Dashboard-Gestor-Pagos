@@ -23,6 +23,7 @@ export default function PagosDeclaracion({ d, pagos }: PagosDeclaracionProps) {
             <li key={p.id} className="flex items-center justify-between px-5 py-3 text-sm">
               <span className="text-slate-700">
                 {formatoFecha(p.fecha)} · {p.medio}
+                {p.recibo && <span className="block text-xs text-slate-500">Recibo de caja {p.recibo}{p.registradoPor && ` · registró ${p.registradoPor}`}</span>}
               </span>
               <span className="tabular-nums text-slate-900">{formatoPesos(p.valor)}</span>
             </li>
