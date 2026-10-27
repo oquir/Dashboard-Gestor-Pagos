@@ -1,7 +1,7 @@
 import { InfoCircle, Location } from 'reicon-react'
 import { useNavigate } from 'react-router'
 import { etiquetaFormulario, etiquetaImpuesto, formatoCompacto, formatoFecha } from '../../../../lib/formato'
-import { formulariosDe, IMPUESTOS } from '../../../../lib/sesion'
+import { formulariosDe, IMPUESTOS, recibeCheques } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import { Badge, Boton, Card, Casilla } from '../../../atoms'
 import { Aviso, Cifra, Interruptor } from '../../../molecules'
@@ -16,6 +16,7 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
   const alternarAprobacionPrevia = useDatos((s) => s.alternarAprobacionPrevia)
   const alternarCargaAsobancaria = useDatos((s) => s.alternarCargaAsobancaria)
   const alternarPagoVentanilla = useDatos((s) => s.alternarPagoVentanilla)
+  const alternarPagoCheque = useDatos((s) => s.alternarPagoCheque)
   const seleccionarMunicipio = useDatos((s) => s.seleccionarMunicipio)
   const navigate = useNavigate()
   const desactivados = useDatos((s) => s.configuraciones.find((c) => c.municipioId === m.id)?.formulariosDesactivados)
@@ -51,6 +52,17 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
           ayuda="El municipio registra los pagos en efectivo que recibe en su ventanilla: el total de la declaración o lo que falta."
           valor={m.pagoVentanilla}
           onChange={() => alternarPagoVentanilla(m.id)}
+        />
+        <Interruptor
+          etiqueta="Pago con cheque de gerencia"
+          ayuda={
+            m.pagoVentanilla
+              ? 'Se recibe en la ventanilla y cuenta como pago cuando el municipio confirma que el banco lo pagó.'
+              : 'Requiere el pago en ventanilla.'
+          }
+          valor={recibeCheques(m)}
+          deshabilitado={!m.pagoVentanilla}
+          onChange={() => alternarPagoCheque(m.id)}
         />
 
         <div role="group" aria-label={`Formularios de ${m.nombre}`}>
