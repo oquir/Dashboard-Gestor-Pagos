@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
 import { Campo, Filtro, PageHeader, RangoFechas, Segmentado } from '../components/molecules'
-import { GraficoBarras, TablaReporte } from '../components/organisms'
+import { BuscadorMunicipios, GraficoBarras, TablaReporte } from '../components/organisms'
 import { OPCIONES_APROBACION } from '../constants'
 import { puede } from '../lib/permisos'
 import { armarReportes, REPORTES } from '../lib/reportes'
@@ -44,6 +44,7 @@ export default function Reportes() {
   return (
     <>
       <PageHeader titulo="Reportes" descripcion="Gráficas e informes del municipio. Consulta los datos en la tabla y descárgalos en Excel." />
+      <BuscadorMunicipios />
 
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <Segmentado
