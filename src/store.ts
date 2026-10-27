@@ -3,7 +3,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { generarDatos } from './data/generar'
 import { nombreCompleto } from './lib/formato'
-import type { Archivo, ConfigMunicipio, Datos, EstadoNovedad, Impuesto, Tarifa, Usuario } from './types'
+import type { Archivo, Cheque, ConfigMunicipio, Datos, EstadoNovedad, Impuesto, Tarifa, Usuario } from './types'
 import { hoy } from './utils'
 
 interface Estado extends Datos {
@@ -41,6 +41,14 @@ interface Estado extends Datos {
   alternarPagoVentanilla: (municipioId: string) => void
   /** Registra un pago en efectivo recibido hoy en la ventanilla del municipio: el total o parte del saldo. */
   registrarPagoVentanilla: (declaracionId: string, valor: number, recibo: string) => void
+  /** Habilita o quita en el municipio los cheques de gerencia en la ventanilla. */
+  alternarPagoCheque: (municipioId: string) => void
+  /** Recibe hoy un cheque de gerencia en la ventanilla; queda en canje hasta que el banco responda. */
+  recibirCheque: (declaracionId: string, cheque: Pick<Cheque, 'valor' | 'banco' | 'numero' | 'recibo'>) => void
+  /** El banco pagó el cheque: se vuelve un pago con la fecha en que se recibió. */
+  confirmarCheque: (id: string) => void
+  /** El banco devolvió el cheque: no hay pago y la declaración vuelve a tener saldo. */
+  devolverCheque: (id: string, motivo: string) => void
   reiniciarDemo: () => void
 }
 
@@ -169,8 +177,45 @@ export const useDatos = create<Estado>()(
         }))
       },
 
+      alternarPagoCheque: (municipioId) =>
+        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, pagoCheque: !m.pagoCheque } : m)) })),
+
+      recibirCheque: (declaracionId, cheque) => {
+        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
+        set((s) => ({
+          cheques: [
+            ...s.cheques,
+            { ...cheque, id: `ch${s.cheques.length + 1}`, declaracionId, fechaRecibo: hoy(), recibidoPor: usuario ? nombreCompleto(usuario) : '', estado: 'en_canje' },
+          ],
+        }))
+      },
+
+      confirmarCheque: (id) => {
+        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
+        const c = get().cheques.find((x) => x.id === id)
+        if (!c || c.estado !== 'en_canje') return
+        set((s) => ({
+          cheques: s.cheques.map((x) => (x.id === id ? { ...x, estado: 'pagado', fechaResolucion: hoy(), resueltoPor: usuario ? nombreCompleto(usuario) : '' } : x)),
+          pagos: [
+            ...s.pagos,
+            { id: `p${s.pagos.length + 1}`, declaracionId: c.declaracionId, fecha: c.fechaRecibo, valor: c.valor, medio: 'Cheque de gerencia', recibo: c.recibo, registradoPor: c.recibidoPor },
+          ],
+        }))
+      },
+
+      devolverCheque: (id, motivo) => {
+        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
+        set((s) => ({
+          cheques: s.cheques.map((x) =>
+            x.id === id && x.estado === 'en_canje'
+              ? { ...x, estado: 'devuelto', fechaResolucion: hoy(), resueltoPor: usuario ? nombreCompleto(usuario) : '', motivoDevolucion: motivo }
+              : x,
+          ),
+        }))
+      },
+
       reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
     }),
-    { name: 'gestor-pagos-demo', version: 23 },
+    { name: 'gestor-pagos-demo', version: 24 },
   ),
 )
