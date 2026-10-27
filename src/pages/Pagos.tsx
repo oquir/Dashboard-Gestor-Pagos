@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { PageHeader, StatTile } from '../components/molecules'
-import { CargaAsobancaria, ChequesEnCanje, DescargaAsobancaria, TablaCartera, TablaPagosRecibidos } from '../components/organisms'
+import { BuscadorMunicipios, CargaAsobancaria, ChequesEnCanje, DescargaAsobancaria, TablaCartera, TablaPagosRecibidos } from '../components/organisms'
 import { formatoCompacto } from '../lib/formato'
 import { puede } from '../lib/permisos'
 import { estadoPago, totalPagado } from '../lib/reglas'
@@ -56,6 +56,7 @@ export default function Pagos() {
         titulo="Pagos"
         descripcion="Recaudo y cartera. En el ICA anual el pago puede ser parcial; en ReteICA y AutoReteICA solo el pago total le da efecto a la declaración."
       />
+      <BuscadorMunicipios />
 
       <div className={`grid gap-4 ${verRecaudo ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
         {verRecaudo && (
