@@ -11,6 +11,8 @@ export type Permiso =
   | 'verReportes'
   /** Descargar la plantilla y cargar desde Excel las actividades y tarifas de un año gravable. */
   | 'cargarActividades'
+  /** Registrar el pago en efectivo que el contribuyente hace en la ventanilla del municipio. */
+  | 'registrarPagoVentanilla'
 
 const PERMISOS: Record<Permiso, Rol[]> = {
   verTodosLosMunicipios: ['1cero1'],
@@ -22,6 +24,8 @@ const PERMISOS: Record<Permiso, Rol[]> = {
   verReportes: ['1cero1', 'admin_municipio'],
   // Los funcionarios solo consultan las actividades.
   cargarActividades: ['1cero1', 'admin_municipio'],
+  // El efectivo lo recibe el municipio; 1cero1 solo habilita la opción.
+  registrarPagoVentanilla: ['admin_municipio', 'funcionario'],
 }
 
 export const puede = (rol: Rol | undefined, permiso: Permiso) => rol !== undefined && PERMISOS[permiso].includes(rol)
