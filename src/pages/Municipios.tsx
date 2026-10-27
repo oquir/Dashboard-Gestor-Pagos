@@ -34,7 +34,7 @@ export default function Municipios() {
 
   return (
     <>
-      <PageHeader titulo="Municipios" descripcion="Municipios que usan el aplicativo: si tienen el RIT, si cargan el Asobancaria 2001, si reciben pagos en ventanilla y cheques de gerencia, qué formularios gestionan, si cada formulario se valida contra el RIT y si el municipio aprueba las declaraciones antes del pago. Desactivar un municipio le quita el acceso a sus usuarios en la demo." />
+      <PageHeader titulo="Municipios" descripcion="Municipios que usan el aplicativo: si tienen el RIT, si cargan el Asobancaria 2001 y qué formularios gestionan. Por formulario: si se valida contra el RIT, si el municipio aprueba las declaraciones antes del pago y si recibe en su ventanilla efectivo o cheque de gerencia. Desactivar un municipio le quita el acceso a sus usuarios en la demo." />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {municipios.map((m) => (
           <TarjetaMunicipio key={m.id} municipio={m} resumen={resumen.get(m.id)!} />
