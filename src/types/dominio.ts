@@ -268,6 +268,18 @@ export interface ConfigMunicipio {
     /** Días hábiles que vale el recibo de pago desde la aprobación. */
     vigenciaReciboDiasHabiles: number
   }
+  /** Formularios que el municipio desactivó para los contribuyentes, con su motivo. Solo cuentan los que tiene activos 1cero1. */
+  formulariosDesactivados: Partial<Record<Formulario, FormularioDesactivado>>
+}
+
+/** El RIT o el formulario de uno de los impuestos. */
+export type Formulario = Impuesto | 'rit'
+
+export interface FormularioDesactivado {
+  motivo: string
+  fecha: string
+  /** Nombre de quien lo desactivó. */
+  por: string
 }
 
 /** Recaudo consolidado de un mes de años anteriores: la demo solo trae pagos uno a uno del año en curso. */
