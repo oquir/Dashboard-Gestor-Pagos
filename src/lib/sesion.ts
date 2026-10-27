@@ -10,7 +10,7 @@ export const formulariosDe = (m: Municipio): Formulario[] => [...(m.rit ? ['rit'
 
 /**
  * Usuario en sesión y municipio que está viendo. Los roles municipales solo ven
- * el suyo; 1cero1 ve el que elija en la barra superior (null = todos).
+ * el suyo; 1cero1 ve el que elija en el buscador de cada vista (null = todos).
  */
 export function useSesion() {
   const usuarioId = useDatos((s) => s.usuarioId)

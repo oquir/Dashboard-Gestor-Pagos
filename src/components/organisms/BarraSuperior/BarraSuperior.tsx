@@ -3,14 +3,13 @@ import { etiquetaRol, nombreCompleto } from '../../../lib/formato'
 import { puede } from '../../../lib/permisos'
 import { useSesion } from '../../../lib/sesion'
 import { useDatos } from '../../../store'
-import { Badge, Boton, Select } from '../../atoms'
+import { Badge, Boton } from '../../atoms'
 import type { BarraSuperiorProps } from './types'
 
-/** Municipio que se está viendo (1cero1 lo elige), usuario en sesión y acciones de la demo. */
+/** El municipio del usuario (1cero1 elige el que ve en cada vista), el usuario en sesión y las acciones de la demo. */
 export default function BarraSuperior({ abrirMenu }: BarraSuperiorProps) {
   const { usuario, municipioId } = useSesion()
   const municipios = useDatos((s) => s.municipios)
-  const seleccionarMunicipio = useDatos((s) => s.seleccionarMunicipio)
   const cerrarSesion = useDatos((s) => s.cerrarSesion)
   const reiniciarDemo = useDatos((s) => s.reiniciarDemo)
 
@@ -27,21 +26,7 @@ export default function BarraSuperior({ abrirMenu }: BarraSuperiorProps) {
         <Menu className="size-5" />
       </Boton>
 
-      {puede(usuario.rol, 'verTodosLosMunicipios') ? (
-        <Select
-          aria-label="Municipio"
-          className="w-auto min-w-56"
-          value={municipioId ?? ''}
-          onChange={(e) => seleccionarMunicipio(e.target.value || null)}
-        >
-          <option value="">Todos los municipios</option>
-          {municipios.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.nombre} ({m.departamento})
-            </option>
-          ))}
-        </Select>
-      ) : (
+      {!puede(usuario.rol, 'verTodosLosMunicipios') && (
         <div className="flex items-center gap-2 text-sm">
           <Building2 className="size-4 text-slate-400" aria-hidden />
           <span className="font-medium text-slate-900">{municipio?.nombre}</span>
