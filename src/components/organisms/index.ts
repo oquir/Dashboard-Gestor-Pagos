@@ -1,6 +1,7 @@
 // Organismos: secciones completas de la interfaz, hechas de moléculas y átomos. Pueden leer y cambiar los datos de la demo.
 // Los genéricos van en la raíz; los de cada tema, en su carpeta. Entre organismos se importan por su ruta, no desde este índice.
 export { default as BarraSuperior } from './BarraSuperior'
+export { default as BuscadorMunicipios } from './BuscadorMunicipios'
 export { default as GraficoBarras } from './GraficoBarras'
 export { default as GraficoRecaudo } from './GraficoRecaudo'
 export { default as ListaArchivos } from './ListaArchivos'
@@ -32,7 +33,9 @@ export { default as LineaTiempoSolicitudes } from './inscripciones/LineaTiempoSo
 export { default as RespuestaSolicitud } from './inscripciones/RespuestaSolicitud'
 export { default as TablaInscripciones } from './inscripciones/TablaInscripciones'
 
-export { default as TarjetaMunicipio } from './municipios/TarjetaMunicipio'
+export { default as EncabezadoMunicipio } from './municipios/EncabezadoMunicipio'
+export { default as FormulariosMunicipio } from './municipios/FormulariosMunicipio'
+export { default as ModulosMunicipio } from './municipios/ModulosMunicipio'
 
 export { default as CargaAsobancaria } from './pagos/CargaAsobancaria'
 export { default as ChequesEnCanje } from './pagos/ChequesEnCanje'
