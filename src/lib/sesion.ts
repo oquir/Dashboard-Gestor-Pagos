@@ -50,6 +50,10 @@ export const ritVisible = (municipios: Municipio[], municipioId: string | null) 
 export const aprobacionVisible = (municipios: Municipio[], municipioId: string | null) =>
   municipios.some((m) => (municipioId === null || m.id === municipioId) && IMPUESTOS.some((i) => m.impuestos[i] && m.aprobacionPrevia[i]))
 
+/** La carga del Asobancaria 2001 se ve si el municipio elegido la tiene, o si alguno la tiene cuando 1cero1 mira todos. */
+export const cargaAsobancariaVisible = (municipios: Municipio[], municipioId: string | null) =>
+  municipios.some((m) => (municipioId === null || m.id === municipioId) && m.cargaAsobancaria)
+
 /** Filtro: el municipio del registro tiene el RIT en el aplicativo. */
 export function conRit(municipios: Municipio[]) {
   const ids = new Set(municipios.filter((m) => m.rit).map((m) => m.id))
