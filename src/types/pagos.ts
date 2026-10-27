@@ -1,4 +1,4 @@
-import type { Declaracion, EstadoPago, Pago } from './dominio'
+import type { Cheque, Declaracion, EstadoPago, Pago } from './dominio'
 
 /** Declaración con deuda, para las listas de Inicio. */
 export interface Deuda {
@@ -18,6 +18,13 @@ export interface FilaCartera {
 /** Fila de los pagos recibidos. */
 export interface FilaPago {
   p: Pago
+  d: Declaracion
+  nombre: string
+}
+
+/** Fila de los cheques en canje. */
+export interface FilaCheque {
+  c: Cheque
   d: Declaracion
   nombre: string
 }

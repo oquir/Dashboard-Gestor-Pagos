@@ -20,6 +20,8 @@ export interface Municipio {
   cargaAsobancaria: boolean
   /** El municipio registra los pagos en efectivo que recibe en su ventanilla; lo activa 1cero1. */
   pagoVentanilla: boolean
+  /** En la ventanilla también se reciben cheques de gerencia; requiere el pago en ventanilla y lo activa 1cero1. */
+  pagoCheque: boolean
 }
 
 export interface Usuario {
@@ -207,6 +209,29 @@ export interface Pago {
   registradoPor?: string
 }
 
+export type EstadoCheque = 'en_canje' | 'pagado' | 'devuelto'
+
+/**
+ * Cheque de gerencia recibido en la ventanilla. Es un pago salvo buen cobro: solo cuando el banco
+ * lo paga en el canje se vuelve un Pago, con la fecha en que se recibió.
+ */
+export interface Cheque {
+  id: string
+  declaracionId: string
+  valor: number
+  /** Banco que expidió el cheque. */
+  banco: string
+  numero: string
+  /** Recibo de caja que se le entregó al contribuyente. */
+  recibo: string
+  fechaRecibo: string
+  recibidoPor: string
+  estado: EstadoCheque
+  fechaResolucion?: string
+  resueltoPor?: string
+  motivoDevolucion?: string
+}
+
 // --- Configuración por municipio ---
 
 export type Sector = 'industrial' | 'comercial' | 'servicios' | 'financiero'
@@ -275,6 +300,8 @@ export interface ConfigMunicipio {
   }
   /** Formularios que el municipio desactivó para los contribuyentes, con su motivo. Solo cuentan los que tiene activos 1cero1. */
   formulariosDesactivados: Partial<Record<Formulario, FormularioDesactivado>>
+  /** Se reciben cheques de gerencia por menos del saldo pendiente; si no, el cheque debe cubrirlo completo. */
+  chequeParcial: boolean
 }
 
 /** El RIT o el formulario de uno de los impuestos. */
@@ -302,6 +329,7 @@ export interface Datos {
   inscripciones: Inscripcion[]
   declaraciones: Declaracion[]
   pagos: Pago[]
+  cheques: Cheque[]
   recaudoHistorico: RecaudoMensual[]
   configuraciones: ConfigMunicipio[]
   actividades: ActividadesVigencia[]
