@@ -37,12 +37,12 @@ interface Estado extends Datos {
   alternarAprobacionPrevia: (municipioId: string, impuesto: Impuesto) => void
   /** Habilita o quita la carga del Asobancaria 2001 en el municipio, para todos sus pagos con código de barras. */
   alternarCargaAsobancaria: (municipioId: string) => void
-  /** Habilita o quita en el municipio el registro de pagos en efectivo en su ventanilla. */
-  alternarPagoVentanilla: (municipioId: string) => void
+  /** Habilita o quita el pago en efectivo en la ventanilla para un formulario del municipio. */
+  alternarPagoEfectivo: (municipioId: string, impuesto: Impuesto) => void
   /** Registra un pago en efectivo recibido hoy en la ventanilla del municipio: el total o parte del saldo. */
   registrarPagoVentanilla: (declaracionId: string, valor: number, recibo: string) => void
-  /** Habilita o quita en el municipio los cheques de gerencia en la ventanilla. */
-  alternarPagoCheque: (municipioId: string) => void
+  /** Habilita o quita los cheques de gerencia en la ventanilla para un formulario del municipio. */
+  alternarPagoCheque: (municipioId: string, impuesto: Impuesto) => void
   /** Recibe hoy un cheque de gerencia en la ventanilla; queda en canje hasta que el banco responda. */
   recibirCheque: (declaracionId: string, cheque: Pick<Cheque, 'valor' | 'banco' | 'numero' | 'recibo'>) => void
   /** El banco pagó el cheque: se vuelve un pago con la fecha en que se recibió. */
@@ -156,8 +156,10 @@ export const useDatos = create<Estado>()(
 
       alternarCargaAsobancaria: (municipioId) =>
         set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, cargaAsobancaria: !m.cargaAsobancaria } : m)) })),
-      alternarPagoVentanilla: (municipioId) =>
-        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, pagoVentanilla: !m.pagoVentanilla } : m)) })),
+      alternarPagoEfectivo: (municipioId, impuesto) =>
+        set((s) => ({
+          municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, pagoEfectivo: { ...m.pagoEfectivo, [impuesto]: !m.pagoEfectivo[impuesto] } } : m)),
+        })),
 
       registrarPagoVentanilla: (declaracionId, valor, recibo) => {
         const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
@@ -177,8 +179,10 @@ export const useDatos = create<Estado>()(
         }))
       },
 
-      alternarPagoCheque: (municipioId) =>
-        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, pagoCheque: !m.pagoCheque } : m)) })),
+      alternarPagoCheque: (municipioId, impuesto) =>
+        set((s) => ({
+          municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, pagoCheque: { ...m.pagoCheque, [impuesto]: !m.pagoCheque[impuesto] } } : m)),
+        })),
 
       recibirCheque: (declaracionId, cheque) => {
         const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
@@ -216,6 +220,6 @@ export const useDatos = create<Estado>()(
 
       reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
     }),
-    { name: 'gestor-pagos-demo', version: 24 },
+    { name: 'gestor-pagos-demo', version: 25 },
   ),
 )
