@@ -1,11 +1,11 @@
-import type { Declaracion } from '../../../../types'
+import type { Declaracion, MediosVentanilla } from '../../../../types'
 
 export interface PagoVentanillaProps {
   d: Declaracion
   /** Lo que falta por pagar, sin contar lo que está en cheques en canje. */
   saldo: number
-  /** El municipio recibe cheques de gerencia. */
-  cheque: boolean
+  /** Lo que el municipio recibe en su ventanilla para este formulario. */
+  medios: MediosVentanilla
   /** El cheque puede ser por menos del saldo. */
   chequeParcial: boolean
 }

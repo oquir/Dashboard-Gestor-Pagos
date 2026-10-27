@@ -10,12 +10,12 @@ import type { Medio, PagoVentanillaProps, Registrado } from './types'
 /**
  * Pago en la ventanilla del municipio: el contribuyente no pagó en el banco ni en línea,
  * o pagó una parte y lleva el resto. Se registra con el número del recibo de caja.
- * Si el municipio los recibe, también puede pagar con cheque de gerencia, que queda en canje.
+ * Efectivo y cheque de gerencia se activan por formulario; el cheque queda en canje.
  */
-export default function PagoVentanilla({ d, saldo, cheque, chequeParcial }: PagoVentanillaProps) {
+export default function PagoVentanilla({ d, saldo, medios, chequeParcial }: PagoVentanillaProps) {
   const registrarPagoVentanilla = useDatos((s) => s.registrarPagoVentanilla)
   const recibirCheque = useDatos((s) => s.recibirCheque)
-  const [medio, setMedio] = useState<Medio>('efectivo')
+  const [medio, setMedio] = useState<Medio>(medios.efectivo ? 'efectivo' : 'cheque')
   const [valor, setValor] = useState(String(saldo))
   const [recibo, setRecibo] = useState('')
   const [banco, setBanco] = useState('')
@@ -24,7 +24,7 @@ export default function PagoVentanilla({ d, saldo, cheque, chequeParcial }: Pago
 
   if (saldo <= 0 && !registrado) return null
 
-  const conCheque = cheque && medio === 'cheque'
+  const conCheque = medios.cheque && (medio === 'cheque' || !medios.efectivo)
   // Sin cheques por valor parcial, el cheque cubre el saldo completo.
   const valorFijo = conCheque && !chequeParcial
   const v = valorFijo ? saldo : Number(valor)
@@ -49,7 +49,7 @@ export default function PagoVentanilla({ d, saldo, cheque, chequeParcial }: Pago
     <Card>
       <CardHeader
         titulo="Registrar pago en ventanilla"
-        descripcion={`Para el contribuyente que paga en ${cheque ? 'efectivo o con cheque de gerencia' : 'efectivo'} en la ventanilla del municipio, sea el total o lo que le falta.`}
+        descripcion={`Para el contribuyente que paga ${medios.efectivo && medios.cheque ? 'en efectivo o con cheque de gerencia' : medios.efectivo ? 'en efectivo' : 'con cheque de gerencia'} en la ventanilla del municipio, sea el total o lo que le falta.`}
       />
       <div className="space-y-4 p-5">
         {registrado && (
@@ -74,7 +74,7 @@ export default function PagoVentanilla({ d, saldo, cheque, chequeParcial }: Pago
 
         {saldo > 0 && (
           <>
-            {cheque && <Segmentado etiqueta="Medio de pago" opciones={MEDIOS} valor={medio} cambiar={setMedio} />}
+            {medios.efectivo && medios.cheque && <Segmentado etiqueta="Medio de pago" opciones={MEDIOS} valor={medio} cambiar={setMedio} />}
             <div className="grid gap-4 sm:grid-cols-2">
               <Campo etiqueta={conCheque ? 'Valor del cheque' : 'Valor recibido'} error={errorValor} ayuda={ayudaValor}>
                 <Input type="number" min={1} max={saldo} disabled={valorFijo} value={valorFijo ? saldo : valor} onChange={(e) => setValor(e.target.value)} />
