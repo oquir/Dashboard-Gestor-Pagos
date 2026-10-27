@@ -40,7 +40,7 @@ export default function ProntoPago({ valor, onChange, errores, editable }: Pront
   }
 
   return (
-    <div className="ml-7 space-y-4 rounded-lg border border-slate-200 p-4">
+    <div className="ml-12 space-y-4 rounded-lg border border-slate-200 p-4">
       <div className="flex flex-wrap items-end gap-3">
         {vigencia !== undefined && (
           <Campo etiqueta="Año gravable">
