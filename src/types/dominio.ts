@@ -18,6 +18,8 @@ export interface Municipio {
   aprobacionPrevia: Record<Impuesto, boolean>
   /** El municipio carga el Asobancaria 2001 de los pagos con código de barras; aplica a todos sus pagos y lo activa 1cero1. */
   cargaAsobancaria: boolean
+  /** El municipio registra los pagos en efectivo que recibe en su ventanilla; lo activa 1cero1. */
+  pagoVentanilla: boolean
 }
 
 export interface Usuario {
@@ -200,6 +202,9 @@ export interface Pago {
   fecha: string
   valor: number
   medio: string
+  /** En los pagos en ventanilla: el número del recibo de caja y quién lo registró. */
+  recibo?: string
+  registradoPor?: string
 }
 
 // --- Configuración por municipio ---
