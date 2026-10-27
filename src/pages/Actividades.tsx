@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Select } from '../components/atoms'
 import { ElegirMunicipio, PageHeader } from '../components/molecules'
-import { CatalogoActividades } from '../components/organisms'
+import { BuscadorMunicipios, CatalogoActividades } from '../components/organisms'
 import { ANIO_EN_CURSO } from '../constants'
 import { useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
@@ -33,11 +33,12 @@ export default function Actividades() {
           )
         }
       />
+      <BuscadorMunicipios todos={false} />
       {municipioId ? (
         // Al cambiar de municipio o de año se descartan la vista previa y los mensajes de la carga.
         <CatalogoActividades key={`${municipioId}-${vigencia}`} municipioId={municipioId} vigencia={vigencia} />
       ) : (
-        <ElegirMunicipio descripcion="Selecciona en la barra superior el municipio cuyas actividades quieres ver." />
+        <ElegirMunicipio descripcion="Búscalo arriba por su nombre para ver sus actividades." />
       )}
     </>
   )
