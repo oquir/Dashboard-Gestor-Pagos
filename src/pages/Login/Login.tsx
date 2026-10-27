@@ -1,17 +1,9 @@
 import { Courthouse } from 'reicon-react'
 import { Navigate, useNavigate } from 'react-router'
-import { Badge, Card } from '../components/atoms'
-import { etiquetaRol, nombreCompleto } from '../lib/formato'
-import { useDatos } from '../store'
-import type { Rol } from '../types'
-
-const DESCRIPCION_ROL: Record<Rol, string> = {
-  '1cero1': 'Proveedor del aplicativo: ve todos los municipios, los configura y gestiona sus administradores.',
-  admin_municipio: 'Secretario de Hacienda o de Tesorería: configura su municipio, gestiona funcionarios y revisa.',
-  funcionario: 'Revisa inscripciones del RIT y declaraciones de su municipio.',
-}
-
-const ORDEN: Rol[] = ['1cero1', 'admin_municipio', 'funcionario']
+import { Badge, Card } from '../../components/atoms'
+import { etiquetaRol, nombreCompleto } from '../../lib/formato'
+import { useDatos } from '../../store'
+import { DESCRIPCION_ROL, ORDEN } from './constants'
 
 export default function Login() {
   const usuarioId = useDatos((s) => s.usuarioId)

@@ -2,10 +2,9 @@ import { useState } from 'react'
 import { Select } from '../components/atoms'
 import { ElegirMunicipio, PageHeader } from '../components/molecules'
 import { CatalogoActividades } from '../components/organisms'
+import { ANIO_EN_CURSO } from '../constants'
 import { useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
-
-const ANIO_EN_CURSO = new Date().getFullYear()
 
 export default function Actividades() {
   const { municipioId } = useSesion()

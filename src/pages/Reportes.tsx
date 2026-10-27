@@ -2,15 +2,14 @@ import { useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
 import { Campo, Filtro, PageHeader, RangoFechas, Segmentado } from '../components/molecules'
 import { GraficoBarras, TablaReporte } from '../components/organisms'
-import { etiquetaEstadoAprobacion } from '../lib/formato'
+import { OPCIONES_APROBACION } from '../constants'
 import { puede } from '../lib/permisos'
 import { armarReportes, REPORTES } from '../lib/reportes'
 import type { IdReporte } from '../lib/reportes'
 import { ritVisible, useAprobacion, useDeclaraciones, useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
-import type { EstadoAprobacion } from '../types'
-
-const hoy = () => new Date().toISOString().slice(0, 10)
+import type { FiltroAprobacion } from '../types'
+import { hoy } from '../utils'
 
 export default function Reportes() {
   const { usuario, municipioId } = useSesion()
@@ -23,7 +22,7 @@ export default function Reportes() {
   const [desde, setDesde] = useState(`${hoy().slice(0, 4)}-01-01`)
   const [hasta, setHasta] = useState(hoy)
   const rangoInvalido = !desde || !hasta || desde > hasta
-  const [filtroAprobacion, setFiltroAprobacion] = useState<EstadoAprobacion | 'no_aplica' | ''>('')
+  const [filtroAprobacion, setFiltroAprobacion] = useState<FiltroAprobacion>('')
   // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
   const conAprobacion = declaraciones.some((d) => d.aprobacion)
   const estadoAprobacion = conAprobacion ? filtroAprobacion : ''
@@ -62,7 +61,7 @@ export default function Reportes() {
               <Campo etiqueta="Aprobación">
                 <Filtro
                   etiqueta="Aprobación"
-                  opciones={{ '': 'Toda aprobación', ...etiquetaEstadoAprobacion, no_aplica: 'Sin aprobación previa' }}
+                  opciones={OPCIONES_APROBACION}
                   valor={estadoAprobacion}
                   cambiar={setFiltroAprobacion}
                 />

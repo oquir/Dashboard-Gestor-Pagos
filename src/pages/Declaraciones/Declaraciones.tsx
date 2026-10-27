@@ -1,20 +1,14 @@
 import { useCallback, useMemo, useState } from 'react'
-import { Card } from '../components/atoms'
-import { BarraFiltros, Buscador, Filtro, PageHeader, Segmentado } from '../components/molecules'
-import { SeleccionDeclaraciones, TablaDeclaraciones } from '../components/organisms'
-import type { FilaDeclaracion } from '../components/organisms'
-import { etiquetaEstadoAprobacion, etiquetaEstadoPago, etiquetaTipoDeclaracion, formatoDocumento } from '../lib/formato'
-import { estadoPago } from '../lib/reglas'
-import { impuestosVisibles, useAprobacion, useDeclaraciones, useSesion } from '../lib/sesion'
-import { useDatos } from '../store'
-import type { EstadoAprobacion, EstadoPago, Impuesto, TipoDeclaracion } from '../types'
-
-const PESTANAS: { valor: Impuesto | ''; texto: string }[] = [
-  { valor: '', texto: 'Todas' },
-  { valor: 'ica', texto: 'ICA anual' },
-  { valor: 'reteica', texto: 'ReteICA' },
-  { valor: 'autorretencion', texto: 'AutoReteICA' },
-]
+import { Card } from '../../components/atoms'
+import { BarraFiltros, Buscador, Filtro, PageHeader, Segmentado } from '../../components/molecules'
+import { SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
+import { OPCIONES_APROBACION } from '../../constants'
+import { formatoDocumento } from '../../lib/formato'
+import { estadoPago } from '../../lib/reglas'
+import { impuestosVisibles, useAprobacion, useDeclaraciones, useSesion } from '../../lib/sesion'
+import { useDatos } from '../../store'
+import type { EstadoPago, FilaDeclaracion, FiltroAprobacion, Impuesto, TipoDeclaracion, ValorFiltro } from '../../types'
+import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS } from './constants'
 
 export default function Declaraciones() {
   const { municipioId } = useSesion()
@@ -23,15 +17,15 @@ export default function Declaraciones() {
   const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
   const aprobacion = useAprobacion()
-  const [pestana, setImpuesto] = useState<Impuesto | ''>('')
+  const [pestana, setImpuesto] = useState<ValorFiltro<Impuesto>>('')
   const visibles = impuestosVisibles(municipios, municipioId)
   const pestanas = PESTANAS.filter((p) => !p.valor || visibles.includes(p.valor))
   // Si 1cero1 desactiva el impuesto de la pestaña elegida, se vuelve a "Todas".
   const impuesto = pestana && visibles.includes(pestana) ? pestana : ''
   const [texto, setTexto] = useState('')
-  const [tipo, setTipo] = useState<TipoDeclaracion | ''>('')
-  const [pago, setPago] = useState<EstadoPago | ''>('')
-  const [filtroAprobacion, setFiltroAprobacion] = useState<EstadoAprobacion | 'no_aplica' | ''>('')
+  const [tipo, setTipo] = useState<ValorFiltro<TipoDeclaracion>>('')
+  const [pago, setPago] = useState<ValorFiltro<EstadoPago>>('')
+  const [filtroAprobacion, setFiltroAprobacion] = useState<FiltroAprobacion>('')
 
   const filas = useMemo<FilaDeclaracion[]>(() => {
     const porId = new Map(inscripciones.map((i) => [i.id, i]))
@@ -101,12 +95,12 @@ export default function Declaraciones() {
       <Card>
         <BarraFiltros>
           <Buscador className="min-w-60 flex-1" placeholder="Buscar por declarante, NIT o cédula, radicado o factura" value={texto} onChange={(e) => setTexto(e.target.value)} />
-          <Filtro etiqueta="Tipo de declaración" opciones={{ '': 'Todo tipo', ...etiquetaTipoDeclaracion }} valor={tipo} cambiar={setTipo} />
-          <Filtro etiqueta="Estado de pago" opciones={{ '': 'Todo estado de pago', ...etiquetaEstadoPago }} valor={pago} cambiar={setPago} />
+          <Filtro etiqueta="Tipo de declaración" opciones={OPCIONES_TIPO} valor={tipo} cambiar={setTipo} />
+          <Filtro etiqueta="Estado de pago" opciones={OPCIONES_PAGO} valor={pago} cambiar={setPago} />
           {conAprobacion && (
             <Filtro
               etiqueta="Aprobación"
-              opciones={{ '': 'Toda aprobación', ...etiquetaEstadoAprobacion, no_aplica: 'Sin aprobación previa' }}
+              opciones={OPCIONES_APROBACION}
               valor={estadoAprobacion}
               cambiar={setFiltroAprobacion}
             />

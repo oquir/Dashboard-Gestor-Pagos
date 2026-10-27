@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import { PageHeader, StatTile } from '../components/molecules'
 import { CargaAsobancaria, DescargaAsobancaria, TablaCartera, TablaPagosRecibidos } from '../components/organisms'
-import type { FilaCartera, FilaPago } from '../components/organisms'
 import { formatoCompacto } from '../lib/formato'
 import { estadoPago, totalPagado } from '../lib/reglas'
 import { useDeclaraciones, useVerRecaudo } from '../lib/sesion'
 import { useDatos } from '../store'
+import type { FilaCartera, FilaPago } from '../types'
 
 export default function Pagos() {
   const declaraciones = useDeclaraciones()

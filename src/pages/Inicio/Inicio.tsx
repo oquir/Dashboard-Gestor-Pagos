@@ -1,17 +1,13 @@
 import { ClipboardList, Document, AlertTriangle, Wallet } from 'reicon-react'
 import { useMemo } from 'react'
-import { StatTile } from '../components/molecules'
-import { AprobacionesPendientes, ListaDeudas, RecaudoAnual, SolicitudesPendientes } from '../components/organisms'
-import type { Deuda } from '../components/organisms'
-import { formatoCompacto } from '../lib/formato'
-import { esperaAprobacion, estadoPago, sePuedePagar, totalPagado } from '../lib/reglas'
-import { aprobacionVisible, conRit, delMunicipio, ritVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
-import { useDatos } from '../store'
-
-const ANIO_ACTUAL = 2026
-
-/** Columnas de la fila de indicadores según cuántos hay, para que ninguno quede solo en la segunda fila. */
-const COLUMNAS_TARJETAS: Record<number, string> = { 2: '', 3: 'lg:grid-cols-3', 4: 'xl:grid-cols-4', 5: 'lg:grid-cols-3 xl:grid-cols-5' }
+import { StatTile } from '../../components/molecules'
+import { AprobacionesPendientes, ListaDeudas, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
+import { formatoCompacto } from '../../lib/formato'
+import { esperaAprobacion, estadoPago, sePuedePagar, totalPagado } from '../../lib/reglas'
+import { aprobacionVisible, conRit, delMunicipio, ritVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../../lib/sesion'
+import { useDatos } from '../../store'
+import type { Deuda } from '../../types'
+import { ANIO_ACTUAL, COLUMNAS_TARJETAS } from './constants'
 
 export default function Inicio() {
   const { municipioId } = useSesion()
