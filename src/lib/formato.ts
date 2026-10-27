@@ -1,6 +1,7 @@
 import type {
   Calidad,
   EstadoAprobacion,
+  EstadoCheque,
   EstadoInscripcion,
   EstadoNovedad,
   EstadoPago,
@@ -107,6 +108,12 @@ export const etiquetaEstadoPago: Record<EstadoPago, string> = {
   sin_pago: 'Sin pago',
   saldo_a_favor: 'Saldo a favor',
   ineficaz: 'Ineficaz (sin pago total)',
+}
+
+export const etiquetaEstadoCheque: Record<EstadoCheque, string> = {
+  en_canje: 'En canje',
+  pagado: 'Pagado',
+  devuelto: 'Devuelto',
 }
 
 export function etiquetaPeriodo(impuesto: Impuesto, vigencia: number, periodo: number) {
