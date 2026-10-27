@@ -127,6 +127,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     sanciones: { ...SANCIONES_LEY },
     plazoInscripcionMeses: 2,
     aprobacionPrevia: { plazoDiasHabiles: 5, alVencer: 'aprobar', vigenciaReciboDiasHabiles: 5 },
+    formulariosDesactivados: {},
   },
   {
     municipioId: 'm2',
@@ -156,6 +157,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     sanciones: { ...SANCIONES_LEY },
     plazoInscripcionMeses: 2,
     aprobacionPrevia: { plazoDiasHabiles: 5, alVencer: 'aprobar', vigenciaReciboDiasHabiles: 5 },
+    formulariosDesactivados: {},
   },
   {
     municipioId: 'm3',
@@ -174,6 +176,9 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     sanciones: { extemporaneidad: 4, extemporaneidadEmplazamiento: 8, correccion: 8, correccionEmplazamiento: 16, minimaUvt: 10 },
     plazoInscripcionMeses: 3,
     aprobacionPrevia: { plazoDiasHabiles: 5, alVencer: 'aprobar', vigenciaReciboDiasHabiles: 5 },
+    formulariosDesactivados: {
+      autorretencion: { motivo: 'El concejo está tramitando el nuevo porcentaje de autorretención; se reactiva cuando se sancione el acuerdo.', fecha: '2026-10-14', por: 'Jorge Pardo' },
+    },
   },
 ]
 
