@@ -15,6 +15,7 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
   const alternarValidacionRit = useDatos((s) => s.alternarValidacionRit)
   const alternarAprobacionPrevia = useDatos((s) => s.alternarAprobacionPrevia)
   const alternarCargaAsobancaria = useDatos((s) => s.alternarCargaAsobancaria)
+  const alternarPagoVentanilla = useDatos((s) => s.alternarPagoVentanilla)
   const seleccionarMunicipio = useDatos((s) => s.seleccionarMunicipio)
   const navigate = useNavigate()
   const desactivados = useDatos((s) => s.configuraciones.find((c) => c.municipioId === m.id)?.formulariosDesactivados)
@@ -44,6 +45,12 @@ export default function TarjetaMunicipio({ municipio: m, resumen: r }: TarjetaMu
           ayuda="El municipio carga el recaudo de los pagos con código de barras, que el banco no notifica. Aplica a todos sus pagos."
           valor={m.cargaAsobancaria}
           onChange={() => alternarCargaAsobancaria(m.id)}
+        />
+        <Interruptor
+          etiqueta="Pago en ventanilla"
+          ayuda="El municipio registra los pagos en efectivo que recibe en su ventanilla: el total de la declaración o lo que falta."
+          valor={m.pagoVentanilla}
+          onChange={() => alternarPagoVentanilla(m.id)}
         />
 
         <div role="group" aria-label={`Formularios de ${m.nombre}`}>
