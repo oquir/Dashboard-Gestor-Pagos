@@ -1,6 +1,7 @@
 // Reportes del municipio: sus columnas (para la tabla y el Excel), sus filas y sus gráficas por categoría.
-import type { Barra } from '../components/organisms/GraficoBarras'
-import type { Declaracion, EstadoAprobacion, Impuesto, Inscripcion, Municipio, Pago } from '../types'
+import { CLASE_SERIE } from '../constants'
+import type { Barra, Declaracion, FiltroAprobacion, FormatoGrafica, Impuesto, Inscripcion, Municipio, Pago } from '../types'
+import { hoy } from '../utils'
 import {
   etiquetaCalidad,
   etiquetaEstadoAprobacion,
@@ -30,7 +31,7 @@ export interface Columna {
 export interface Grafica {
   titulo: string
   descripcion?: string
-  formato: 'cantidad' | 'pesos'
+  formato: FormatoGrafica
   barras: Barra[]
 }
 
@@ -85,12 +86,8 @@ export const COLUMNAS: Record<IdReporte, Columna[]> = {
 /** Sin declaraciones con aprobación previa, el reporte de declaraciones va sin esa columna, que es la última. */
 export const SIN_APROBACION = COLUMNAS.declaraciones.slice(0, -1)
 
-const hoy = () => new Date().toISOString().slice(0, 10)
 const documento = (i: Inscripcion | undefined) => (i ? formatoDocumento(i) : '')
 const DIA = 24 * 60 * 60 * 1000
-
-/** Mismos colores que las series de la gráfica de recaudo en Inicio. */
-const CLASE_IMPUESTO: Record<Impuesto, string> = { ica: 'bg-serie-ica', reteica: 'bg-serie-reteica', autorretencion: 'bg-serie-autorretencion' }
 
 /** Cuenta o suma por categoría, en el orden de las etiquetas. */
 function agrupar<T, K extends string>(items: T[], etiquetas: Record<K, string>, clave: (item: T) => K, valor: (item: T) => number = () => 1): Barra[] {
@@ -133,7 +130,7 @@ interface Fuente {
   hasta: string
   rangoInvalido: boolean
   aprobacion: (d: Declaracion) => SituacionAprobacion | undefined
-  estadoAprobacion: EstadoAprobacion | 'no_aplica' | ''
+  estadoAprobacion: FiltroAprobacion
 }
 
 /** Filas y gráficas de cada reporte. Declaraciones y recaudo van por rango de fechas; cartera y RIT, al día de hoy. */
@@ -150,7 +147,7 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
     visibles.map((i) => ({
       etiqueta: etiquetaImpuesto[i],
       valor: items.filter((x) => impuesto(x) === i).reduce((s, x) => s + valor(x), 0),
-      clase: CLASE_IMPUESTO[i],
+      clase: CLASE_SERIE[i],
     }))
 
   const presentadas = declaraciones

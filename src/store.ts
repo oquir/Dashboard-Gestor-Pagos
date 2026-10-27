@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 import { generarDatos } from './data/generar'
 import { nombreCompleto } from './lib/formato'
 import type { Archivo, ConfigMunicipio, Datos, EstadoNovedad, Impuesto, Tarifa, Usuario } from './types'
+import { hoy } from './utils'
 
 interface Estado extends Datos {
   usuarioId: string | null
@@ -36,8 +37,6 @@ interface Estado extends Datos {
   alternarAprobacionPrevia: (municipioId: string, impuesto: Impuesto) => void
   reiniciarDemo: () => void
 }
-
-const hoy = () => new Date().toISOString().slice(0, 10)
 
 export const useDatos = create<Estado>()(
   persist(

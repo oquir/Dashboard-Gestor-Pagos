@@ -3,16 +3,6 @@ import type { ConfigMunicipio, TramoProntoPago } from '../types'
 import { formatoFecha } from './formato'
 import { ANTICIPO_MAXIMO, SANCIONES_LEY } from './reglas'
 
-/** Lo que recibe cada sección del formulario de configuración. */
-export interface EdicionConfiguracion {
-  /** Borrador con los cambios aún sin guardar. */
-  b: ConfigMunicipio
-  cambiar: (parcial: Partial<ConfigMunicipio>) => void
-  editable: boolean
-  /** Por campo; las claves de los tramos son `pronto-<año>-<tramo>`. */
-  errores: Record<string, string>
-}
-
 /** Valor de un campo numérico; vacío cuenta como 0. */
 export const numero = (v: string) => (v === '' ? 0 : Number(v))
 
