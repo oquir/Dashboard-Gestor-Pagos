@@ -3,7 +3,7 @@ import { PageHeader, StatTile } from '../components/molecules'
 import { CargaAsobancaria, DescargaAsobancaria, TablaCartera, TablaPagosRecibidos } from '../components/organisms'
 import { formatoCompacto } from '../lib/formato'
 import { estadoPago, totalPagado } from '../lib/reglas'
-import { useDeclaraciones, useVerRecaudo } from '../lib/sesion'
+import { cargaAsobancariaVisible, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
 import { useDatos } from '../store'
 import type { FilaCartera, FilaPago } from '../types'
 
@@ -12,6 +12,9 @@ export default function Pagos() {
   const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
   const verRecaudo = useVerRecaudo()
+  const { municipioId } = useSesion()
+  const municipios = useDatos((s) => s.municipios)
+  const verCarga = cargaAsobancariaVisible(municipios, municipioId)
 
   const datos = useMemo(() => {
     const porId = new Map(declaraciones.map((d) => [d.id, d]))
@@ -59,7 +62,7 @@ export default function Pagos() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <CargaAsobancaria />
+        {verCarga && <CargaAsobancaria />}
         <DescargaAsobancaria declaraciones={declaraciones} />
       </div>
 
