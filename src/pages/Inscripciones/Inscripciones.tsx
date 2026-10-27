@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
 import { Card, Casilla } from '../../components/atoms'
 import { BarraFiltros, Buscador, Filtro, IndicadorSeleccionable, PageHeader } from '../../components/molecules'
-import { TablaInscripciones } from '../../components/organisms'
+import { BuscadorMunicipios, TablaInscripciones } from '../../components/organisms'
 import { ultimoTramite } from '../../lib/reglas'
 import { conRit, delMunicipio, ritVisible, useSesion } from '../../lib/sesion'
 import { useDatos } from '../../store'
@@ -45,6 +45,7 @@ export default function Inscripciones() {
         titulo="Inscripciones"
         descripcion="Registro de Información Tributaria: personas naturales, empresas y demás sujetos, con la calidad en que actúan."
       />
+      <BuscadorMunicipios />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {CALIDADES.map((c) => (
