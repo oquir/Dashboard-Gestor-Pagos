@@ -4,6 +4,7 @@ import type {
   EstadoInscripcion,
   EstadoNovedad,
   EstadoPago,
+  Formulario,
   Impuesto,
   Inscripcion,
   Rol,
@@ -83,6 +84,8 @@ export const etiquetaImpuesto: Record<Impuesto, string> = {
   reteica: 'ReteICA',
   autorretencion: 'AutoReteICA',
 }
+
+export const etiquetaFormulario: Record<Formulario, string> = { rit: 'RIT', ...etiquetaImpuesto }
 
 export const etiquetaTipoDeclaracion: Record<TipoDeclaracion, string> = {
   inicial: 'Inicial',
