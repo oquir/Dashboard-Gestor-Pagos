@@ -46,7 +46,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 | Punto | Qué falta | Estado |
 |---|---|---|
 | Omisos | Quién debía declarar y no lo hizo, por impuesto y periodo (§3.5). Los datos de la demo ya los generan, pero ninguna pantalla los muestra | En revisión |
-| Calendario tributario | Los vencimientos están fijos en el código. Falta una pantalla para ponerlos y, como opción, una tarjeta de próximos vencimientos en Inicio (§3.6) | En revisión |
+| Calendario tributario | Sección en Configuración para editar y cargar vencimientos por año gravable (ICA, ReteICA y AutoReteICA), con importación/exportación JSON, sugerencias automáticas y tarjeta en Inicio | **Implementado** (2026-10-30) |
 | Alerta de ReteICA sin consignar | El dominio pide una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§6.3 de `Dominio-ICA.md`). Opcional por municipio: la regla de Ricaurte, que no la deja ineficaz si se paga dentro de los 2 meses | Pendiente |
 | Estado de cuenta del contribuyente | Ninguna vista junta lo que debe un contribuyente: sus vigencias, saldos y pagos | Pendiente, **sin paz y salvo** |
 | Carga del Asobancaria | El resultado es aleatorio y no cambia la cartera; las referencias que no cruzan no quedan en ninguna parte | Se queda simulada |
