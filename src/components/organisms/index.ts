@@ -22,6 +22,7 @@ export { default as ValidacionesDeclaracion } from './declaraciones/Validaciones
 
 export { default as AprobacionesPendientes } from './inicio/AprobacionesPendientes'
 export { default as ListaDeudas } from './inicio/ListaDeudas'
+export { default as ProximosVencimientos } from './inicio/ProximosVencimientos'
 export { default as RecaudoAnual } from './inicio/RecaudoAnual'
 export { default as SolicitudesPendientes } from './inicio/SolicitudesPendientes'
 

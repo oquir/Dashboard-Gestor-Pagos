@@ -1,7 +1,7 @@
 import { ClipboardList, Document, AlertTriangle, Wallet } from 'reicon-react'
 import { useMemo } from 'react'
 import { StatTile } from '../../components/molecules'
-import { AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
+import { AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, ProximosVencimientos, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
 import { formatoCompacto } from '../../lib/formato'
 import { esperaAprobacion, estadoPago, sePuedePagar, totalPagado } from '../../lib/reglas'
 import { aprobacionVisible, conRit, delMunicipio, ritVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../../lib/sesion'
@@ -78,7 +78,7 @@ export default function Inicio() {
   const vencidas = datos.porAprobar.filter((x) => x.a.estado === 'vencida').length
   const tarjetas = 2 + Number(conRitVisible) + Number(conAprobacion) + Number(verRecaudo)
   // Con un número impar de listas, la primera ocupa toda la fila para que las de deuda vayan juntas.
-  const primeraAncha = (Number(conRitVisible) + Number(conAprobacion)) % 2 === 1 ? 'lg:col-span-2' : ''
+  const primeraAncha = (1 + Number(conRitVisible) + Number(conAprobacion)) % 2 === 1 ? 'lg:col-span-2' : ''
 
   return (
     <>
@@ -135,9 +135,11 @@ export default function Inicio() {
       )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        {conRitVisible && <SolicitudesPendientes pendientes={datos.pendientes} className={primeraAncha} />}
+        <ProximosVencimientos municipioId={municipioId} className={primeraAncha} />
 
-        {conAprobacion && <AprobacionesPendientes aprobaciones={datos.aprobaciones} nombres={datos.nombres} className={conRitVisible ? '' : primeraAncha} />}
+        {conRitVisible && <SolicitudesPendientes pendientes={datos.pendientes} />}
+
+        {conAprobacion && <AprobacionesPendientes aprobaciones={datos.aprobaciones} nombres={datos.nombres} />}
 
         <ListaDeudas
           titulo="Declaraciones no pagadas"
