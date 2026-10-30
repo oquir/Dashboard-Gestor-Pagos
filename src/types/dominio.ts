@@ -261,6 +261,22 @@ export interface TramoProntoPago {
   porcentaje: number
 }
 
+export interface VencimientoPeriodo {
+  periodo: number
+  fecha: string
+}
+
+export interface CalendarioVigencia {
+  vigencia: number
+  decreto?: string
+  /** Fecha límite de presentación y pago del ICA anual de ese año gravable (se presenta en vigencia + 1). */
+  vencimientoIca: string
+  /** Fechas de vencimiento de ReteICA por periodo (bimestral o mensual). */
+  vencimientosReteica: VencimientoPeriodo[]
+  /** Fechas de vencimiento de AutoReteICA por periodo (opcional, si difiere de ReteICA). */
+  vencimientosAutorretencion?: VencimientoPeriodo[]
+}
+
 export interface ConfigMunicipio {
   municipioId: string
   periodicidadRetencion: 'bimestral' | 'mensual'
@@ -272,6 +288,8 @@ export interface ConfigMunicipio {
   correccionABaja: 'proyecto_589' | 'correccion_directa'
   /** El concejo fija los tramos para cada año gravable; fuera de ellos no hay descuento. */
   prontoPago: { activo: boolean; porVigencia: { vigencia: number; tramos: TramoProntoPago[] }[] }
+  /** Calendario tributario de vencimientos por año gravable. */
+  calendarioTributario: { porVigencia: CalendarioVigencia[] }
   anticipoPorcentaje: number
   sobretasaBomberil: { activa: boolean; porcentaje: number }
   reteica: {

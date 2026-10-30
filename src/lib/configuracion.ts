@@ -1,5 +1,5 @@
 // Edición de la configuración del municipio: borrador, validaciones y tramos de pronto pago.
-import type { ConfigMunicipio, TramoProntoPago } from '../types'
+import type { CalendarioVigencia, ConfigMunicipio, TramoProntoPago, VencimientoPeriodo } from '../types'
 import { formatoFecha } from './formato'
 import { ANTICIPO_MAXIMO, SANCIONES_LEY } from './reglas'
 
@@ -14,6 +14,60 @@ const diaSiguiente = (iso: string) => {
 const finDeMes = (iso: string) => new Date(Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)), 0)).toISOString().slice(0, 10)
 /** La misma fecha un año después; el 29 de febrero pasa al 28. */
 export const unAnioDespues = (iso: string) => iso && `${Number(iso.slice(0, 4)) + 1}${iso.slice(4)}`.replace(/-02-29$/, '-02-28')
+
+/** Genera un calendario tributario sugerido para una vigencia y periodicidad. */
+export function generarCalendarioSugerido(vigencia: number, periodicidad: 'bimestral' | 'mensual'): CalendarioVigencia {
+  const vencimientoIca = `${vigencia + 1}-04-20`
+  const vencimientosReteica: VencimientoPeriodo[] = []
+  if (periodicidad === 'bimestral') {
+    const meses = [3, 5, 7, 9, 11]
+    meses.forEach((mes, idx) => {
+      vencimientosReteica.push({
+        periodo: idx + 1,
+        fecha: `${vigencia}-${String(mes).padStart(2, '0')}-20`,
+      })
+    })
+    vencimientosReteica.push({
+      periodo: 6,
+      fecha: `${vigencia + 1}-01-20`,
+    })
+  } else {
+    for (let mes = 1; mes <= 11; mes++) {
+      vencimientosReteica.push({
+        periodo: mes,
+        fecha: `${vigencia}-${String(mes + 1).padStart(2, '0')}-20`,
+      })
+    }
+    vencimientosReteica.push({
+      periodo: 12,
+      fecha: `${vigencia + 1}-01-20`,
+    })
+  }
+
+  return {
+    vigencia,
+    decreto: `Decreto anual de calendario tributario ${vigencia}`,
+    vencimientoIca,
+    vencimientosReteica,
+  }
+}
+
+/** Copia el calendario tributario de una vigencia previa corriendo las fechas un año. */
+export function copiarCalendarioVigencia(origen: CalendarioVigencia, nuevaVigencia: number): CalendarioVigencia {
+  return {
+    vigencia: nuevaVigencia,
+    decreto: origen.decreto ? origen.decreto.replace(String(origen.vigencia), String(nuevaVigencia)) : undefined,
+    vencimientoIca: unAnioDespues(origen.vencimientoIca),
+    vencimientosReteica: origen.vencimientosReteica.map((v) => ({
+      ...v,
+      fecha: unAnioDespues(v.fecha),
+    })),
+    vencimientosAutorretencion: origen.vencimientosAutorretencion?.map((v) => ({
+      ...v,
+      fecha: unAnioDespues(v.fecha),
+    })),
+  }
+}
 
 /** Un tramo nuevo arranca el día siguiente al último y llega hasta fin de ese mes. */
 export function tramoNuevo(vigencia: number, tramos: TramoProntoPago[]): TramoProntoPago {
@@ -47,6 +101,23 @@ export function erroresConfiguracion(b: ConfigMunicipio) {
       erroresTramos(vigencia, tramos).forEach((error, i) => {
         if (error) errores[`pronto-${vigencia}-${i}`] = error
       })
+    }
+  }
+  if (b.calendarioTributario?.porVigencia) {
+    for (const cal of b.calendarioTributario.porVigencia) {
+      if (!cal.vencimientoIca) {
+        errores[`calendario-${cal.vigencia}-ica`] = 'Indica la fecha de vencimiento del ICA anual.'
+      }
+      for (const p of cal.vencimientosReteica ?? []) {
+        if (!p.fecha) {
+          errores[`calendario-${cal.vigencia}-reteica-${p.periodo}`] = `Indica la fecha del periodo ${p.periodo}.`
+        }
+      }
+      for (const p of cal.vencimientosAutorretencion ?? []) {
+        if (!p.fecha) {
+          errores[`calendario-${cal.vigencia}-autorretencion-${p.periodo}`] = `Indica la fecha del periodo ${p.periodo}.`
+        }
+      }
     }
   }
   if (b.aprobacionPrevia.plazoDiasHabiles < 1) errores.plazoAprobacion = 'Debe ser de al menos 1 día hábil.'

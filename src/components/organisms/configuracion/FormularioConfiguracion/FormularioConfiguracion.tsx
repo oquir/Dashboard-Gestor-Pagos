@@ -6,6 +6,7 @@ import { useDatos } from '../../../../store'
 import type { ConfigMunicipio } from '../../../../types'
 import { Boton } from '../../../atoms'
 import SeccionAprobacionPrevia from '../SeccionAprobacionPrevia'
+import SeccionCalendario from '../SeccionCalendario'
 import SeccionFormularios from '../SeccionFormularios'
 import SeccionFuncionarios from '../SeccionFuncionarios'
 import SeccionIca from '../SeccionIca'
@@ -39,6 +40,7 @@ export default function FormularioConfiguracion({ config, editable }: Formulario
   return (
     <div className="space-y-6">
       {municipio && <SeccionFormularios {...edicion} formularios={formulariosDe(municipio)} guardados={config.formulariosDesactivados} />}
+      <SeccionCalendario {...edicion} periodicidad={b.periodicidadRetencion} />
       {(impuestos.reteica || impuestos.autorretencion) && <SeccionRetencion {...edicion} impuestos={impuestos} />}
       {impuestos.ica && <SeccionIca {...edicion} />}
       <SeccionProcedimiento {...edicion} conRit={conRit} />
