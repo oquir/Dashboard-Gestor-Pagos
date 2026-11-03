@@ -5,6 +5,8 @@
 > **Verificado el 2026-09-22; actualizado el 2026-09-24** con los tipos de declaración, el descuento por pronto pago y las reglas de sistema de sanciones, y **validado contra el Estatuto Tributario el 2026-09-25** (lo que depende de cada municipio o aún no tiene fuente está en la sección 8). La ley y la estructura de los formularios son estables. Lo que caduca (UVT, bases mínimas, plazos, tasas) está marcado con ⏳ y reunido en "Datos que caducan": antes de usarlo, revisar solo eso, no todo el documento.
 >
 > **Adaptado el 2026-10-22** a este proyecto: el documento se escribió para otro aplicativo. Se quitaron las referencias a ese aplicativo y se reescribió la sección 6; el contenido tributario no cambió.
+>
+> **Ampliado el 2026-11-02** con la sección 1.2: año gravable, vigencia y declaraciones "anticipadas".
 
 ## 1. Panorama: tres declaraciones, un solo impuesto
 
@@ -28,6 +30,40 @@ El RIT (Registro de Información Tributaria) es el equivalente municipal del RUT
 - **Contribuyentes**: se inscriben para reportar sus actividades (códigos CIIU) y poder declarar ICA.
 - **Agentes retenedores**: asumen la responsabilidad legal de retener el impuesto a terceros. Deben actualizar su RIT con esa responsabilidad para que el portal habilite la declaración de ReteICA.
 - **Autorretenedores**: usualmente los designa la Secretaría de Hacienda por resolución; el municipio actualiza su RIT para que no les practiquen ReteICA.
+
+### 1.2 Año gravable, vigencia y declaraciones "anticipadas"
+
+**Regla general**: el ICA del año N se declara en el año N+1, en las fechas del calendario tributario (Medellín: Acuerdo 093 de 2023, art. 43, y guía del ICA de 2026, pregunta 4). Un negocio activo no presenta en 2026 su declaración normal del año gravable 2026: el año no ha terminado y todavía no se conocen sus ingresos.
+
+**Año gravable y vigencia no son lo mismo**. Según el Consejo de Estado (citado en el concepto 031090 de 2017 de MinHacienda), el *año gravable* es aquel en que se causa el impuesto y sirve de base por sus ingresos, y la *vigencia fiscal* es el año siguiente, cuando nace la obligación de pagar. Así, "ICA vigencia 2026" puede referirse a los ingresos de 2025. El uso de la palabra no es uniforme: en este dashboard `vigencia` significa año gravable, así que hay que confirmar a qué año se refiere un documento o un archivo de un municipio antes de cargarlo.
+
+**Lo que parece declarar por anticipado en el ICA** son en realidad casos distintos:
+
+| Caso | Qué es | Por qué tiene sentido |
+|---|---|---|
+| **"ICA 2026" pagado en 2026** | La vigencia fiscal 2026, es decir, los ingresos de 2025 | Es la declaración normal con otro nombre |
+| **Presentar antes del vencimiento** | Sigue siendo el año siguiente al gravable, pero antes del plazo. Manizales ⏳: año gravable 2025 con 10 % hasta el 27 de febrero, 8 % hasta el 31 de marzo y 6 % hasta el 30 de abril de 2026; el plazo normal iba del 4 de mayo al 1 de junio | Es lo que da el descuento por pronto pago |
+| **Cierre del negocio** | Declaración de la fracción del año en curso | Quien cierra no siempre puede esperar el calendario del año siguiente; depende del municipio |
+| **Anticipo** (renglón 30) | Parte del impuesto del año siguiente, cobrada en la declaración normal; no es otra declaración | Es un cobro del municipio, no una decisión del contribuyente. Ibagué cobraba el 30 % hasta el Acuerdo 014 de 2024 |
+| **Periodos bimestrales del ICA** | En Bogotá ⏳, quienes superaron 391 UVT de impuesto a cargo declaran durante el mismo año | Es su calendario normal |
+
+**Cuándo se declara la fracción de año al cerrar** depende del municipio:
+- **Chía y Cajicá**: se declara la fracción del año en curso como parte del trámite de cese.
+- **Medellín**: por regla general no se presenta de inmediato, sino en el calendario del año siguiente, porque "no se permiten declaraciones fraccionadas dentro de la misma vigencia fiscal". La excepción son las sociedades liquidadas y canceladas, que pueden presentarla en taquilla (guía del ICA de 2026, pregunta 12).
+
+**Por qué declarar el año en curso deja sin descuento**: los acuerdos fijan el descuento para un año gravable, con fechas del año siguiente. Quien cierra y declara en 2026 el año 2026 queda fuera de los tramos del año 2025 y, por lo general, los del 2026 todavía no existen. El calendario tampoco suele estar listo: el de Medellín para 2026 se expidió en diciembre de 2025. Quien declara así no busca un ahorro: necesita cerrar. Es una deducción a partir de cómo están redactados los acuerdos; no se encontró una norma que trate expresamente el cese y el descuento.
+
+**La renta no justifica adelantar el ICA al mismo año**: el ICA de un año gravable se puede deducir en la renta de ese año si se paga antes de presentarla (art. 115-1 del Estatuto Tributario; Oficio DIAN 417 de 2020, escrito cuando existía el descuento). La renta de 2026 se presenta en 2027, así que no hace falta pagar en 2026. Sí puede ser un motivo para no esperar al final del plazo del ICA.
+
+**ReteICA y autorretención** se declaran en el mismo año porque su periodo es el año en curso, y no tienen descuento por pronto pago que perder:
+- **ReteICA**: se declara después de cerrar el periodo. En Medellín ⏳, noviembre-diciembre de 2026 vence el 20 de enero de 2027. No se encontró una norma sobre presentarla antes del cierre, pero no tendría lógica: esas retenciones aún no han ocurrido.
+- **Autorretención**: aquí **sí hay anticipación real, impuesta por el municipio**. En Medellín ⏳, el bimestre 6 de 2026 vence el 21 de diciembre y la autorretención se practica solo hasta el 15; los ingresos del 16 al 31 de diciembre van a la declaración anual de 2026 (Resolución 202550100057 de 2025, parágrafo 1). Envigado ⏳ adoptó el mismo corte en 2026, según un resumen de la norma, "para asegurar el recaudo en la vigencia 2026".
+
+**Sin confirmar**:
+- Se revisó una muestra de municipios: Medellín, Manizales, Chía, Cajicá, Ibagué, Envigado y Bogotá. Cada uno fija sus reglas.
+- En actividades ocasionales, Medellín pide declarar y pagar sobre la fracción trabajada (art. 53) y al presentar (resolución de calendario), pero no se confirmó en qué fecha.
+- Los datos de Bogotá, Ibagué y Envigado salen de notas de prensa o resúmenes, no de la norma.
+- Si un contribuyente activo declara el año en curso sin estar en uno de estos casos, lo más probable es un error: no se encontró ninguna norma que lo respalde.
 
 ## 2. ICA anual
 
@@ -110,7 +146,7 @@ Además de la "opción de uso" del FUN (inicial, solamente pago, corrección), p
 
 1. **Inicial (o normal)**: primera presentación del periodo fiscal.
 2. **Corrección**: reemplaza jurídica y financieramente a la anterior. **Regla de sistema**: el usuario debe digitar o vincular el ID/sticker de la declaración que va a corregir.
-3. **Clausura (cese de actividades o fracción de año)**: se presenta cuando la empresa cierra definitivamente o se traslada. **Regla de sistema**: el formulario exige la **fecha exacta de cierre** (para prorratear topes de ingresos a los meses operados) y, al presentarse, debe iniciar la cancelación del RIT del contribuyente en ese municipio. Esto último es una **decisión de diseño, no una regla legal**: en varios municipios la cancelación es una novedad aparte que la administración verifica antes de aprobar, así que el sistema no debería darla por hecha al presentar la clausura.
+3. **Clausura (cese de actividades o fracción de año)**: se presenta cuando la empresa cierra definitivamente o se traslada; si se presenta de inmediato o en el calendario del año siguiente depende del municipio (sección 1.2). **Regla de sistema**: el formulario exige la **fecha exacta de cierre** (para prorratear topes de ingresos a los meses operados) y, al presentarse, debe iniciar la cancelación del RIT del contribuyente en ese municipio. Esto último es una **decisión de diseño, no una regla legal**: en varios municipios la cancelación es una novedad aparte que la administración verifica antes de aprobar, así que el sistema no debería darla por hecha al presentar la clausura.
 
 Retención y autorretención solo tienen Inicial y Corrección (secciones 3 y 4).
 
@@ -289,7 +325,7 @@ Lo que el dominio les exige a los cuatro frentes del dashboard: las inscripcione
 - **Quién liquida cada sanción**: la extemporaneidad y la corrección las autoliquida el declarante; la inexactitud la impone la alcaldía, así que una declaración que la trae autoliquidada es una inconsistencia, salvo la corrección que acepta un requerimiento especial (sección 5). Los porcentajes y la sanción mínima salen de la configuración del municipio (sección 6.4).
 - **Correcciones**: exigen el ID o sticker de la declaración que corrigen, parten de una inicial aprobada (**bloqueo de periodos**) y la reemplazan por completo. El dashboard muestra la cadena inicial → correcciones de cada periodo y trae como crédito lo ya pagado (**herencia de saldos**).
 - **Corrección a la baja**: flujo propio con estados (proyecto de corrección, aprobada, rechazada, aprobada por silencio) y control de los plazos de 1 año y 6 meses; mientras es proyecto no tiene validez de pago (sección 5).
-- **Clausura** (solo ICA anual): exige la fecha exacta de cierre y abre la novedad de cancelación en el RIT (sección 6.1).
+- **Clausura** (solo ICA anual): exige la fecha exacta de cierre y abre la novedad de cancelación en el RIT (sección 6.1). Es el único caso en que el ICA del año en curso se declara ese mismo año, y no todos los municipios lo permiten (sección 1.2).
 - **Valores**: redondeados al múltiplo de mil más cercano (regla del FUN; la ReteICA de Medellín hace lo mismo).
 - **Omisos**: en Medellín, un agente sin retenciones en el bimestre no declara en ceros, así que no se le puede marcar como omiso por ese bimestre. Si el municipio exige la declaración en ceros es un parámetro (sección 6.4).
 - **Cruces posibles**: el renglón 28 del ICA anual frente a las autorretenciones que el mismo contribuyente declaró y pagó en el año gravable; el 27, que viene de certificados de terceros, solo frente a la información exógena de los agentes (sección 3).
@@ -317,15 +353,15 @@ No hay formulario nacional de retención ni de autorretención, y cada concejo f
 
 - **Tarifas**: por actividad, dentro de los topes de ley de la sección 2; una tarifa fuera de ellos merece advertencia, no bloqueo, porque el sector financiero tiene reglas propias. En ReteICA, tarifa única (Medellín: 2 por mil), por actividad o por concepto (compras / servicios), cada una con su base mínima en UVT. En autorretención, la tarifa plena o un porcentaje de ella.
 - **Estructura del formulario**: si se detallan actividades, qué complementarios existen (sobretasas bomberil y de seguridad, con su porcentaje) y si se retienen o autorretienen, pagos a no residentes y formulario conjunto de retención y autorretención.
-- **Calendario**: periodicidad (anual, bimestral o mensual) y vencimientos según el último dígito del NIT.
+- **Calendario**: periodicidad (anual, bimestral o mensual) y vencimientos según el último dígito del NIT. Un periodo puede vencer antes de terminar: la autorretención del último bimestre puede tener fecha de corte y vencimiento en diciembre (sección 1.2).
 - **Beneficios y cobros**: descuento por pronto pago (tramos de fechas y porcentajes por año gravable, y condiciones), anticipo (hasta el 40%) y pago voluntario.
-- **Procedimiento**: si se exige la declaración en ceros, si la cancelación del RIT es automática o verificada, si la corrección a la baja sigue el art. 589 clásico o la corrección directa, los soportes de inscripción por calidad y el plazo para inscribirse.
+- **Procedimiento**: si se exige la declaración en ceros, si la cancelación del RIT es automática o verificada, cuándo se presenta la fracción de año al cerrar (de inmediato o en el calendario siguiente, sección 1.2), si la corrección a la baja sigue el art. 589 clásico o la corrección directa, los soportes de inscripción por calidad y el plazo para inscribirse.
 - **Sanciones**: la configuración parte de los valores de ley (extemporaneidad del 5% o 10% por mes, con topes del 100% y 200%; corrección del 10% o 20%; mínimo de 10 UVT) y **no acepta valores mayores**: el municipio solo puede bajarlos (sección 5).
 - **Datos con vigencia, no constantes**: UVT, bases mínimas, plazos y tasa de interés de mora (sección 7) caducan, así que van como parámetros con fecha de vigencia. Los plazos se cargan desde fuentes oficiales y, mientras no estén, quedan vacíos: no se inventan.
 
 ## 7. Datos que caducan ⏳
 
-Todos verificados el 2026-09-22. Revisar antes de reutilizarlos.
+Verificados el 2026-09-22, salvo los que indican otra fecha. Revisar antes de reutilizarlos.
 
 | Dato | Valor | Vigencia |
 |---|---|---|
@@ -337,13 +373,17 @@ Todos verificados el 2026-09-22. Revisar antes de reutilizarlos.
 | Base mínima ReteICA Medellín | 15 UVT para todo pago (tarifa 2 por mil) | 2026 |
 | Base mínima ReteICA Bucaramanga | Servicios 25 UVT · compras 50 UVT | 2026 |
 | Plazos ReteICA Bogotá | 20 mar, 22 may, 17 jul, 18 sep, 20 nov de 2026; 15 ene de 2027 | 2026 |
+| Bimestre 6 en Medellín | ReteICA: vence el 20 ene de 2027. Autorretención: se practica hasta el 15 dic y vence el 21 dic de 2026 | 2026 (verificado el 2026-11-02) |
+| Pronto pago ICA en Manizales | 10% hasta el 27 feb, 8% hasta el 31 mar y 6% hasta el 30 abr de 2026; tope de 300 UVT; no aplica al SIMPLE | Año gravable 2025 (verificado el 2026-11-02) |
+| Autorretención del bimestre 6 en Envigado | Corte al 15 dic de 2026 | 2026 (resumen de la norma, 2026-11-02) |
+| ICA bimestral en Bogotá | Más de 391 UVT de impuesto a cargo en 2025 | 2026 (nota de prensa, 2026-11-02) |
 | Tasa de interés de mora | 27,66% E.A. (usura − 2 puntos) | **Solo agosto de 2026**: la tasa es mensual y la de septiembre de 2026 no se encontró publicada; actualizar antes de usarla para liquidar intereses |
 
 ## 8. Sin verificar o pendiente
 
 - El único formulario de **retención** leído completo, renglón por renglón, es el de **Medellín**. Lo de las demás ciudades sale de fuentes secundarias y de las páginas de las alcaldías, no del formulario. **Los formularios reales de los municipios con los que trabaja el usuario valen más que este documento**: si aparecen, agregarlos aquí.
 - No se leyó completo ningún formulario de **autorretención** (el de Medellín es un manual de portal sin renglones numerados).
-- Umbral exacto a partir del cual un contribuyente declara bimestralmente en Bogotá: no verificado.
+- Umbral a partir del cual un contribuyente declara bimestralmente en Bogotá: 391 UVT según una nota de prensa (sección 7); falta confirmarlo en la Resolución SDH 000195 de 2025.
 - Lo incorporado el 2026-09-24 (tipos de declaración y clausura, descuento por pronto pago, reglas de sistema de sanciones) no trae fuente citada; confirmar con el estatuto de cada municipio.
 - **Aprobación previa** (sección 6.2): no se encontró norma que la regule. El plazo, el efecto del silencio y la vigencia del recibo los decide cada municipio; confirmar en su estatuto o en un acto de la Secretaría de Hacienda.
 - **Descuento por pronto pago** (sección 2): no hay norma nacional; el rango, el paz y salvo, la base, la pérdida del beneficio y el trato en correcciones deben confirmarse en el acuerdo de cada municipio.
@@ -375,3 +415,14 @@ Todos verificados el 2026-09-22. Revisar antes de reutilizarlos.
 - Código Penal, art. 402 (omisión del agente retenedor)
 - [DIAN, Concepto 14116 de 2017: art. 589 tras la Ley 1819 de 2016](https://normograma.dian.gov.co/dian/compilacion/docs/concepto_tributario_dian_0014116_2017.htm)
 - [Ámbito Jurídico: hecho generador de avisos y tableros](https://www.ambitojuridico.com/noticias/tributario/asi-se-determina-el-hecho-generador-del-impuesto-de-avisos-y-tableros-1104-am)
+- [Acuerdo 093 de 2023 de Medellín](https://www.medellin.gov.co/es/wp-content/uploads/2024/01/ACUERDO-093-2023-GACETA.pdf) (arts. 43, 53 y 76)
+- [Guía de preguntas frecuentes del ICA anual de Medellín (2026)](https://www.medellin.gov.co/es/wp-content/uploads/2026/03/4.-DE-GEHA-ING-Guia-de-Preguntas-y-Respuestas-Frecuentes_Declaracion-Anual-de-Industria-y-Comercio.pdf) (preguntas 4 y 12)
+- [Resolución 202550100057 de 2025: calendario de Medellín para 2026](https://www.cerlatam.com/wp-content//uploads/2026/01/ResALCALDIAMED202550100057_2025.pdf)
+- [MinHacienda, concepto 031090 de 2017: año gravable y vigencia fiscal](https://cdn.actualicese.com/normatividad/2017/Conceptos/C031090-17.pdf)
+- [Acuerdo 1212 de 2025 de Manizales](https://legalytributarioenlinea.co.pwc.com/Repositorio%20PwC/PDF/Normas%20Nacionales/Acuerdos/ACUERDO-001212-25.pdf) (art. 6) y [calendario de Manizales para 2026](https://centrodeinformacion.manizales.gov.co/manizales-fija-el-calendario-tributario-para-2026-con-descuentos-por-pronto-pago/)
+- [Chía: instructivo de cese de actividades](https://sh.chia-cundinamarca.gov.co/2025/Tramites%20y%20Servicios/INSTRUCTIVO%20PARA%20REALIZAR%20CESE%20DE%20ACTIVIDADES.pdf)
+- [Cajicá: cese de actividades económicas](https://cajica.gov.co/docdown/archi/2025/Procedimiento/PORTAFOLIO%20DE%20TRAMITES%20Y%20SERVICIOS%20ACTUALIZADO%202025/7.%20SECRETARIA%20DE%20HACIENDA%20LISTO/7.%20CESE%20DE%20ACTIVIDADES%20ECONOMICAS.pdf)
+- [Ecos del Combeima: fin del pago anticipado en Ibagué](https://www.ecosdelcombeima.com/economia/nota-154521-no-pediran-pago-anticipado-del-impuesto-de-industria-y-comercio-en-ibague)
+- [Cerlatam: modificación del calendario de Envigado](https://www.cerlatam.com/?p=38550)
+- [Infobae: calendario de Bogotá para 2026](https://www.infobae.com/colombia/2025/12/21/tome-nota-bogota-definio-su-calendario-tributario-2026-para-los-pagos-de-los-impuestos-predial-vehicular-ica-entre-otros/)
+- [Oficio DIAN 417 de 2020: momento de la deducción del ICA](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_0417_2020.htm)
