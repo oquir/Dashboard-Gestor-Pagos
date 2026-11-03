@@ -47,6 +47,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 |---|---|---|
 | Omisos | Quién debía declarar y no lo hizo, por impuesto y periodo (§3.5). Los datos de la demo ya los generan, pero ninguna pantalla los muestra | En revisión |
 | Calendario tributario | Sección en Configuración para editar y cargar vencimientos por año gravable (ICA, ReteICA y AutoReteICA), con importación/exportación JSON, sugerencias automáticas y tarjeta en Inicio | **Implementado** (2026-10-30) |
+| Datos anuales sin actualizar | Mostrar cuando falta el calendario oficial o la UVT de un año, y marcar lo que se liquidó sin ellos, para que el municipio no se entere meses después por declaraciones mal calculadas (§3.14) | Pendiente |
 | Alerta de ReteICA sin consignar | El dominio pide una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§6.3 de `Dominio-ICA.md`). Opcional por municipio: la regla de Ricaurte, que no la deja ineficaz si se paga dentro de los 2 meses | Pendiente |
 | Estado de cuenta del contribuyente | Ninguna vista junta lo que debe un contribuyente: sus vigencias, saldos y pagos | Pendiente, **sin paz y salvo** |
 | Carga del Asobancaria | El resultado es aleatorio y no cambia la cartera; las referencias que no cruzan no quedan en ninguna parte | Se queda simulada |
@@ -57,6 +58,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 | Punto | Qué falta | Estado |
 |---|---|---|
 | Flujo de la corrección a la baja | Los estados proyecto, aceptada, rechazada y aceptada por silencio, con los plazos de 1 año y 6 meses (§3.2) | En revisión |
+| Emplazamientos | Registrar los emplazamientos para declarar y para corregir, con su fecha de notificación, y usar la sanción más alta cuando se presenta o se corrige después de esa fecha (§3.13). Las tasas ya se configuran, pero la liquidación no las usa | Pendiente |
 | Bitácora de cambios | Quién cambió qué y cuándo (§3.9) | Sí, solo para 1cero1 |
 | Usuarios | Editar el rol, el cargo, el correo y el municipio; hoy solo se crean y se activan o desactivan | Editar: pendiente. Separar permisos: descartado |
 | Recibos de caja y de pago | Poder descargarlos (§3.10) | Descartado |
@@ -71,10 +73,10 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 Nada de esto se ha decidido:
 - alta de municipios nuevos por 1cero1 (hoy son 3 fijos), con su escudo en la barra y en los PDF;
 - una meta de recaudo anual con su avance en Inicio, y un reporte de los mayores contribuyentes;
-- la UVT por año y la tasa de interés de mora por mes, con su vigencia (hoy son constantes);
+- la tasa de interés de mora por mes, con su vigencia (hoy es constante);
 - la sobretasa de seguridad y el pago voluntario en Configuración (renglones 24, 39 y 40 del FUN);
 - el cruce del renglón 28 con las autorretenciones declaradas y pagadas en el año (§6.2 de `Dominio-ICA.md`);
-- saldos a favor (devolución o compensación), acuerdos de pago, emplazamientos a omisos, certificados de retención y exógena;
+- saldos a favor (devolución o compensación), acuerdos de pago, certificados de retención y exógena;
 - en el RIT, la inscripción de oficio, la carga de la resolución de autorretenedores y la naturaleza jurídica del inscrito (ideas de la §9 de `Contexto-RIT.md`);
 - la cadena de correcciones de cada periodo (hoy solo hay los enlaces "corrige a" y "reemplazada por");
 - un tour o un guion para presentar la demo.
@@ -195,6 +197,39 @@ Rechazar por otra cosa, como una tarifa mal puesta, es discutible: eso se arregl
 
 En el mock, la lista de documentos está fija y es igual para todos los municipios, aunque cada uno pide algo distinto. Medellín le pide a un agente el formulario RIT y cuatro documentos; Ricaurte, solo una copia del RUT. Hacerla configurable sería que cada administrador marque qué exige según el tipo de persona y la calidad. Para una demo, es de lo menos importante.
 
+### 3.13 Emplazamientos
+
+Un emplazamiento no es una fecha general como el calendario: es un aviso que la alcaldía le notifica a un contribuyente por un periodo concreto (un año gravable en el ICA; un bimestre o mes en ReteICA y AutoReteICA). No sube la sanción por sí solo: la sube presentar o corregir después de notificado. Hay dos:
+
+- **Para declarar** (art. 715 ET): el contribuyente no ha presentado. Tiene 1 mes. Si presenta después de notificado, la extemporaneidad pasa de 5 % a 10 % por mes, con tope de 200 %. Si no presenta, viene la sanción por no declarar y después la liquidación de aforo.
+- **Para corregir** (art. 685 ET): ya presentó y hay indicios de error. Tiene 1 mes para responder, pero el 20 % aplica a toda corrección hecha entre la notificación y el requerimiento especial. Antes del emplazamiento es 10 %. No responder no genera sanción por sí solo. Es facultativo: la alcaldía puede ir directo al requerimiento.
+
+La clausura no tiene reglas propias: si no se ha presentado, le aplica el de declarar; si ya se presentó, el de corregir (es una deducción: no se encontró norma expresa). Corregir a la baja no lleva esta sanción.
+
+Para el mock, el de declarar se liga al inscrito y al periodo, porque todavía no hay declaración; el de corregir, a una declaración. Lo que define la tasa es comparar la fecha de notificación con la de presentación.
+
+Sin resolver: qué significa la condición del art. 355, parágrafo 1, del Acuerdo 093 de Medellín ("siempre y cuando no se haya expedido emplazamiento para declarar ni auto de inspección"), que la ley nacional no trae, y cómo se emplaza a una sociedad ya liquidada.
+
+Al aplicarlo, corregir la sección 5 de `Dominio-ICA.md`: dice que el 20 % aplica si se corrige "dentro del mes" y pasa de no responder al aforo sin mencionar la sanción por no declarar.
+
+### 3.14 Datos anuales: UVT y calendario
+
+**El problema**: en el aplicativo actual, los municipios tardan meses en enviar el calendario nuevo, no responden los correos y avisan cuando ven declaraciones mal calculadas.
+
+**UVT**: es nacional. La DIAN debe publicarla por resolución antes del 1 de enero de cada año (art. 868 ET). Si no lo hace, se aplica el reajuste que autoriza la ley. La de 2026 salió el 15 de diciembre de 2025. No se le pide a ningún municipio: se tiene pensada una sonda que la actualice sola. La sonda debe distinguir el proyecto de resolución del acto final (el proyecto para 2026 salió el 19 de noviembre de 2025), guardar el valor por año sin tocar los anteriores y avisarle a 1cero1 si no encuentra el valor o si falla.
+
+**Calendario**: no se encontró un plazo nacional. Lo fija cada municipio según su estatuto. Popayán, por ejemplo, se obliga a fijarlo antes del 1 de octubre; en el Acuerdo 093 de Medellín no se encontró una fecha. En la práctica salen a fin de año (Medellín: 9 de diciembre de 2025; Envigado: 26 de diciembre de 2025), y pueden cambiar durante el año (Manizales lo modificó el 14 de agosto de 2026 y Envigado el 21 de septiembre de 2026). Tampoco se encontró qué pasa con las sanciones si un municipio no lo expide.
+
+**Versión mínima**:
+- UVT por año, actualizada por la sonda. En el mock no hay backend, así que se simula o se carga a mano.
+- Estado del calendario por año gravable: sin cargar, sugerido u oficial. Solo es oficial con el acto, su fecha y quién lo cargó.
+- Aviso visible en Inicio para el municipio y para 1cero1 cuando falte el calendario o la UVT del año.
+- Marca en cada declaración liquidada sin calendario oficial, y sin sanciones definitivas mientras tanto.
+- Registro de avisos enviados: fecha y destinatario.
+- Historial del calendario, porque una modificación no debe cambiar lo ya liquidado sin dejar rastro.
+
+Con esto, además, la falta de datos queda a la vista desde el primer día y no depende de que respondan un correo.
+
 ## 4. Dónde está cada cosa en el código
 
 | Qué | Dónde |
@@ -211,6 +246,10 @@ En el mock, la lista de documentos está fija y es igual para todos los municipi
 | UVT constante | `UVT`, en `src/lib/reglas.ts` |
 | Tasa de interés de mora fija | `liquidarIca` y la liquidación de la retención, en `src/data/generar.ts` |
 | Rechazo en la aprobación previa (texto libre) | `src/components/organisms/declaraciones/AprobacionPrevia/AprobacionPrevia.tsx` |
+| Fechas inventadas al sugerir o copiar un calendario, sin distinguirlas de las oficiales | `generarCalendarioSugerido` y `copiarCalendarioVigencia`, en `src/lib/configuracion.ts` |
+| Liquidación que no lee el calendario configurado | `generar.ts` usa `VENCIMIENTO_ICA_2025` y `VENCIMIENTOS_BIMESTRE_2026`, no `calendarioTributario` |
+| Tarjeta que rotula "ReteICA y AutoReteICA" pero solo lee las fechas de ReteICA | `ProximosVencimientos`, en `src/components/organisms/inicio/` |
+| Tasas con emplazamiento que se configuran pero no se usan (`extemporaneidadEmplazamiento`, `correccionEmplazamiento`) | Se editan en `SeccionSanciones`; la liquidación de `src/data/generar.ts` solo usa `extemporaneidad` y `correccion` |
 
 ## 5. Para retomar
 
