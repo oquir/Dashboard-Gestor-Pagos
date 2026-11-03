@@ -1,0 +1,12 @@
+# core-js solo imprime un mensaje de donaciones al instalarse; no necesita ejecutarse.
+allowBuilds:
+  core-js: false
+
+# No instalar versiones publicadas hace menos de 7 días (en minutos).
+minimumReleaseAge: 10080
+
+# Rechazar una versión con menos garantías de procedencia que las anteriores del paquete.
+trustPolicy: no-downgrade
+# Falso positivo: parche retroactivo de 2023, publicado sin procedencia después de versiones 7.x que sí la tenían.
+trustPolicyExclude:
+  - semver@6.3.1
