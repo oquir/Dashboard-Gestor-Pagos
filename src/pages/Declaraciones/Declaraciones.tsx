@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Card } from '../../components/atoms'
 import { BarraFiltros, Buscador, Filtro, PageHeader, Segmentado } from '../../components/molecules'
-import { BuscadorMunicipios, ListaOmisos, SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
+import { BuscadorMunicipios, DescargaDeclaraciones, ListaOmisos, SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
 import { OPCIONES_APROBACION } from '../../constants'
 import { formatoDocumento } from '../../lib/formato'
 import { estadoPago } from '../../lib/reglas'
@@ -120,8 +120,10 @@ export default function Declaraciones() {
         <ListaOmisos resultado={omisos} impuesto={impuesto} />
       ) : (
         <Card>
-          <BarraFiltros>
-            <Buscador className="min-w-60 flex-1" placeholder="Buscar por declarante, NIT o cédula, radicado o factura" value={texto} onChange={(e) => setTexto(e.target.value)} />
+          <BarraFiltros
+            buscador={<Buscador placeholder="Buscar por declarante, NIT o cédula, radicado o factura" value={texto} onChange={(e) => setTexto(e.target.value)} />}
+            acciones={<DescargaDeclaraciones declaraciones={marcadas.map((f) => f.d)} />}
+          >
             <Filtro etiqueta="Tipo de declaración" opciones={OPCIONES_TIPO} valor={tipo} cambiar={setTipo} />
             <Filtro etiqueta="Estado de pago" opciones={OPCIONES_PAGO} valor={pago} cambiar={setPago} />
             {conAprobacion && (

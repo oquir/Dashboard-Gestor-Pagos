@@ -33,16 +33,17 @@ export default function TablaActividades({ vigencia, actual, vista, puedeCargar 
       />
       {filas.length > 0 ? (
         <>
-          <BarraFiltros>
-            <Buscador
-              type="search"
-              aria-label="Buscar actividad"
-              placeholder="Buscar por nombre de la actividad o código CIIU"
-              className="flex-1"
-              value={texto}
-              onChange={(e) => setTexto(e.target.value)}
-            />
-          </BarraFiltros>
+          <BarraFiltros
+            buscador={
+              <Buscador
+                type="search"
+                aria-label="Buscar actividad"
+                placeholder="Buscar por nombre de la actividad o código CIIU"
+                value={texto}
+                onChange={(e) => setTexto(e.target.value)}
+              />
+            }
+          />
           <Tabla datos={encontradas} columnas={COLUMNAS} idFila={(t) => t.ciiu} densa nombre="actividades" vacio="Ninguna actividad coincide con la búsqueda" />
         </>
       ) : (

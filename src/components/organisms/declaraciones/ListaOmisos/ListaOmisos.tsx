@@ -60,14 +60,15 @@ export default function ListaOmisos({ resultado, impuesto }: ListaOmisosProps) {
         <CardHeader
           titulo="Omisos"
           descripcion="Inscritos en el RIT que debían declarar un periodo ya vencido y no lo han hecho."
+        />
+        <BarraFiltros
+          buscador={<Buscador placeholder="Buscar por nombre, NIT o cédula, o número de RIT" value={texto} onChange={(e) => setTexto(e.target.value)} />}
           acciones={
             <Boton variante="primario" disabled={filtrados.length === 0} onClick={descargar}>
               <Download className="size-4" aria-hidden /> Descargar Excel
             </Boton>
           }
-        />
-        <BarraFiltros>
-          <Buscador className="min-w-60 flex-1" placeholder="Buscar por nombre, NIT o cédula, o número de RIT" value={texto} onChange={(e) => setTexto(e.target.value)} />
+        >
           <Filtro etiqueta="Año gravable" opciones={anios} valor={anio} cambiar={setAnio} />
         </BarraFiltros>
         <TablaOmisos omisos={filtrados} total={delImpuesto.length} />

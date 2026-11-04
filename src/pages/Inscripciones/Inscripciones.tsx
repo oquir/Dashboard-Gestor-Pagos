@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
-import { Card, Casilla } from '../../components/atoms'
-import { BarraFiltros, Buscador, Filtro, IndicadorSeleccionable, PageHeader } from '../../components/molecules'
+import { Card } from '../../components/atoms'
+import { BarraFiltros, Buscador, Filtro, FiltroCasilla, IndicadorSeleccionable, PageHeader } from '../../components/molecules'
 import { BuscadorMunicipios, TablaInscripciones } from '../../components/organisms'
 import { ultimoTramite } from '../../lib/reglas'
 import { conRit, delMunicipio, ritVisible, useSesion } from '../../lib/sesion'
@@ -54,16 +54,14 @@ export default function Inscripciones() {
       </div>
 
       <Card>
-        <BarraFiltros>
-          <Buscador className="min-w-60 flex-1" placeholder="Buscar por nombre, documento o número de RIT" value={texto} onChange={(e) => setTexto(e.target.value)} />
+        <BarraFiltros
+          buscador={<Buscador placeholder="Buscar por nombre, documento o número de RIT" value={texto} onChange={(e) => setTexto(e.target.value)} />}
+          acciones={<FiltroCasilla etiqueta="Con solicitudes pendientes" marcado={soloPendientes} cambiar={setSoloPendientes} />}
+        >
           <Filtro etiqueta="Tipo de persona" opciones={OPCIONES_TIPO_PERSONA} valor={tipoPersona} cambiar={setTipoPersona} />
           <Filtro etiqueta="Calidad" opciones={OPCIONES_CALIDAD} valor={calidad} cambiar={setCalidad} />
           <Filtro etiqueta="Estado" opciones={OPCIONES_ESTADO} valor={estado} cambiar={setEstado} />
           <Filtro etiqueta="Tipo de trámite" opciones={OPCIONES_TRAMITE} valor={tramite} cambiar={setTramite} />
-          <label className="flex items-center gap-2 text-sm text-slate-700">
-            <Casilla className="rounded border-slate-300" checked={soloPendientes} onChange={(e) => setSoloPendientes(e.target.checked)} />
-            Con solicitudes pendientes
-          </label>
         </BarraFiltros>
 
         <TablaInscripciones inscripciones={filtradas} total={inscripciones.length} />
