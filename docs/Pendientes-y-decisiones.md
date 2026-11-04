@@ -7,7 +7,7 @@
 >
 > El dashboard es un **mock**: corre en localhost, sin API ni base de datos, y sirve para mostrarles a los municipios cómo se verá el aplicativo. Complementa a [`Dominio-ICA.md`](Dominio-ICA.md) y a [`Contexto-RIT.md`](Contexto-RIT.md).
 >
-> **Revisado el 2026-10-27.** Lo que dice sobre el código es de esa fecha: antes de usarlo, verificar que siga igual.
+> **Revisado el 2026-10-27; actualizado el 2026-11-04.** Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
 
 ## 1. Decisiones del 2026-10-27
 
@@ -20,7 +20,7 @@
 | Vista previa de los correos | **Descartado** | Invita a los municipios a pedir cambios en la plantilla |
 | Festivos en los días hábiles | **Fuera del mock** | Los resuelve quien hace la base de datos, al construir la API |
 | Carga del Asobancaria 2001 | **Se queda simulada** | Es un mock: basta con que muestre el flujo |
-| Bitácora de cambios | **Sí, más adelante** | Solo la ve 1cero1, con la fecha y la hora de cada cambio (§3.9) |
+| Bitácora de cambios | **Sí**; hecha el 2026-11-04 con datos de prueba | Solo la ve 1cero1, con la fecha y la hora de cada cambio, también los de 1cero1 (§3.9) |
 | Buscador global | **Por ahora no** | La respuesta quedó a medias: confirmarla |
 | Cuadre de caja | **Por decidir**; la sugerencia es dejarlo fuera | Seguramente lo hace el sistema de rentas del municipio (§3.8) |
 | Corrección a la baja, plazo de inscripción en el RIT, declaración en ceros, omisos, calendario de vencimientos, causales del art. 580 y soportes por calidad | **En revisión** | El usuario los está estudiando con las explicaciones de §3 |
@@ -40,7 +40,7 @@ La lista sale de revisar todas las páginas, el store, las reglas y la §6 de `D
 
 ### 2.1 Configuración que hoy no cambia nada
 
-Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia con ellos. Mientras no se implementen, lo más barato es ocultarlos.
+Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba con ellos. Los que siguen pendientes conviene ocultarlos mientras no se implementen; los que ya tienen efecto lo dicen en su estado.
 
 | Campo | Qué pasa hoy | Estado |
 |---|---|---|
@@ -49,6 +49,8 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 | Corrección a la baja (art. 589 clásico o corrección directa) | El flujo no existe (§3.2) | En revisión |
 | Plazo para inscribirse en el RIT | Nada marca una inscripción tardía (§3.3) | En revisión |
 | Declaración en ceros | Desde el 2026-11-03 decide si un agente de ReteICA sin declaración sale como omiso o solo en el aviso (§3.4 y §3.5) | **Con efecto** |
+| Bases mínimas de ReteICA (servicios y compras) | Desde el 2026-11-04, en las declaraciones de ReteICA de la demo, los pagos por debajo de la base mínima no se retienen, y el renglón lo dice. Como el resto de la configuración de la liquidación (tarifa, anticipo, sobretasa), se aplica al generar los datos de la demo: cambiarla no recalcula lo ya declarado | **Con efecto** |
+| Tasas de sanción con emplazamiento | La liquidación no las usa: falta registrar los emplazamientos (§3.13) | Pendiente |
 
 ### 2.2 Prioridad alta
 
@@ -68,8 +70,8 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 |---|---|---|
 | Flujo de la corrección a la baja | Los estados proyecto, aceptada, rechazada y aceptada por silencio, con los plazos de 1 año y 6 meses (§3.2) | En revisión |
 | Emplazamientos | Registrar los emplazamientos para declarar y para corregir, con su fecha de notificación, y usar la sanción más alta cuando se presenta o se corrige después de esa fecha (§3.13). Las tasas ya se configuran, pero la liquidación no las usa | Pendiente |
-| Bitácora de cambios | Quién cambió qué y cuándo (§3.9) | Sí, solo para 1cero1 |
-| Usuarios | Editar el rol, el cargo, el correo y el municipio; hoy solo se crean y se activan o desactivan | Editar: pendiente. Separar permisos: descartado |
+| Bitácora de cambios | Página Bitácora, solo para 1cero1, con datos de prueba (§3.9). Falta que lo que se hace en la demo también se registre | **Implementada con datos de prueba** (2026-11-04) |
+| Usuarios | Botón en cada fila que abre el detalle del usuario: editar sus datos (también el correo, cuando el municipio pierde el acceso al que tenía), desactivar o reactivar, eliminar y reenviar las credenciales (el correo es simulado) | **Implementado** (2026-11-04). Separar permisos: descartado |
 | Recibos de caja y de pago | Poder descargarlos (§3.10) | Descartado |
 | Causales del art. 580 | Escoger la causal al rechazar en la aprobación previa; hoy es texto libre (§3.11) | En revisión |
 | Soportes del RIT por calidad | Que cada municipio configure qué documentos exige (§3.12) | En revisión |
@@ -192,7 +194,9 @@ Sirve para que 1cero1 le pueda decir a un municipio quién hizo un cambio y cuá
 - **qué hizo**: cambios de configuración, módulos activados, aprobaciones y rechazos, pagos en ventanilla, cheques y usuarios;
 - **cómo estaba antes**: el valor previo de lo que cambió.
 
-En el mock viviría en el navegador; la de verdad la guardaría la API. Hoy el estado de la demo solo guarda fechas, no horas.
+En el mock viviría en el navegador; la de verdad la guardaría la API.
+
+**Cómo quedó en el mock** (2026-11-04): la página Bitácora, solo para 1cero1, con unos 50 registros de prueba entre agosto y octubre de 2026 (`src/data/bitacora.ts`). Trae acciones de los tres roles, también de 1cero1, y un caso de madrugada: Carlos Restrepo cambió la sobretasa bomberil y el anticipo de San José del Valle el 9 de septiembre a la 1 a. m. Los cambios terminan en los valores que hoy tiene la demo, para no contradecir las demás pantallas, y los registros del RIT y de los cheques salen de los datos de la demo. Se filtra por municipio, texto, categoría, rol y "fuera de horario" (antes de las 7 a. m. o desde las 7 p. m.), y se descarga en Excel. **Límite**: lo que se hace en la demo no se registra; para eso, cada acción del store tendría que agregar su registro.
 
 ### 3.10 Recibo de caja y recibo de pago
 
@@ -256,7 +260,7 @@ Con esto, además, la falta de datos queda a la vista desde el primer día y no 
 
 | Qué | Dónde |
 |---|---|
-| Campos de configuración sin efecto (`correccionABaja`, `plazoInscripcionMeses`, las bases mínimas de `reteica` y las tasas con emplazamiento de `sanciones`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionRetencion`, `SeccionSanciones` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
+| Campos de configuración sin efecto (`correccionABaja`, `plazoInscripcionMeses` y las tasas con emplazamiento de `sanciones`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionSanciones` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
 | Etiqueta del periodo ("bimestre") | `etiquetaPeriodo`, en `src/lib/formato.ts` |
 | Vencimientos fijos | `VENCIMIENTO_ICA_2025` y `VENCIMIENTOS_BIMESTRE_2026`, en `src/data/catalogos.ts` |
 | Omisos: cálculo y pantallas | `calcularOmisos` en `src/lib/omisos.ts` y `useOmisos` en `src/lib/sesion.ts`; la vista en `ListaOmisos` y `TablaOmisos` (`src/components/organisms/declaraciones/`); `DeclaracionesFaltantes` en `src/components/organisms/inscripciones/`; la fecha `declaracionesDesde` del tipo `Municipio` |
@@ -278,10 +282,9 @@ Con esto, además, la falta de datos queda a la vista desde el primer día y no 
 - **En revisión por el usuario**:
   - la corrección a la baja;
   - el plazo de inscripción en el RIT;
-  - el calendario de vencimientos;
   - las causales del art. 580;
   - los soportes por calidad.
 
   Las explicaciones están en §3.
 - **Por confirmar**: el buscador global, porque la respuesta quedó a medias, y el cuadre de caja.
-- **Siguiente paso**: el usuario decide qué hacer. Cada punto se hace en su versión mínima.
+- **Siguiente paso**: el usuario decide qué hacer. Cada punto se hace en su versión mínima. La sugerencia del 2026-11-04 es que las declaraciones de la demo sigan la periodicidad del calendario (§2.1).
