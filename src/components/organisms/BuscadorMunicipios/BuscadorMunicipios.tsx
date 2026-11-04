@@ -1,5 +1,5 @@
 import { useId, useRef, useState, type KeyboardEvent } from 'react'
-import { TickCircle } from 'reicon-react'
+import { GlobalSearch, TickCircle } from 'reicon-react'
 import { puede } from '../../../lib/permisos'
 import { useSesion } from '../../../lib/sesion'
 import { useDatos } from '../../../store'
@@ -52,6 +52,7 @@ export default function BuscadorMunicipios({ todos = true }: BuscadorMunicipiosP
       <div className="relative">
         <Buscador
           ref={campo}
+          icono={GlobalSearch}
           role="combobox"
           aria-label="Municipio"
           aria-autocomplete="list"
