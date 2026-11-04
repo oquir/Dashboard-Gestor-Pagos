@@ -30,6 +30,9 @@
 | Años pasados en el calendario (2026-11-03) | **Sí**: se pueden agregar hasta 10 años atrás | Los municipios piden corregir fechas de años pasados; en esos años no hay pronto pago |
 | Vencimientos por último dígito (2026-11-03) | El dígito es siempre **sin el dígito de verificación (DV)**, y la página Calendario lo dice con un ejemplo | Los municipios se quejan cuando no queda claro |
 | Vencimientos por rango de ingresos, como en Cali (2026-11-03) | **No por ahora**: el municipio pone a mano las fechas que necesite | No hace falta todavía |
+| Dónde se ven los omisos (2026-11-03) | **En Declaraciones**, con el selector "Presentadas / Omisos". Además, una tarjeta en Inicio y "Declaraciones que faltan" en el detalle del inscrito | Es donde el municipio ya revisa lo declarado |
+| Desde cuándo se revisan los omisos (2026-11-03) | **Desde la fecha "declaraciones en el aplicativo desde" de cada municipio**, que pone 1cero1 en Municipios | Lo anterior está en otro sistema: revisarlo marcaría como omisos a quienes sí declararon |
+| ReteICA sin declaración donde no se exige la declaración en ceros (2026-11-03) | **Solo un aviso** con cuántos agentes son; no salen en la lista | Pudieron no haber retenido nada: no se les puede llamar omisos |
 
 ## 2. Lo que falta, con su estado
 
@@ -45,13 +48,13 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 | Formulario conjunto | No hay ninguna declaración conjunta | Descartado |
 | Corrección a la baja (art. 589 clásico o corrección directa) | El flujo no existe (§3.2) | En revisión |
 | Plazo para inscribirse en el RIT | Nada marca una inscripción tardía (§3.3) | En revisión |
-| Declaración en ceros | Sin una lista de omisos, no tiene efecto (§3.4) | En revisión |
+| Declaración en ceros | Desde el 2026-11-03 decide si un agente de ReteICA sin declaración sale como omiso o solo en el aviso (§3.4 y §3.5) | **Con efecto** |
 
 ### 2.2 Prioridad alta
 
 | Punto | Qué falta | Estado |
 |---|---|---|
-| Omisos | Quién debía declarar y no lo hizo, por impuesto y periodo (§3.5). Los datos de la demo ya los generan, pero ninguna pantalla los muestra | En revisión |
+| Omisos | Quién debía declarar y no lo hizo, por impuesto y periodo (§3.5): en Declaraciones › Omisos, con Excel, en una tarjeta de Inicio y en el detalle del inscrito | **Implementado** (2026-11-03) |
 | Calendario tributario | Página Calendario (antes era una sección de Configuración) con, por año gravable, pasado o futuro: los vencimientos de cada formulario activo por separado, su periodicidad, fechas por último dígito del NIT o la cédula si el municipio las separa, y el pronto pago con su interruptor. Tarjeta de próximos vencimientos en Inicio | **Implementado** (2026-10-30; rehecho el 2026-11-03) |
 | Datos anuales sin actualizar | Mostrar cuando falta el calendario oficial o la UVT de un año, y marcar lo que se liquidó sin ellos, para que el municipio no se entere meses después por declaraciones mal calculadas (§3.14) | Pendiente |
 | Alerta de ReteICA sin consignar | El dominio pide una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§6.3 de `Dominio-ICA.md`). Opcional por municipio: la regla de Ricaurte, que no la deja ineficaz si se paga dentro de los 2 meses | Pendiente |
@@ -148,6 +151,15 @@ No hace falta saber quién trabaja en el municipio: **para eso está el RIT**, q
 Los omisos son los inscritos que debían declarar y todavía no lo han hecho en ese periodo. Para sacarlos basta cruzar dos listas que el dashboard ya tiene: la de inscritos y la de declaraciones. Ese cruce tiene dos límites:
 - solo sirve en los municipios que tienen el RIT en el aplicativo; en los demás, el dashboard solo ve a quien declaró;
 - al que nunca se inscribió (el informal) no se le ve desde aquí. Encontrarlo es trabajo de fiscalización (cruces con la Cámara de Comercio o la DIAN, visitas) y queda fuera del dashboard.
+
+**Cómo lo calcula el aplicativo** (desde el 2026-11-03), periodo por periodo del calendario:
+- Solo cuentan las inscripciones activas o canceladas que tienen la calidad desde antes de que termine el periodo. Si la canceló, solo los periodos que empezaron antes del cese.
+- El vencimiento es el del calendario o, si el formulario va por dígito, el del último dígito del documento sin DV. Debe haber pasado, y ser desde la fecha en que el municipio empezó a recibir declaraciones en el aplicativo. Lo anterior está en otro sistema.
+- No cuentan los periodos que vencieron mientras el municipio tenía el formulario desactivado.
+- Cualquier declaración del periodo lo cubre: inicial, corrección, clausura o pendiente de aprobación. La rechazada en la aprobación previa no, porque se tiene por no presentada (§3.11). La ineficaz sí lo cubre: es asunto de la alerta de ReteICA sin consignar.
+- Si falta el calendario de un año, sus periodos no se pueden revisar y la página lo avisa.
+
+**Límite conocido**: las declaraciones de la demo van por bimestres. Si en Calendario se cambia la periodicidad de la ReteICA o la AutoReteICA, los periodos ya no coinciden y salen omisos que no lo son.
 
 ### 3.6 Calendario de vencimientos
 
@@ -248,7 +260,8 @@ Con esto, además, la falta de datos queda a la vista desde el primer día y no 
 | Formulario conjunto prendido en la demo | Puerto Esperanza (`m2`), en `CONFIGURACIONES` de `src/data/catalogos.ts` |
 | Etiqueta del periodo ("bimestre") | `etiquetaPeriodo`, en `src/lib/formato.ts` |
 | Vencimientos fijos | `VENCIMIENTO_ICA_2025` y `VENCIMIENTOS_BIMESTRE_2026`, en `src/data/catalogos.ts` |
-| Omisos que ya genera la demo | La lista `omisos` de `generarDatos`, en `src/data/generar.ts` |
+| Omisos: cálculo y pantallas | `calcularOmisos` en `src/lib/omisos.ts` y `useOmisos` en `src/lib/sesion.ts`; la vista en `ListaOmisos` y `TablaOmisos` (`src/components/organisms/declaraciones/`); `DeclaracionesFaltantes` en `src/components/organisms/inscripciones/`; la fecha `declaracionesDesde` del tipo `Municipio` |
+| Omisos de la demo | En `generarDatos` (`src/data/generar.ts`): los inscritos que no declararon el ICA 2025 y, con su propio azar, algunas ReteICA y AutoReteICA que se quitan al final |
 | Soportes fijos del RIT | `soportesRequeridos`, en `src/data/generar.ts` |
 | Resultado simulado del Asobancaria | `simular`, en `src/components/organisms/pagos/CargaAsobancaria/utils.ts` |
 | Permisos por rol | `src/lib/permisos.ts` |
@@ -266,7 +279,6 @@ Con esto, además, la falta de datos queda a la vista desde el primer día y no 
 - **En revisión por el usuario**:
   - la corrección a la baja;
   - el plazo de inscripción en el RIT;
-  - la declaración en ceros y los omisos;
   - el calendario de vencimientos;
   - las causales del art. 580;
   - los soportes por calidad.
