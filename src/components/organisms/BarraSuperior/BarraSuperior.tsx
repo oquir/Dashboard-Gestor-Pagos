@@ -1,4 +1,4 @@
-import { Building2, Logout, Menu, RotateLeft } from 'reicon-react'
+import { MapPoint2, Logout, Menu, RotateLeft } from 'reicon-react'
 import { etiquetaRol, nombreCompleto } from '../../../lib/formato'
 import { puede } from '../../../lib/permisos'
 import { useSesion } from '../../../lib/sesion'
@@ -28,7 +28,7 @@ export default function BarraSuperior({ abrirMenu }: BarraSuperiorProps) {
 
       {!puede(usuario.rol, 'verTodosLosMunicipios') && (
         <div className="flex items-center gap-2 text-sm">
-          <Building2 className="size-4 text-slate-400" aria-hidden />
+          <MapPoint2 className="size-4 text-slate-400" aria-hidden />
           <span className="font-medium text-slate-900">{municipio?.nombre}</span>
           <span className="text-slate-500">· {municipio?.departamento}</span>
         </div>
