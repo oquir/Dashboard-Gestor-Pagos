@@ -1,5 +1,6 @@
 import type {
   Calidad,
+  CategoriaBitacora,
   EstadoAprobacion,
   EstadoCheque,
   EstadoInscripcion,
@@ -21,10 +22,13 @@ import type {
 const pesos = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 })
 const compacto = new Intl.NumberFormat('es-CO', { notation: 'compact', maximumFractionDigits: 1 })
 const fecha = new Intl.DateTimeFormat('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
+const horaMinutos = new Intl.DateTimeFormat('es-CO', { hour: 'numeric', minute: '2-digit' })
 
 export const formatoPesos = (valor: number) => pesos.format(valor)
 export const formatoCompacto = (valor: number) => compacto.format(valor)
 export const formatoFecha = (iso: string) => fecha.format(new Date(`${iso}T12:00:00`))
+/** Hora de un registro AAAA-MM-DDTHH:MM, como "1:12 a. m.". */
+export const formatoHora = (fechaHora: string) => horaMinutos.format(new Date(`${fechaHora}:00`))
 /** "hace 1 día", "hace 12 días". */
 export const formatoHaceDias = (dias: number) => (dias === 1 ? 'hace 1 día' : `hace ${dias} días`)
 /** Para comparar textos sin importar tildes, mayúsculas ni espacios de los extremos. */
@@ -39,7 +43,17 @@ export const etiquetaRol: Record<Rol, string> = {
   funcionario: 'Funcionario municipio',
 }
 
-export const nombreCompleto = (u: Pick<Usuario, 'nombres' | 'apellidos'>) => `${u.nombres} ${u.apellidos}`
+export const etiquetaCategoriaBitacora: Record<CategoriaBitacora, string> = {
+  sesion: 'Inicio de sesión',
+  configuracion: 'Configuración',
+  calendario: 'Calendario',
+  municipios: 'Municipios',
+  usuarios: 'Usuarios',
+  rit: 'RIT',
+  pagos: 'Pagos',
+}
+
+export const nombreCompleto =(u: Pick<Usuario, 'nombres' | 'apellidos'>) => `${u.nombres} ${u.apellidos}`
 
 /** Cuándo, quién y por qué el municipio desactivó un formulario. */
 export const textoDesactivado = (d: FormularioDesactivado) => `Desactivado por el municipio el ${formatoFecha(d.fecha)} (${d.por}): ${d.motivo}`

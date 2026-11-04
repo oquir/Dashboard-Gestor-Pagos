@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { Layout } from './components/templates'
 import Actividades from './pages/Actividades'
+import Bitacora from './pages/Bitacora'
 import Calendario from './pages/Calendario'
 import Configuracion from './pages/Configuracion'
 import DeclaracionDetalle from './pages/DeclaracionDetalle'
@@ -32,6 +33,7 @@ export default function App() {
           <Route path="configuracion" element={<Configuracion />} />
           <Route path="usuarios" element={<Usuarios />} />
           <Route path="municipios" element={<Municipios />} />
+          <Route path="bitacora" element={<Bitacora />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

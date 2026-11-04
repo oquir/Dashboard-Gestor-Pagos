@@ -1,4 +1,4 @@
-import { City, Calendar, ChartSquare, AddressCard, Briefcase, Category, Industry, Settings2, Users, Wallet } from 'reicon-react'
+import { City, Calendar, ChartSquare, AddressCard, Briefcase, Category, History, Industry, Settings2, Users, Wallet } from 'reicon-react'
 import type { EnlaceNavegacion } from './types'
 
 export const NAVEGACION: EnlaceNavegacion[] = [
@@ -12,4 +12,5 @@ export const NAVEGACION: EnlaceNavegacion[] = [
   { a: '/configuracion', texto: 'Configuración', icono: Settings2 },
   { a: '/usuarios', texto: 'Usuarios', icono: Users, permiso: 'gestionarUsuarios' },
   { a: '/municipios', texto: 'Municipios', icono: City, permiso: 'gestionarMunicipios' },
+  { a: '/bitacora', texto: 'Bitácora', icono: History, permiso: 'verBitacora' },
 ]

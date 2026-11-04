@@ -13,6 +13,8 @@ export type Permiso =
   | 'cargarActividades'
   /** Registrar el pago en efectivo que el contribuyente hace en la ventanilla del municipio. */
   | 'registrarPagoVentanilla'
+  /** Ver quién hizo cada cambio y cuándo, en todos los municipios. */
+  | 'verBitacora'
 
 const PERMISOS: Record<Permiso, Rol[]> = {
   verTodosLosMunicipios: ['1cero1'],
@@ -26,6 +28,8 @@ const PERMISOS: Record<Permiso, Rol[]> = {
   cargarActividades: ['1cero1', 'admin_municipio'],
   // El efectivo lo recibe el municipio; 1cero1 solo habilita la opción.
   registrarPagoVentanilla: ['admin_municipio', 'funcionario'],
+  // Con la bitácora, 1cero1 le responde al municipio quién hizo un cambio; el municipio no la ve.
+  verBitacora: ['1cero1'],
 }
 
 export const puede = (rol: Rol | undefined, permiso: Permiso) => rol !== undefined && PERMISOS[permiso].includes(rol)
