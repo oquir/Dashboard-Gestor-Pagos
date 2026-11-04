@@ -27,6 +27,8 @@ interface Estado extends Datos {
   cargarActividades: (municipioId: string, vigencia: number, tarifas: Tarifa[], archivo: string) => void
   guardarUsuario: (usuario: Usuario) => void
   alternarUsuario: (id: string) => void
+  /** Borra el usuario de la demo. Lo que hizo queda con su nombre, que se guarda como texto. */
+  eliminarUsuario: (id: string) => void
   alternarMunicipio: (id: string) => void
   /** Fecha desde la que el municipio recibe declaraciones en el aplicativo; desde ahí se revisan los omisos. */
   cambiarDeclaracionesDesde: (municipioId: string, fecha: string) => void
@@ -132,6 +134,7 @@ export const useDatos = create<Estado>()(
         })),
 
       alternarUsuario: (id) => set((s) => ({ usuarios: s.usuarios.map((u) => (u.id === id ? { ...u, activo: !u.activo } : u)) })),
+      eliminarUsuario: (id) => set((s) => ({ usuarios: s.usuarios.filter((u) => u.id !== id) })),
       alternarMunicipio: (id) => set((s) => ({ municipios: s.municipios.map((m) => (m.id === id ? { ...m, activo: !m.activo } : m)) })),
       cambiarDeclaracionesDesde: (municipioId, fecha) =>
         set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, declaracionesDesde: fecha } : m)) })),

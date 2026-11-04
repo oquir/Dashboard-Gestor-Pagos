@@ -1,17 +1,20 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useSesion } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import { Card } from '../../../atoms'
 import Tabla from '../../Tabla'
+import DetalleUsuario from '../DetalleUsuario'
 import type { TablaUsuariosProps } from './types'
-import { columnasUsuarios } from './utils'
+import { columnasUsuarios, esGestionable, nombreMunicipio } from './utils'
 
-/** Usuarios con su rol y estado. Nadie se desactiva a sí mismo, y solo 1cero1 desactiva a los de 1cero1. */
+/** Usuarios con su rol y estado. El botón de cada fila abre su detalle, donde se desactiva, se elimina o se le reenvían las credenciales. */
 export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
   const { usuario } = useSesion()
   const municipios = useDatos((s) => s.municipios)
-  const alternarUsuario = useDatos((s) => s.alternarUsuario)
-  const columnas = useMemo(() => columnasUsuarios(municipios, usuario, alternarUsuario), [municipios, usuario, alternarUsuario])
+  const [verId, setVerId] = useState<string | null>(null)
+  const columnas = useMemo(() => columnasUsuarios(municipios, setVerId), [municipios])
+  // Se busca en cada render para que la ventana muestre el estado al día, y se cierre sola si el usuario se elimina.
+  const viendo = usuarios.find((u) => u.id === verId)
 
   return (
     <Card>
@@ -22,6 +25,15 @@ export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {
         nombre="usuarios"
         claseFila={(u) => (u.activo ? 'hover:bg-slate-50' : 'bg-slate-50 opacity-60')}
       />
+      {viendo && (
+        <DetalleUsuario
+          key={viendo.id}
+          usuario={viendo}
+          municipio={nombreMunicipio(viendo, municipios)}
+          gestionable={esGestionable(viendo, usuario)}
+          cerrar={() => setVerId(null)}
+        />
+      )}
     </Card>
   )
 }
