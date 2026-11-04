@@ -16,6 +16,7 @@ export { default as FormularioConfiguracion } from './configuracion/FormularioCo
 
 export { default as AprobacionPrevia } from './declaraciones/AprobacionPrevia'
 export { default as DatosDeclaracion } from './declaraciones/DatosDeclaracion'
+export { default as DescargaDeclaraciones } from './declaraciones/DescargaDeclaraciones'
 export { default as Liquidacion } from './declaraciones/Liquidacion'
 export { default as ListaOmisos } from './declaraciones/ListaOmisos'
 export { default as PagosDeclaracion } from './declaraciones/PagosDeclaracion'
