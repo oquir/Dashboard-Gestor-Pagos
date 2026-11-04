@@ -8,7 +8,8 @@ import { entradas } from './utils'
  */
 export default function Filtro<T extends string>({ etiqueta, opciones, valor, cambiar }: FiltroProps<T>) {
   return (
-    <Select aria-label={etiqueta} className="w-auto" value={valor} onChange={(e) => cambiar(e.target.value as T)}>
+    // `w-auto!` gana sobre el `w-full` de los campos: el filtro mide lo que su texto, y así caben varios en una fila.
+    <Select aria-label={etiqueta} className="w-auto!" value={valor} onChange={(e) => cambiar(e.target.value as T)}>
       {entradas(opciones).map(([v, texto]) => (
         <option key={v} value={v}>{texto}</option>
       ))}
