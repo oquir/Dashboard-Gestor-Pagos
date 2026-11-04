@@ -1,5 +1,5 @@
 // Genera los datos de la demo con una semilla fija: siempre salen los mismos.
-import { etiquetaCalidad, nombreCompleto } from '../lib/formato'
+import { etiquetaCalidad, formatoPesos, nombreCompleto } from '../lib/formato'
 import { porcentajeProntoPago, redondearMil, sumarDiasHabiles, UVT } from '../lib/reglas'
 import type {
   Archivo,
@@ -386,6 +386,8 @@ function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, tarif
 
 export function generarDatos(): Datos {
   const az = crearAzar(20261022)
+  // Los pagos por debajo de la base mínima de ReteICA tienen su propio azar para no cambiar el resto de los datos.
+  const azBases = crearAzar(1529)
   const inscripciones: Inscripcion[] = []
   const declaraciones: Declaracion[] = []
   const pagos: Pago[] = []
@@ -496,16 +498,33 @@ export function generarDatos(): Datos {
           let impuesto: number
 
           if (calidad === 'agente_retenedor') {
-            const tarifas =
+            const { baseMinimaServiciosUvt: minServicios, baseMinimaComprasUvt: minCompras } = cfg.reteica
+            // Con tarifa única va un solo renglón para servicios y compras, con la menor de las dos bases mínimas.
+            const conceptos =
               cfg.reteica.modalidad === 'unica'
-                ? [cfg.reteica.tarifaUnicaPorMil]
-                : [tarifas2026.find((t) => t.sector === 'servicios')!.porMil, tarifas2026.find((t) => t.sector === 'comercial')!.porMil]
+                ? [{ tarifa: cfg.reteica.tarifaUnicaPorMil, de: 'servicios y compras', minimaUvt: Math.min(minServicios, minCompras) }]
+                : [
+                    { tarifa: tarifas2026.find((t) => t.sector === 'servicios')!.porMil, de: 'servicios', minimaUvt: minServicios },
+                    { tarifa: tarifas2026.find((t) => t.sector === 'comercial')!.porMil, de: 'compras', minimaUvt: minCompras },
+                  ]
             let retenciones = 0
-            for (const tarifa of tarifas) {
+            for (const { tarifa, de, minimaUvt } of conceptos) {
+              // La base es la suma de los pagos que llegan a la base mínima; los menores no se retienen.
               const base = az.entero(15, 900) * 1_000_000
               const retencion = redondearMil((base * tarifa) / 1000)
               retenciones += retencion
-              renglones.push({ codigo: '13–15', concepto: `Retención a ${tarifa} por mil sobre una base de ${(base / 1_000_000).toLocaleString('es-CO')} millones`, valor: retencion })
+              const minima = minimaUvt * UVT
+              const menores = minima > 0 ? azBases.entero(0, 3) : 0
+              const bajoMinima = Array.from({ length: menores }, () => redondearMil(minima * (0.2 + azBases.num() * 0.75))).reduce((a, b) => a + b, 0)
+              renglones.push({
+                codigo: '13–15',
+                concepto:
+                  `Retención a ${tarifa} por mil sobre ${(base / 1_000_000).toLocaleString('es-CO')} millones en pagos de ${de}` +
+                  (menores > 0
+                    ? `. No se retienen ${menores} ${menores === 1 ? 'pago' : 'pagos'} por ${formatoPesos(bajoMinima)}, por debajo de la base mínima de ${formatoPesos(minima)} (${minimaUvt} UVT)`
+                    : ''),
+                valor: retencion,
+              })
             }
             const devoluciones = az.prob(0.15) ? redondearMil(retenciones * az.num() * 0.1) : 0
             impuesto = retenciones - devoluciones
