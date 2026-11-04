@@ -24,6 +24,12 @@
 | Buscador global | **Por ahora no** | La respuesta quedó a medias: confirmarla |
 | Cuadre de caja | **Por decidir**; la sugerencia es dejarlo fuera | Seguramente lo hace el sistema de rentas del municipio (§3.8) |
 | Corrección a la baja, plazo de inscripción en el RIT, declaración en ceros, omisos, calendario de vencimientos, causales del art. 580 y soportes por calidad | **En revisión** | El usuario los está estudiando con las explicaciones de §3 |
+| Calendario como página aparte (2026-11-03) | **Sí**: vencimientos, periodicidad y pronto pago (también su interruptor) van en la página Calendario, no en Configuración | Hacerlo más sencillo |
+| Carga y exportación del calendario en JSON (2026-11-03) | **Descartado** | No le sirve a nadie |
+| Calendario combinado de ReteICA y AutoReteICA (2026-11-03) | **Descartado**: cada una tiene siempre sus propios vencimientos | En la práctica los municipios las separan |
+| Años pasados en el calendario (2026-11-03) | **Sí**: se pueden agregar hasta 10 años atrás | Los municipios piden corregir fechas de años pasados; en esos años no hay pronto pago |
+| Vencimientos por último dígito (2026-11-03) | El dígito es siempre **sin el dígito de verificación (DV)**, y la página Calendario lo dice con un ejemplo | Los municipios se quejan cuando no queda claro |
+| Vencimientos por rango de ingresos, como en Cali (2026-11-03) | **No por ahora**: el municipio pone a mano las fechas que necesite | No hace falta todavía |
 
 ## 2. Lo que falta, con su estado
 
@@ -35,7 +41,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 
 | Campo | Qué pasa hoy | Estado |
 |---|---|---|
-| Periodicidad mensual de ReteICA y AutoReteICA | Los datos y la etiqueta siempre dicen "bimestre" (Ricaurte declara mensual) | Pendiente |
+| Periodicidad de ReteICA y AutoReteICA | Desde el 2026-11-03 se pone en Calendario, por año gravable y por formulario (mensual, bimestral o trimestral), y la usan los vencimientos y la tarjeta de Inicio. Pero las declaraciones de la demo y su etiqueta siguen diciendo "bimestre" (Ricaurte declara mensual) | Pendiente |
 | Formulario conjunto | No hay ninguna declaración conjunta | Descartado |
 | Corrección a la baja (art. 589 clásico o corrección directa) | El flujo no existe (§3.2) | En revisión |
 | Plazo para inscribirse en el RIT | Nada marca una inscripción tardía (§3.3) | En revisión |
@@ -46,7 +52,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 | Punto | Qué falta | Estado |
 |---|---|---|
 | Omisos | Quién debía declarar y no lo hizo, por impuesto y periodo (§3.5). Los datos de la demo ya los generan, pero ninguna pantalla los muestra | En revisión |
-| Calendario tributario | Sección en Configuración para editar y cargar vencimientos por año gravable (ICA, ReteICA y AutoReteICA), con importación/exportación JSON, sugerencias automáticas y tarjeta en Inicio | **Implementado** (2026-10-30) |
+| Calendario tributario | Página Calendario (antes era una sección de Configuración) con, por año gravable, pasado o futuro: los vencimientos de cada formulario activo por separado, su periodicidad, fechas por último dígito del NIT o la cédula si el municipio las separa, y el pronto pago con su interruptor. Tarjeta de próximos vencimientos en Inicio | **Implementado** (2026-10-30; rehecho el 2026-11-03) |
 | Datos anuales sin actualizar | Mostrar cuando falta el calendario oficial o la UVT de un año, y marcar lo que se liquidó sin ellos, para que el municipio no se entere meses después por declaraciones mal calculadas (§3.14) | Pendiente |
 | Alerta de ReteICA sin consignar | El dominio pide una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§6.3 de `Dominio-ICA.md`). Opcional por municipio: la regla de Ricaurte, que no la deja ineficaz si se paga dentro de los 2 meses | Pendiente |
 | Estado de cuenta del contribuyente | Ninguna vista junta lo que debe un contribuyente: sus vigencias, saldos y pagos | Pendiente, **sin paz y salvo** |
@@ -145,7 +151,11 @@ Los omisos son los inscritos que debían declarar y todavía no lo han hecho en 
 
 ### 3.6 Calendario de vencimientos
 
-Para cada año gravable, el municipio fija las fechas de vencimiento según la periodicidad: el ICA anual tiene una sola fecha, y ReteICA y AutoReteICA, una por bimestre o por mes. En algunos municipios la fecha cambia según el último dígito del NIT.
+Para cada año gravable, el municipio fija las fechas de vencimiento según la periodicidad: el ICA anual tiene una sola fecha, y ReteICA y AutoReteICA, una por periodo. Según la experiencia del usuario con los municipios (2026-11-03):
+- ReteICA y AutoReteICA pueden ser mensuales, bimestrales o trimestrales, y cada una puede tener una periodicidad distinta;
+- tienen vencimientos separados;
+- a veces la fecha cambia según el último dígito del NIT o de la cédula;
+- los municipios piden corregir calendarios de años pasados, sobre todo los vencimientos (en esos años no hay pronto pago).
 
 El vencimiento decide si una declaración es extemporánea, desde cuándo corren los intereses y hasta cuándo va el plazo de la aprobación previa. Por eso el municipio debería poder ponerlo.
 
@@ -234,7 +244,7 @@ Con esto, además, la falta de datos queda a la vista desde el primer día y no 
 
 | Qué | Dónde |
 |---|---|
-| Campos de configuración sin efecto (`periodicidadRetencion`, `formularioConjunto`, `declaracionEnCeros`, `correccionABaja`, `plazoInscripcionMeses`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionRetencion` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
+| Campos de configuración sin efecto (`formularioConjunto`, `declaracionEnCeros`, `correccionABaja`, `plazoInscripcionMeses`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionRetencion` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
 | Formulario conjunto prendido en la demo | Puerto Esperanza (`m2`), en `CONFIGURACIONES` de `src/data/catalogos.ts` |
 | Etiqueta del periodo ("bimestre") | `etiquetaPeriodo`, en `src/lib/formato.ts` |
 | Vencimientos fijos | `VENCIMIENTO_ICA_2025` y `VENCIMIENTOS_BIMESTRE_2026`, en `src/data/catalogos.ts` |
@@ -246,9 +256,9 @@ Con esto, además, la falta de datos queda a la vista desde el primer día y no 
 | UVT constante | `UVT`, en `src/lib/reglas.ts` |
 | Tasa de interés de mora fija | `liquidarIca` y la liquidación de la retención, en `src/data/generar.ts` |
 | Rechazo en la aprobación previa (texto libre) | `src/components/organisms/declaraciones/AprobacionPrevia/AprobacionPrevia.tsx` |
-| Fechas inventadas al sugerir o copiar un calendario, sin distinguirlas de las oficiales | `generarCalendarioSugerido` y `copiarCalendarioVigencia`, en `src/lib/configuracion.ts` |
+| Calendario: modelo y reglas (periodicidad, fechas por dígito, año nuevo copiado del más cercano) | `CalendarioVigencia` en `src/types/dominio.ts`; `src/lib/calendario.ts`; la página en `src/pages/Calendario.tsx` y sus secciones en `src/components/organisms/calendario/` |
+| Año nuevo con las fechas del año más cercano corridas, sin marcarlas como no oficiales (§3.14) | `calendarioNuevo`, en `src/lib/calendario.ts` |
 | Liquidación que no lee el calendario configurado | `generar.ts` usa `VENCIMIENTO_ICA_2025` y `VENCIMIENTOS_BIMESTRE_2026`, no `calendarioTributario` |
-| Tarjeta que rotula "ReteICA y AutoReteICA" pero solo lee las fechas de ReteICA | `ProximosVencimientos`, en `src/components/organisms/inicio/` |
 | Tasas con emplazamiento que se configuran pero no se usan (`extemporaneidadEmplazamiento`, `correccionEmplazamiento`) | Se editan en `SeccionSanciones`; la liquidación de `src/data/generar.ts` solo usa `extemporaneidad` y `correccion` |
 
 ## 5. Para retomar

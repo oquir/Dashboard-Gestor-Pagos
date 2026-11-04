@@ -190,6 +190,11 @@ El **RIT (Registro de Información Tributaria)** es el registro municipal que id
 
 Casi siempre **bimestral**: bimestre 1 = enero–febrero … bimestre 6 = noviembre–diciembre. Algunos municipios son mensuales (Barranquilla, para ciertos contribuyentes). Los plazos suelen depender del **último dígito del NIT**.
 
+Según la experiencia del usuario con los municipios (2026-11-03; no se ha cruzado con normas), los casos son más variados:
+- la ReteICA y la autorretención pueden ser mensuales, bimestrales o **trimestrales**, y cada una puede tener una periodicidad distinta;
+- sus vencimientos van por separado;
+- la fecha puede depender del último dígito del NIT **o de la cédula**.
+
 ### El formulario: no hay uno nacional
 
 El FUN es solo para el ICA anual. La Resolución 4056 dice expresamente que, cuando un municipio establece la retención, **el formulario lo define cada entidad**. En consecuencia:
@@ -353,7 +358,11 @@ No hay formulario nacional de retención ni de autorretención, y cada concejo f
 
 - **Tarifas**: por actividad, dentro de los topes de ley de la sección 2; una tarifa fuera de ellos merece advertencia, no bloqueo, porque el sector financiero tiene reglas propias. En ReteICA, tarifa única (Medellín: 2 por mil), por actividad o por concepto (compras / servicios), cada una con su base mínima en UVT. En autorretención, la tarifa plena o un porcentaje de ella.
 - **Estructura del formulario**: si se detallan actividades, qué complementarios existen (sobretasas bomberil y de seguridad, con su porcentaje) y si se retienen o autorretienen, pagos a no residentes y formulario conjunto de retención y autorretención.
-- **Calendario**: periodicidad (anual, bimestral o mensual) y vencimientos según el último dígito del NIT. Un periodo puede vencer antes de terminar: la autorretención del último bimestre puede tener fecha de corte y vencimiento en diciembre (sección 1.2).
+- **Calendario**: por año gravable, también los pasados, y por formulario:
+  - periodicidad: anual en el ICA; mensual, bimestral o trimestral en ReteICA y autorretención, que pueden diferir entre sí;
+  - vencimientos de cada formulario por separado, con una fecha única o según el último dígito del NIT o la cédula.
+
+  Un periodo puede vencer antes de terminar: la autorretención del último bimestre puede tener fecha de corte y vencimiento en diciembre (sección 1.2).
 - **Beneficios y cobros**: descuento por pronto pago (tramos de fechas y porcentajes por año gravable, y condiciones), anticipo (hasta el 40%) y pago voluntario.
 - **Procedimiento**: si se exige la declaración en ceros, si la cancelación del RIT es automática o verificada, cuándo se presenta la fracción de año al cerrar (de inmediato o en el calendario siguiente, sección 1.2), si la corrección a la baja sigue el art. 589 clásico o la corrección directa, los soportes de inscripción por calidad y el plazo para inscribirse.
 - **Sanciones**: la configuración parte de los valores de ley (extemporaneidad del 5% o 10% por mes, con topes del 100% y 200%; corrección del 10% o 20%; mínimo de 10 UVT) y **no acepta valores mayores**: el municipio solo puede bajarlos (sección 5).
