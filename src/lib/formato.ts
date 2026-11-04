@@ -9,6 +9,7 @@ import type {
   FormularioDesactivado,
   Impuesto,
   Inscripcion,
+  Periodicidad,
   Rol,
   Sector,
   TipoDeclaracion,
@@ -118,6 +119,13 @@ export const etiquetaEstadoCheque: Record<EstadoCheque, string> = {
   en_canje: 'En canje',
   pagado: 'Pagado',
   devuelto: 'Devuelto',
+}
+
+export const etiquetaPeriodicidad: Record<Periodicidad, string> = {
+  anual: 'Anual',
+  mensual: 'Mensual',
+  bimestral: 'Bimestral',
+  trimestral: 'Trimestral',
 }
 
 export function etiquetaPeriodo(impuesto: Impuesto, vigencia: number, periodo: number) {

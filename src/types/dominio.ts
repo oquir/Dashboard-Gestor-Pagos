@@ -261,25 +261,39 @@ export interface TramoProntoPago {
   porcentaje: number
 }
 
+/** El ICA es anual; ReteICA y AutoReteICA pueden ser mensuales, bimestrales o trimestrales, cada una por su lado. */
+export type Periodicidad = 'anual' | 'mensual' | 'bimestral' | 'trimestral'
+
 export interface VencimientoPeriodo {
+  /** 1 es el primer periodo del año (el ICA anual tiene solo el 1). */
   periodo: number
-  fecha: string
+  /**
+   * Una sola fecha para todos o, si el calendario las separa por el último dígito del NIT o de la cédula,
+   * diez: la posición es el dígito (la del 0 en la posición 0).
+   */
+  fechas: string[]
 }
 
-export interface CalendarioVigencia {
-  vigencia: number
-  decreto?: string
-  /** Fecha límite de presentación y pago del ICA anual de ese año gravable (se presenta en vigencia + 1). */
-  vencimientoIca: string
-  /** Fechas de vencimiento de ReteICA por periodo (bimestral o mensual). */
-  vencimientosReteica: VencimientoPeriodo[]
-  /** Fechas de vencimiento de AutoReteICA por periodo (opcional, si difiere de ReteICA). */
-  vencimientosAutorretencion?: VencimientoPeriodo[]
+/** Vencimientos de un formulario en un año gravable. */
+export interface VencimientosFormulario {
+  periodicidad: Periodicidad
+  /** La fecha cambia según el último dígito del NIT o de la cédula del declarante. */
+  porDigito: boolean
+  periodos: VencimientoPeriodo[]
 }
+
+/**
+ * Calendario de un año gravable, con los vencimientos de cada formulario por separado. El ICA anual
+ * de ese año se presenta en vigencia + 1; ReteICA y AutoReteICA, durante el mismo año.
+ */
+export type CalendarioVigencia = {
+  vigencia: number
+  /** Acto del municipio que fija el calendario. */
+  decreto?: string
+} & Record<Impuesto, VencimientosFormulario>
 
 export interface ConfigMunicipio {
   municipioId: string
-  periodicidadRetencion: 'bimestral' | 'mensual'
   formularioConjunto: boolean
   declaracionEnCeros: boolean
   cancelacionRitAutomatica: boolean
@@ -288,7 +302,7 @@ export interface ConfigMunicipio {
   correccionABaja: 'proyecto_589' | 'correccion_directa'
   /** El concejo fija los tramos para cada año gravable; fuera de ellos no hay descuento. */
   prontoPago: { activo: boolean; porVigencia: { vigencia: number; tramos: TramoProntoPago[] }[] }
-  /** Calendario tributario de vencimientos por año gravable. */
+  /** Calendario tributario de vencimientos por año gravable, también de años pasados. */
   calendarioTributario: { porVigencia: CalendarioVigencia[] }
   anticipoPorcentaje: number
   sobretasaBomberil: { activa: boolean; porcentaje: number }

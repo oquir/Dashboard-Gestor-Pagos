@@ -6,19 +6,13 @@ import { Input, Select } from '../../../atoms'
 import { Campo, Interruptor, Seccion } from '../../../molecules'
 import type { SeccionRetencionProps } from './types'
 
-/** ReteICA y AutoReteICA: periodicidad, tarifas y bases mínimas. Muestra solo lo que el municipio tiene activo. */
+/** ReteICA y AutoReteICA: tarifas y bases mínimas. La periodicidad va en la página Calendario. Muestra solo lo que el municipio tiene activo. */
 export default function SeccionRetencion({ b, cambiar, editable, impuestos }: SeccionRetencionProps) {
   const titulo =
     impuestos.reteica && impuestos.autorretencion ? 'ReteICA y AutoReteICA' : impuestos.reteica ? 'Retención (ReteICA)' : 'Autorretención (AutoReteICA)'
 
   return (
-    <Seccion titulo={titulo} descripcion="No hay formulario nacional: cada municipio define el suyo.">
-      <Campo etiqueta="Periodicidad">
-        <Select disabled={!editable} value={b.periodicidadRetencion} onChange={(e) => cambiar({ periodicidadRetencion: e.target.value as ConfigMunicipio['periodicidadRetencion'] })}>
-          <option value="bimestral">Bimestral</option>
-          <option value="mensual">Mensual</option>
-        </Select>
-      </Campo>
+    <Seccion titulo={titulo} descripcion="No hay formulario nacional: cada municipio define el suyo. La periodicidad y los vencimientos se ponen en Calendario.">
       {impuestos.reteica && (
         <>
           <Campo etiqueta="Tarifa de ReteICA">

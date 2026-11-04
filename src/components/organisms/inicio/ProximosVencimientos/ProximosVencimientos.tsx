@@ -8,71 +8,21 @@ import { useDatos } from '../../../../store'
 import { hoy } from '../../../../utils'
 import { Badge, Card } from '../../../atoms'
 import { Vacio } from '../../../molecules'
-import type { ProximosVencimientosProps, VencimientoProximo } from './types'
+import type { ProximosVencimientosProps } from './types'
+import { vencimientosProximos } from './utils'
 
-const diferenciaDias = (fechaIso: string, hoyIso: string) => {
-  const f = new Date(`${fechaIso}T12:00:00Z`).getTime()
-  const h = new Date(`${hoyIso}T12:00:00Z`).getTime()
-  return Math.round((f - h) / (1000 * 60 * 60 * 24))
-}
-
+/** Los próximos vencimientos del calendario, de cada formulario activo; si las fechas cambian por dígito, el rango. */
 export default function ProximosVencimientos({ className = '', municipioId }: ProximosVencimientosProps) {
   const { usuario } = useSesion()
   const configuraciones = useDatos((s) => s.configuraciones)
+  const municipios = useDatos((s) => s.municipios)
   const puedeEditar = puede(usuario?.rol, 'editarConfiguracion')
   const fechaHoy = hoy()
 
-  const proximos = useMemo<VencimientoProximo[]>(() => {
-    // Si hay un municipio específico seleccionado, solo sus vencimientos; si no, de todos
-    const configs = municipioId
-      ? configuraciones.filter((c) => c.municipioId === municipioId)
-      : configuraciones
-
-    const lista: VencimientoProximo[] = []
-
-    for (const cfg of configs) {
-      const esBimestral = cfg.periodicidadRetencion === 'bimestral'
-
-      for (const cal of cfg.calendarioTributario?.porVigencia ?? []) {
-        // 1. ICA Anual
-        if (cal.vencimientoIca) {
-          const dias = diferenciaDias(cal.vencimientoIca, fechaHoy)
-          lista.push({
-            id: `${cfg.municipioId}-${cal.vigencia}-ica`,
-            impuesto: 'ICA Anual',
-            periodoTexto: `Año gravable ${cal.vigencia}`,
-            fecha: cal.vencimientoIca,
-            decreto: cal.decreto,
-            diasRestantes: dias,
-          })
-        }
-
-        // 2. ReteICA
-        for (const r of cal.vencimientosReteica ?? []) {
-          if (!r.fecha) continue
-          const dias = diferenciaDias(r.fecha, fechaHoy)
-          const nombrePeriodo = esBimestral
-            ? `Bimestre ${r.periodo}`
-            : `Mes ${r.periodo}`
-
-          lista.push({
-            id: `${cfg.municipioId}-${cal.vigencia}-reteica-${r.periodo}`,
-            impuesto: 'ReteICA y AutoReteICA',
-            periodoTexto: `${nombrePeriodo} (${cal.vigencia})`,
-            fecha: r.fecha,
-            decreto: cal.decreto,
-            diasRestantes: dias,
-          })
-        }
-      }
-    }
-
-    // Filtrar los que no estén vencidos hace más de 30 días y ordenar por fecha más cercana hacia el futuro
-    return lista
-      .filter((v) => v.diasRestantes >= -15)
-      .sort((a, b) => a.fecha.localeCompare(b.fecha))
-      .slice(0, 5)
-  }, [configuraciones, municipioId, fechaHoy])
+  const proximos = useMemo(
+    () => vencimientosProximos(configuraciones, municipios, municipioId, fechaHoy),
+    [configuraciones, municipios, municipioId, fechaHoy],
+  )
 
   return (
     <Card className={className}>
@@ -84,10 +34,7 @@ export default function ProximosVencimientos({ className = '', municipioId }: Pr
           <p className="text-xs text-slate-500 mt-0.5">Fechas límite de presentación y pago según el calendario municipal.</p>
         </div>
         {puedeEditar && (
-          <Link
-            to="/configuracion"
-            className="text-xs font-medium text-indigo-600 hover:text-indigo-800 underline shrink-0"
-          >
+          <Link to="/calendario" className="text-xs font-medium text-indigo-600 hover:text-indigo-800 underline shrink-0">
             Configurar calendario
           </Link>
         )}
@@ -98,8 +45,9 @@ export default function ProximosVencimientos({ className = '', municipioId }: Pr
       ) : (
         <ul className="divide-y divide-slate-100">
           {proximos.map((item) => {
-            const esHoy = item.diasRestantes === 0
-            const vencido = item.diasRestantes < 0
+            const vencido = item.diasHasta < 0
+            // Con fechas por dígito, entre la primera y la última ya les venció a unos y a otros no.
+            const enCurso = item.hasta !== undefined && item.diasRestantes <= 0 && !vencido
             const urgente = item.diasRestantes > 0 && item.diasRestantes <= 10
 
             return (
@@ -111,14 +59,19 @@ export default function ProximosVencimientos({ className = '', municipioId }: Pr
                     <span className="text-xs text-slate-600 font-medium">{item.periodoTexto}</span>
                   </div>
                   <p className="truncate text-xs text-slate-500 mt-0.5">
-                    Límite: {formatoFecha(item.fecha)} {item.decreto ? `(${item.decreto})` : ''}
+                    {item.hasta
+                      ? `Límite: del ${formatoFecha(item.fecha)} al ${formatoFecha(item.hasta)}, según el último dígito del NIT (sin DV)`
+                      : `Límite: ${formatoFecha(item.fecha)}`}{' '}
+                    {item.decreto ? `(${item.decreto})` : ''}
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  {esHoy ? (
+                  {vencido ? (
+                    <Badge tono="peligro">Venció hace {Math.abs(item.diasHasta)} d</Badge>
+                  ) : enCurso ? (
+                    <Badge tono="alerta">Venciendo por dígito</Badge>
+                  ) : item.diasRestantes === 0 ? (
                     <Badge tono="peligro">Vence hoy</Badge>
-                  ) : vencido ? (
-                    <Badge tono="peligro">Venció hace {Math.abs(item.diasRestantes)} d</Badge>
                   ) : urgente ? (
                     <Badge tono="alerta">Vence en {item.diasRestantes} días</Badge>
                   ) : (

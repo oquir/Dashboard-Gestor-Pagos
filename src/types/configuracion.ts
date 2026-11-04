@@ -1,6 +1,6 @@
 import type { ConfigMunicipio } from './dominio'
 
-/** Lo que recibe cada sección del formulario de configuración. */
+/** Lo que recibe cada sección de los formularios de Configuración y de Calendario. */
 export interface EdicionConfiguracion {
   /** Borrador con los cambios aún sin guardar. */
   b: ConfigMunicipio

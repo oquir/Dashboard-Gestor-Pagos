@@ -3,22 +3,11 @@ import { ANTICIPO_MAXIMO } from '../../../lib/reglas'
 import type { EdicionConfiguracion } from '../../../types'
 import { Input } from '../../atoms'
 import { Campo, Interruptor, Seccion } from '../../molecules'
-import ProntoPago from './ProntoPago'
 
-/** ICA anual: pronto pago, anticipo y sobretasa bomberil. */
+/** ICA anual: anticipo y sobretasa bomberil. El descuento por pronto pago está en la página Calendario. */
 export default function SeccionIca({ b, cambiar, editable, errores }: EdicionConfiguracion) {
   return (
-    <Seccion titulo="ICA anual" descripcion="Beneficios y cobros que fija el concejo municipal.">
-      <div className="space-y-3 sm:col-span-2">
-        <Interruptor
-          etiqueta="Descuento por pronto pago"
-          ayuda="Por año gravable, en tramos según la fecha de pago. Solo sobre el impuesto neto; se pierde con pago parcial o extemporáneo."
-          valor={b.prontoPago.activo}
-          deshabilitado={!editable}
-          onChange={(v) => cambiar({ prontoPago: { ...b.prontoPago, activo: v } })}
-        />
-        {b.prontoPago.activo && <ProntoPago valor={b.prontoPago} onChange={(prontoPago) => cambiar({ prontoPago })} errores={errores} editable={editable} />}
-      </div>
+    <Seccion titulo="ICA anual" descripcion="Cobros que fija el concejo municipal. El descuento por pronto pago se pone en Calendario.">
       <Campo etiqueta="Anticipo del año siguiente (%)" ayuda="0 si el municipio no lo exige." error={errores.anticipo}>
         <Input type="number" min={0} max={ANTICIPO_MAXIMO} disabled={!editable} value={b.anticipoPorcentaje} onChange={(e) => cambiar({ anticipoPorcentaje: numero(e.target.value) })} />
       </Campo>

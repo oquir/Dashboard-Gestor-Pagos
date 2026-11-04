@@ -1,7 +1,8 @@
 // Datos fijos del mock. Municipios, personas y empresas son ficticios.
+import { DIGITOS } from '../constants'
 import { nombreCompleto } from '../lib/formato'
 import { SANCIONES_LEY } from '../lib/reglas'
-import type { ActividadesVigencia, ConfigMunicipio, Municipio, Sector, Tarifa, Usuario } from '../types'
+import type { ActividadesVigencia, ConfigMunicipio, Municipio, Periodicidad, Sector, Tarifa, Usuario, VencimientosFormulario } from '../types'
 
 export const MUNICIPIOS: Municipio[] = [
   {
@@ -95,10 +96,23 @@ export const ACTIVIDADES_POR_VIGENCIA: ActividadesVigencia[] = MUNICIPIOS.flatMa
   }))
 })
 
+/** Vencimientos con una fecha por periodo, la misma para todos los declarantes. */
+const fechasUnicas = (periodicidad: Periodicidad, fechas: string[]): VencimientosFormulario => ({
+  periodicidad,
+  porDigito: false,
+  periodos: fechas.map((fecha, i) => ({ periodo: i + 1, fechas: [fecha] })),
+})
+
+/** Vencimientos por último dígito: cada periodo lista sus fechas del dígito 1 al 0, como los calendarios. */
+const fechasPorDigito = (periodicidad: Periodicidad, porPeriodo: string[][]): VencimientosFormulario => ({
+  periodicidad,
+  porDigito: true,
+  periodos: porPeriodo.map((lista, i) => ({ periodo: i + 1, fechas: Array.from({ length: 10 }, (_, d) => lista[DIGITOS.indexOf(d)]) })),
+})
+
 export const CONFIGURACIONES: ConfigMunicipio[] = [
   {
     municipioId: 'm1',
-    periodicidadRetencion: 'bimestral',
     formularioConjunto: false,
     declaracionEnCeros: false,
     cancelacionRitAutomatica: false,
@@ -131,28 +145,16 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2025,
           decreto: 'Decreto 0920 de 2025',
-          vencimientoIca: '2026-04-17',
-          vencimientosReteica: [
-            { periodo: 1, fecha: '2025-03-21' },
-            { periodo: 2, fecha: '2025-05-20' },
-            { periodo: 3, fecha: '2025-07-18' },
-            { periodo: 4, fecha: '2025-09-19' },
-            { periodo: 5, fecha: '2025-11-21' },
-            { periodo: 6, fecha: '2026-01-20' },
-          ],
+          ica: fechasUnicas('anual', ['2026-04-17']),
+          reteica: fechasUnicas('bimestral', ['2025-03-21', '2025-05-20', '2025-07-18', '2025-09-19', '2025-11-21', '2026-01-20']),
+          autorretencion: fechasUnicas('bimestral', ['2025-03-21', '2025-05-20', '2025-07-18', '2025-09-19', '2025-11-21', '2026-01-20']),
         },
         {
           vigencia: 2026,
           decreto: 'Decreto 0045 de 2026',
-          vencimientoIca: '2027-04-16',
-          vencimientosReteica: [
-            { periodo: 1, fecha: '2026-03-18' },
-            { periodo: 2, fecha: '2026-05-20' },
-            { periodo: 3, fecha: '2026-07-17' },
-            { periodo: 4, fecha: '2026-09-18' },
-            { periodo: 5, fecha: '2026-11-20' },
-            { periodo: 6, fecha: '2027-01-19' },
-          ],
+          ica: fechasUnicas('anual', ['2027-04-16']),
+          reteica: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
+          autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
         },
       ],
     },
@@ -168,7 +170,6 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
   },
   {
     municipioId: 'm2',
-    periodicidadRetencion: 'bimestral',
     formularioConjunto: true,
     declaracionEnCeros: true,
     cancelacionRitAutomatica: false,
@@ -192,41 +193,26 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2024,
           decreto: 'Resolución 011 de 2024',
-          vencimientoIca: '2025-03-31',
-          vencimientosReteica: [
-            { periodo: 1, fecha: '2024-03-19' },
-            { periodo: 2, fecha: '2024-05-21' },
-            { periodo: 3, fecha: '2024-07-18' },
-            { periodo: 4, fecha: '2024-09-19' },
-            { periodo: 5, fecha: '2024-11-21' },
-            { periodo: 6, fecha: '2025-01-20' },
-          ],
+          ica: fechasUnicas('anual', ['2025-03-31']),
+          reteica: fechasUnicas('bimestral', ['2024-03-19', '2024-05-21', '2024-07-18', '2024-09-19', '2024-11-21', '2025-01-20']),
+          autorretencion: fechasUnicas('bimestral', ['2024-03-19', '2024-05-21', '2024-07-18', '2024-09-19', '2024-11-21', '2025-01-20']),
         },
         {
           vigencia: 2025,
           decreto: 'Resolución 014 de 2025',
-          vencimientoIca: '2026-03-31',
-          vencimientosReteica: [
-            { periodo: 1, fecha: '2025-03-18' },
-            { periodo: 2, fecha: '2025-05-20' },
-            { periodo: 3, fecha: '2025-07-17' },
-            { periodo: 4, fecha: '2025-09-18' },
-            { periodo: 5, fecha: '2025-11-20' },
-            { periodo: 6, fecha: '2026-01-19' },
-          ],
+          ica: fechasUnicas('anual', ['2026-03-31']),
+          reteica: fechasUnicas('bimestral', ['2025-03-18', '2025-05-20', '2025-07-17', '2025-09-18', '2025-11-20', '2026-01-19']),
+          autorretencion: fechasUnicas('bimestral', ['2025-03-18', '2025-05-20', '2025-07-17', '2025-09-18', '2025-11-20', '2026-01-19']),
         },
         {
           vigencia: 2026,
           decreto: 'Resolución 008 de 2026',
-          vencimientoIca: '2027-03-31',
-          vencimientosReteica: [
-            { periodo: 1, fecha: '2026-03-18' },
-            { periodo: 2, fecha: '2026-05-20' },
-            { periodo: 3, fecha: '2026-07-17' },
-            { periodo: 4, fecha: '2026-09-18' },
-            { periodo: 5, fecha: '2026-11-20' },
-            { periodo: 6, fecha: '2027-01-19' },
-          ],
+          // Desde este año el ICA anual vence según el último dígito del NIT o la cédula: un día hábil por dígito.
+          ica: fechasPorDigito('anual', [
+            ['2027-04-05', '2027-04-06', '2027-04-07', '2027-04-08', '2027-04-09', '2027-04-12', '2027-04-13', '2027-04-14', '2027-04-15', '2027-04-16'],
+          ]),
+          reteica: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
+          autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
         },
       ],
     },
@@ -242,7 +228,6 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
   },
   {
     municipioId: 'm3',
-    periodicidadRetencion: 'bimestral',
     formularioConjunto: false,
     declaracionEnCeros: false,
     cancelacionRitAutomatica: true,
@@ -251,31 +236,20 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     prontoPago: { activo: false, porVigencia: [] },
     calendarioTributario: {
       porVigencia: [
+        // La AutoReteICA del bimestre 6 vence en diciembre, antes de que termine el año, como en Medellín.
         {
           vigencia: 2025,
           decreto: 'Decreto 028 de 2025',
-          vencimientoIca: '2026-04-30',
-          vencimientosReteica: [
-            { periodo: 1, fecha: '2025-03-20' },
-            { periodo: 2, fecha: '2025-05-20' },
-            { periodo: 3, fecha: '2025-07-18' },
-            { periodo: 4, fecha: '2025-09-18' },
-            { periodo: 5, fecha: '2025-11-20' },
-            { periodo: 6, fecha: '2026-01-20' },
-          ],
+          ica: fechasUnicas('anual', ['2026-04-30']),
+          reteica: fechasUnicas('bimestral', ['2025-03-20', '2025-05-20', '2025-07-18', '2025-09-18', '2025-11-20', '2026-01-20']),
+          autorretencion: fechasUnicas('bimestral', ['2025-03-20', '2025-05-20', '2025-07-18', '2025-09-18', '2025-11-20', '2025-12-19']),
         },
         {
           vigencia: 2026,
           decreto: 'Decreto 015 de 2026',
-          vencimientoIca: '2027-04-30',
-          vencimientosReteica: [
-            { periodo: 1, fecha: '2026-03-18' },
-            { periodo: 2, fecha: '2026-05-20' },
-            { periodo: 3, fecha: '2026-07-17' },
-            { periodo: 4, fecha: '2026-09-18' },
-            { periodo: 5, fecha: '2026-11-20' },
-            { periodo: 6, fecha: '2027-01-19' },
-          ],
+          ica: fechasUnicas('anual', ['2027-04-30']),
+          reteica: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
+          autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2026-12-21']),
         },
       ],
     },

@@ -2,6 +2,7 @@
 // Entre moléculas se importan por su ruta, no desde este índice.
 export { default as Aviso } from './Aviso'
 export { default as BarraFiltros } from './BarraFiltros'
+export { default as BarraGuardar } from './BarraGuardar'
 export { default as Buscador } from './Buscador'
 export { default as Campo } from './Campo'
 export { default as CardHeader } from './CardHeader'

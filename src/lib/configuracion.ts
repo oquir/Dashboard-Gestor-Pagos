@@ -1,5 +1,6 @@
-// Edición de la configuración del municipio: borrador, validaciones y tramos de pronto pago.
-import type { CalendarioVigencia, ConfigMunicipio, TramoProntoPago, VencimientoPeriodo } from '../types'
+// Edición de la configuración y del calendario del municipio: borrador, validaciones, vencimientos y tramos de pronto pago.
+import type { ConfigMunicipio, Impuesto, TramoProntoPago } from '../types'
+import { erroresVencimientos } from './calendario'
 import { formatoFecha } from './formato'
 import { ANTICIPO_MAXIMO, SANCIONES_LEY } from './reglas'
 
@@ -12,62 +13,6 @@ const diaSiguiente = (iso: string) => {
   return d.toISOString().slice(0, 10)
 }
 const finDeMes = (iso: string) => new Date(Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)), 0)).toISOString().slice(0, 10)
-/** La misma fecha un año después; el 29 de febrero pasa al 28. */
-export const unAnioDespues = (iso: string) => iso && `${Number(iso.slice(0, 4)) + 1}${iso.slice(4)}`.replace(/-02-29$/, '-02-28')
-
-/** Genera un calendario tributario sugerido para una vigencia y periodicidad. */
-export function generarCalendarioSugerido(vigencia: number, periodicidad: 'bimestral' | 'mensual'): CalendarioVigencia {
-  const vencimientoIca = `${vigencia + 1}-04-20`
-  const vencimientosReteica: VencimientoPeriodo[] = []
-  if (periodicidad === 'bimestral') {
-    const meses = [3, 5, 7, 9, 11]
-    meses.forEach((mes, idx) => {
-      vencimientosReteica.push({
-        periodo: idx + 1,
-        fecha: `${vigencia}-${String(mes).padStart(2, '0')}-20`,
-      })
-    })
-    vencimientosReteica.push({
-      periodo: 6,
-      fecha: `${vigencia + 1}-01-20`,
-    })
-  } else {
-    for (let mes = 1; mes <= 11; mes++) {
-      vencimientosReteica.push({
-        periodo: mes,
-        fecha: `${vigencia}-${String(mes + 1).padStart(2, '0')}-20`,
-      })
-    }
-    vencimientosReteica.push({
-      periodo: 12,
-      fecha: `${vigencia + 1}-01-20`,
-    })
-  }
-
-  return {
-    vigencia,
-    decreto: `Decreto anual de calendario tributario ${vigencia}`,
-    vencimientoIca,
-    vencimientosReteica,
-  }
-}
-
-/** Copia el calendario tributario de una vigencia previa corriendo las fechas un año. */
-export function copiarCalendarioVigencia(origen: CalendarioVigencia, nuevaVigencia: number): CalendarioVigencia {
-  return {
-    vigencia: nuevaVigencia,
-    decreto: origen.decreto ? origen.decreto.replace(String(origen.vigencia), String(nuevaVigencia)) : undefined,
-    vencimientoIca: unAnioDespues(origen.vencimientoIca),
-    vencimientosReteica: origen.vencimientosReteica.map((v) => ({
-      ...v,
-      fecha: unAnioDespues(v.fecha),
-    })),
-    vencimientosAutorretencion: origen.vencimientosAutorretencion?.map((v) => ({
-      ...v,
-      fecha: unAnioDespues(v.fecha),
-    })),
-  }
-}
 
 /** Un tramo nuevo arranca el día siguiente al último y llega hasta fin de ese mes. */
 export function tramoNuevo(vigencia: number, tramos: TramoProntoPago[]): TramoProntoPago {
@@ -87,7 +32,7 @@ function erroresTramos(vigencia: number, tramos: TramoProntoPago[]) {
   })
 }
 
-/** Errores del borrador por campo; sin errores, se puede guardar. */
+/** Errores del borrador de Configuración por campo; sin errores, se puede guardar. El calendario se valida aparte. */
 export function erroresConfiguracion(b: ConfigMunicipio) {
   const errores: Record<string, string> = {}
   for (const clave of Object.keys(SANCIONES_LEY) as (keyof ConfigMunicipio['sanciones'])[]) {
@@ -96,34 +41,27 @@ export function erroresConfiguracion(b: ConfigMunicipio) {
   }
   if (b.anticipoPorcentaje > ANTICIPO_MAXIMO) errores.anticipo = `Máximo ${ANTICIPO_MAXIMO}% (art. 47 de la Ley 43 de 1987).`
   if (b.sobretasaBomberil.activa && b.sobretasaBomberil.porcentaje <= 0) errores.sobretasa = 'Debe ser mayor que 0; si no se cobra, desactívala.'
-  if (b.prontoPago.activo) {
+  if (b.aprobacionPrevia.plazoDiasHabiles < 1) errores.plazoAprobacion = 'Debe ser de al menos 1 día hábil.'
+  if (b.aprobacionPrevia.vigenciaReciboDiasHabiles < 1) errores.vigenciaRecibo = 'Debe ser de al menos 1 día hábil.'
+  for (const [formulario, desactivado] of Object.entries(b.formulariosDesactivados)) {
+    if (!desactivado.motivo.trim()) errores[`motivo-${formulario}`] = 'Indica por qué se desactiva el formulario.'
+  }
+  return errores
+}
+
+/**
+ * Errores del borrador de la página Calendario: tramos de pronto pago y vencimientos sin fecha. Los vencimientos
+ * solo se exigen en los formularios que el municipio tiene activos.
+ */
+export function erroresCalendario(b: ConfigMunicipio, impuestos: Record<Impuesto, boolean>) {
+  const errores: Record<string, string> = {}
+  if (b.prontoPago.activo && impuestos.ica) {
     for (const { vigencia, tramos } of b.prontoPago.porVigencia) {
       erroresTramos(vigencia, tramos).forEach((error, i) => {
         if (error) errores[`pronto-${vigencia}-${i}`] = error
       })
     }
   }
-  if (b.calendarioTributario?.porVigencia) {
-    for (const cal of b.calendarioTributario.porVigencia) {
-      if (!cal.vencimientoIca) {
-        errores[`calendario-${cal.vigencia}-ica`] = 'Indica la fecha de vencimiento del ICA anual.'
-      }
-      for (const p of cal.vencimientosReteica ?? []) {
-        if (!p.fecha) {
-          errores[`calendario-${cal.vigencia}-reteica-${p.periodo}`] = `Indica la fecha del periodo ${p.periodo}.`
-        }
-      }
-      for (const p of cal.vencimientosAutorretencion ?? []) {
-        if (!p.fecha) {
-          errores[`calendario-${cal.vigencia}-autorretencion-${p.periodo}`] = `Indica la fecha del periodo ${p.periodo}.`
-        }
-      }
-    }
-  }
-  if (b.aprobacionPrevia.plazoDiasHabiles < 1) errores.plazoAprobacion = 'Debe ser de al menos 1 día hábil.'
-  if (b.aprobacionPrevia.vigenciaReciboDiasHabiles < 1) errores.vigenciaRecibo = 'Debe ser de al menos 1 día hábil.'
-  for (const [formulario, desactivado] of Object.entries(b.formulariosDesactivados)) {
-    if (!desactivado.motivo.trim()) errores[`motivo-${formulario}`] = 'Indica por qué se desactiva el formulario.'
-  }
+  for (const cal of b.calendarioTributario.porVigencia) Object.assign(errores, erroresVencimientos(cal, impuestos))
   return errores
 }

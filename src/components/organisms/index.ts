@@ -10,6 +10,8 @@ export { default as Tabla } from './Tabla'
 
 export { default as CatalogoActividades } from './actividades/CatalogoActividades'
 
+export { default as FormularioCalendario } from './calendario/FormularioCalendario'
+
 export { default as FormularioConfiguracion } from './configuracion/FormularioConfiguracion'
 
 export { default as AprobacionPrevia } from './declaraciones/AprobacionPrevia'
