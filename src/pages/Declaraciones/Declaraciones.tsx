@@ -1,14 +1,15 @@
 import { useCallback, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { Card } from '../../components/atoms'
 import { BarraFiltros, Buscador, Filtro, PageHeader, Segmentado } from '../../components/molecules'
-import { BuscadorMunicipios, SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
+import { BuscadorMunicipios, ListaOmisos, SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
 import { OPCIONES_APROBACION } from '../../constants'
 import { formatoDocumento } from '../../lib/formato'
 import { estadoPago } from '../../lib/reglas'
-import { impuestosVisibles, useAprobacion, useDeclaraciones, useSesion } from '../../lib/sesion'
+import { impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useOmisos, useSesion } from '../../lib/sesion'
 import { useDatos } from '../../store'
-import type { EstadoPago, FilaDeclaracion, FiltroAprobacion, Impuesto, TipoDeclaracion, ValorFiltro } from '../../types'
-import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS } from './constants'
+import type { EstadoPago, FilaDeclaracion, FiltroAprobacion, Impuesto, TipoDeclaracion, ValorFiltro, VistaDeclaraciones } from '../../types'
+import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS, VISTAS } from './constants'
 
 export default function Declaraciones() {
   const { municipioId } = useSesion()
@@ -17,6 +18,11 @@ export default function Declaraciones() {
   const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
   const aprobacion = useAprobacion()
+  const omisos = useOmisos()
+  // La vista va en la dirección (?vista=omisos) para que Inicio pueda enlazar directo a los omisos.
+  const [parametros, setParametros] = useSearchParams()
+  const conRitVisible = ritVisible(municipios, municipioId)
+  const vista: VistaDeclaraciones = conRitVisible && parametros.get('vista') === 'omisos' ? 'omisos' : 'presentadas'
   const [pestana, setImpuesto] = useState<ValorFiltro<Impuesto>>('')
   const visibles = impuestosVisibles(municipios, municipioId)
   const pestanas = PESTANAS.filter((p) => !p.valor || visibles.includes(p.valor))
@@ -85,33 +91,54 @@ export default function Declaraciones() {
       />
       <BuscadorMunicipios />
 
-      <Segmentado
-        etiqueta="Impuesto"
-        className="mb-4 sm:inline-flex"
-        opciones={pestanas.map((p) => ({ ...p, conteo: filas.filter((f) => !p.valor || f.d.impuesto === p.valor).length }))}
-        valor={impuesto}
-        cambiar={setImpuesto}
-      />
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        {conRitVisible && (
+          <Segmentado
+            etiqueta="Vista"
+            className="sm:inline-flex"
+            opciones={VISTAS.map((v) => ({ ...v, conteo: v.valor === 'omisos' ? omisos.omisos.length : filas.length }))}
+            valor={vista}
+            cambiar={(v) => setParametros(v === 'omisos' ? { vista: 'omisos' } : {}, { replace: true })}
+          />
+        )}
+        <Segmentado
+          etiqueta="Impuesto"
+          className="sm:inline-flex"
+          opciones={pestanas.map((p) => ({
+            ...p,
+            conteo:
+              vista === 'omisos'
+                ? omisos.omisos.filter((o) => !p.valor || o.impuesto === p.valor).length
+                : filas.filter((f) => !p.valor || f.d.impuesto === p.valor).length,
+          }))}
+          valor={impuesto}
+          cambiar={setImpuesto}
+        />
+      </div>
 
-      <Card>
-        <BarraFiltros>
-          <Buscador className="min-w-60 flex-1" placeholder="Buscar por declarante, NIT o cédula, radicado o factura" value={texto} onChange={(e) => setTexto(e.target.value)} />
-          <Filtro etiqueta="Tipo de declaración" opciones={OPCIONES_TIPO} valor={tipo} cambiar={setTipo} />
-          <Filtro etiqueta="Estado de pago" opciones={OPCIONES_PAGO} valor={pago} cambiar={setPago} />
-          {conAprobacion && (
-            <Filtro
-              etiqueta="Aprobación"
-              opciones={OPCIONES_APROBACION}
-              valor={estadoAprobacion}
-              cambiar={setFiltroAprobacion}
-            />
-          )}
-        </BarraFiltros>
+      {vista === 'omisos' ? (
+        <ListaOmisos resultado={omisos} impuesto={impuesto} />
+      ) : (
+        <Card>
+          <BarraFiltros>
+            <Buscador className="min-w-60 flex-1" placeholder="Buscar por declarante, NIT o cédula, radicado o factura" value={texto} onChange={(e) => setTexto(e.target.value)} />
+            <Filtro etiqueta="Tipo de declaración" opciones={OPCIONES_TIPO} valor={tipo} cambiar={setTipo} />
+            <Filtro etiqueta="Estado de pago" opciones={OPCIONES_PAGO} valor={pago} cambiar={setPago} />
+            {conAprobacion && (
+              <Filtro
+                etiqueta="Aprobación"
+                opciones={OPCIONES_APROBACION}
+                valor={estadoAprobacion}
+                cambiar={setFiltroAprobacion}
+              />
+            )}
+          </BarraFiltros>
 
-        <SeleccionDeclaraciones declaraciones={marcadas.map((f) => f.d)} quitar={() => setSeleccion(new Set())} />
+          <SeleccionDeclaraciones declaraciones={marcadas.map((f) => f.d)} quitar={() => setSeleccion(new Set())} />
 
-        <TablaDeclaraciones filas={filtradas} seleccion={seleccion} marcar={marcar} conAprobacion={conAprobacion} />
-      </Card>
+          <TablaDeclaraciones filas={filtradas} seleccion={seleccion} marcar={marcar} conAprobacion={conAprobacion} />
+        </Card>
+      )}
     </>
   )
 }

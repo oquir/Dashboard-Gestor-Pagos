@@ -1,10 +1,11 @@
-import { ClipboardList, Document, AlertTriangle, Wallet } from 'reicon-react'
+import { ClipboardList, Document, AlertTriangle, UserSearch, Wallet } from 'reicon-react'
 import { useMemo } from 'react'
+import { Link } from 'react-router'
 import { StatTile } from '../../components/molecules'
 import { AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, ProximosVencimientos, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
 import { formatoCompacto } from '../../lib/formato'
 import { esperaAprobacion, estadoPago, sePuedePagar, totalPagado } from '../../lib/reglas'
-import { aprobacionVisible, conRit, delMunicipio, ritVisible, useAprobacion, useDeclaraciones, useSesion, useVerRecaudo } from '../../lib/sesion'
+import { aprobacionVisible, conRit, delMunicipio, ritVisible, useAprobacion, useDeclaraciones, useOmisos, useSesion, useVerRecaudo } from '../../lib/sesion'
 import { useDatos } from '../../store'
 import type { Deuda } from '../../types'
 import { ANIO_ACTUAL, COLUMNAS_TARJETAS } from './constants'
@@ -18,6 +19,8 @@ export default function Inicio() {
   const aprobacion = useAprobacion()
   const conRitVisible = ritVisible(municipios, municipioId)
   const verRecaudo = useVerRecaudo()
+  const { omisos } = useOmisos()
+  const contribuyentesOmisos = new Set(omisos.map((o) => o.inscripcion.id)).size
 
   const datos = useMemo(() => {
     const inscripciones = delMunicipio(todasInscripciones, municipioId)
@@ -76,7 +79,8 @@ export default function Inicio() {
   // Si 1cero1 apaga la aprobación previa, lo que quedó pendiente se sigue mostrando hasta resolverlo.
   const conAprobacion = aprobacionVisible(municipios, municipioId) || datos.porAprobar.length > 0
   const vencidas = datos.porAprobar.filter((x) => x.a.estado === 'vencida').length
-  const tarjetas = 2 + Number(conRitVisible) + Number(conAprobacion) + Number(verRecaudo)
+  // Con el RIT van dos tarjetas: las solicitudes por revisar y los omisos.
+  const tarjetas = 2 + 2 * Number(conRitVisible) + Number(conAprobacion) + Number(verRecaudo)
   // Con un número impar de listas, la primera ocupa toda la fila para que las de deuda vayan juntas.
   const primeraAncha = (1 + Number(conRitVisible) + Number(conAprobacion)) % 2 === 1 ? 'lg:col-span-2' : ''
 
@@ -90,6 +94,25 @@ export default function Inicio() {
             valor={String(datos.pendientes.length)}
             icono={<ClipboardList className="size-5" />}
             detalle={`${datos.activas} inscripciones activas`}
+          />
+        )}
+        {conRitVisible && (
+          <StatTile
+            etiqueta="Contribuyentes omisos"
+            valor={String(contribuyentesOmisos)}
+            icono={<UserSearch className="size-5" />}
+            detalle={
+              omisos.length > 0 ? (
+                <>
+                  {omisos.length} {omisos.length === 1 ? 'periodo vencido' : 'periodos vencidos'} sin declarar ·{' '}
+                  <Link to="/declaraciones?vista=omisos" className="font-medium text-brand-700 hover:underline">
+                    Ver la lista
+                  </Link>
+                </>
+              ) : (
+                'Todos al día'
+              )
+            }
           />
         )}
         {conAprobacion && (

@@ -1,12 +1,14 @@
 import { textoDesactivado } from '../../../../lib/formato'
 import { useDatos } from '../../../../store'
-import { Interruptor, Seccion } from '../../../molecules'
+import { Input } from '../../../atoms'
+import { Campo, Interruptor, Seccion } from '../../../molecules'
 import type { ModulosMunicipioProps } from './types'
 
 /** Lo que el municipio tiene en el aplicativo además de sus formularios de impuestos. */
 export default function ModulosMunicipio({ municipio: m, pausas }: ModulosMunicipioProps) {
   const alternarRit = useDatos((s) => s.alternarRit)
   const alternarCargaAsobancaria = useDatos((s) => s.alternarCargaAsobancaria)
+  const cambiarDeclaracionesDesde = useDatos((s) => s.cambiarDeclaracionesDesde)
 
   return (
     <Seccion titulo="Módulos" descripcion="Lo que el municipio tiene en el aplicativo además de sus formularios.">
@@ -20,6 +22,9 @@ export default function ModulosMunicipio({ municipio: m, pausas }: ModulosMunici
         valor={m.cargaAsobancaria}
         onChange={() => alternarCargaAsobancaria(m.id)}
       />
+      <Campo etiqueta="Declaraciones en el aplicativo desde" ayuda="Los omisos se revisan desde esta fecha; lo anterior está en otro sistema.">
+        <Input type="date" value={m.declaracionesDesde} onChange={(e) => e.target.value && cambiarDeclaracionesDesde(m.id, e.target.value)} />
+      </Campo>
     </Seccion>
   )
 }

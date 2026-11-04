@@ -15,6 +15,9 @@ export const NOMBRES_PERIODOS: Record<Periodicidad, string[]> = {
   trimestral: ['Trimestre 1 (ene – mar)', 'Trimestre 2 (abr – jun)', 'Trimestre 3 (jul – sep)', 'Trimestre 4 (oct – dic)'],
 }
 
+/** Meses que abarca cada periodo según la periodicidad. */
+export const MESES_POR_PERIODO: Record<Periodicidad, number> = { anual: 12, trimestral: 3, bimestral: 2, mensual: 1 }
+
 /** Último dígito del NIT o de la cédula, en el orden en que lo listan los calendarios. */
 export const DIGITOS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
 

@@ -573,14 +573,25 @@ export function generarDatos(): Datos {
     })
   }
 
+  const cheques = generarCheques(declaraciones, pagos)
+  const recaudoHistorico = generarHistorico(az, declaraciones, pagos)
+
+  // Omisos de retención: algunos agentes y autorretenedores no declararon un bimestre. Se quitan al final y con su
+  // propio azar para no cambiar el resto de los datos; no se tocan las declaraciones que tienen un cheque.
+  const azOmisos = crearAzar(580)
+  const conCheque = new Set(cheques.map((c) => c.declaracionId))
+  const omitidas = new Set(
+    declaraciones.filter((d) => d.impuesto !== 'ica' && d.periodo >= 2 && !conCheque.has(d.id) && azOmisos.prob(0.12)).map((d) => d.id),
+  )
+
   return {
     municipios: MUNICIPIOS.map((m) => ({ ...m })),
     usuarios: USUARIOS.map((u) => ({ ...u })),
     inscripciones,
-    declaraciones,
-    pagos,
-    cheques: generarCheques(declaraciones, pagos),
-    recaudoHistorico: generarHistorico(az, declaraciones, pagos),
+    declaraciones: declaraciones.filter((d) => !omitidas.has(d.id)),
+    pagos: pagos.filter((p) => !omitidas.has(p.declaracionId)),
+    cheques,
+    recaudoHistorico,
     configuraciones: structuredClone(CONFIGURACIONES),
     actividades: structuredClone(ACTIVIDADES_POR_VIGENCIA),
   }

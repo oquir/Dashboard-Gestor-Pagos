@@ -1,5 +1,11 @@
 import { etiquetaEstadoPago, etiquetaTipoDeclaracion } from '../../lib/formato'
-import type { EstadoPago, Impuesto, Opcion, TipoDeclaracion, ValorFiltro } from '../../types'
+import type { EstadoPago, Impuesto, Opcion, TipoDeclaracion, ValorFiltro, VistaDeclaraciones } from '../../types'
+
+/** Lo presentado o lo que debía presentarse y no se presentó; los omisos solo existen donde está el RIT. */
+export const VISTAS: Opcion<VistaDeclaraciones>[] = [
+  { valor: 'presentadas', texto: 'Presentadas' },
+  { valor: 'omisos', texto: 'Omisos' },
+]
 
 export const PESTANAS: Opcion<ValorFiltro<Impuesto>>[] = [
   { valor: '', texto: 'Todas' },

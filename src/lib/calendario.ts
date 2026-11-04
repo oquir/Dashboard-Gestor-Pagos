@@ -1,5 +1,5 @@
 // Calendario tributario: vencimientos por año gravable y formulario, con fecha única o por último dígito del NIT o la cédula.
-import { DIGITOS, NOMBRES_PERIODOS } from '../constants'
+import { DIGITOS, MESES_POR_PERIODO, NOMBRES_PERIODOS } from '../constants'
 import type { CalendarioVigencia, Impuesto, Periodicidad, VencimientoPeriodo, VencimientosFormulario } from '../types'
 import { moverAnios } from '../utils'
 
@@ -46,6 +46,26 @@ export const conFecha = (f: VencimientosFormulario, periodo: number, posicion: n
   ...f,
   periodos: f.periodos.map((p) => (p.periodo === periodo ? { ...p, fechas: p.fechas.map((actual, i) => (i === posicion ? fecha : actual)) } : p)),
 })
+
+/** Primer y último día del periodo dentro del año gravable. */
+export function rangoPeriodo(periodicidad: Periodicidad, vigencia: number, periodo: number) {
+  const meses = MESES_POR_PERIODO[periodicidad]
+  const inicio = `${vigencia}-${String((periodo - 1) * meses + 1).padStart(2, '0')}-01`
+  // El día 0 del mes siguiente es el último del mes en que termina el periodo.
+  const fin = new Date(Date.UTC(vigencia, periodo * meses, 0)).toISOString().slice(0, 10)
+  return { inicio, fin }
+}
+
+/**
+ * Vencimiento del periodo para un declarante: la fecha única o la de su último dígito. El documento se guarda sin el
+ * dígito de verificación, así que su último carácter es el dígito que cuenta. Sin fecha, undefined.
+ */
+export const vencimientoPara = (f: VencimientosFormulario, p: VencimientoPeriodo, documento: string) =>
+  (f.porDigito ? p.fechas[Number(documento.trim().slice(-1))] : p.fechas[0]) || undefined
+
+/** Nombre del periodo: el año gravable en el ICA anual; el periodo y su año en ReteICA y AutoReteICA. */
+export const etiquetaPeriodoCalendario = (impuesto: Impuesto, periodicidad: Periodicidad, vigencia: number, periodo: number) =>
+  impuesto === 'ica' ? `Año gravable ${vigencia}` : `${NOMBRES_PERIODOS[periodicidad][periodo - 1]} de ${vigencia}`
 
 /** Primera y última fecha del periodo; con fecha única, las dos son la misma. Sin fechas, undefined. */
 export function rangoFechas(f: VencimientosFormulario, p: VencimientoPeriodo) {

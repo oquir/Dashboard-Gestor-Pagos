@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 import { Badge, Card } from '../components/atoms'
 import { Vacio } from '../components/molecules'
 import {
+  DeclaracionesFaltantes,
   DeclaracionesPresentadas,
   EncabezadoSolicitud,
   FichaCancelacion,
@@ -70,6 +71,7 @@ export default function InscripcionDetalle() {
           ) : (
             <FichaRit datos={solicitud?.datos ?? inscripcion} anterior={anterior} tarifas={solicitud ? undefined : tarifas} />
           )}
+          {(inscripcion.estado === 'activa' || inscripcion.estado === 'cancelada') && <DeclaracionesFaltantes inscripcion={inscripcion} />}
           <DeclaracionesPresentadas declaraciones={declaraciones} regimenSimple={inscripcion.regimenSimple} />
         </>
       }

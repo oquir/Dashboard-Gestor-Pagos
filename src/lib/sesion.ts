@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
 import { useDatos } from '../store'
 import type { Declaracion, Formulario, Impuesto, MediosVentanilla, Municipio } from '../types'
+import { hoy } from '../utils'
+import { calcularOmisos } from './omisos'
 import { aprobacionDe } from './reglas'
 
 export const IMPUESTOS: Impuesto[] = ['ica', 'reteica', 'autorretencion']
@@ -101,4 +103,22 @@ export function useAprobacion() {
       return cfg && aprobacionDe(d, cfg, hoy)
     }
   }, [configuraciones])
+}
+
+/**
+ * Omisos al día de hoy: del municipio que se está viendo (o de todos, si 1cero1 no eligió uno), o del que se indique,
+ * como el de una inscripción.
+ */
+export function useOmisos(municipio?: string | null) {
+  const sesion = useSesion()
+  const municipioId = municipio === undefined ? sesion.municipioId : municipio
+  const municipios = useDatos((s) => s.municipios)
+  const configuraciones = useDatos((s) => s.configuraciones)
+  const inscripciones = useDatos((s) => s.inscripciones)
+  const declaraciones = useDatos((s) => s.declaraciones)
+  const fecha = hoy()
+  return useMemo(
+    () => calcularOmisos({ municipios, configuraciones, inscripciones, declaraciones }, municipioId, fecha),
+    [municipios, configuraciones, inscripciones, declaraciones, municipioId, fecha],
+  )
 }

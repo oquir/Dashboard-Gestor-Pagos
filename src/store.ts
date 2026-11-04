@@ -28,6 +28,8 @@ interface Estado extends Datos {
   guardarUsuario: (usuario: Usuario) => void
   alternarUsuario: (id: string) => void
   alternarMunicipio: (id: string) => void
+  /** Fecha desde la que el municipio recibe declaraciones en el aplicativo; desde ahí se revisan los omisos. */
+  cambiarDeclaracionesDesde: (municipioId: string, fecha: string) => void
   /** Activa o desactiva un impuesto del municipio; siempre debe quedar al menos uno activo. */
   alternarImpuesto: (municipioId: string, impuesto: Impuesto) => void
   alternarRit: (municipioId: string) => void
@@ -131,6 +133,8 @@ export const useDatos = create<Estado>()(
 
       alternarUsuario: (id) => set((s) => ({ usuarios: s.usuarios.map((u) => (u.id === id ? { ...u, activo: !u.activo } : u)) })),
       alternarMunicipio: (id) => set((s) => ({ municipios: s.municipios.map((m) => (m.id === id ? { ...m, activo: !m.activo } : m)) })),
+      cambiarDeclaracionesDesde: (municipioId, fecha) =>
+        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, declaracionesDesde: fecha } : m)) })),
       alternarImpuesto: (municipioId, impuesto) =>
         set((s) => ({
           municipios: s.municipios.map((m) => {
@@ -220,6 +224,6 @@ export const useDatos = create<Estado>()(
 
       reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
     }),
-    { name: 'gestor-pagos-demo', version: 27 },
+    { name: 'gestor-pagos-demo', version: 28 },
   ),
 )

@@ -25,6 +25,8 @@ const fecha = new Intl.DateTimeFormat('es-CO', { day: '2-digit', month: 'short',
 export const formatoPesos = (valor: number) => pesos.format(valor)
 export const formatoCompacto = (valor: number) => compacto.format(valor)
 export const formatoFecha = (iso: string) => fecha.format(new Date(`${iso}T12:00:00`))
+/** "hace 1 día", "hace 12 días". */
+export const formatoHaceDias = (dias: number) => (dias === 1 ? 'hace 1 día' : `hace ${dias} días`)
 /** Para comparar textos sin importar tildes, mayúsculas ni espacios de los extremos. */
 export const normalizar = (texto: string) => texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').trim().toLowerCase()
 

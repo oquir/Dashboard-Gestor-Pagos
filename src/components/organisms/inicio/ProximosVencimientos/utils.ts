@@ -1,5 +1,4 @@
-import { NOMBRES_PERIODOS } from '../../../../constants'
-import { rangoFechas } from '../../../../lib/calendario'
+import { etiquetaPeriodoCalendario, rangoFechas } from '../../../../lib/calendario'
 import { etiquetaImpuesto } from '../../../../lib/formato'
 import { IMPUESTOS } from '../../../../lib/sesion'
 import type { ConfigMunicipio, Municipio } from '../../../../types'
@@ -25,7 +24,7 @@ export function vencimientosProximos(configuraciones: ConfigMunicipio[], municip
           lista.push({
             id: `${cfg.municipioId}-${cal.vigencia}-${impuesto}-${p.periodo}`,
             impuesto: etiquetaImpuesto[impuesto],
-            periodoTexto: impuesto === 'ica' ? `Año gravable ${cal.vigencia}` : `${NOMBRES_PERIODOS[f.periodicidad][p.periodo - 1]} de ${cal.vigencia}`,
+            periodoTexto: etiquetaPeriodoCalendario(impuesto, f.periodicidad, cal.vigencia, p.periodo),
             fecha: rango.desde,
             hasta: rango.hasta !== rango.desde ? rango.hasta : undefined,
             decreto: cal.decreto,

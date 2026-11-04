@@ -8,6 +8,11 @@ export interface Municipio {
   departamento: string
   codigoDane: string
   activo: boolean
+  /**
+   * Desde cuándo recibe declaraciones en el aplicativo; las anteriores quedaron en otro sistema, así que los
+   * omisos se revisan desde esta fecha. La pone 1cero1.
+   */
+  declaracionesDesde: string
   /** Impuestos que el municipio gestiona en el aplicativo; los activa 1cero1. */
   impuestos: Record<Impuesto, boolean>
   /** El RIT del municipio está en el aplicativo (inscripciones y novedades); lo activa 1cero1. */

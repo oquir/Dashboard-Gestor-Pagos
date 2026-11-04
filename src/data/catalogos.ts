@@ -6,7 +6,7 @@ import type { ActividadesVigencia, ConfigMunicipio, Municipio, Periodicidad, Sec
 
 export const MUNICIPIOS: Municipio[] = [
   {
-    id: 'm1', nombre: 'San José del Valle', departamento: 'Antioquia', codigoDane: '05901', activo: true,
+    id: 'm1', nombre: 'San José del Valle', departamento: 'Antioquia', codigoDane: '05901', activo: true, declaracionesDesde: '2026-02-01',
     impuestos: { ica: true, reteica: false, autorretencion: false },
     rit: true,
     validarContraRit: { ica: true, reteica: true, autorretencion: true },
@@ -16,7 +16,7 @@ export const MUNICIPIOS: Municipio[] = [
     pagoCheque: { ica: true, reteica: false, autorretencion: false },
   },
   {
-    id: 'm2', nombre: 'Puerto Esperanza', departamento: 'Bolívar', codigoDane: '13901', activo: true,
+    id: 'm2', nombre: 'Puerto Esperanza', departamento: 'Bolívar', codigoDane: '13901', activo: true, declaracionesDesde: '2026-02-01',
     impuestos: { ica: true, reteica: true, autorretencion: false },
     rit: true,
     validarContraRit: { ica: true, reteica: true, autorretencion: true },
@@ -26,7 +26,7 @@ export const MUNICIPIOS: Municipio[] = [
     pagoCheque: { ica: false, reteica: false, autorretencion: false },
   },
   {
-    id: 'm3', nombre: 'Santa Rosa de los Andes', departamento: 'Santander', codigoDane: '68901', activo: true,
+    id: 'm3', nombre: 'Santa Rosa de los Andes', departamento: 'Santander', codigoDane: '68901', activo: true, declaracionesDesde: '2026-02-01',
     impuestos: { ica: true, reteica: true, autorretencion: true },
     rit: true,
     validarContraRit: { ica: true, reteica: true, autorretencion: true },

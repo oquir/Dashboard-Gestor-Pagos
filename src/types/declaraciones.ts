@@ -1,6 +1,9 @@
 import type { SituacionAprobacion } from '../lib/reglas'
 import type { Declaracion, EstadoPago } from './dominio'
 
+/** Lo que muestra la página Declaraciones: las presentadas o los omisos (lo que debía presentarse y no se presentó). */
+export type VistaDeclaraciones = 'presentadas' | 'omisos'
+
 /** Fila de la tabla de declaraciones. */
 export interface FilaDeclaracion {
   d: Declaracion
