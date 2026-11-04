@@ -359,6 +359,27 @@ export interface RecaudoMensual {
   valores: Record<Impuesto, number>
 }
 
+// --- Bitácora ---
+
+export type CategoriaBitacora = 'sesion' | 'configuracion' | 'calendario' | 'municipios' | 'usuarios' | 'rit' | 'pagos'
+
+/** Un cambio hecho en el aplicativo: quién, cuándo, qué y cómo estaba antes. Solo la ve 1cero1. */
+export interface RegistroBitacora {
+  id: string
+  /** Fecha y hora local, AAAA-MM-DDTHH:MM. */
+  fechaHora: string
+  /** Quién lo hizo, como era en ese momento: el usuario puede cambiar o eliminarse después. */
+  usuario: { id: string; nombre: string; rol: Rol }
+  /** Municipio en el que se hizo; null en lo que no es de un municipio, como el inicio de sesión de 1cero1. */
+  municipioId: string | null
+  categoria: CategoriaBitacora
+  /** Qué hizo, en una frase: "Cambió la tarifa única de ReteICA". */
+  accion: string
+  /** Valor anterior y nuevo, cuando la acción cambia un dato. */
+  antes?: string
+  despues?: string
+}
+
 export interface Datos {
   municipios: Municipio[]
   usuarios: Usuario[]
@@ -369,4 +390,6 @@ export interface Datos {
   recaudoHistorico: RecaudoMensual[]
   configuraciones: ConfigMunicipio[]
   actividades: ActividadesVigencia[]
+  /** Datos de prueba: en la demo, lo que se hace en el navegador no se registra. */
+  bitacora: RegistroBitacora[]
 }

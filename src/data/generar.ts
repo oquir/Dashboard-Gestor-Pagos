@@ -37,6 +37,7 @@ import {
 } from './catalogos'
 import { crearAzar, fechaAleatoria, sumarDias } from './azar'
 import type { Azar } from './azar'
+import { generarBitacora } from './bitacora'
 
 const INSCRIPCIONES_POR_MUNICIPIO = 40
 const FECHA_DEMO = '2026-10-21'
@@ -579,7 +580,7 @@ export function generarDatos(): Datos {
     declaraciones.filter((d) => d.impuesto !== 'ica' && d.periodo >= 2 && !conCheque.has(d.id) && azOmisos.prob(0.12)).map((d) => d.id),
   )
 
-  return {
+  const datos = {
     municipios: MUNICIPIOS.map((m) => ({ ...m })),
     usuarios: USUARIOS.map((u) => ({ ...u })),
     inscripciones,
@@ -590,6 +591,7 @@ export function generarDatos(): Datos {
     configuraciones: structuredClone(CONFIGURACIONES),
     actividades: structuredClone(ACTIVIDADES_POR_VIGENCIA),
   }
+  return { ...datos, bitacora: generarBitacora(datos) }
 }
 
 /** Un cheque de gerencia en canje en cada municipio que los recibe en algún formulario. No usa el azar, para no cambiar el resto de los datos. */
