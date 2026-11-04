@@ -50,9 +50,6 @@ export default function SeccionRetencion({ b, cambiar, editable, impuestos }: Se
           )}
         </>
       )}
-      {impuestos.reteica && impuestos.autorretencion && (
-        <Interruptor etiqueta="Formulario conjunto de ReteICA y AutoReteICA" valor={b.formularioConjunto} deshabilitado={!editable} onChange={(v) => cambiar({ formularioConjunto: v })} />
-      )}
       <Interruptor
         etiqueta="Exige declaración en ceros"
         ayuda="Si no, un agente sin retenciones en el periodo no declara y no se marca como omiso."

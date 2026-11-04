@@ -299,7 +299,6 @@ export type CalendarioVigencia = {
 
 export interface ConfigMunicipio {
   municipioId: string
-  formularioConjunto: boolean
   declaracionEnCeros: boolean
   cancelacionRitAutomatica: boolean
   /** Los funcionarios no ven en Inicio lo que ha recaudado el municipio. */

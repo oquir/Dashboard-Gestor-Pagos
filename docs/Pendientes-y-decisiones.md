@@ -45,7 +45,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambia c
 | Campo | Qué pasa hoy | Estado |
 |---|---|---|
 | Periodicidad de ReteICA y AutoReteICA | Desde el 2026-11-03 se pone en Calendario, por año gravable y por formulario (mensual, bimestral o trimestral), y la usan los vencimientos y la tarjeta de Inicio. Pero las declaraciones de la demo y su etiqueta siguen diciendo "bimestre" (Ricaurte declara mensual) | Pendiente |
-| Formulario conjunto | No hay ninguna declaración conjunta | Descartado |
+| Formulario conjunto | Se quitó el interruptor y el campo (2026-11-04) | **Quitado** |
 | Corrección a la baja (art. 589 clásico o corrección directa) | El flujo no existe (§3.2) | En revisión |
 | Plazo para inscribirse en el RIT | Nada marca una inscripción tardía (§3.3) | En revisión |
 | Declaración en ceros | Desde el 2026-11-03 decide si un agente de ReteICA sin declaración sale como omiso o solo en el aviso (§3.4 y §3.5) | **Con efecto** |
@@ -256,8 +256,7 @@ Con esto, además, la falta de datos queda a la vista desde el primer día y no 
 
 | Qué | Dónde |
 |---|---|
-| Campos de configuración sin efecto (`formularioConjunto`, `declaracionEnCeros`, `correccionABaja`, `plazoInscripcionMeses`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionRetencion` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
-| Formulario conjunto prendido en la demo | Puerto Esperanza (`m2`), en `CONFIGURACIONES` de `src/data/catalogos.ts` |
+| Campos de configuración sin efecto (`correccionABaja`, `plazoInscripcionMeses`, las bases mínimas de `reteica` y las tasas con emplazamiento de `sanciones`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionRetencion`, `SeccionSanciones` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
 | Etiqueta del periodo ("bimestre") | `etiquetaPeriodo`, en `src/lib/formato.ts` |
 | Vencimientos fijos | `VENCIMIENTO_ICA_2025` y `VENCIMIENTOS_BIMESTRE_2026`, en `src/data/catalogos.ts` |
 | Omisos: cálculo y pantallas | `calcularOmisos` en `src/lib/omisos.ts` y `useOmisos` en `src/lib/sesion.ts`; la vista en `ListaOmisos` y `TablaOmisos` (`src/components/organisms/declaraciones/`); `DeclaracionesFaltantes` en `src/components/organisms/inscripciones/`; la fecha `declaracionesDesde` del tipo `Municipio` |

@@ -113,7 +113,6 @@ const fechasPorDigito = (periodicidad: Periodicidad, porPeriodo: string[][]): Ve
 export const CONFIGURACIONES: ConfigMunicipio[] = [
   {
     municipioId: 'm1',
-    formularioConjunto: false,
     declaracionEnCeros: false,
     cancelacionRitAutomatica: false,
     ocultarRecaudoAFuncionarios: true,
@@ -170,7 +169,6 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
   },
   {
     municipioId: 'm2',
-    formularioConjunto: true,
     declaracionEnCeros: true,
     cancelacionRitAutomatica: false,
     ocultarRecaudoAFuncionarios: true,
@@ -228,7 +226,6 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
   },
   {
     municipioId: 'm3',
-    formularioConjunto: false,
     declaracionEnCeros: false,
     cancelacionRitAutomatica: true,
     ocultarRecaudoAFuncionarios: true,
