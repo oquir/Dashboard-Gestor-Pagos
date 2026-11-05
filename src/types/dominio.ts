@@ -171,6 +171,19 @@ export type DatosRit = Pick<
 
 // --- Declaraciones y pagos ---
 
+/**
+ * Lo que el declarante escribe en la declaración: sus datos y los de quienes la firman (el representante legal y el
+ * contador o revisor fiscal). Es lo de ese día: no cambia si después actualiza el RIT, y es lo único que se sabe de él
+ * cuando el municipio no tiene el RIT o él no está inscrito.
+ */
+export type DatosDeclarante = Pick<
+  Inscripcion,
+  'tipoPersona' | 'tipoDocumento' | 'documento' | 'dv' | 'nombre' | 'representanteLegal' | 'direccion' | 'telefono' | 'correo' | 'contador'
+> & {
+  /** Solo lo pide el formulario del ICA anual (renglón 6). */
+  establecimientos?: number
+}
+
 export type Impuesto = 'ica' | 'reteica' | 'autorretencion'
 export type TipoDeclaracion = 'inicial' | 'correccion' | 'clausura'
 export type EstadoPago = 'pagada' | 'parcial' | 'sin_pago' | 'saldo_a_favor' | 'ineficaz'
@@ -185,6 +198,7 @@ export interface Declaracion {
   id: string
   municipioId: string
   inscripcionId: string
+  declarante: DatosDeclarante
   impuesto: Impuesto
   vigencia: number
   /** 1 en el ICA anual; bimestre (1–6) en retención y autorretención. */

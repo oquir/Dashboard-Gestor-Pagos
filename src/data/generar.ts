@@ -8,6 +8,7 @@ import type {
   CalidadInscrita,
   ConfigMunicipio,
   Datos,
+  DatosDeclarante,
   DatosRit,
   Declaracion,
   EstadoInscripcion,
@@ -320,6 +321,17 @@ function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripci
 
 // --- Declaraciones ---
 
+/**
+ * Lo que el declarante escribe en la declaración: lo que tenía inscrito en el RIT el día que la presenta, así que las
+ * declaraciones viejas conservan los datos de antes de una actualización. El número de establecimientos solo lo pide el
+ * formulario del ICA anual.
+ */
+function declaranteDe(ins: Inscripcion, fecha: string, impuesto: Impuesto): DatosDeclarante {
+  const vigente = ins.novedades.findLast((n) => n.estado === 'aprobada' && n.datos && (n.fechaRevision ?? n.fecha) <= fecha)?.datos ?? ins
+  const { tipoPersona, tipoDocumento, documento, dv, nombre, representanteLegal, direccion, telefono, correo, contador, establecimientos } = vigente
+  return { tipoPersona, tipoDocumento, documento, dv, nombre, representanteLegal, direccion, telefono, correo, contador, ...(impuesto === 'ica' && { establecimientos }) }
+}
+
 interface PerfilIca {
   ingresos: number
   fueraPct: number
@@ -438,6 +450,7 @@ export function generarDatos(): Datos {
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
           adjuntos: [],
+          declarante: declaranteDe(ins, presentacion, 'ica'),
           id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'inicial',
           numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
           totalAPagar: liq.r38, saldoAFavor: liq.r34,
@@ -458,6 +471,7 @@ export function generarDatos(): Datos {
           const idCorreccion = `d${declaraciones.length + 1}`
           declaraciones.push({
             adjuntos: [],
+            declarante: declaranteDe(ins, fecha, 'ica'),
             id: idCorreccion, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'correccion',
             corrigeA: id, numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: fecha, fechaVencimiento: vencimiento,
             renglones: [...nueva.renglones, { codigo: '—', concepto: 'Menos lo pagado con la declaración que se corrige', valor: pagado }],
@@ -478,6 +492,7 @@ export function generarDatos(): Datos {
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
           adjuntos: [],
+          declarante: declaranteDe(ins, presentacion, 'ica'),
           id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2026, periodo: 1, tipo: 'clausura',
           fechaCierre: cierre, numero: numero('ICA', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: sumarDias(cierre, 60),
           renglones: liq.renglones, totalAPagar: liq.r38, saldoAFavor: liq.r34,
@@ -559,6 +574,7 @@ export function generarDatos(): Datos {
           const esRete = calidad === 'agente_retenedor'
           declaraciones.push({
             adjuntos: [],
+            declarante: declaranteDe(ins, presentacion, esRete ? 'reteica' : 'autorretencion'),
             id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: esRete ? 'reteica' : 'autorretencion', vigencia: 2026, periodo: bimestre,
             tipo: 'inicial', numero: numero(esRete ? 'RET' : 'AUT', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento,
             renglones, totalAPagar: total, saldoAFavor: 0,
@@ -587,6 +603,7 @@ export function generarDatos(): Datos {
     const liq = liquidarIca(perfil, ins, cfg, tarifas, diasMora, 0)
     declaraciones.push({
       adjuntos: ANEXOS.ica.filter(() => azAprobacion.prob(0.45)).map((nombre) => ({ nombre, archivo: archivoAleatorio(azAprobacion, nombre, presentacion) })),
+      declarante: declaranteDe(ins, presentacion, 'ica'),
       id: `d${declaraciones.length + 1}`, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'inicial',
       numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
       totalAPagar: liq.r38, saldoAFavor: liq.r34, aprobacion: { estado: 'pendiente' },
