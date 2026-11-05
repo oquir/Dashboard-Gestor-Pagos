@@ -2,36 +2,28 @@ import { etiquetaCalidad, formatoFecha } from '../../../../lib/formato'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import { HABILITA } from './constants'
-import type { FichaRitProps } from './types'
-import { campos } from './utils'
+import type { CampoFicha, FichaRitProps } from './types'
+import { campos, camposContador } from './utils'
 
-/** Datos, calidades y actividades del inscrito. Con `anterior`, marca lo que cambió frente a ese formulario. */
+/** Datos, contador, calidades y actividades del inscrito. Con `anterior`, marca lo que cambió frente a ese formulario. */
 export default function FichaRit({ datos, anterior, tarifas }: FichaRitProps) {
-  const antes = anterior && new Map(campos(anterior))
   const agregada = (nueva: boolean) => anterior && nueva && <Badge tono="alerta">Agregada</Badge>
+  const conContador = datos.contador || anterior?.contador
 
   return (
     <>
       <Card>
         <CardHeader titulo="Datos del inscrito" />
-        <dl className="grid gap-5 p-5 sm:grid-cols-2">
-          {campos(datos).map(([etiqueta, valor]) => {
-            const previo = antes?.get(etiqueta)
-            if (!valor && !previo) return null
-            return (
-              <Dato key={etiqueta} etiqueta={etiqueta}>
-                {valor ?? '—'}
-                {antes && previo !== valor && (
-                  <>
-                    {' '}
-                    <Badge tono="alerta">Modificado</Badge>
-                    <span className="mt-0.5 block text-xs text-slate-500">Antes: {previo ?? '—'}</span>
-                  </>
-                )}
-              </Dato>
-            )
-          })}
-        </dl>
+        <ListaCampos actuales={campos(datos)} anteriores={anterior && campos(anterior)} />
+      </Card>
+
+      <Card>
+        <CardHeader titulo="Contador o revisor fiscal" descripcion="Firma las declaraciones. Lo registra quien está obligado a llevar contabilidad." />
+        {conContador ? (
+          <ListaCampos actuales={camposContador(datos.contador)} anteriores={anterior && camposContador(anterior.contador)} />
+        ) : (
+          <p className="p-5 text-sm text-slate-500">No registró contador ni revisor fiscal.</p>
+        )}
       </Card>
 
       <Card>
@@ -69,5 +61,30 @@ export default function FichaRit({ datos, anterior, tarifas }: FichaRitProps) {
         </ul>
       </Card>
     </>
+  )
+}
+
+/** Los datos en dos columnas; con `anteriores`, cada uno que cambió lleva lo que decía antes. */
+function ListaCampos({ actuales, anteriores }: { actuales: CampoFicha[]; anteriores?: CampoFicha[] }) {
+  const antes = anteriores && new Map(anteriores)
+  return (
+    <dl className="grid gap-5 p-5 sm:grid-cols-2">
+      {actuales.map(([etiqueta, valor]) => {
+        const previo = antes?.get(etiqueta)
+        if (!valor && !previo) return null
+        return (
+          <Dato key={etiqueta} etiqueta={etiqueta}>
+            {valor ?? '—'}
+            {antes && previo !== valor && (
+              <>
+                {' '}
+                <Badge tono="alerta">Modificado</Badge>
+                <span className="mt-0.5 block text-xs text-slate-500">Antes: {previo ?? '—'}</span>
+              </>
+            )}
+          </Dato>
+        )
+      })}
+    </dl>
   )
 }
