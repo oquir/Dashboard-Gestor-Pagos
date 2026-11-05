@@ -397,6 +397,85 @@ function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, tarif
   return { renglones, r33, r34, r38 }
 }
 
+/** Cuándo se presenta una retención o autorretención: a tiempo o, una de cada diez, con días de mora. */
+function presentarRetencion(az: Azar, vencimiento: string) {
+  const diasMora = az.prob(0.1) ? az.entero(3, 60) : 0
+  const presentacion = diasMora > 0 ? sumarDias(vencimiento, diasMora) : sumarDias(vencimiento, -az.entero(0, 15))
+  return { diasMora, presentacion }
+}
+
+/**
+ * Renglones 13 a 18 de la ReteICA de un bimestre: lo retenido en cada concepto y lo que no se retuvo por estar debajo
+ * de la base mínima, menos las devoluciones. `azBases` sortea solo los pagos por debajo de la base mínima.
+ */
+function liquidarReteica(az: Azar, azBases: Azar, cfg: ConfigMunicipio, tarifas: Tarifa[]) {
+  const renglones: Renglon[] = []
+  const { baseMinimaServiciosUvt: minServicios, baseMinimaComprasUvt: minCompras } = cfg.reteica
+  // Con tarifa única va un solo renglón para servicios y compras, con la menor de las dos bases mínimas.
+  const conceptos =
+    cfg.reteica.modalidad === 'unica'
+      ? [{ tarifa: cfg.reteica.tarifaUnicaPorMil, de: 'servicios y compras', minimaUvt: Math.min(minServicios, minCompras) }]
+      : [
+          { tarifa: tarifas.find((t) => t.sector === 'servicios')!.porMil, de: 'servicios', minimaUvt: minServicios },
+          { tarifa: tarifas.find((t) => t.sector === 'comercial')!.porMil, de: 'compras', minimaUvt: minCompras },
+        ]
+  let retenciones = 0
+  for (const { tarifa, de, minimaUvt } of conceptos) {
+    // La base es la suma de los pagos que llegan a la base mínima; los menores no se retienen.
+    const base = az.entero(15, 900) * 1_000_000
+    const retencion = redondearMil((base * tarifa) / 1000)
+    retenciones += retencion
+    const minima = minimaUvt * UVT
+    const menores = minima > 0 ? azBases.entero(0, 3) : 0
+    const bajoMinima = Array.from({ length: menores }, () => redondearMil(minima * (0.2 + azBases.num() * 0.75))).reduce((a, b) => a + b, 0)
+    renglones.push({
+      codigo: '13–15',
+      concepto:
+        `Retención a ${tarifa} por mil sobre ${(base / 1_000_000).toLocaleString('es-CO')} millones en pagos de ${de}` +
+        (menores > 0
+          ? `. No se retienen ${menores} ${menores === 1 ? 'pago' : 'pagos'} por ${formatoPesos(bajoMinima)}, por debajo de la base mínima de ${formatoPesos(minima)} (${minimaUvt} UVT)`
+          : ''),
+      valor: retencion,
+    })
+  }
+  const devoluciones = az.prob(0.15) ? redondearMil(retenciones * az.num() * 0.1) : 0
+  const impuesto = retenciones - devoluciones
+  renglones.push(
+    { codigo: '16', concepto: 'Retenciones practicadas en el periodo', valor: retenciones },
+    { codigo: '17', concepto: 'Devoluciones, anulaciones y retenciones en exceso', valor: devoluciones },
+    { codigo: '18', concepto: 'Subtotal', valor: impuesto },
+  )
+  return { renglones, impuesto }
+}
+
+/** Renglones 1 y 2 de la AutoReteICA de un bimestre: la base, cerca de un sexto de los ingresos del año, y lo autorretenido. */
+function liquidarAutorretencion(az: Azar, cfg: ConfigMunicipio, tarifas: Tarifa[], ciiu: string, ingresos: number) {
+  const principal = tarifas.find((t) => t.ciiu === ciiu)?.porMil ?? 7
+  const tarifa = cfg.autorretencion.modalidad === 'plena' ? principal : (principal * cfg.autorretencion.porcentaje) / 100
+  const base = redondearMil((ingresos / 6) * (0.8 + az.num() * 0.4))
+  const impuesto = redondearMil((base * tarifa) / 1000)
+  const renglones: Renglon[] = [
+    { codigo: '1', concepto: 'Base gravable del bimestre', valor: base },
+    { codigo: '2', concepto: `Autorretención a ${tarifa.toLocaleString('es-CO')} por mil`, valor: impuesto },
+  ]
+  return { renglones, impuesto }
+}
+
+/** Agrega a los renglones de una retención o autorretención la sanción, los intereses y el total, que devuelve. */
+function cerrarRetencion(renglones: Renglon[], impuesto: number, diasMora: number, cfg: ConfigMunicipio) {
+  const meses = Math.ceil(diasMora / 30)
+  const minima = redondearMil(cfg.sanciones.minimaUvt * UVT)
+  const sancion = diasMora > 0 ? Math.max(redondearMil((impuesto * Math.min(meses * cfg.sanciones.extemporaneidad, 100)) / 100), minima) : 0
+  const intereses = diasMora > 0 ? redondearMil(impuesto * 0.00067 * diasMora) : 0
+  const total = impuesto + sancion + intereses
+  renglones.push(
+    { codigo: 'S', concepto: 'Sanción por extemporaneidad', valor: sancion },
+    { codigo: 'I', concepto: 'Intereses de mora', valor: intereses },
+    { codigo: 'T', concepto: 'Total a pagar', valor: total },
+  )
+  return total
+}
+
 export function generarDatos(): Datos {
   const az = crearAzar(20261022)
   // Los pagos por debajo de la base mínima de ReteICA tienen su propio azar para no cambiar el resto de los datos.
@@ -507,68 +586,12 @@ export function generarDatos(): Datos {
         const bimestre = i + 1
         for (const calidad of ['agente_retenedor', 'autorretenedor'] as const) {
           if (!ins.calidades.some((c) => c.calidad === calidad)) continue
-          const diasMora = az.prob(0.1) ? az.entero(3, 60) : 0
-          const presentacion = diasMora > 0 ? sumarDias(vencimiento, diasMora) : sumarDias(vencimiento, -az.entero(0, 15))
-          const meses = Math.ceil(diasMora / 30)
-          const renglones: Renglon[] = []
-          let impuesto: number
-
-          if (calidad === 'agente_retenedor') {
-            const { baseMinimaServiciosUvt: minServicios, baseMinimaComprasUvt: minCompras } = cfg.reteica
-            // Con tarifa única va un solo renglón para servicios y compras, con la menor de las dos bases mínimas.
-            const conceptos =
-              cfg.reteica.modalidad === 'unica'
-                ? [{ tarifa: cfg.reteica.tarifaUnicaPorMil, de: 'servicios y compras', minimaUvt: Math.min(minServicios, minCompras) }]
-                : [
-                    { tarifa: tarifas2026.find((t) => t.sector === 'servicios')!.porMil, de: 'servicios', minimaUvt: minServicios },
-                    { tarifa: tarifas2026.find((t) => t.sector === 'comercial')!.porMil, de: 'compras', minimaUvt: minCompras },
-                  ]
-            let retenciones = 0
-            for (const { tarifa, de, minimaUvt } of conceptos) {
-              // La base es la suma de los pagos que llegan a la base mínima; los menores no se retienen.
-              const base = az.entero(15, 900) * 1_000_000
-              const retencion = redondearMil((base * tarifa) / 1000)
-              retenciones += retencion
-              const minima = minimaUvt * UVT
-              const menores = minima > 0 ? azBases.entero(0, 3) : 0
-              const bajoMinima = Array.from({ length: menores }, () => redondearMil(minima * (0.2 + azBases.num() * 0.75))).reduce((a, b) => a + b, 0)
-              renglones.push({
-                codigo: '13–15',
-                concepto:
-                  `Retención a ${tarifa} por mil sobre ${(base / 1_000_000).toLocaleString('es-CO')} millones en pagos de ${de}` +
-                  (menores > 0
-                    ? `. No se retienen ${menores} ${menores === 1 ? 'pago' : 'pagos'} por ${formatoPesos(bajoMinima)}, por debajo de la base mínima de ${formatoPesos(minima)} (${minimaUvt} UVT)`
-                    : ''),
-                valor: retencion,
-              })
-            }
-            const devoluciones = az.prob(0.15) ? redondearMil(retenciones * az.num() * 0.1) : 0
-            impuesto = retenciones - devoluciones
-            renglones.push(
-              { codigo: '16', concepto: 'Retenciones practicadas en el periodo', valor: retenciones },
-              { codigo: '17', concepto: 'Devoluciones, anulaciones y retenciones en exceso', valor: devoluciones },
-              { codigo: '18', concepto: 'Subtotal', valor: impuesto },
-            )
-          } else {
-            const principal = tarifas2026.find((t) => t.ciiu === ins.actividades[0].ciiu)?.porMil ?? 7
-            const tarifa = cfg.autorretencion.modalidad === 'plena' ? principal : (principal * cfg.autorretencion.porcentaje) / 100
-            const base = redondearMil((perfil.ingresos / 6) * (0.8 + az.num() * 0.4))
-            impuesto = redondearMil((base * tarifa) / 1000)
-            renglones.push(
-              { codigo: '1', concepto: 'Base gravable del bimestre', valor: base },
-              { codigo: '2', concepto: `Autorretención a ${tarifa.toLocaleString('es-CO')} por mil`, valor: impuesto },
-            )
-          }
-
-          const minima = redondearMil(cfg.sanciones.minimaUvt * UVT)
-          const sancion = diasMora > 0 ? Math.max(redondearMil((impuesto * Math.min(meses * cfg.sanciones.extemporaneidad, 100)) / 100), minima) : 0
-          const intereses = diasMora > 0 ? redondearMil(impuesto * 0.00067 * diasMora) : 0
-          const total = impuesto + sancion + intereses
-          renglones.push(
-            { codigo: 'S', concepto: 'Sanción por extemporaneidad', valor: sancion },
-            { codigo: 'I', concepto: 'Intereses de mora', valor: intereses },
-            { codigo: 'T', concepto: 'Total a pagar', valor: total },
-          )
+          const { diasMora, presentacion } = presentarRetencion(az, vencimiento)
+          const { renglones, impuesto } =
+            calidad === 'agente_retenedor'
+              ? liquidarReteica(az, azBases, cfg, tarifas2026)
+              : liquidarAutorretencion(az, cfg, tarifas2026, ins.actividades[0].ciiu, perfil.ingresos)
+          const total = cerrarRetencion(renglones, impuesto, diasMora, cfg)
           sorteoDeRevision(az, bimestre === 4 ? 0.7 : 0.1)
           const id = `d${declaraciones.length + 1}`
           const esRete = calidad === 'agente_retenedor'
