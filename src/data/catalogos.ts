@@ -19,7 +19,8 @@ export const MUNICIPIOS: Municipio[] = [
     id: 'm2', nombre: 'Puerto Esperanza', departamento: 'Bolívar', codigoDane: '13901', activo: true, declaracionesDesde: '2026-02-01',
     impuestos: { ica: true, reteica: true, autorretencion: false },
     rit: true,
-    validarContraRit: { ica: true, reteica: true, autorretencion: true },
+    // La ReteICA no se valida contra el RIT: también la declaran agentes que no se han inscrito.
+    validarContraRit: { ica: true, reteica: false, autorretencion: true },
     aprobacionPrevia: { ica: true, reteica: false, autorretencion: false },
     cargaAsobancaria: false,
     pagoEfectivo: { ica: true, reteica: true, autorretencion: false },

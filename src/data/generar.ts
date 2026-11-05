@@ -41,6 +41,8 @@ import type { Azar } from './azar'
 import { generarBitacora } from './bitacora'
 
 const INSCRIPCIONES_POR_MUNICIPIO = 40
+/** Donde la ReteICA no se valida contra el RIT, sociedades que la declaran sin haberse inscrito. */
+const AGENTES_NO_INSCRITOS = 3
 const FECHA_DEMO = '2026-10-21'
 
 const menor = (a: string, b: string) => (a < b ? a : b)
@@ -332,6 +334,30 @@ function declaranteDe(ins: Inscripcion, fecha: string, impuesto: Impuesto): Dato
   return { tipoPersona, tipoDocumento, documento, dv, nombre, representanteLegal, direccion, telefono, correo, contador, ...(impuesto === 'ica' && { establecimientos }) }
 }
 
+/**
+ * Una sociedad que declara ReteICA sin estar inscrita en el RIT: lo que escribe en sus declaraciones. Su nombre no es
+ * ninguno de los `usados`, para que no se confunda con un inscrito, y queda entre ellos.
+ */
+function declaranteNoInscrito(az: Azar, municipioId: string, n: number, usados: Set<string>): DatosDeclarante {
+  const documento = String(az.entero(900_100_000, 901_999_999))
+  const dv = String(az.entero(0, 9))
+  let nombre = nombreSujeto(az, 'juridica')
+  while (usados.has(nombre)) nombre = nombreSujeto(az, 'juridica')
+  usados.add(nombre)
+  return {
+    tipoPersona: 'juridica',
+    tipoDocumento: 'NIT',
+    documento,
+    dv,
+    nombre,
+    representanteLegal: `${az.elegir(NOMBRES)} ${az.elegir(APELLIDOS)}`,
+    direccion: direccionAleatoria(az),
+    telefono: telefonoAleatorio(az),
+    correo: `tesoreria${n}@empresa.demo`,
+    contador: datosContables(`${municipioId}-sin-rit-${n}`, 'juridica').contador,
+  }
+}
+
 interface PerfilIca {
   ingresos: number
   fueraPct: number
@@ -487,8 +513,8 @@ export function generarDatos(): Datos {
   const omisos: { municipio: Municipio; ins: Inscripcion; perfil: PerfilIca; cfg: ConfigMunicipio; tarifas: Tarifa[] }[] = []
   let consecutivo = 1
 
-  const agregarPago = (declaracionId: string, fecha: string, valor: number) => {
-    if (valor > 0) pagos.push({ id: `p${pagos.length + 1}`, declaracionId, fecha, valor, medio: az.elegir(['PSE', 'Banco de Bogotá', 'Bancolombia', 'Davivienda']) })
+  const agregarPago = (declaracionId: string, fecha: string, valor: number, azar = az) => {
+    if (valor > 0) pagos.push({ id: `p${pagos.length + 1}`, declaracionId, fecha, valor, medio: azar.elegir(['PSE', 'Banco de Bogotá', 'Bancolombia', 'Davivienda']) })
   }
   const numero = (prefijo: string, vigencia: number) => `${prefijo}-${vigencia}-${String(consecutivo++).padStart(6, '0')}`
   // La factura lleva su propio consecutivo y no usa el azar, para no cambiar el resto de los datos.
@@ -631,6 +657,32 @@ export function generarDatos(): Datos {
       numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
       totalAPagar: liq.r38, saldoAFavor: liq.r34, aprobacion: { estado: 'pendiente' },
     })
+  }
+
+  // Agentes de ReteICA que no están inscritos en el RIT: declaran donde el municipio tiene el RIT, pero no valida la
+  // ReteICA contra el RIT. Tienen su propio azar para no cambiar el resto de los datos.
+  const azNoInscritos = crearAzar(402)
+  const nombresUsados = new Set(inscripciones.map((i) => i.nombre))
+  for (const municipio of MUNICIPIOS.filter((m) => m.rit && m.impuestos.reteica && !m.validarContraRit.reteica)) {
+    const cfg = CONFIGURACIONES.find((c) => c.municipioId === municipio.id)!
+    const tarifas = ACTIVIDADES_POR_VIGENCIA.find((a) => a.municipioId === municipio.id && a.vigencia === 2026)!.tarifas
+    for (let n = 1; n <= AGENTES_NO_INSCRITOS; n++) {
+      const declarante = declaranteNoInscrito(azNoInscritos, municipio.id, n, nombresUsados)
+      VENCIMIENTOS_BIMESTRE_2026.forEach((vencimiento, i) => {
+        const { diasMora, presentacion } = presentarRetencion(azNoInscritos, vencimiento)
+        const { renglones, impuesto } = liquidarReteica(azNoInscritos, azNoInscritos, cfg, tarifas)
+        const total = cerrarRetencion(renglones, impuesto, diasMora, cfg)
+        const id = `d${declaraciones.length + 1}`
+        declaraciones.push({
+          adjuntos: ANEXOS.reteica.filter(() => azNoInscritos.prob(0.6)).map((nombre) => ({ nombre, archivo: archivoAleatorio(azNoInscritos, nombre, presentacion) })),
+          declarante: { ...declarante },
+          id, municipioId: municipio.id, impuesto: 'reteica', vigencia: 2026, periodo: i + 1, tipo: 'inicial',
+          numero: numero('RET', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento,
+          renglones, totalAPagar: total, saldoAFavor: 0,
+        })
+        if (azNoInscritos.prob(0.9)) agregarPago(id, presentacion, total, azNoInscritos)
+      })
+    }
   }
 
   const cheques = generarCheques(declaraciones, pagos)
