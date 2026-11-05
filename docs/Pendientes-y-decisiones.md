@@ -7,7 +7,7 @@
 >
 > El dashboard es un **mock**: corre en localhost, sin API ni base de datos, y sirve para mostrarles a los municipios cómo se verá el aplicativo. Complementa a [`Dominio-ICA.md`](Dominio-ICA.md) y a [`Contexto-RIT.md`](Contexto-RIT.md).
 >
-> **Revisado el 2026-10-27; actualizado el 2026-11-04.** Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
+> **Revisado el 2026-10-27; actualizado el 2026-11-05.** Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
 
 ## 1. Decisiones del 2026-10-27
 
@@ -37,6 +37,12 @@
 | Aviso de datos anuales (2026-11-04) | **Solo del calendario**: sale en Inicio de cada municipio activo desde el 1 de enero, hasta que cargue el año (§3.14). La UVT no va en el aviso | La UVT se actualiza sola, sin pedirle nada al municipio |
 | Declaraciones sin el calendario cargado (2026-11-04) | **Se reciben y se marcan** | Por ahora puede haber municipios que reciban declaraciones sin el calendario. El usuario piensa en que el aplicativo del formulario no deje declarar un año gravable sin calendario, para que todo sea legal: lo decidirá después |
 | Plazo de 2 meses para pagar la retención (2026-11-04) | Interruptor por municipio, **encendido por defecto** | No es solo de Ricaurte: es el art. 580-1 del Estatuto Tributario, que los municipios aplican por el art. 59 de la Ley 788 de 2002 |
+| Pagos de 1cero1 sin un municipio elegido (2026-11-05) | **Gráficas por municipio** (pagos recibidos, cartera pendiente, retenciones sin consignar y cheques en canje) en lugar de las tablas. La carga y la descarga del Asobancaria piden elegir un municipio | Sin el municipio, las tablas no dicen de cuál es cada fila |
+| "Todos los municipios" en Actividades (2026-11-05) | **No**: como en Calendario y Configuración, hay que elegir un municipio | Cada municipio tiene sus propias tarifas, y la plantilla se carga para un municipio y un año |
+| Establecimientos y contador o revisor fiscal en el RIT (2026-11-05) | **Sí**: la inscripción registra el número de establecimientos en el municipio y el contador o revisor fiscal, con tipo y número de documento, nombre y tarjeta profesional | Faltaban en la ficha del RIT |
+| Datos del declarante en la declaración (2026-11-05) | **En todas las declaraciones**: cada una guarda lo que escribió el declarante y quiénes la firman (§3.16). El detalle, el PDF, las tablas y los reportes los toman de ahí, no del RIT | Lo que vale es lo que se firmó ese día, aunque después cambie el RIT. Y hay municipios sin RIT, o que no validan un formulario contra el RIT |
+| Municipios sin RIT (2026-11-05) | Sus declaraciones se ven con lo que trae cada una, sin cruces con el RIT ni omisos. Lo configura 1cero1. En la demo, Santa Rosa de los Andes no tiene RIT | Hay municipios que llevan el RIT en papel, o que no lo llevan en ningún sistema, y quieren seguir así |
+| Declarante que no está inscrito en el RIT (2026-11-05) | Donde un formulario no se valida contra el RIT, su declaración dice **"No inscrito en el RIT"**, y Declaraciones tiene un filtro para verlas. En la demo, Puerto Esperanza no valida la ReteICA y tres sociedades la declaran sin estar inscritas | Es una pista de fiscalización: declara, pero nunca se inscribió |
 
 ## 2. Lo que falta, con su estado
 
@@ -64,7 +70,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 | Calendario tributario | Página Calendario (antes era una sección de Configuración) con, por año gravable, pasado o futuro: los vencimientos de cada formulario activo por separado, su periodicidad, fechas por último dígito del NIT o la cédula si el municipio las separa, y el pronto pago con su interruptor. Tarjeta de próximos vencimientos en Inicio | **Implementado** (2026-10-30; rehecho el 2026-11-03) |
 | Datos anuales sin actualizar | Avisar desde el inicio del año cuando falta el calendario, y marcar lo que se liquidó sin él, para que el municipio no se entere meses después por declaraciones mal calculadas (§3.14). La UVT se actualiza sola | **Implementado** para el calendario (2026-11-04) |
 | Alerta de ReteICA sin consignar | Una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§3.15): en Pagos, en Inicio y en el detalle de la declaración, también para la AutoReteICA. El plazo de 2 meses del art. 580-1 ET, que también trae Ricaurte, es un interruptor por municipio | **Implementado** (2026-11-04) |
-| Estado de cuenta del contribuyente | Ninguna vista junta lo que debe un contribuyente: sus vigencias, saldos y pagos | Pendiente, **sin paz y salvo** |
+| Estado de cuenta del contribuyente | Ninguna vista junta lo que debe un contribuyente: sus vigencias, saldos y pagos. Donde no hay RIT, al contribuyente se le reconoce por su documento (§3.16) | Pendiente, **sin paz y salvo** |
 | Carga del Asobancaria | El resultado es aleatorio y no cambia la cartera; las referencias que no cruzan no quedan en ninguna parte | Se queda simulada |
 | Cuadre de caja de la ventanilla | El cierre del día por funcionario (§3.8) | Por decidir |
 
@@ -156,7 +162,7 @@ No hace falta saber quién trabaja en el municipio: **para eso está el RIT**, q
 
 Los omisos son los inscritos que debían declarar y todavía no lo han hecho en ese periodo. Para sacarlos basta cruzar dos listas que el dashboard ya tiene: la de inscritos y la de declaraciones. Ese cruce tiene dos límites:
 - solo sirve en los municipios que tienen el RIT en el aplicativo; en los demás, el dashboard solo ve a quien declaró;
-- al que nunca se inscribió (el informal) no se le ve desde aquí. Encontrarlo es trabajo de fiscalización (cruces con la Cámara de Comercio o la DIAN, visitas) y queda fuera del dashboard.
+- al que nunca se inscribió (el informal) no se le ve desde aquí, salvo si declara un formulario que no se valida contra el RIT: entonces su declaración dice "No inscrito en el RIT" (§3.16). Encontrar a los demás es trabajo de fiscalización (cruces con la Cámara de Comercio o la DIAN, visitas) y queda fuera del dashboard.
 
 **Cómo lo calcula el aplicativo** (desde el 2026-11-03), periodo por periodo del calendario:
 - Solo cuentan las inscripciones activas o canceladas que tienen la calidad desde antes de que termine el periodo. Si la canceló, solo los periodos que empezaron antes del cese.
@@ -321,6 +327,41 @@ Si el plazo termina en sábado o domingo, se corre al día hábil siguiente (art
 
 **Fuentes**: [art. 402 del Código Penal](https://leyes.co/codigo_penal/402.htm); [DIAN, Concepto 8678 de 2024](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_8678_2024.htm), que cita el art. 580-1 del Estatuto Tributario; [Acuerdo 093 de 2023 de Medellín](https://www.medellin.gov.co/es/wp-content/uploads/2024/01/ACUERDO-093-2023-GACETA.pdf), art. 76; el estatuto de Ricaurte (§10 de `Contexto-RIT.md`).
 
+### 3.16 Datos del declarante y municipios sin RIT
+
+**El problema**: hasta el 2026-11-05, el dashboard sacaba el nombre, el documento y el correo del declarante de su inscripción en el RIT. Eso falla en tres casos:
+- hay municipios que no tienen el RIT con 1cero1 ni con nadie (lo llevan en papel, o no lo llevan) y quieren seguir así;
+- donde un formulario no se valida contra el RIT, puede declarar alguien que no está inscrito;
+- si el contribuyente actualiza el RIT, sus declaraciones viejas mostraban los datos nuevos, y no lo que firmó.
+
+**La decisión**: cada declaración guarda lo que escribió el declarante, haya RIT o no:
+- sus datos: tipo y número de documento con el DV, nombre o razón social, dirección, teléfono y correo. En el ICA anual, también el número de establecimientos en el municipio (renglón 6); el formulario de ReteICA no lo trae;
+- quiénes la firman: el representante legal (o el propio declarante, si es persona natural) y el contador o revisor fiscal, con su tipo y número de documento, su nombre y su tarjeta profesional. Quien no está obligado a llevar contabilidad no tiene contador que firme.
+
+El cruce con el RIT queda como un extra:
+
+| Municipio | Qué se muestra |
+|---|---|
+| Con RIT y el formulario validado contra el RIT | Los datos de la declaración, y el nombre lleva a la ficha del RIT |
+| Con RIT, pero el formulario no se valida contra el RIT | Lo mismo si está inscrito. Si no lo está, "No inscrito en el RIT" |
+| Sin RIT | Solo los datos de la declaración: sin enlace, sin cruces y sin omisos |
+
+**Cómo quedó en el aplicativo** (2026-11-05):
+- **Detalle de la declaración**: una tarjeta "Declarante" y otra "Firmas". Si no está inscrito donde hay RIT, la tarjeta del declarante lo dice.
+- **Declaraciones**: "No inscrito en el RIT" debajo del documento, y un filtro para ver solo esas declaraciones. El filtro sale cuando hay alguna.
+- **PDF**: la sección B (declarante) sale de la declaración, y hay una sección E (firmas).
+- **Pagos, Inicio y Reportes**: el nombre y el documento salen de la declaración.
+
+**En la demo**:
+- Los datos de cada declaración son los que el contribuyente tenía en el RIT el día que la presentó. Tres declaraciones ya muestran datos distintos de los del RIT de hoy, porque el contribuyente lo actualizó después.
+- **Santa Rosa de los Andes no tiene RIT**: sus contribuyentes solo aparecen en sus declaraciones.
+- **Puerto Esperanza** valida el ICA contra el RIT, pero no la ReteICA. Tres sociedades declaran ReteICA sin estar inscritas: 10 declaraciones de los bimestres 1 a 4 de 2026.
+
+**Límites conocidos**:
+- En la demo, el cruce con el RIT queda guardado al generar los datos. En el aplicativo real se haría por el tipo y el número de documento, así que si alguien se inscribe después, sus declaraciones anteriores también se enlazarían.
+- Sin RIT no hay omisos: no hay una lista de quién debía declarar.
+- El estado de cuenta (§2.2), cuando se haga, tiene que reconocer al contribuyente por su documento, porque donde no hay RIT no hay inscripción.
+
 ## 4. Dónde está cada cosa en el código
 
 | Qué | Dónde |
@@ -335,7 +376,7 @@ Si el plazo termina en sábado o domingo, se corre al día hábil siguiente (art
 | Permisos por rol | `src/lib/permisos.ts` |
 | Días hábiles sin festivos | `sumarDiasHabiles`, en `src/lib/reglas.ts` |
 | UVT constante (la real la actualizará la sonda, §3.14) | `UVT`, en `src/lib/reglas.ts` |
-| Tasa de interés de mora fija | `liquidarIca` y la liquidación de la retención, en `src/data/generar.ts` |
+| Tasa de interés de mora fija | `liquidarIca` y `cerrarRetencion`, en `src/data/generar.ts` |
 | Rechazo en la aprobación previa (texto libre) | `src/components/organisms/declaraciones/AprobacionPrevia/AprobacionPrevia.tsx` |
 | Calendario: modelo y reglas (periodicidad, fechas por dígito, año nuevo copiado del más cercano) | `CalendarioVigencia` en `src/types/dominio.ts`; `src/lib/calendario.ts`; la página en `src/pages/Calendario.tsx` y sus secciones en `src/components/organisms/calendario/` |
 | Año nuevo con las fechas del año más cercano corridas, sin marcarlas como no oficiales (§3.14) | `calendarioNuevo`, en `src/lib/calendario.ts` |
@@ -345,6 +386,10 @@ Si el plazo termina en sábado o domingo, se corre al día hábil siguiente (art
 | Retenciones sin consignar: límite, plazo de 2 meses y lista | `limiteConsignacion` y `estadoPago` en `src/lib/reglas.ts`; `calcularSinConsignar` en `src/lib/consignacion.ts`; `useSinConsignar` y `useEstadoPago` en `src/lib/sesion.ts`; el campo `pagoRetencionEnDosMeses` de `ConfigMunicipio` |
 | Retenciones sin consignar: pantallas | `RetencionesSinConsignar` (`organisms/pagos/`), `AlertaSinConsignar` (`organisms/inicio/`), `AvisoSinConsignar` (`organisms/declaraciones/`) y el interruptor en `SeccionRetencion` |
 | Retención pagada después del límite que sale como pagada (§3.15) | `estadoPago`, en `src/lib/reglas.ts`: no mira la fecha de los pagos |
+| Establecimientos y contador o revisor fiscal del RIT | `establecimientos`, `contador` y `FirmanteContable` en `src/types/dominio.ts`; `datosContables` en `src/data/generar.ts`; `FichaRit` (`organisms/inscripciones/`) |
+| Datos del declarante en la declaración (§3.16) | `DatosDeclarante` y el campo `declarante` de `Declaracion` (`src/types/dominio.ts`); `declaranteDe` en `src/data/generar.ts`; `DeclaranteDeclaracion` (`organisms/declaraciones/`); las secciones B y E de `src/lib/pdfDeclaracion.ts` |
+| Declarante no inscrito en el RIT (§3.16) | `inscripcionId`, opcional en `Declaracion`; `noInscrito` de `FilaDeclaracion` (`src/types/declaraciones.ts`) y su filtro en `src/pages/Declaraciones/Declaraciones.tsx`; en la demo, `declaranteNoInscrito` y `AGENTES_NO_INSCRITOS` en `src/data/generar.ts` |
+| Municipio sin RIT en la demo (§3.16) | `rit: false` de Santa Rosa en `src/data/catalogos.ts`; al final de `generarDatos` se quitan sus inscripciones |
 
 ## 5. Para retomar
 
