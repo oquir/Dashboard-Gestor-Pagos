@@ -19,7 +19,6 @@ import type { Barra, Declaracion, FilaCartera, FilaCheque, FilaPago, FilaSinCons
 
 export default function Pagos() {
   const declaraciones = useDeclaraciones()
-  const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
   const cheques = useDatos((s) => s.cheques)
   const estadoDe = useEstadoPago()
@@ -34,25 +33,24 @@ export default function Pagos() {
 
   const datos = useMemo(() => {
     const porId = new Map(declaraciones.map((d) => [d.id, d]))
-    const nombres = new Map(inscripciones.map((i) => [i.id, i.nombre]))
     const reemplazadas = new Set(declaraciones.map((d) => d.corrigeA).filter(Boolean))
 
     const cartera: FilaCartera[] = declaraciones
       .filter((d) => !reemplazadas.has(d.id))
-      .map((d) => ({ d, estado: estadoDe(d), pagado: totalPagado(d.id, pagos), nombre: nombres.get(d.inscripcionId) ?? '' }))
+      .map((d) => ({ d, estado: estadoDe(d), pagado: totalPagado(d.id, pagos), nombre: d.declarante.nombre }))
       .filter((f) => f.estado === 'parcial' || f.estado === 'sin_pago' || f.estado === 'ineficaz')
 
     const recibidos: FilaPago[] = pagos.flatMap((p) => {
       const d = porId.get(p.declaracionId)
-      return d ? [{ p, d, nombre: nombres.get(d.inscripcionId) ?? '' }] : []
+      return d ? [{ p, d, nombre: d.declarante.nombre }] : []
     })
 
     const enCanje: FilaCheque[] = cheques.flatMap((c) => {
       const d = porId.get(c.declaracionId)
-      return d && c.estado === 'en_canje' ? [{ c, d, nombre: nombres.get(d.inscripcionId) ?? '' }] : []
+      return d && c.estado === 'en_canje' ? [{ c, d, nombre: d.declarante.nombre }] : []
     })
 
-    const sinConsignar: FilaSinConsignar[] = retenciones.map((r) => ({ ...r, nombre: nombres.get(r.d.inscripcionId) ?? '' }))
+    const sinConsignar: FilaSinConsignar[] = retenciones.map((r) => ({ ...r, nombre: r.d.declarante.nombre }))
     return {
       cartera,
       recibidos,
@@ -63,7 +61,7 @@ export default function Pagos() {
       saldoIca: cartera.filter((f) => f.d.impuesto === 'ica').reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0),
       saldoSinConsignar: retenciones.reduce((s, r) => s + r.saldo, 0),
     }
-  }, [declaraciones, inscripciones, pagos, cheques, estadoDe, retenciones])
+  }, [declaraciones, pagos, cheques, estadoDe, retenciones])
 
   return (
     <>

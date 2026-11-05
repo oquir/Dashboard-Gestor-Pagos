@@ -15,7 +15,6 @@ export default function Declaraciones() {
   const { municipioId } = useSesion()
   const declaraciones = useDeclaraciones()
   const municipios = useDatos((s) => s.municipios)
-  const inscripciones = useDatos((s) => s.inscripciones)
   const configuraciones = useDatos((s) => s.configuraciones)
   const estadoDe = useEstadoPago()
   const aprobacion = useAprobacion()
@@ -36,22 +35,18 @@ export default function Declaraciones() {
   const [soloSinCalendario, setSoloSinCalendario] = useState(false)
 
   const filas = useMemo<FilaDeclaracion[]>(() => {
-    const porId = new Map(inscripciones.map((i) => [i.id, i]))
     const numeros = new Map(declaraciones.map((d) => [d.id, d.numero]))
     const configPorMunicipio = new Map(configuraciones.map((c) => [c.municipioId, c]))
-    return declaraciones.map((d) => {
-      const ins = porId.get(d.inscripcionId)
-      return {
-        d,
-        nombre: ins?.nombre ?? '',
-        documento: ins ? formatoDocumento(ins) : '',
-        pago: estadoDe(d),
-        corrige: d.corrigeA && numeros.get(d.corrigeA),
-        aprobacion: aprobacion(d),
-        sinCalendario: presentadaSinCalendario(d, configPorMunicipio.get(d.municipioId)),
-      }
-    })
-  }, [declaraciones, inscripciones, configuraciones, estadoDe, aprobacion])
+    return declaraciones.map((d) => ({
+      d,
+      nombre: d.declarante.nombre,
+      documento: formatoDocumento(d.declarante),
+      pago: estadoDe(d),
+      corrige: d.corrigeA && numeros.get(d.corrigeA),
+      aprobacion: aprobacion(d),
+      sinCalendario: presentadaSinCalendario(d, configPorMunicipio.get(d.municipioId)),
+    }))
+  }, [declaraciones, configuraciones, estadoDe, aprobacion])
 
   // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
   const conAprobacion = filas.some((f) => f.aprobacion)
