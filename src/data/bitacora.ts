@@ -27,7 +27,7 @@ const ESCRITAS: Accion[] = [
   // 1cero1: lo que activa en cada municipio y los usuarios que crea.
   { fechaHora: '2026-08-04T09:15', usuarioId: 'u1', municipioId: 'm2', categoria: 'municipios', accion: 'Activó la aprobación previa del ICA anual', antes: 'Apagada', despues: 'Encendida' },
   { fechaHora: '2026-08-04T09:22', usuarioId: 'u1', municipioId: 'm2', categoria: 'municipios', accion: 'Habilitó el pago en efectivo en ventanilla de ReteICA', antes: 'No', despues: 'Sí' },
-  { fechaHora: '2026-08-11T10:40', usuarioId: 'u1', municipioId: 'm3', categoria: 'municipios', accion: 'Activó la validación contra el RIT de AutoReteICA', antes: 'Apagada', despues: 'Encendida' },
+  { fechaHora: '2026-08-11T10:40', usuarioId: 'u1', municipioId: 'm3', categoria: 'municipios', accion: 'Habilitó el pago en efectivo en ventanilla de ReteICA', antes: 'No', despues: 'Sí' },
   { fechaHora: '2026-08-11T10:46', usuarioId: 'u1', municipioId: 'm3', categoria: 'municipios', accion: 'Habilitó los cheques de gerencia en ventanilla de ReteICA', antes: 'No', despues: 'Sí' },
   { fechaHora: '2026-08-19T15:05', usuarioId: 'u1', municipioId: 'm1', categoria: 'municipios', accion: 'Habilitó la carga del Asobancaria 2001', antes: 'No', despues: 'Sí' },
   { fechaHora: '2026-08-03T08:30', usuarioId: 'u1', municipioId: 'm3', categoria: 'usuarios', accion: 'Creó el usuario Sandra Vega', despues: 'Funcionario municipio · s.vega@santarosa.demo' },
@@ -57,7 +57,7 @@ const ESCRITAS: Accion[] = [
   { fechaHora: '2026-08-18T09:00', usuarioId: 'u7', municipioId: 'm3', categoria: 'configuracion', accion: 'Rebajó la sanción por extemporaneidad', antes: '5 % por mes', despues: '4 % por mes' },
   { fechaHora: '2026-08-18T09:02', usuarioId: 'u7', municipioId: 'm3', categoria: 'configuracion', accion: 'Rebajó la sanción por corrección', antes: '10 %', despues: '8 %' },
   { fechaHora: '2026-09-24T16:20', usuarioId: 'u7', municipioId: 'm3', categoria: 'calendario', accion: 'Cambió el vencimiento de AutoReteICA, bimestre 6 de 2026', antes: formatoFecha('2027-01-19'), despues: formatoFecha('2026-12-21') },
-  { fechaHora: '2026-10-02T07:50', usuarioId: 'u7', municipioId: 'm3', categoria: 'configuracion', accion: 'Activó la cancelación automática del RIT', antes: 'No', despues: 'Sí' },
+  { fechaHora: '2026-10-02T07:50', usuarioId: 'u7', municipioId: 'm3', categoria: 'configuracion', accion: 'Ocultó a los funcionarios el recaudo del municipio', antes: 'No', despues: 'Sí' },
 ]
 
 const hora = (az: Azar, desde = 7, hasta = 17) =>
