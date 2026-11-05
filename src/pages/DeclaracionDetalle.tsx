@@ -99,7 +99,7 @@ export default function DeclaracionDetalle() {
         <>
           {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={d.declarante.correo} puedeResolver={puede(usuario?.rol, 'revisar')} ventanilla={ventanilla} />}
           <DatosDeclaracion d={d} corregida={corregida} />
-          <DeclaranteDeclaracion d={d} ins={municipioConRit ? ins : undefined} />
+          <DeclaranteDeclaracion d={d} ins={municipioConRit ? ins : undefined} noInscrito={municipioConRit && !d.inscripcionId} />
           <Card>
             <ListaArchivos
               titulo="Archivos adjuntos"

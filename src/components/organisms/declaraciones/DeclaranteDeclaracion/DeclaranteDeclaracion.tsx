@@ -1,18 +1,22 @@
 import { Link } from 'react-router'
 import { etiquetaCargoContable, formatoDocumento } from '../../../../lib/formato'
-import { Card } from '../../../atoms'
+import { Badge, Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import type { DeclaranteDeclaracionProps } from './types'
 
 /** Lo que escribió el declarante en la declaración y quiénes la firman. Si está en el RIT, su nombre lleva a la ficha. */
-export default function DeclaranteDeclaracion({ d, ins }: DeclaranteDeclaracionProps) {
+export default function DeclaranteDeclaracion({ d, ins, noInscrito = false }: DeclaranteDeclaracionProps) {
   const { declarante: dec } = d
   const c = dec.contador
 
   return (
     <>
       <Card>
-        <CardHeader titulo="Declarante" descripcion="Tal como lo escribió en la declaración." />
+        <CardHeader
+          titulo="Declarante"
+          descripcion="Tal como lo escribió en la declaración."
+          acciones={noInscrito && <Badge tono="alerta">No inscrito en el RIT</Badge>}
+        />
         <dl className="space-y-4 p-5">
           <Dato etiqueta="Nombre o razón social">
             {ins ? <Link className="font-medium text-brand-700 hover:underline" to={`/rit/${ins.id}`}>{dec.nombre}</Link> : dec.nombre}
