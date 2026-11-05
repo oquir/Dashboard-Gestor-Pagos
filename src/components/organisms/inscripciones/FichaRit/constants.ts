@@ -1,6 +1,4 @@
-import type { Calidad, FirmanteContable } from '../../../../types'
-
-export const CARGO_CONTABLE: Record<FirmanteContable['cargo'], string> = { contador: 'Contador', revisor_fiscal: 'Revisor fiscal' }
+import type { Calidad } from '../../../../types'
 
 export const HABILITA: Record<Calidad, string> = {
   contribuyente: 'Declara ICA anual.',

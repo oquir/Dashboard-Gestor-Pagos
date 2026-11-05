@@ -1,6 +1,5 @@
-import { etiquetaTipoPersona, formatoDocumento, formatoFecha } from '../../../../lib/formato'
+import { etiquetaCargoContable, etiquetaTipoPersona, formatoDocumento, formatoFecha } from '../../../../lib/formato'
 import type { DatosRit, FirmanteContable } from '../../../../types'
-import { CARGO_CONTABLE } from './constants'
 import type { CampoFicha } from './types'
 
 export const campos = (d: DatosRit): CampoFicha[] => [
@@ -17,7 +16,7 @@ export const campos = (d: DatosRit): CampoFicha[] => [
 ]
 
 export const camposContador = (c: FirmanteContable | undefined): CampoFicha[] => [
-  ['Firma como', c && CARGO_CONTABLE[c.cargo]],
+  ['Firma como', c && etiquetaCargoContable[c.cargo]],
   ['Nombre', c?.nombre],
   ['Documento', c && formatoDocumento(c)],
   ['Tarjeta profesional', c?.tarjetaProfesional],

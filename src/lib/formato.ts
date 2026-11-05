@@ -6,6 +6,7 @@ import type {
   EstadoInscripcion,
   EstadoNovedad,
   EstadoPago,
+  FirmanteContable,
   Formulario,
   FormularioDesactivado,
   Impuesto,
@@ -74,6 +75,8 @@ export const etiquetaTipoPersona: Record<TipoPersona, string> = {
   union_temporal: 'Unión temporal',
   patrimonio_autonomo: 'Patrimonio autónomo',
 }
+
+export const etiquetaCargoContable: Record<FirmanteContable['cargo'], string> = { contador: 'Contador', revisor_fiscal: 'Revisor fiscal' }
 
 export const etiquetaCalidad: Record<Calidad, string> = {
   contribuyente: 'Contribuyente',
