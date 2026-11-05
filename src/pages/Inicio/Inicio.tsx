@@ -40,7 +40,7 @@ export default function Inicio() {
 
   const datos = useMemo(() => {
     const inscripciones = delMunicipio(todasInscripciones, municipioId)
-    // Las solicitudes solo existen donde el RIT está en el aplicativo; los nombres de los declarantes, en todos.
+    // Las solicitudes solo existen donde el RIT está en el aplicativo.
     const enRit = inscripciones.filter(conRit(municipios))
     const porId = new Map(declaraciones.map((d) => [d.id, d]))
 
@@ -88,7 +88,6 @@ export default function Inicio() {
       aprobaciones,
       porAprobar,
       activas: enRit.filter((i) => i.estado === 'activa').length,
-      nombres: new Map(inscripciones.map((i) => [i.id, i.nombre])),
     }
   }, [todasInscripciones, declaraciones, pagos, municipios, municipioId, aprobacion, estadoDe])
 
@@ -180,14 +179,13 @@ export default function Inicio() {
 
         {conRitVisible && <SolicitudesPendientes pendientes={datos.pendientes} />}
 
-        {conAprobacion && <AprobacionesPendientes aprobaciones={datos.aprobaciones} nombres={datos.nombres} />}
+        {conAprobacion && <AprobacionesPendientes aprobaciones={datos.aprobaciones} />}
 
         <ListaDeudas
           titulo="Declaraciones no pagadas"
           descripcion="Tienen valor a pagar y no registran ningún pago. En ReteICA y AutoReteICA, solo el pago total le da efecto a la declaración."
           vacio="No hay declaraciones sin pagar"
           deudas={datos.noPagadas}
-          nombres={datos.nombres}
         />
 
         <ListaDeudas
@@ -195,7 +193,6 @@ export default function Inicio() {
           descripcion="Registran pagos, pero no cubren el total a pagar."
           vacio="No hay declaraciones con pago incompleto"
           deudas={datos.pagoIncompleto}
-          nombres={datos.nombres}
         />
       </div>
     </>

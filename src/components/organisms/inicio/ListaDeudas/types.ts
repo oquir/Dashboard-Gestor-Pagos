@@ -5,6 +5,4 @@ export interface ListaDeudasProps {
   descripcion: string
   vacio: string
   deudas: Deuda[]
-  /** Nombre del declarante por id de inscripción. */
-  nombres: Map<string, string>
 }

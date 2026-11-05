@@ -13,7 +13,5 @@ export type FiltroAprobaciones = ValorFiltro<EstadoAprobacion | 'pendientes'>
 export interface AprobacionesPendientesProps {
   /** Lo pendiente primero, por plazo; lo resuelto, de lo más reciente a lo más antiguo. */
   aprobaciones: DeclaracionConAprobacion[]
-  /** Nombre del declarante por id de inscripción. */
-  nombres: Map<string, string>
   className?: string
 }

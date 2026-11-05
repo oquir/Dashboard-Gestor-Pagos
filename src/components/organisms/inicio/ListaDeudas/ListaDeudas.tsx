@@ -6,7 +6,7 @@ import { CardHeader, ItemEnlace, Vacio } from '../../../molecules'
 import type { ListaDeudasProps } from './types'
 
 /** Declaraciones con deuda: las seis más recientes, con lo que falta por pagar. */
-export default function ListaDeudas({ titulo, descripcion, vacio, deudas, nombres }: ListaDeudasProps) {
+export default function ListaDeudas({ titulo, descripcion, vacio, deudas }: ListaDeudasProps) {
   return (
     <Card>
       <CardHeader titulo={titulo} descripcion={descripcion} acciones={<Badge tono={deudas.length > 0 ? 'peligro' : 'neutral'}>{deudas.length}</Badge>} />
@@ -18,7 +18,7 @@ export default function ListaDeudas({ titulo, descripcion, vacio, deudas, nombre
             <ItemEnlace
               key={d.id}
               a={`/declaraciones/${d.id}`}
-              titulo={nombres.get(d.inscripcionId)}
+              titulo={d.declarante.nombre}
               detalle={`${d.numero} · ${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}`}
               derecha={
                 <>

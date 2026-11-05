@@ -8,7 +8,7 @@ import { OPCIONES_FILTRO } from './constants'
 import type { AprobacionesPendientesProps, FiltroAprobaciones } from './types'
 
 /** Declaraciones con aprobación previa, filtradas por estado; por defecto, las que esperan aprobación. */
-export default function AprobacionesPendientes({ aprobaciones, nombres, className = '' }: AprobacionesPendientesProps) {
+export default function AprobacionesPendientes({ aprobaciones, className = '' }: AprobacionesPendientesProps) {
   const [filtro, setFiltro] = useState<FiltroAprobaciones>('pendientes')
   const lista = aprobaciones.filter((x) => (filtro === 'pendientes' ? esperaAprobacion(x.a) : !filtro || x.a.estado === filtro))
 
@@ -34,7 +34,7 @@ export default function AprobacionesPendientes({ aprobaciones, nombres, classNam
             <ItemEnlace
               key={d.id}
               a={`/declaraciones/${d.id}`}
-              titulo={nombres.get(d.inscripcionId)}
+              titulo={d.declarante.nombre}
               detalle={`${d.numero} · ${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}`}
               derecha={
                 <>
