@@ -621,10 +621,15 @@ export function generarDatos(): Datos {
     declaraciones.filter((d) => d.impuesto !== 'ica' && d.periodo >= 2 && !conCheque.has(d.id) && azOmisos.prob(0.12)).map((d) => d.id),
   )
 
+  // Donde el municipio no tiene el RIT en el aplicativo no hay inscripciones: de sus contribuyentes solo se sabe lo que
+  // escriben en las declaraciones. Se generan igual y aquí se quitan, para no cambiar el resto de los datos.
+  const conRit = new Set(MUNICIPIOS.filter((m) => m.rit).map((m) => m.id))
+  for (const d of declaraciones) if (!conRit.has(d.municipioId)) delete d.inscripcionId
+
   const datos = {
     municipios: MUNICIPIOS.map((m) => ({ ...m })),
     usuarios: USUARIOS.map((u) => ({ ...u })),
-    inscripciones,
+    inscripciones: inscripciones.filter((i) => conRit.has(i.municipioId)),
     declaraciones: declaraciones.filter((d) => !omitidas.has(d.id)),
     pagos: pagos.filter((p) => !omitidas.has(p.declaracionId)),
     cheques,

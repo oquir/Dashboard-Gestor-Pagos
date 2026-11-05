@@ -28,8 +28,9 @@ export const MUNICIPIOS: Municipio[] = [
   {
     id: 'm3', nombre: 'Santa Rosa de los Andes', departamento: 'Santander', codigoDane: '68901', activo: true, declaracionesDesde: '2026-02-01',
     impuestos: { ica: true, reteica: true, autorretencion: true },
-    rit: true,
-    validarContraRit: { ica: true, reteica: true, autorretencion: true },
+    // No lleva el RIT en ningún sistema: de sus contribuyentes solo se sabe lo que escriben en las declaraciones.
+    rit: false,
+    validarContraRit: { ica: false, reteica: false, autorretencion: false },
     aprobacionPrevia: { ica: false, reteica: false, autorretencion: false },
     cargaAsobancaria: true,
     pagoEfectivo: { ica: true, reteica: true, autorretencion: false },
@@ -242,7 +243,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     municipioId: 'm3',
     declaracionEnCeros: false,
     pagoRetencionEnDosMeses: true,
-    cancelacionRitAutomatica: true,
+    cancelacionRitAutomatica: false,
     ocultarRecaudoAFuncionarios: true,
     correccionABaja: 'proyecto_589',
     prontoPago: { activo: false, porVigencia: [] },
