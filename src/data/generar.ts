@@ -173,6 +173,7 @@ function agregarFormularios(ins: Inscripcion) {
   let vigente: DatosRit = structuredClone({
     tipoPersona: ins.tipoPersona, tipoDocumento: ins.tipoDocumento, documento: ins.documento, dv: ins.dv, nombre: ins.nombre,
     representanteLegal: ins.representanteLegal, direccion: ins.direccion, telefono: ins.telefono, correo: ins.correo,
+    establecimientos: ins.establecimientos, contador: ins.contador,
     fechaInicioActividades: ins.fechaInicioActividades, regimenSimple: ins.regimenSimple, actividades: ins.actividades, calidades: ins.calidades,
   })
   for (const n of [...novedades].reverse()) {
@@ -195,6 +196,28 @@ function agregarFormularios(ins: Inscripcion) {
       const requeridos = soportesRequeridos(ins.tipoPersona, vigente.calidades.map((c) => c.calidad))
       n.soportes = ins.soportes.filter((s) => requeridos.includes(s.nombre))
     }
+  }
+}
+
+/**
+ * Establecimientos en el municipio y contador o revisor fiscal del inscrito. Pocas personas naturales están obligadas
+ * a llevar contabilidad, y algunas sociedades deben tener revisor fiscal. Usa su propio azar para no cambiar el resto
+ * de los datos.
+ */
+function datosContables(id: string, tipo: TipoPersona): Pick<Inscripcion, 'establecimientos' | 'contador'> {
+  const az = crearAzar(semilla(`${id}-contable`))
+  const establecimientos = az.elegir(tipo === 'natural' ? [0, 1, 1, 1, 1, 1, 1, 1, 2] : tipo === 'juridica' ? [1, 1, 1, 2, 2, 3, 4] : [0, 0, 1])
+  if (tipo === 'natural' && !az.prob(0.3)) return { establecimientos }
+  const extranjero = az.prob(0.05)
+  return {
+    establecimientos,
+    contador: {
+      cargo: tipo === 'juridica' && az.prob(0.35) ? 'revisor_fiscal' : 'contador',
+      tipoDocumento: extranjero ? 'CE' : 'CC',
+      documento: String(extranjero ? az.entero(100_000, 9_999_999) : az.entero(10_000_000, 1_199_999_999)),
+      nombre: `${az.elegir(NOMBRES)} ${az.elegir(APELLIDOS)} ${az.elegir(APELLIDOS)}`,
+      tarjetaProfesional: `${az.entero(10_000, 299_999)}-T`,
+    },
   }
 }
 
@@ -282,6 +305,7 @@ function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripci
     direccion: direccionAleatoria(az),
     telefono: telefonoAleatorio(az),
     correo: `contacto${n}@${esNatural ? 'correo' : 'empresa'}.demo`,
+    ...datosContables(id, tipoPersona),
     fechaInicioActividades: fechaInicio,
     regimenSimple,
     actividades,

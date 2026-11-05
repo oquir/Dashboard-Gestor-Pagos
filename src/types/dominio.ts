@@ -113,6 +113,16 @@ export interface Adjunto {
   archivo: Archivo
 }
 
+/** Contador o revisor fiscal que el inscrito registra en el RIT: el que firma sus declaraciones. */
+export interface FirmanteContable {
+  cargo: 'contador' | 'revisor_fiscal'
+  tipoDocumento: 'CC' | 'CE'
+  documento: string
+  nombre: string
+  /** Número de la tarjeta profesional que expide la Junta Central de Contadores. */
+  tarjetaProfesional: string
+}
+
 export interface Inscripcion {
   id: string
   municipioId: string
@@ -126,6 +136,10 @@ export interface Inscripcion {
   direccion: string
   telefono: string
   correo: string
+  /** Establecimientos que tiene en el municipio; puede ser 0 si ejerce la actividad sin uno. */
+  establecimientos: number
+  /** Solo quien está obligado a llevar contabilidad. */
+  contador?: FirmanteContable
   fechaInicioActividades: string
   regimenSimple: boolean
   actividades: Actividad[]
@@ -147,6 +161,8 @@ export type DatosRit = Pick<
   | 'direccion'
   | 'telefono'
   | 'correo'
+  | 'establecimientos'
+  | 'contador'
   | 'fechaInicioActividades'
   | 'regimenSimple'
   | 'actividades'
