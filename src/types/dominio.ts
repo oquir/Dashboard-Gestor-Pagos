@@ -197,7 +197,11 @@ export interface Renglon {
 export interface Declaracion {
   id: string
   municipioId: string
-  inscripcionId: string
+  /**
+   * Su inscripción en el RIT. No la tiene si el municipio no tiene el RIT en el aplicativo, ni si el declarante no está
+   * inscrito y el formulario no se valida contra el RIT.
+   */
+  inscripcionId?: string
   declarante: DatosDeclarante
   impuesto: Impuesto
   vigencia: number

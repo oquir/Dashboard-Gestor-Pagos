@@ -39,8 +39,11 @@ export function calcularOmisos({ municipios, configuraciones, inscripciones, dec
   const omisos: Omiso[] = []
   const agentesSinCeros = new Set<string>()
   const sinCalendario: ResultadoOmisos['sinCalendario'] = []
+  // Los omisos salen del RIT: solo cuentan las declaraciones de los inscritos.
   const presentadas = new Set(
-    declaraciones.filter((d) => d.aprobacion?.estado !== 'rechazada').map((d) => `${d.inscripcionId}|${d.impuesto}|${d.vigencia}|${d.periodo}`),
+    declaraciones
+      .filter((d) => d.inscripcionId && d.aprobacion?.estado !== 'rechazada')
+      .map((d) => `${d.inscripcionId}|${d.impuesto}|${d.vigencia}|${d.periodo}`),
   )
 
   for (const m of municipios) {
