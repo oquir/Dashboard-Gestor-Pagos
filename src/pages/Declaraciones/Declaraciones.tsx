@@ -6,7 +6,7 @@ import { BuscadorMunicipios, DescargaDeclaraciones, ListaOmisos, SeleccionDeclar
 import { OPCIONES_APROBACION } from '../../constants'
 import { presentadaSinCalendario } from '../../lib/calendario'
 import { formatoDocumento } from '../../lib/formato'
-import { impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useEstadoPago, useOmisos, useSesion } from '../../lib/sesion'
+import { conRit, impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useEstadoPago, useOmisos, useSesion } from '../../lib/sesion'
 import { useDatos } from '../../store'
 import type { EstadoPago, FilaDeclaracion, FiltroAprobacion, Impuesto, TipoDeclaracion, ValorFiltro, VistaDeclaraciones } from '../../types'
 import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS, VISTAS } from './constants'
@@ -33,10 +33,12 @@ export default function Declaraciones() {
   const [pago, setPago] = useState<ValorFiltro<EstadoPago>>('')
   const [filtroAprobacion, setFiltroAprobacion] = useState<FiltroAprobacion>('')
   const [soloSinCalendario, setSoloSinCalendario] = useState(false)
+  const [soloNoInscritos, setSoloNoInscritos] = useState(false)
 
   const filas = useMemo<FilaDeclaracion[]>(() => {
     const numeros = new Map(declaraciones.map((d) => [d.id, d.numero]))
     const configPorMunicipio = new Map(configuraciones.map((c) => [c.municipioId, c]))
+    const enRit = conRit(municipios)
     return declaraciones.map((d) => ({
       d,
       nombre: d.declarante.nombre,
@@ -45,8 +47,9 @@ export default function Declaraciones() {
       corrige: d.corrigeA && numeros.get(d.corrigeA),
       aprobacion: aprobacion(d),
       sinCalendario: presentadaSinCalendario(d, configPorMunicipio.get(d.municipioId)),
+      noInscrito: enRit(d) && !d.inscripcionId,
     }))
-  }, [declaraciones, configuraciones, estadoDe, aprobacion])
+  }, [declaraciones, municipios, configuraciones, estadoDe, aprobacion])
 
   // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
   const conAprobacion = filas.some((f) => f.aprobacion)
@@ -54,11 +57,14 @@ export default function Declaraciones() {
   // El filtro solo sale si hay declaraciones presentadas sin el calendario cargado; si no, el elegido no aplica.
   const conSinCalendario = filas.some((f) => f.sinCalendario)
   const filtrarSinCalendario = conSinCalendario && soloSinCalendario
+  // Lo mismo con las de quien no está inscrito en el RIT, que solo hay donde un formulario no se valida contra el RIT.
+  const conNoInscritos = filas.some((f) => f.noInscrito)
+  const filtrarNoInscritos = conNoInscritos && soloNoInscritos
 
   const filtradas = useMemo(() => {
     const busqueda = texto.trim().toLowerCase()
     return filas.filter(
-      ({ d, nombre, documento, pago: p, aprobacion: a, sinCalendario }) =>
+      ({ d, nombre, documento, pago: p, aprobacion: a, sinCalendario, noInscrito }) =>
         (!impuesto || d.impuesto === impuesto) &&
         (!busqueda ||
           nombre.toLowerCase().includes(busqueda) ||
@@ -68,9 +74,10 @@ export default function Declaraciones() {
         (!tipo || d.tipo === tipo) &&
         (!pago || p === pago) &&
         (!estadoAprobacion || (a?.estado ?? 'no_aplica') === estadoAprobacion) &&
-        (!filtrarSinCalendario || sinCalendario),
+        (!filtrarSinCalendario || sinCalendario) &&
+        (!filtrarNoInscritos || noInscrito),
     )
-  }, [filas, impuesto, texto, tipo, pago, estadoAprobacion, filtrarSinCalendario])
+  }, [filas, impuesto, texto, tipo, pago, estadoAprobacion, filtrarSinCalendario, filtrarNoInscritos])
 
   // La selección sobrevive a los filtros, pero solo cuentan y se descargan las declaraciones que siguen visibles.
   const [seleccion, setSeleccion] = useState<ReadonlySet<string>>(new Set())
@@ -138,6 +145,7 @@ export default function Declaraciones() {
               />
             )}
             {conSinCalendario && <FiltroCasilla etiqueta="Sin calendario cargado" marcado={soloSinCalendario} cambiar={setSoloSinCalendario} />}
+            {conNoInscritos && <FiltroCasilla etiqueta="No inscritos en el RIT" marcado={soloNoInscritos} cambiar={setSoloNoInscritos} />}
           </BarraFiltros>
 
           <SeleccionDeclaraciones declaraciones={marcadas.map((f) => f.d)} quitar={() => setSeleccion(new Set())} />

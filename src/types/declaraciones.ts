@@ -16,4 +16,6 @@ export interface FilaDeclaracion {
   aprobacion?: SituacionAprobacion
   /** Se presentó antes de que el municipio cargara el calendario de su año gravable. */
   sinCalendario: boolean
+  /** El municipio tiene el RIT en el aplicativo, pero el declarante no está inscrito. */
+  noInscrito: boolean
 }

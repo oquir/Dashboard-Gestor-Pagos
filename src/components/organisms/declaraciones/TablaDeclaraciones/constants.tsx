@@ -46,6 +46,7 @@ export const COLUMNAS = col.columns([
       <>
         <p className="truncate text-slate-700">{f.nombre}</p>
         <p className="truncate text-xs tabular-nums text-slate-500">{f.documento}</p>
+        {f.noInscrito && <p className="text-xs text-amber-700">No inscrito en el RIT</p>}
       </>
     ),
   }),
