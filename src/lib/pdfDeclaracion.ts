@@ -4,7 +4,16 @@ import type { jsPDF } from 'jspdf'
 import type { ConfigMunicipio, Declaracion, Impuesto, Inscripcion, Municipio, Pago } from '../types'
 import { hoy } from '../utils'
 import { descargarBlob } from './archivos'
-import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion, formatoFecha, formatoPesos } from './formato'
+import {
+  etiquetaCargoContable,
+  etiquetaEstadoPago,
+  etiquetaImpuesto,
+  etiquetaPeriodo,
+  etiquetaTipoDeclaracion,
+  formatoDocumento,
+  formatoFecha,
+  formatoPesos,
+} from './formato'
 import { estadoPago, RENGLONES_TOTALES, totalPagado } from './reglas'
 
 /** Lo que el PDF necesita además de la declaración; el estado de la demo lo cumple. */
@@ -105,13 +114,17 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   if (d.fechaCierre) datos.push(['Fecha de cierre', formatoFecha(d.fechaCierre)])
   campos(datos)
 
+  // Lo que escribió el declarante, aunque después haya cambiado sus datos en el RIT.
+  const { declarante: dec } = d
   seccion('B. Declarante')
   const declarante: [string, string][] = [
-    ['Nombre o razón social', ins?.nombre ?? '—'],
-    ['Documento', ins ? `${ins.tipoDocumento} ${ins.documento}${ins.dv ? `-${ins.dv}` : ''}` : '—'],
-    ['Dirección', ins?.direccion ?? '—'],
-    ['Correo electrónico', ins?.correo ?? '—'],
+    ['Nombre o razón social', dec.nombre],
+    ['Documento', formatoDocumento(dec)],
+    ['Dirección', dec.direccion],
+    ['Teléfono', dec.telefono],
+    ['Correo electrónico', dec.correo],
   ]
+  if (dec.establecimientos !== undefined) declarante.push(['Establecimientos en el municipio', String(dec.establecimientos)])
   if (ins && municipio?.rit) declarante.push(['Número de RIT', ins.numeroRit])
   campos(declarante)
 
@@ -162,6 +175,15 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   ]
   if (d.saldoAFavor > 0) pago.push(['Saldo a favor', formatoPesos(d.saldoAFavor)])
   campos(pago)
+
+  seccion('E. Firmas')
+  const c = dec.contador
+  const firmas: [string, string][] = [
+    [dec.representanteLegal ? 'Representante legal' : 'Declarante', dec.representanteLegal ?? dec.nombre],
+    c ? [etiquetaCargoContable[c.cargo], c.nombre] : ['Contador o revisor fiscal', 'No firma'],
+  ]
+  if (c) firmas.push([`Documento del ${etiquetaCargoContable[c.cargo].toLowerCase()}`, formatoDocumento(c)], ['Tarjeta profesional', c.tarjetaProfesional])
+  campos(firmas)
 
   // Pie en todas las páginas
   const paginas = doc.getNumberOfPages()
