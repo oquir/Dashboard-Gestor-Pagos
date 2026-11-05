@@ -14,4 +14,6 @@ export interface FilaDeclaracion {
   /** Radicado de la declaración que corrige, si es una corrección. */
   corrige?: string
   aprobacion?: SituacionAprobacion
+  /** Se presentó antes de que el municipio cargara el calendario de su año gravable. */
+  sinCalendario: boolean
 }

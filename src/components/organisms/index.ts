@@ -17,6 +17,8 @@ export { default as FormularioCalendario } from './calendario/FormularioCalendar
 export { default as FormularioConfiguracion } from './configuracion/FormularioConfiguracion'
 
 export { default as AprobacionPrevia } from './declaraciones/AprobacionPrevia'
+export { default as AvisoSinCalendario } from './declaraciones/AvisoSinCalendario'
+export { default as AvisoSinConsignar } from './declaraciones/AvisoSinConsignar'
 export { default as DatosDeclaracion } from './declaraciones/DatosDeclaracion'
 export { default as DescargaDeclaraciones } from './declaraciones/DescargaDeclaraciones'
 export { default as Liquidacion } from './declaraciones/Liquidacion'
@@ -26,6 +28,8 @@ export { default as SeleccionDeclaraciones } from './declaraciones/SeleccionDecl
 export { default as TablaDeclaraciones } from './declaraciones/TablaDeclaraciones'
 export { default as ValidacionesDeclaracion } from './declaraciones/ValidacionesDeclaracion'
 
+export { default as AlertaCalendario } from './inicio/AlertaCalendario'
+export { default as AlertaSinConsignar } from './inicio/AlertaSinConsignar'
 export { default as AprobacionesPendientes } from './inicio/AprobacionesPendientes'
 export { default as ListaDeudas } from './inicio/ListaDeudas'
 export { default as ProximosVencimientos } from './inicio/ProximosVencimientos'
@@ -49,6 +53,7 @@ export { default as CargaAsobancaria } from './pagos/CargaAsobancaria'
 export { default as ChequesEnCanje } from './pagos/ChequesEnCanje'
 export { default as DescargaAsobancaria } from './pagos/DescargaAsobancaria'
 export { default as PagoVentanilla } from './pagos/PagoVentanilla'
+export { default as RetencionesSinConsignar } from './pagos/RetencionesSinConsignar'
 export { default as TablaCartera } from './pagos/TablaCartera'
 export { default as TablaPagosRecibidos } from './pagos/TablaPagosRecibidos'
 

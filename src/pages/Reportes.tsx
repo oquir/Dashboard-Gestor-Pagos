@@ -6,7 +6,7 @@ import { OPCIONES_APROBACION } from '../constants'
 import { puede } from '../lib/permisos'
 import { armarReportes, REPORTES } from '../lib/reportes'
 import type { IdReporte } from '../lib/reportes'
-import { ritVisible, useAprobacion, useDeclaraciones, useSesion } from '../lib/sesion'
+import { ritVisible, useAprobacion, useDeclaraciones, useEstadoPago, useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
 import type { FiltroAprobacion } from '../types'
 import { hoy } from '../utils'
@@ -18,6 +18,7 @@ export default function Reportes() {
   const pagos = useDatos((s) => s.pagos)
   const municipios = useDatos((s) => s.municipios)
   const aprobacion = useAprobacion()
+  const estadoDe = useEstadoPago()
   const [pestana, setPestana] = useState<IdReporte>('declaraciones')
   const [desde, setDesde] = useState(`${hoy().slice(0, 4)}-01-01`)
   const [hasta, setHasta] = useState(hoy)
@@ -33,8 +34,8 @@ export default function Reportes() {
   const reporte = reportes.find((r) => r.id === pestana) ?? reportes[0]
 
   const datos = useMemo(
-    () => armarReportes({ declaraciones, inscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, estadoAprobacion }),
-    [declaraciones, inscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, estadoAprobacion],
+    () => armarReportes({ declaraciones, inscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, estadoDe, estadoAprobacion }),
+    [declaraciones, inscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, estadoDe, estadoAprobacion],
   )
 
   if (!puede(usuario?.rol, 'verReportes')) return <Navigate to="/" replace />

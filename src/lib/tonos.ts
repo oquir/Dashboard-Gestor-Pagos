@@ -32,6 +32,9 @@ export const tonoPago: Record<EstadoPago, Tono> = {
   ineficaz: 'peligro',
 }
 
+/** Retención sin consignar: en alerta mientras corre el plazo de 2 meses; en peligro cuando ya pasó. */
+export const tonoConsignacion = (dias: number): Tono => (dias < 0 ? 'peligro' : 'alerta')
+
 export const tonoCheque: Record<EstadoCheque, Tono> = {
   en_canje: 'alerta',
   pagado: 'exito',

@@ -295,11 +295,27 @@ export type CalendarioVigencia = {
   vigencia: number
   /** Acto del municipio que fija el calendario. */
   decreto?: string
+  /**
+   * Cuándo y quién lo guardó por primera vez. Las declaraciones del año presentadas antes quedan marcadas: se liquidaron
+   * sin el calendario. Un año recién agregado no lo tiene hasta que se guarda.
+   */
+  cargado?: CargaCalendario
 } & Record<Impuesto, VencimientosFormulario>
+
+export interface CargaCalendario {
+  fecha: string
+  /** Nombre de quien lo guardó, como era en ese momento. */
+  por: string
+}
 
 export interface ConfigMunicipio {
   municipioId: string
   declaracionEnCeros: boolean
+  /**
+   * La ReteICA o AutoReteICA presentada a tiempo sin el pago total no queda ineficaz si se paga completa dentro de los
+   * 2 meses siguientes al vencimiento (art. 580-1 del Estatuto Tributario).
+   */
+  pagoRetencionEnDosMeses: boolean
   cancelacionRitAutomatica: boolean
   /** Los funcionarios no ven en Inicio lo que ha recaudado el municipio. */
   ocultarRecaudoAFuncionarios: boolean

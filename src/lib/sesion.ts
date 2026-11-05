@@ -2,8 +2,10 @@ import { useMemo } from 'react'
 import { useDatos } from '../store'
 import type { Declaracion, Formulario, Impuesto, MediosVentanilla, Municipio } from '../types'
 import { hoy } from '../utils'
+import { municipiosSinCalendario } from './calendario'
+import { calcularSinConsignar } from './consignacion'
 import { calcularOmisos } from './omisos'
-import { aprobacionDe } from './reglas'
+import { aprobacionDe, estadoPago } from './reglas'
 
 export const IMPUESTOS: Impuesto[] = ['ica', 'reteica', 'autorretencion']
 
@@ -103,6 +105,41 @@ export function useAprobacion() {
       return cfg && aprobacionDe(d, cfg, hoy)
     }
   }, [configuraciones])
+}
+
+/** Estado del pago de cada declaración al día de hoy, con el plazo de 2 meses de la retención si su municipio lo da. */
+export function useEstadoPago() {
+  const pagos = useDatos((s) => s.pagos)
+  const configuraciones = useDatos((s) => s.configuraciones)
+  const fecha = hoy()
+  return useMemo(() => {
+    const porMunicipio = new Map(configuraciones.map((c) => [c.municipioId, c]))
+    return (d: Declaracion) => estadoPago(d, pagos, porMunicipio.get(d.municipioId), fecha)
+  }, [pagos, configuraciones, fecha])
+}
+
+/**
+ * ReteICA y AutoReteICA sin consignar al día de hoy: de todas las declaraciones que se indiquen o, si no, de las del
+ * municipio que se está viendo.
+ */
+export function useSinConsignar(lista?: Declaracion[]) {
+  const visibles = useDeclaraciones()
+  const declaraciones = lista ?? visibles
+  const pagos = useDatos((s) => s.pagos)
+  const cheques = useDatos((s) => s.cheques)
+  const aprobacion = useAprobacion()
+  const fecha = hoy()
+  return useMemo(() => calcularSinConsignar({ declaraciones, pagos, cheques, aprobacion }, fecha), [declaraciones, pagos, cheques, aprobacion, fecha])
+}
+
+/** El año en curso y los municipios que se están viendo que aún no cargan su calendario de ese año. */
+export function useSinCalendario() {
+  const { municipioId } = useSesion()
+  const municipios = useDatos((s) => s.municipios)
+  const configuraciones = useDatos((s) => s.configuraciones)
+  const anio = Number(hoy().slice(0, 4))
+  const faltan = useMemo(() => municipiosSinCalendario(municipios, configuraciones, municipioId, anio), [municipios, configuraciones, municipioId, anio])
+  return { anio, municipios: faltan }
 }
 
 /**

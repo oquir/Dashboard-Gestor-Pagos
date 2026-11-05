@@ -1,6 +1,6 @@
 // Reportes del municipio: sus columnas (para la tabla y el Excel), sus filas y sus gráficas por categoría.
 import { CLASE_SERIE } from '../constants'
-import type { Barra, Declaracion, FiltroAprobacion, FormatoGrafica, Impuesto, Inscripcion, Municipio, Pago } from '../types'
+import type { Barra, Declaracion, EstadoPago, FiltroAprobacion, FormatoGrafica, Impuesto, Inscripcion, Municipio, Pago } from '../types'
 import { hoy } from '../utils'
 import {
   etiquetaCalidad,
@@ -14,7 +14,7 @@ import {
   formatoDocumento,
   MESES,
 } from './formato'
-import { estadoPago, sePuedePagar, totalPagado } from './reglas'
+import { sePuedePagar, totalPagado } from './reglas'
 import type { SituacionAprobacion } from './reglas'
 import { conRit, delMunicipio, impuestosVisibles } from './sesion'
 
@@ -130,12 +130,14 @@ interface Fuente {
   hasta: string
   rangoInvalido: boolean
   aprobacion: (d: Declaracion) => SituacionAprobacion | undefined
+  /** Estado del pago al día de hoy, con el plazo de 2 meses de la retención si el municipio lo da. */
+  estadoDe: (d: Declaracion) => EstadoPago
   estadoAprobacion: FiltroAprobacion
 }
 
 /** Filas y gráficas de cada reporte. Declaraciones y recaudo van por rango de fechas; cartera y RIT, al día de hoy. */
 export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]; graficas: Grafica[] }> {
-  const { declaraciones, inscripciones: todas, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, estadoAprobacion } = fuente
+  const { declaraciones, inscripciones: todas, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, estadoDe, estadoAprobacion } = fuente
   const enRango = (fecha: string) => !rangoInvalido && fecha >= desde && fecha <= hasta
   const inscripciones = delMunicipio(todas, municipioId)
   const porId = new Map(inscripciones.map((i) => [i.id, i]))
@@ -152,7 +154,7 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
 
   const presentadas = declaraciones
     .filter((d) => enRango(d.fechaPresentacion))
-    .map((d) => ({ d, ins: porId.get(d.inscripcionId), pagado: totalPagado(d.id, pagos), estado: estadoPago(d, pagos), a: aprobacion(d) }))
+    .map((d) => ({ d, ins: porId.get(d.inscripcionId), pagado: totalPagado(d.id, pagos), estado: estadoDe(d), a: aprobacion(d) }))
     .filter((f) => !estadoAprobacion || (f.a?.estado ?? 'no_aplica') === estadoAprobacion)
 
   const recibidos = pagos.flatMap((p) => {
@@ -166,7 +168,7 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
     const pagado = totalPagado(d.id, pagos)
     // Lo que aún espera la aprobación previa no se puede pagar: no es cartera.
     if (reemplazadas.has(d.id) || d.totalAPagar <= 0 || pagado >= d.totalAPagar || !sePuedePagar(aprobacion(d))) return []
-    return [{ d, ins: porId.get(d.inscripcionId), pagado, saldo: d.totalAPagar - pagado, estado: estadoPago(d, pagos) }]
+    return [{ d, ins: porId.get(d.inscripcionId), pagado, saldo: d.totalAPagar - pagado, estado: estadoDe(d) }]
   })
 
   const inscritos = inscripciones.filter(conRit(municipios))

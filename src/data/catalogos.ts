@@ -96,6 +96,12 @@ export const ACTIVIDADES_POR_VIGENCIA: ActividadesVigencia[] = MUNICIPIOS.flatMa
   }))
 })
 
+/** El administrador del municipio cargó el calendario del año gravable en esa fecha. */
+const cargadoPorAdministrador = (municipioId: string, fecha: string) => ({
+  fecha,
+  por: nombreCompleto(USUARIOS.find((u) => u.municipioId === municipioId && u.rol === 'admin_municipio')!),
+})
+
 /** Vencimientos con una fecha por periodo, la misma para todos los declarantes. */
 const fechasUnicas = (periodicidad: Periodicidad, fechas: string[]): VencimientosFormulario => ({
   periodicidad,
@@ -114,6 +120,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
   {
     municipioId: 'm1',
     declaracionEnCeros: false,
+    pagoRetencionEnDosMeses: true,
     cancelacionRitAutomatica: false,
     ocultarRecaudoAFuncionarios: true,
     correccionABaja: 'proyecto_589',
@@ -144,6 +151,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2025,
           decreto: 'Decreto 0920 de 2025',
+          cargado: cargadoPorAdministrador('m1', '2025-01-14'),
           ica: fechasUnicas('anual', ['2026-04-17']),
           reteica: fechasUnicas('bimestral', ['2025-03-21', '2025-05-20', '2025-07-18', '2025-09-19', '2025-11-21', '2026-01-20']),
           autorretencion: fechasUnicas('bimestral', ['2025-03-21', '2025-05-20', '2025-07-18', '2025-09-19', '2025-11-21', '2026-01-20']),
@@ -151,6 +159,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2026,
           decreto: 'Decreto 0045 de 2026',
+          cargado: cargadoPorAdministrador('m1', '2026-01-23'),
           ica: fechasUnicas('anual', ['2027-04-16']),
           reteica: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
           autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
@@ -170,6 +179,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
   {
     municipioId: 'm2',
     declaracionEnCeros: true,
+    pagoRetencionEnDosMeses: true,
     cancelacionRitAutomatica: false,
     ocultarRecaudoAFuncionarios: true,
     correccionABaja: 'correccion_directa',
@@ -191,6 +201,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2024,
           decreto: 'Resolución 011 de 2024',
+          cargado: cargadoPorAdministrador('m2', '2024-01-17'),
           ica: fechasUnicas('anual', ['2025-03-31']),
           reteica: fechasUnicas('bimestral', ['2024-03-19', '2024-05-21', '2024-07-18', '2024-09-19', '2024-11-21', '2025-01-20']),
           autorretencion: fechasUnicas('bimestral', ['2024-03-19', '2024-05-21', '2024-07-18', '2024-09-19', '2024-11-21', '2025-01-20']),
@@ -198,6 +209,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2025,
           decreto: 'Resolución 014 de 2025',
+          cargado: cargadoPorAdministrador('m2', '2025-01-22'),
           ica: fechasUnicas('anual', ['2026-03-31']),
           reteica: fechasUnicas('bimestral', ['2025-03-18', '2025-05-20', '2025-07-17', '2025-09-18', '2025-11-20', '2026-01-19']),
           autorretencion: fechasUnicas('bimestral', ['2025-03-18', '2025-05-20', '2025-07-17', '2025-09-18', '2025-11-20', '2026-01-19']),
@@ -205,6 +217,8 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2026,
           decreto: 'Resolución 008 de 2026',
+          // Lo cargó tarde: las ReteICA del bimestre 1 se presentaron sin él y quedan marcadas.
+          cargado: cargadoPorAdministrador('m2', '2026-04-08'),
           // Desde este año el ICA anual vence según el último dígito del NIT o la cédula: un día hábil por dígito.
           ica: fechasPorDigito('anual', [
             ['2027-04-05', '2027-04-06', '2027-04-07', '2027-04-08', '2027-04-09', '2027-04-12', '2027-04-13', '2027-04-14', '2027-04-15', '2027-04-16'],
@@ -227,6 +241,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
   {
     municipioId: 'm3',
     declaracionEnCeros: false,
+    pagoRetencionEnDosMeses: true,
     cancelacionRitAutomatica: true,
     ocultarRecaudoAFuncionarios: true,
     correccionABaja: 'proyecto_589',
@@ -237,6 +252,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2025,
           decreto: 'Decreto 028 de 2025',
+          cargado: cargadoPorAdministrador('m3', '2025-01-21'),
           ica: fechasUnicas('anual', ['2026-04-30']),
           reteica: fechasUnicas('bimestral', ['2025-03-20', '2025-05-20', '2025-07-18', '2025-09-18', '2025-11-20', '2026-01-20']),
           autorretencion: fechasUnicas('bimestral', ['2025-03-20', '2025-05-20', '2025-07-18', '2025-09-18', '2025-11-20', '2025-12-19']),
@@ -244,6 +260,7 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2026,
           decreto: 'Decreto 015 de 2026',
+          cargado: cargadoPorAdministrador('m3', '2026-01-27'),
           ica: fechasUnicas('anual', ['2027-04-30']),
           reteica: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
           autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2026-12-21']),

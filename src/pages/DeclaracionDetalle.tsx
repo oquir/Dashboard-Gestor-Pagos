@@ -1,12 +1,23 @@
 import { Link, useParams } from 'react-router'
 import { Badge, Card } from '../components/atoms'
 import { Aviso, Vacio } from '../components/molecules'
-import { AprobacionPrevia, DatosDeclaracion, Liquidacion, ListaArchivos, PagosDeclaracion, PagoVentanilla, ValidacionesDeclaracion } from '../components/organisms'
+import {
+  AprobacionPrevia,
+  AvisoSinCalendario,
+  AvisoSinConsignar,
+  DatosDeclaracion,
+  Liquidacion,
+  ListaArchivos,
+  PagosDeclaracion,
+  PagoVentanilla,
+  ValidacionesDeclaracion,
+} from '../components/organisms'
 import { PlantillaDetalle } from '../components/templates'
+import { cargaCalendario, presentadaSinCalendario } from '../lib/calendario'
 import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { estadoPago, sePuedePagar, totalEnCanje, totalPagado } from '../lib/reglas'
-import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useSesion, ventanillaDe } from '../lib/sesion'
+import { sePuedePagar, totalEnCanje, totalPagado } from '../lib/reglas'
+import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useEstadoPago, useSesion, useSinConsignar, ventanillaDe } from '../lib/sesion'
 import { tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
 
@@ -20,6 +31,9 @@ export default function DeclaracionDetalle() {
   const municipios = useDatos((s) => s.municipios)
   const configuraciones = useDatos((s) => s.configuraciones)
   const aprobacion = useAprobacion()
+  const estadoDe = useEstadoPago()
+  // De todas las declaraciones: 1cero1 puede abrir una de un municipio distinto del que eligió en el buscador.
+  const sinConsignar = useSinConsignar(declaraciones)
   const d = declaraciones.find((x) => x.id === id)
 
   if (!d || (usuario?.municipioId && d.municipioId !== usuario.municipioId)) {
@@ -30,7 +44,8 @@ export default function DeclaracionDetalle() {
   }
 
   const ins = inscripciones.find((i) => i.id === d.inscripcionId)
-  const estado = estadoPago(d, pagos)
+  const estado = estadoDe(d)
+  const retencion = sinConsignar.find((r) => r.d.id === d.id)
   const corregida = d.corrigeA ? declaraciones.find((x) => x.id === d.corrigeA) : undefined
   const reemplazo = declaraciones.find((x) => x.corrigeA === d.id)
   const municipioConRit = conRit(municipios)(d)
@@ -38,7 +53,9 @@ export default function DeclaracionDetalle() {
   const municipio = municipios.find((m) => m.id === d.municipioId)
   // Efectivo y cheque se activan por formulario: solo se ofrece lo que tiene el de esta declaración.
   const ventanilla = ventanillaDe(municipio, d.impuesto)
-  const chequeParcial = configuraciones.find((c) => c.municipioId === d.municipioId)?.chequeParcial ?? false
+  const cfg = configuraciones.find((c) => c.municipioId === d.municipioId)
+  const chequeParcial = cfg?.chequeParcial ?? false
+  const sinCalendario = presentadaSinCalendario(d, cfg)
   // Lo que está en canje no se vuelve a cobrar mientras el banco responde.
   const saldo = Math.max(d.totalAPagar - totalPagado(d.id, pagos) - totalEnCanje(d.id, cheques), 0)
   // En ventanilla solo se recibe lo que ya es deuda: ni lo reemplazado por una corrección ni lo que espera aprobación.
@@ -56,11 +73,18 @@ export default function DeclaracionDetalle() {
         </>
       }
       aviso={
-        reemplazo && (
-          <Aviso tono="info">
-            Esta declaración fue reemplazada por la corrección{' '}
-            <Link className="font-medium underline" to={`/declaraciones/${reemplazo.id}`}>{reemplazo.numero}</Link>.
-          </Aviso>
+        (reemplazo || retencion || sinCalendario) && (
+          <div className="space-y-3">
+            {reemplazo ? (
+              <Aviso tono="info">
+                Esta declaración fue reemplazada por la corrección{' '}
+                <Link className="font-medium underline" to={`/declaraciones/${reemplazo.id}`}>{reemplazo.numero}</Link>.
+              </Aviso>
+            ) : (
+              retencion && <AvisoSinConsignar r={retencion} />
+            )}
+            {sinCalendario && <AvisoSinCalendario d={d} carga={cargaCalendario(cfg, d.vigencia)} />}
+          </div>
         )
       }
       principal={

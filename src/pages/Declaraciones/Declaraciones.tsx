@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Card } from '../../components/atoms'
-import { BarraFiltros, Buscador, Filtro, PageHeader, Segmentado } from '../../components/molecules'
+import { BarraFiltros, Buscador, Filtro, FiltroCasilla, PageHeader, Segmentado } from '../../components/molecules'
 import { BuscadorMunicipios, DescargaDeclaraciones, ListaOmisos, SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
 import { OPCIONES_APROBACION } from '../../constants'
+import { presentadaSinCalendario } from '../../lib/calendario'
 import { formatoDocumento } from '../../lib/formato'
-import { estadoPago } from '../../lib/reglas'
-import { impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useOmisos, useSesion } from '../../lib/sesion'
+import { impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useEstadoPago, useOmisos, useSesion } from '../../lib/sesion'
 import { useDatos } from '../../store'
 import type { EstadoPago, FilaDeclaracion, FiltroAprobacion, Impuesto, TipoDeclaracion, ValorFiltro, VistaDeclaraciones } from '../../types'
 import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS, VISTAS } from './constants'
@@ -16,7 +16,8 @@ export default function Declaraciones() {
   const declaraciones = useDeclaraciones()
   const municipios = useDatos((s) => s.municipios)
   const inscripciones = useDatos((s) => s.inscripciones)
-  const pagos = useDatos((s) => s.pagos)
+  const configuraciones = useDatos((s) => s.configuraciones)
+  const estadoDe = useEstadoPago()
   const aprobacion = useAprobacion()
   const omisos = useOmisos()
   // La vista va en la dirección (?vista=omisos) para que Inicio pueda enlazar directo a los omisos.
@@ -32,31 +33,37 @@ export default function Declaraciones() {
   const [tipo, setTipo] = useState<ValorFiltro<TipoDeclaracion>>('')
   const [pago, setPago] = useState<ValorFiltro<EstadoPago>>('')
   const [filtroAprobacion, setFiltroAprobacion] = useState<FiltroAprobacion>('')
+  const [soloSinCalendario, setSoloSinCalendario] = useState(false)
 
   const filas = useMemo<FilaDeclaracion[]>(() => {
     const porId = new Map(inscripciones.map((i) => [i.id, i]))
     const numeros = new Map(declaraciones.map((d) => [d.id, d.numero]))
+    const configPorMunicipio = new Map(configuraciones.map((c) => [c.municipioId, c]))
     return declaraciones.map((d) => {
       const ins = porId.get(d.inscripcionId)
       return {
         d,
         nombre: ins?.nombre ?? '',
         documento: ins ? formatoDocumento(ins) : '',
-        pago: estadoPago(d, pagos),
+        pago: estadoDe(d),
         corrige: d.corrigeA && numeros.get(d.corrigeA),
         aprobacion: aprobacion(d),
+        sinCalendario: presentadaSinCalendario(d, configPorMunicipio.get(d.municipioId)),
       }
     })
-  }, [declaraciones, inscripciones, pagos, aprobacion])
+  }, [declaraciones, inscripciones, configuraciones, estadoDe, aprobacion])
 
   // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
   const conAprobacion = filas.some((f) => f.aprobacion)
   const estadoAprobacion = conAprobacion ? filtroAprobacion : ''
+  // El filtro solo sale si hay declaraciones presentadas sin el calendario cargado; si no, el elegido no aplica.
+  const conSinCalendario = filas.some((f) => f.sinCalendario)
+  const filtrarSinCalendario = conSinCalendario && soloSinCalendario
 
   const filtradas = useMemo(() => {
     const busqueda = texto.trim().toLowerCase()
     return filas.filter(
-      ({ d, nombre, documento, pago: p, aprobacion: a }) =>
+      ({ d, nombre, documento, pago: p, aprobacion: a, sinCalendario }) =>
         (!impuesto || d.impuesto === impuesto) &&
         (!busqueda ||
           nombre.toLowerCase().includes(busqueda) ||
@@ -65,9 +72,10 @@ export default function Declaraciones() {
           String(d.numeroFactura).includes(busqueda)) &&
         (!tipo || d.tipo === tipo) &&
         (!pago || p === pago) &&
-        (!estadoAprobacion || (a?.estado ?? 'no_aplica') === estadoAprobacion),
+        (!estadoAprobacion || (a?.estado ?? 'no_aplica') === estadoAprobacion) &&
+        (!filtrarSinCalendario || sinCalendario),
     )
-  }, [filas, impuesto, texto, tipo, pago, estadoAprobacion])
+  }, [filas, impuesto, texto, tipo, pago, estadoAprobacion, filtrarSinCalendario])
 
   // La selección sobrevive a los filtros, pero solo cuentan y se descargan las declaraciones que siguen visibles.
   const [seleccion, setSeleccion] = useState<ReadonlySet<string>>(new Set())
@@ -134,6 +142,7 @@ export default function Declaraciones() {
                 cambiar={setFiltroAprobacion}
               />
             )}
+            {conSinCalendario && <FiltroCasilla etiqueta="Sin calendario cargado" marcado={soloSinCalendario} cambiar={setSoloSinCalendario} />}
           </BarraFiltros>
 
           <SeleccionDeclaraciones declaraciones={marcadas.map((f) => f.d)} quitar={() => setSeleccion(new Set())} />

@@ -2,10 +2,23 @@ import { ClipboardList, Document, AlertTriangle, UserSearch, Wallet } from 'reic
 import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { StatTile } from '../../components/molecules'
-import { AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, ProximosVencimientos, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
+import { AlertaCalendario, AlertaSinConsignar, AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, ProximosVencimientos, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
 import { formatoCompacto } from '../../lib/formato'
-import { esperaAprobacion, estadoPago, sePuedePagar, totalPagado } from '../../lib/reglas'
-import { aprobacionVisible, conRit, delMunicipio, ritVisible, useAprobacion, useDeclaraciones, useOmisos, useSesion, useVerRecaudo } from '../../lib/sesion'
+import { esperaAprobacion, sePuedePagar, totalPagado } from '../../lib/reglas'
+import {
+  aprobacionVisible,
+  conRit,
+  delMunicipio,
+  ritVisible,
+  useAprobacion,
+  useDeclaraciones,
+  useEstadoPago,
+  useOmisos,
+  useSesion,
+  useSinCalendario,
+  useSinConsignar,
+  useVerRecaudo,
+} from '../../lib/sesion'
 import { useDatos } from '../../store'
 import type { Deuda } from '../../types'
 import { ANIO_ACTUAL, COLUMNAS_TARJETAS } from './constants'
@@ -17,6 +30,9 @@ export default function Inicio() {
   const municipios = useDatos((s) => s.municipios)
   const pagos = useDatos((s) => s.pagos)
   const aprobacion = useAprobacion()
+  const estadoDe = useEstadoPago()
+  const sinConsignar = useSinConsignar()
+  const sinCalendario = useSinCalendario()
   const conRitVisible = ritVisible(municipios, municipioId)
   const verRecaudo = useVerRecaudo()
   const { omisos } = useOmisos()
@@ -37,11 +53,11 @@ export default function Inicio() {
       .reduce((s, p) => s + p.valor, 0)
     // Una declaración corregida se reemplaza por su corrección: se cuenta solo la vigente.
     const reemplazadas = new Set(declaraciones.map((d) => d.corrigeA).filter(Boolean))
-    const pagadas = declaraciones.filter((d) => !reemplazadas.has(d.id) && estadoPago(d, pagos) === 'pagada').length
+    const pagadas = declaraciones.filter((d) => !reemplazadas.has(d.id) && estadoDe(d) === 'pagada').length
 
     const deudas: Deuda[] = declaraciones
       .filter((d) => !reemplazadas.has(d.id) && d.totalAPagar > 0 && sePuedePagar(aprobacion(d)))
-      .map((d) => ({ d, estado: estadoPago(d, pagos), pagado: totalPagado(d.id, pagos) }))
+      .map((d) => ({ d, estado: estadoDe(d), pagado: totalPagado(d.id, pagos) }))
       .filter((f) => f.pagado < f.d.totalAPagar)
       .sort((a, b) => b.d.fechaPresentacion.localeCompare(a.d.fechaPresentacion))
     const noPagadas = deudas.filter((f) => f.pagado === 0)
@@ -74,7 +90,7 @@ export default function Inicio() {
       activas: enRit.filter((i) => i.estado === 'activa').length,
       nombres: new Map(inscripciones.map((i) => [i.id, i.nombre])),
     }
-  }, [todasInscripciones, declaraciones, pagos, municipios, municipioId, aprobacion])
+  }, [todasInscripciones, declaraciones, pagos, municipios, municipioId, aprobacion, estadoDe])
 
   // Si 1cero1 apaga la aprobación previa, lo que quedó pendiente se sigue mostrando hasta resolverlo.
   const conAprobacion = aprobacionVisible(municipios, municipioId) || datos.porAprobar.length > 0
@@ -87,6 +103,8 @@ export default function Inicio() {
   return (
     <>
       <BuscadorMunicipios />
+      <AlertaCalendario anio={sinCalendario.anio} municipios={sinCalendario.municipios} className="mb-6" />
+      <AlertaSinConsignar retenciones={sinConsignar} className="mb-6" />
       <div className={`grid gap-4 sm:grid-cols-2 ${COLUMNAS_TARJETAS[tarjetas]}`}>
         {conRitVisible && (
           <StatTile
@@ -166,7 +184,7 @@ export default function Inicio() {
 
         <ListaDeudas
           titulo="Declaraciones no pagadas"
-          descripcion="Tienen valor a pagar y no registran ningún pago. En ReteICA y AutoReteICA son ineficaces."
+          descripcion="Tienen valor a pagar y no registran ningún pago. En ReteICA y AutoReteICA, solo el pago total le da efecto a la declaración."
           vacio="No hay declaraciones sin pagar"
           deudas={datos.noPagadas}
           nombres={datos.nombres}

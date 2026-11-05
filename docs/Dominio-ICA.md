@@ -7,6 +7,8 @@
 > **Adaptado el 2026-10-22** a este proyecto: el documento se escribió para otro aplicativo. Se quitaron las referencias a ese aplicativo y se reescribió la sección 6; el contenido tributario no cambió.
 >
 > **Ampliado el 2026-11-02** con la sección 1.2: año gravable, vigencia y declaraciones "anticipadas".
+>
+> **Ampliado el 2026-11-04** en la sección 3 con el plazo de 2 meses del art. 580-1 y el alcance del art. 402 del Código Penal.
 
 ## 1. Panorama: tres declaraciones, un solo impuesto
 
@@ -238,6 +240,7 @@ El FUN es solo para el ICA anual. La Resolución 4056 dice expresamente que, cua
 - **Tipos de declaración**: solo Inicial y Corrección. No existe Clausura: la retención es transaccional y no grava la existencia del negocio; si la empresa cierra, simplemente deja de retener en los bimestres siguientes.
 - **Sin descuento por pronto pago**: son dineros de terceros, no impuesto propio, y los municipios no lo otorgan en ReteICA.
 - **Sin pago total, la declaración no produce efecto** (es ineficaz, sin necesidad de acto administrativo; es la lógica del art. 580-1 del Estatuto Tributario, recogida por Medellín en su estatuto). A diferencia del renglón 35 del FUN, **no hay pago parcial**.
+  - **Excepción del mismo art. 580-1** (verificada el 2026-11-04): si se presentó antes del vencimiento, vale si se paga completa, con intereses, dentro de los 2 meses siguientes al vencimiento (DIAN, Concepto 8678 de 2024). Si se paga después, sigue siendo ineficaz y hay que presentarla de nuevo. Ricaurte trae la misma regla en su estatuto; en el Acuerdo 093 de Medellín no se encontró de forma expresa.
 - **No produce saldo a favor.** Lo retenido de más se recupera restándolo en el renglón de devoluciones y anulaciones de ese periodo o de los siguientes.
 - **Certificados**: el agente debe expedirlos (plazos y contenido según el municipio; suelen incluir partes, NIT, concepto o actividad, base, valor retenido y periodo). No expedirlos se sanciona (art. 667 del Estatuto Tributario: 5% de los pagos sin certificado). Se conservan 5 años.
 - **Sin retenciones en el periodo, no se declara en ceros** (Medellín: si en el bimestre no hubo pagos sujetos a retención, no hay obligación de declarar). Verificar en cada municipio: algunos sí exigen la declaración en ceros.
@@ -246,7 +249,7 @@ El FUN es solo para el ICA anual. La Resolución 4056 dice expresamente que, cua
 - **Las sanciones se calculan sobre la retención a cargo** (Medellín: 5% por mes o fracción con tope del 100% antes del emplazamiento; 10% con tope del 200% después; mínima de 10 UVT).
 - **Información exógena**: el agente reporta a los terceros a quienes les retuvo, según la resolución del municipio (en Medellín no hay que reportar si en el año no hubo retenciones).
 - Los agentes no tienen estado de cuenta ni paz y salvo: la modalidad es "declare y pague", y el soporte son las declaraciones presentadas.
-- **Riesgo penal**: **no consignar** lo retenido dentro de los dos meses siguientes puede encuadrar en el art. 402 del Código Penal (omisión del agente retenedor). Declarar con errores no es delito: se trata con sanciones administrativas (corrección o inexactitud). Es la razón por la que los municipios son tan estrictos con estas declaraciones.
+- **Riesgo penal**: **no consignar** lo retenido dentro de los dos meses siguientes al vencimiento puede encuadrar en el art. 402 del Código Penal (omisión del agente retenedor). El artículo también incluye al autorretenedor, y pagar todo con intereses permite cerrar el proceso penal (parágrafo). No se encontró una sentencia que lo aplique a la retención de ICA (§3.15 de `Pendientes-y-decisiones.md`). Declarar con errores no es delito: se trata con sanciones administrativas (corrección o inexactitud). Es la razón por la que los municipios son tan estrictos con estas declaraciones.
 
 ## 4. Autorretención
 
@@ -347,7 +350,7 @@ Lo que el dominio les exige a los cuatro frentes del dashboard: las inscripcione
 - **Descuento por pronto pago** (reglas por defecto de la sección 2, ajustables por municipio): solo sobre el impuesto neto a cargo, nunca sobre sanciones ni intereses; exige paz y salvo y se pierde si el pago es parcial, extemporáneo o entra en un acuerdo de pago.
 - **Intereses de mora**: diarios, con la tasa vigente al momento del pago, que cambia cada mes (secciones 5 y 7). En una corrección de mayor valor fuera de plazo, solo sobre la diferencia.
 - **ReteICA y autorretención**: sin pago total la declaración es ineficaz, sin necesidad de acto administrativo, y no hay saldo a favor. En ReteICA, lo retenido de más se descuenta en el renglón de devoluciones y anulaciones de ese periodo o de los siguientes.
-- **Una ReteICA sin pagar merece una alerta propia**, no solo el estado de ineficaz: no consignar lo retenido dentro de los dos meses siguientes puede encuadrar en el art. 402 del Código Penal (sección 3).
+- **Una ReteICA sin pagar merece una alerta propia**, no solo el estado de ineficaz: no consignar lo retenido dentro de los dos meses siguientes al vencimiento puede encuadrar en el art. 402 del Código Penal (sección 3). Lo mismo vale para la autorretención. Está hecha desde el 2026-11-04 (§3.15 de `Pendientes-y-decisiones.md`).
 - **Agentes retenedores**: no tienen estado de cuenta ni paz y salvo ("declare y pague"); su soporte son las declaraciones presentadas (sección 3).
 - **Correcciones**: la sección de pago solo lleva lo que se paga con la corrección; lo ya pagado por ese periodo entra como crédito (sección 6.2).
 - **Radicado y número de factura**: cada declaración (ICA anual, ReteICA y autorretención) lleva los dos. El radicado es la referencia del pago; el número de factura, solo numérico, es el que identifica el pago. Una corrección trae su propio número de factura.

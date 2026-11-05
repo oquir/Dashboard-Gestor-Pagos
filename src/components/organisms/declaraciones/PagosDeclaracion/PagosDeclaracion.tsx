@@ -17,7 +17,7 @@ export default function PagosDeclaracion({ d, pagos, cheques }: PagosDeclaracion
     <Card>
       <CardHeader
         titulo="Pagos"
-        descripcion={d.impuesto === 'ica' ? 'El ICA anual admite pago parcial.' : 'Sin pago total, esta declaración no produce efecto (es ineficaz).'}
+        descripcion={d.impuesto === 'ica' ? 'El ICA anual admite pago parcial.' : 'Solo el pago total le da efecto a esta declaración.'}
       />
       {deEsta.length === 0 && chequesSinPago.length === 0 ? (
         <Vacio titulo="No hay pagos registrados" />

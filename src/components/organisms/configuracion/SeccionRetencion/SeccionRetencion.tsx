@@ -57,6 +57,13 @@ export default function SeccionRetencion({ b, cambiar, editable, impuestos }: Se
         deshabilitado={!editable}
         onChange={(v) => cambiar({ declaracionEnCeros: v })}
       />
+      <Interruptor
+        etiqueta="Plazo de 2 meses para pagar"
+        ayuda="La declaración presentada a tiempo sin pago no queda ineficaz si se paga completa dentro de los 2 meses siguientes al vencimiento (art. 580-1 del Estatuto Tributario)."
+        valor={b.pagoRetencionEnDosMeses}
+        deshabilitado={!editable}
+        onChange={(v) => cambiar({ pagoRetencionEnDosMeses: v })}
+      />
     </Seccion>
   )
 }

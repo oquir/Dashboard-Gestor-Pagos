@@ -44,7 +44,7 @@ export default function ChequesEnCanje({ cheques, puedeResolver }: ChequesEnCanj
             <Aviso tono="alerta" icono={Danger} rol="status">
               <p className="font-medium">
                 Se marcó como devuelto el cheque {resuelto.fila.c.numero}. La declaración {resuelto.fila.d.numero} vuelve a quedar con saldo
-                {resuelto.fila.d.impuesto === 'ica' ? '.' : ' y es ineficaz mientras no se pague completa.'}
+                {resuelto.fila.d.impuesto === 'ica' ? '.' : ', y no tiene efecto mientras no se pague completa.'}
               </p>
               <p className="mt-0.5">
                 El art. 731 del Código de Comercio fija una sanción del {SANCION_CHEQUE_DEVUELTO * 100} % del valor del cheque devuelto sin causa

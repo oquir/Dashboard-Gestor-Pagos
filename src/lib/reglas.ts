@@ -44,18 +44,40 @@ export function totalEnCanje(declaracionId: string, cheques: Cheque[]) {
 /** Sanción por cheque devuelto sin causa justificada (art. 731 del Código de Comercio); en la demo solo se avisa. */
 export const SANCION_CHEQUE_DEVUELTO = 0.2
 
+/** Meses que tiene el agente para consignar lo retenido después del vencimiento (art. 402 del Código Penal y art. 580-1 del ET). */
+export const MESES_PARA_CONSIGNAR = 2
+
 /**
- * ICA anual admite pago parcial y saldo a favor; ReteICA y autorretención
- * sin pago total son ineficaces y no producen saldo a favor.
+ * Último día para consignar la ReteICA o la AutoReteICA: el mismo día del mes, dos meses después del vencimiento, o el
+ * último día del mes si ese mes es más corto. Si cae en sábado o domingo, pasa al día hábil siguiente (art. 62 de la
+ * Ley 4 de 1913); la demo no descuenta los festivos.
  */
-export function estadoPago(declaracion: Declaracion, pagos: Pago[]): EstadoPago {
+export function limiteConsignacion(vencimiento: string) {
+  const [anio, mes, dia] = vencimiento.split('-').map(Number)
+  const mesLimite = mes - 1 + MESES_PARA_CONSIGNAR
+  const ultimoDia = new Date(Date.UTC(anio, mesLimite + 1, 0)).getUTCDate()
+  const limite = new Date(Date.UTC(anio, mesLimite, Math.min(dia, ultimoDia), 12))
+  while (limite.getUTCDay() % 6 === 0) limite.setUTCDate(limite.getUTCDate() + 1)
+  return limite.toISOString().slice(0, 10)
+}
+
+/**
+ * ICA anual admite pago parcial y saldo a favor; ReteICA y autorretención sin pago total son ineficaces y no
+ * producen saldo a favor. Si el municipio da el plazo de 2 meses (art. 580-1 ET), la que se presentó a tiempo no es
+ * ineficaz mientras ese plazo no pase: queda sin pago o con pago parcial.
+ */
+export function estadoPago(declaracion: Declaracion, pagos: Pago[], cfg: ConfigMunicipio | undefined, hoy: string): EstadoPago {
   const pagado = totalPagado(declaracion.id, pagos)
   if (declaracion.impuesto === 'ica') {
     if (declaracion.totalAPagar === 0) return declaracion.saldoAFavor > 0 ? 'saldo_a_favor' : 'pagada'
     if (pagado >= declaracion.totalAPagar) return 'pagada'
     return pagado > 0 ? 'parcial' : 'sin_pago'
   }
-  return pagado >= declaracion.totalAPagar ? 'pagada' : 'ineficaz'
+  if (pagado >= declaracion.totalAPagar) return 'pagada'
+  const enPlazo =
+    cfg?.pagoRetencionEnDosMeses && declaracion.fechaPresentacion <= declaracion.fechaVencimiento && hoy <= limiteConsignacion(declaracion.fechaVencimiento)
+  if (enPlazo) return pagado > 0 ? 'parcial' : 'sin_pago'
+  return 'ineficaz'
 }
 
 /** Descuento por pronto pago del año gravable para un pago en esa fecha; 0 si no cae en ningún tramo. */

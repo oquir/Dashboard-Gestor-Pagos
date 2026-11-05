@@ -1,6 +1,6 @@
 // Calendario tributario: vencimientos por año gravable y formulario, con fecha única o por último dígito del NIT o la cédula.
 import { DIGITOS, MESES_POR_PERIODO, NOMBRES_PERIODOS } from '../constants'
-import type { CalendarioVigencia, Impuesto, Periodicidad, VencimientoPeriodo, VencimientosFormulario } from '../types'
+import type { CalendarioVigencia, ConfigMunicipio, Declaracion, Impuesto, Municipio, Periodicidad, VencimientoPeriodo, VencimientosFormulario } from '../types'
 import { moverAnios } from '../utils'
 
 /** Periodos del año sin fechas: una por periodo o, por dígito, diez. */
@@ -90,3 +90,31 @@ export function erroresVencimientos(cal: CalendarioVigencia, impuestos: Record<I
   }
   return errores
 }
+
+// --- Calendario cargado (docs/Pendientes-y-decisiones.md, §3.14) ---
+
+/** Cuándo y quién cargó el calendario del año gravable en el municipio; undefined si no lo ha cargado. */
+export const cargaCalendario = (cfg: ConfigMunicipio | undefined, vigencia: number) =>
+  cfg?.calendarioTributario.porVigencia.find((c) => c.vigencia === vigencia)?.cargado
+
+/**
+ * La declaración se presentó sin el calendario de su año gravable: el municipio no lo había cargado o lo cargó
+ * después. Su vencimiento, su sanción y sus intereses pueden estar mal calculados.
+ */
+export function presentadaSinCalendario(d: Declaracion, cfg: ConfigMunicipio | undefined) {
+  const carga = cargaCalendario(cfg, d.vigencia)
+  return !carga || d.fechaPresentacion < carga.fecha
+}
+
+/**
+ * Municipios activos (todos, o solo el elegido) que no han cargado el calendario del año en curso. Se avisa desde el
+ * 1 de enero, cuando empiezan a correr los periodos de ReteICA y AutoReteICA del año.
+ */
+export const municipiosSinCalendario = (municipios: Municipio[], configuraciones: ConfigMunicipio[], municipioId: string | null, anio: number) =>
+  municipios.filter(
+    (m) => m.activo && (municipioId === null || m.id === municipioId) && !cargaCalendario(configuraciones.find((c) => c.municipioId === m.id), anio),
+  )
+
+/** Al guardar, los años recién agregados quedan cargados hoy por quien guarda; los que ya estaban conservan su fecha. */
+export const conCargas = (calendarios: CalendarioVigencia[], por: string, fecha: string): CalendarioVigencia[] =>
+  calendarios.map((c) => (c.cargado ? c : { ...c, cargado: { fecha, por } }))

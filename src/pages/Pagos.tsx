@@ -1,22 +1,25 @@
 import { useMemo } from 'react'
 import { PageHeader, StatTile } from '../components/molecules'
-import { BuscadorMunicipios, CargaAsobancaria, ChequesEnCanje, DescargaAsobancaria, TablaCartera, TablaPagosRecibidos } from '../components/organisms'
+import { BuscadorMunicipios, CargaAsobancaria, ChequesEnCanje, DescargaAsobancaria, RetencionesSinConsignar, TablaCartera, TablaPagosRecibidos } from '../components/organisms'
 import { formatoCompacto } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { estadoPago, totalPagado } from '../lib/reglas'
-import { cargaAsobancariaVisible, chequesVisibles, useDeclaraciones, useSesion, useVerRecaudo } from '../lib/sesion'
+import { totalPagado } from '../lib/reglas'
+import { cargaAsobancariaVisible, chequesVisibles, impuestosVisibles, useDeclaraciones, useEstadoPago, useSesion, useSinConsignar, useVerRecaudo } from '../lib/sesion'
 import { useDatos } from '../store'
-import type { FilaCartera, FilaCheque, FilaPago } from '../types'
+import type { FilaCartera, FilaCheque, FilaPago, FilaSinConsignar } from '../types'
 
 export default function Pagos() {
   const declaraciones = useDeclaraciones()
   const inscripciones = useDatos((s) => s.inscripciones)
   const pagos = useDatos((s) => s.pagos)
   const cheques = useDatos((s) => s.cheques)
+  const estadoDe = useEstadoPago()
+  const retenciones = useSinConsignar()
   const verRecaudo = useVerRecaudo()
   const { usuario, municipioId } = useSesion()
   const municipios = useDatos((s) => s.municipios)
   const verCarga = cargaAsobancariaVisible(municipios, municipioId)
+  const conRetencion = impuestosVisibles(municipios, municipioId).some((i) => i !== 'ica')
 
   const datos = useMemo(() => {
     const porId = new Map(declaraciones.map((d) => [d.id, d]))
@@ -25,7 +28,7 @@ export default function Pagos() {
 
     const cartera: FilaCartera[] = declaraciones
       .filter((d) => !reemplazadas.has(d.id))
-      .map((d) => ({ d, estado: estadoPago(d, pagos), pagado: totalPagado(d.id, pagos), nombre: nombres.get(d.inscripcionId) ?? '' }))
+      .map((d) => ({ d, estado: estadoDe(d), pagado: totalPagado(d.id, pagos), nombre: nombres.get(d.inscripcionId) ?? '' }))
       .filter((f) => f.estado === 'parcial' || f.estado === 'sin_pago' || f.estado === 'ineficaz')
 
     const recibidos: FilaPago[] = pagos.flatMap((p) => {
@@ -38,17 +41,18 @@ export default function Pagos() {
       return d && c.estado === 'en_canje' ? [{ c, d, nombre: nombres.get(d.inscripcionId) ?? '' }] : []
     })
 
-    const ineficaces = cartera.filter((f) => f.estado === 'ineficaz')
+    const sinConsignar: FilaSinConsignar[] = retenciones.map((r) => ({ ...r, nombre: nombres.get(r.d.inscripcionId) ?? '' }))
     return {
       cartera,
       recibidos,
       enCanje,
-      ineficaces,
+      sinConsignar,
+      vencidas: retenciones.filter((r) => r.dias < 0).length,
       recaudo2026: recibidos.filter((r) => r.p.fecha.startsWith('2026')).reduce((s, r) => s + r.p.valor, 0),
       saldoIca: cartera.filter((f) => f.d.impuesto === 'ica').reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0),
-      saldoIneficaces: ineficaces.reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0),
+      saldoSinConsignar: retenciones.reduce((s, r) => s + r.saldo, 0),
     }
-  }, [declaraciones, inscripciones, pagos, cheques])
+  }, [declaraciones, inscripciones, pagos, cheques, estadoDe, retenciones])
 
   return (
     <>
@@ -64,11 +68,30 @@ export default function Pagos() {
         )}
         <StatTile etiqueta="Saldo pendiente de ICA anual" valor={`$${formatoCompacto(datos.saldoIca)}`} detalle="Pagos parciales y declaraciones sin pago" />
         <StatTile
-          etiqueta="ReteICA y AutoReteICA ineficaces"
-          valor={String(datos.ineficaces.length)}
-          detalle={`$${formatoCompacto(datos.saldoIneficaces)} sin pagar`}
+          etiqueta="Retenciones sin consignar"
+          valor={String(datos.sinConsignar.length)}
+          detalle={
+            datos.sinConsignar.length === 0 ? (
+              'Todo lo retenido está consignado'
+            ) : (
+              <>
+                ${formatoCompacto(datos.saldoSinConsignar)} ·{' '}
+                {datos.vencidas > 0 ? (
+                  <span className="text-red-700">{datos.vencidas === 1 ? '1 pasó' : `${datos.vencidas} pasaron`} los 2 meses</span>
+                ) : (
+                  'dentro del plazo'
+                )}
+              </>
+            )
+          }
         />
       </div>
+
+      {conRetencion && (
+        <div className="mt-6">
+          <RetencionesSinConsignar filas={datos.sinConsignar} />
+        </div>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         {verCarga && <CargaAsobancaria />}

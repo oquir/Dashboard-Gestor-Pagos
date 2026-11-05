@@ -33,7 +33,7 @@ export default function PagoVentanilla({ d, saldo, medios, chequeParcial }: Pago
 
   const ayudaValor = valorFijo
     ? 'El municipio no recibe cheques por valor parcial: el cheque debe cubrir el saldo pendiente.'
-    : `Saldo pendiente: ${formatoPesos(saldo)}. ${d.impuesto === 'ica' ? 'El ICA anual admite pago parcial.' : 'Sin el pago total, la declaración sigue ineficaz.'}`
+    : `Saldo pendiente: ${formatoPesos(saldo)}. ${d.impuesto === 'ica' ? 'El ICA anual admite pago parcial.' : 'Solo el pago total le da efecto a la declaración.'}`
 
   const registrar = () => {
     if (conCheque) recibirCheque(d.id, { valor: v, banco, numero: numero.trim(), recibo: recibo.trim() })

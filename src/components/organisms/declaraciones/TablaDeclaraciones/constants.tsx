@@ -64,10 +64,11 @@ export const COLUMNAS = col.columns([
     id: 'presentacion',
     header: 'Presentación',
     meta: { clase: 'whitespace-nowrap' },
-    cell: ({ row: { original: { d } } }) => (
+    cell: ({ row: { original: { d, sinCalendario } } }) => (
       <>
         <p className="text-slate-700">{formatoFecha(d.fechaPresentacion)}</p>
         {d.tipo !== 'clausura' && d.fechaPresentacion > d.fechaVencimiento && <p className="text-xs text-amber-700">Extemporánea</p>}
+        {sinCalendario && <p className="text-xs text-amber-700">Sin calendario cargado</p>}
       </>
     ),
   }),

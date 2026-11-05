@@ -338,7 +338,7 @@ Validado contra el Acuerdo 093 de 2023 y las resoluciones de 2026:
 - **Naturaleza jurídica**: el mock no distingue entidades públicas de privadas, y sin ese dato no puede mostrar quién es agente por norma.
 - **Ricaurte (Nariño), agentes**: nacen de la norma y de la categoría del RUT, no de una resolución. Para mostrar quién retiene, el mock necesitaría la categoría tributaria del inscrito: gran contribuyente, responsable o no de IVA, SIMPLE, régimen especial, entidad pública, etc.
 - **Ricaurte (Nariño), autorretenedores**: el flujo actual del mock (lo pide el contribuyente y la administración aprueba) **sí calza con Ricaurte**, aunque no con Medellín. Conviene que este flujo sea configurable por municipio.
-- **Ricaurte (Nariño), declaración**: la ReteICA es **mensual**. Además, una declaración presentada a tiempo sin pago no queda ineficaz si se paga dentro de los 2 meses siguientes al vencimiento; el mock hoy la marca ineficaz de inmediato.
+- **Ricaurte (Nariño), declaración**: la ReteICA es **mensual**. Además, una declaración presentada a tiempo sin pago no queda ineficaz si se paga dentro de los 2 meses siguientes al vencimiento. Esta regla no es solo de Ricaurte: es la del art. 580-1 del Estatuto Tributario. Desde el 2026-11-04, el mock la tiene como un interruptor por municipio, "Plazo de 2 meses para pagar" (§3.15 de `Pendientes-y-decisiones.md`).
 
 ## 10. Fuentes
 

@@ -1,7 +1,8 @@
 // PDF de la declaración con el formato que entrega el municipio. jsPDF se carga solo al descargar.
 import { zipSync } from 'fflate'
 import type { jsPDF } from 'jspdf'
-import type { Declaracion, Impuesto, Inscripcion, Municipio, Pago } from '../types'
+import type { ConfigMunicipio, Declaracion, Impuesto, Inscripcion, Municipio, Pago } from '../types'
+import { hoy } from '../utils'
 import { descargarBlob } from './archivos'
 import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion, formatoFecha, formatoPesos } from './formato'
 import { estadoPago, RENGLONES_TOTALES, totalPagado } from './reglas'
@@ -12,6 +13,8 @@ export interface FuentePdf {
   inscripciones: Inscripcion[]
   declaraciones: Declaracion[]
   pagos: Pago[]
+  /** Para el estado del pago: el plazo de 2 meses de la retención depende del municipio. */
+  configuraciones: ConfigMunicipio[]
 }
 
 const TITULOS: Record<Impuesto, string> = {
@@ -155,7 +158,7 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
     ['Total a pagar', formatoPesos(d.totalAPagar)],
     ['Total pagado', formatoPesos(pagado)],
     ['Saldo pendiente', formatoPesos(Math.max(d.totalAPagar - pagado, 0))],
-    ['Estado del pago', etiquetaEstadoPago[estadoPago(d, fuente.pagos)]],
+    ['Estado del pago', etiquetaEstadoPago[estadoPago(d, fuente.pagos, fuente.configuraciones.find((c) => c.municipioId === d.municipioId), hoy())]],
   ]
   if (d.saldoAFavor > 0) pago.push(['Saldo a favor', formatoPesos(d.saldoAFavor)])
   campos(pago)

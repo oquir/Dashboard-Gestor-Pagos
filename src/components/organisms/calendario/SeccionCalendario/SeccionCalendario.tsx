@@ -2,7 +2,7 @@ import { Plus, Xmark } from 'reicon-react'
 import { useState } from 'react'
 import { ANIO_EN_CURSO } from '../../../../constants'
 import { calendarioNuevo } from '../../../../lib/calendario'
-import { etiquetaImpuesto } from '../../../../lib/formato'
+import { etiquetaImpuesto, formatoFecha } from '../../../../lib/formato'
 import { IMPUESTOS } from '../../../../lib/sesion'
 import type { CalendarioVigencia } from '../../../../types'
 import { Boton, Input, Select } from '../../../atoms'
@@ -99,6 +99,11 @@ export default function SeccionCalendario({ b, cambiar, editable, errores, impue
             <Campo etiqueta="Acto que fija el calendario" ayuda={`Decreto o resolución del municipio para el año gravable ${vigencia}.`}>
               <Input value={cal.decreto ?? ''} disabled={!editable} onChange={(e) => cambiarCal({ decreto: e.target.value })} placeholder="Ej.: Decreto 089 de 2026" />
             </Campo>
+            <p className="text-xs text-slate-500">
+              {cal.cargado
+                ? `Cargado el ${formatoFecha(cal.cargado.fecha)}${cal.cargado.por ? ` por ${cal.cargado.por}` : ''}. Las declaraciones de este año gravable presentadas antes quedan marcadas como presentadas sin calendario.`
+                : `Sin guardar: el año gravable ${vigencia} queda cargado cuando guardes.`}
+            </p>
             {IMPUESTOS.filter((i) => impuestos[i]).map((impuesto) => (
               <TablaVencimientos
                 key={impuesto}

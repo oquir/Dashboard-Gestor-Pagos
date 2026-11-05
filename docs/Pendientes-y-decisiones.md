@@ -33,6 +33,10 @@
 | Dónde se ven los omisos (2026-11-03) | **En Declaraciones**, con el selector "Presentadas / Omisos". Además, una tarjeta en Inicio y "Declaraciones que faltan" en el detalle del inscrito | Es donde el municipio ya revisa lo declarado |
 | Desde cuándo se revisan los omisos (2026-11-03) | **Desde la fecha "declaraciones en el aplicativo desde" de cada municipio**, que pone 1cero1 en Municipios | Lo anterior está en otro sistema: revisarlo marcaría como omisos a quienes sí declararon |
 | ReteICA sin declaración donde no se exige la declaración en ceros (2026-11-03) | **Solo un aviso** con cuántos agentes son; no salen en la lista | Pudieron no haber retenido nada: no se les puede llamar omisos |
+| Alerta de retenciones sin consignar (2026-11-04) | **Sí**, para la ReteICA y también para la AutoReteICA (§3.15) | El art. 402 del Código Penal habla del agente retenedor y del autorretenedor |
+| Aviso de datos anuales (2026-11-04) | **Solo del calendario**: sale en Inicio de cada municipio activo desde el 1 de enero, hasta que cargue el año (§3.14). La UVT no va en el aviso | La UVT se actualiza sola, sin pedirle nada al municipio |
+| Declaraciones sin el calendario cargado (2026-11-04) | **Se reciben y se marcan** | Por ahora puede haber municipios que reciban declaraciones sin el calendario. El usuario piensa en que el aplicativo del formulario no deje declarar un año gravable sin calendario, para que todo sea legal: lo decidirá después |
+| Plazo de 2 meses para pagar la retención (2026-11-04) | Interruptor por municipio, **encendido por defecto** | No es solo de Ricaurte: es el art. 580-1 del Estatuto Tributario, que los municipios aplican por el art. 59 de la Ley 788 de 2002 |
 
 ## 2. Lo que falta, con su estado
 
@@ -58,8 +62,8 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 |---|---|---|
 | Omisos | Quién debía declarar y no lo hizo, por impuesto y periodo (§3.5): en Declaraciones › Omisos, con Excel, en una tarjeta de Inicio y en el detalle del inscrito | **Implementado** (2026-11-03) |
 | Calendario tributario | Página Calendario (antes era una sección de Configuración) con, por año gravable, pasado o futuro: los vencimientos de cada formulario activo por separado, su periodicidad, fechas por último dígito del NIT o la cédula si el municipio las separa, y el pronto pago con su interruptor. Tarjeta de próximos vencimientos en Inicio | **Implementado** (2026-10-30; rehecho el 2026-11-03) |
-| Datos anuales sin actualizar | Mostrar cuando falta el calendario oficial o la UVT de un año, y marcar lo que se liquidó sin ellos, para que el municipio no se entere meses después por declaraciones mal calculadas (§3.14) | Pendiente |
-| Alerta de ReteICA sin consignar | El dominio pide una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§6.3 de `Dominio-ICA.md`). Opcional por municipio: la regla de Ricaurte, que no la deja ineficaz si se paga dentro de los 2 meses | Pendiente |
+| Datos anuales sin actualizar | Avisar desde el inicio del año cuando falta el calendario, y marcar lo que se liquidó sin él, para que el municipio no se entere meses después por declaraciones mal calculadas (§3.14). La UVT se actualiza sola | **Implementado** para el calendario (2026-11-04) |
+| Alerta de ReteICA sin consignar | Una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§3.15): en Pagos, en Inicio y en el detalle de la declaración, también para la AutoReteICA. El plazo de 2 meses del art. 580-1 ET, que también trae Ricaurte, es un interruptor por municipio | **Implementado** (2026-11-04) |
 | Estado de cuenta del contribuyente | Ninguna vista junta lo que debe un contribuyente: sus vigencias, saldos y pagos | Pendiente, **sin paz y salvo** |
 | Carga del Asobancaria | El resultado es aleatorio y no cambia la cartera; las referencias que no cruzan no quedan en ninguna parte | Se queda simulada |
 | Cuadre de caja de la ventanilla | El cierre del día por funcionario (§3.8) | Por decidir |
@@ -256,6 +260,67 @@ Al aplicarlo, corregir la sección 5 de `Dominio-ICA.md`: dice que el 20 % aplic
 
 Con esto, además, la falta de datos queda a la vista desde el primer día y no depende de que respondan un correo.
 
+**Lo que decidió el usuario** (2026-11-04):
+- El aviso es solo del calendario. La UVT no va, porque se actualiza sola.
+- Sale desde el inicio del año, a cada municipio activo, hasta que cargue su calendario.
+- Las declaraciones que entren sin el calendario se reciben y se marcan.
+- Queda por decidir una idea para el aplicativo del formulario: no dejar declarar un año gravable sin calendario, para que todo sea legal.
+
+**Una trampa del modelo**: en el aplicativo, el calendario del año gravable 2026 trae dos cosas:
+- la ReteICA y la AutoReteICA de 2026, que vencen durante 2026;
+- el ICA anual del año gravable 2026, que vence en 2027.
+
+El acto que un municipio expide para "su calendario de 2027" suele traer la ReteICA de 2027 **y** la fecha del ICA del año gravable 2026. Por eso, al empezar 2027, hay que agregar el año gravable 2027 y también revisar la fecha del ICA en el año gravable 2026. El aviso lo recuerda cuando el municipio tiene el ICA.
+
+**Cómo quedó en el aplicativo** (2026-11-04):
+- **Fecha de carga**: cada año del calendario guarda cuándo y quién lo cargó, la primera vez que se guarda. Cambiar sus fechas después no cambia esa fecha.
+- **Inicio**: desde el 1 de enero, si el municipio no ha cargado el año en curso, sale un aviso amarillo.
+  - Al administrador y a 1cero1 los lleva a Calendario.
+  - Al funcionario le dice que lo carga el administrador.
+  - Si 1cero1 está viendo todos los municipios, el aviso dice cuáles faltan.
+- **Declaraciones**: las que se presentaron antes de que el municipio cargara el calendario de su año gravable dicen "Sin calendario cargado" junto a la fecha de presentación. Hay un filtro para verlas. En el detalle, un aviso dice cuándo se cargó el calendario y pide revisar el vencimiento, la sanción y los intereses.
+- **Calendario**: cada año dice cuándo y quién lo cargó.
+- **En la demo**:
+  - Puerto Esperanza cargó el calendario de 2026 el 8 de abril de 2026, así que sus declaraciones de 2026 presentadas antes están marcadas: las ReteICA del bimestre 1 y una clausura de ICA.
+  - El aviso de Inicio sale en los tres municipios desde el 1 de enero de 2027.
+
+**Lo que falta de la versión mínima**:
+- Los estados "sugerido" y "oficial". Hoy, guardar un año con las fechas copiadas del año anterior ya cuenta como cargado.
+- Que las declaraciones marcadas no tengan sanciones definitivas.
+- El registro de avisos enviados.
+- El historial del calendario.
+
+### 3.15 Retenciones sin consignar
+
+**La idea**: cuando una empresa le paga a un proveedor, se queda con un pedacito del pago para dárselo al municipio. Esa plata no es de la empresa: solo la está guardando. **Consignar** es entregársela al municipio. Con la autorretención pasa igual, solo que el pedacito sale de los ingresos de la propia empresa.
+
+Por ejemplo, la Constructora le paga a un proveedor y le retiene $100.000. Declara la ReteICA del bimestre, que vence el 18 de septiembre, pero no la paga. Si el 18 de noviembre todavía no ha pagado esos $100.000, se quedó con plata ajena.
+
+**Dos reglas con el mismo plazo**: 2 meses contados desde el **vencimiento**, no desde el día en que presentó la declaración.
+- **El delito** (art. 402 del Código Penal): el agente retenedor o el autorretenedor que no consigna dentro de esos 2 meses puede ir a la cárcel (de 48 a 108 meses) y pagar una multa del doble de lo que no consignó. Si paga todo con intereses, se puede cerrar el proceso penal (parágrafo del mismo artículo).
+- **La declaración** (art. 580-1 del Estatuto Tributario): sin el pago total no vale (es ineficaz). Pero si se presentó a tiempo y se paga completa dentro de esos 2 meses, con intereses, sí vale (DIAN, Concepto 8678 de 2024). Ricaurte copia esta regla en su estatuto (§7.5 de `Contexto-RIT.md`).
+
+Si el plazo termina en sábado o domingo, se corre al día hábil siguiente (art. 62 de la Ley 4 de 1913). Si el mes del límite es más corto, se toma su último día: el 31 de diciembre más 2 meses da el 28 de febrero.
+
+**Cómo quedó en el aplicativo** (2026-11-04):
+- **Pagos › Retenciones sin consignar**: las ReteICA y AutoReteICA vigentes que tienen saldo, con su vencimiento, su límite para consignar y cuánto falta o hace cuánto venció. No cuentan las reemplazadas por una corrección, las que esperan la aprobación previa (el agente aún no puede pagar) ni lo que está en cheques en canje.
+- **Inicio**: un aviso rojo si alguna ya pasó los 2 meses, o amarillo si todas siguen en plazo. Sin retenciones pendientes, no sale.
+- **Detalle de la declaración**: un aviso con el límite y lo que pasa si no se paga.
+- **Configuración › ReteICA y AutoReteICA**: el interruptor "Plazo de 2 meses para pagar", encendido en los tres municipios de la demo. Si está encendido, la declaración que se presentó a tiempo sale "Sin pago" o "Pago parcial" hasta el límite, y después "Ineficaz". Si está apagado, sale "Ineficaz" desde el principio. La alerta sale igual en los dos casos, porque el delito no depende del estatuto del municipio.
+
+**Sin confirmar**:
+- **Si el art. 402 aplica a la retención de ICA**. El artículo habla de la fecha "fijada por el Gobierno Nacional", y no se encontró una sentencia sobre impuestos municipales. Medellín, en cambio, dice que el incumplimiento de los agentes es "sin perjuicio de las sanciones penales a que haya lugar" (Acuerdo 093, art. 76). Por eso el aplicativo dice "**puede** ser delito".
+- **Medellín y la regla de los 2 meses**: el Acuerdo 093 no la trae de forma expresa (se buscó el 2026-11-04). Se aplicaría por el art. 59 de la Ley 788 de 2002, que manda usar el procedimiento del Estatuto Tributario nacional.
+- **El parágrafo de 10 UVT** de la Ley 2277 de 2022 (la declaración vale si lo que falta no pasa de 10 UVT) solo se vio en fuentes secundarias. No está en el aplicativo.
+
+**Límites conocidos**:
+- Una retención que se paga completa después del límite sale "Pagada". En la ley sigue siendo ineficaz y el agente tiene que presentarla de nuevo, con sanción e intereses (DIAN, Concepto 8678 de 2024). El mock no tiene ese flujo.
+- No se descuentan los festivos (§1).
+- A los omisos no los cubre: si el agente no declaró, el municipio no sabe cuánto retuvo.
+- En la demo, las declaraciones se pagan el mismo día en que se presentan o nunca. Como el plazo se mide contra la fecha real, las de los bimestres 1 a 3 ya pasaron los 2 meses y las del bimestre 4 vencen el 18 de noviembre de 2026.
+
+**Fuentes**: [art. 402 del Código Penal](https://leyes.co/codigo_penal/402.htm); [DIAN, Concepto 8678 de 2024](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_8678_2024.htm), que cita el art. 580-1 del Estatuto Tributario; [Acuerdo 093 de 2023 de Medellín](https://www.medellin.gov.co/es/wp-content/uploads/2024/01/ACUERDO-093-2023-GACETA.pdf), art. 76; el estatuto de Ricaurte (§10 de `Contexto-RIT.md`).
+
 ## 4. Dónde está cada cosa en el código
 
 | Qué | Dónde |
@@ -269,13 +334,17 @@ Con esto, además, la falta de datos queda a la vista desde el primer día y no 
 | Resultado simulado del Asobancaria | `simular`, en `src/components/organisms/pagos/CargaAsobancaria/utils.ts` |
 | Permisos por rol | `src/lib/permisos.ts` |
 | Días hábiles sin festivos | `sumarDiasHabiles`, en `src/lib/reglas.ts` |
-| UVT constante | `UVT`, en `src/lib/reglas.ts` |
+| UVT constante (la real la actualizará la sonda, §3.14) | `UVT`, en `src/lib/reglas.ts` |
 | Tasa de interés de mora fija | `liquidarIca` y la liquidación de la retención, en `src/data/generar.ts` |
 | Rechazo en la aprobación previa (texto libre) | `src/components/organisms/declaraciones/AprobacionPrevia/AprobacionPrevia.tsx` |
 | Calendario: modelo y reglas (periodicidad, fechas por dígito, año nuevo copiado del más cercano) | `CalendarioVigencia` en `src/types/dominio.ts`; `src/lib/calendario.ts`; la página en `src/pages/Calendario.tsx` y sus secciones en `src/components/organisms/calendario/` |
 | Año nuevo con las fechas del año más cercano corridas, sin marcarlas como no oficiales (§3.14) | `calendarioNuevo`, en `src/lib/calendario.ts` |
 | Liquidación que no lee el calendario configurado | `generar.ts` usa `VENCIMIENTO_ICA_2025` y `VENCIMIENTOS_BIMESTRE_2026`, no `calendarioTributario` |
 | Tasas con emplazamiento que se configuran pero no se usan (`extemporaneidadEmplazamiento`, `correccionEmplazamiento`) | Se editan en `SeccionSanciones`; la liquidación de `src/data/generar.ts` solo usa `extemporaneidad` y `correccion` |
+| Calendario cargado, aviso de inicio de año y declaraciones marcadas | El campo `cargado` de `CalendarioVigencia` (`src/types/dominio.ts`), que se pone al guardar en `FormularioCalendario`; `cargaCalendario`, `presentadaSinCalendario`, `municipiosSinCalendario` y `conCargas` en `src/lib/calendario.ts`; `useSinCalendario` en `src/lib/sesion.ts`; `AlertaCalendario` (`organisms/inicio/`) y `AvisoSinCalendario` (`organisms/declaraciones/`) |
+| Retenciones sin consignar: límite, plazo de 2 meses y lista | `limiteConsignacion` y `estadoPago` en `src/lib/reglas.ts`; `calcularSinConsignar` en `src/lib/consignacion.ts`; `useSinConsignar` y `useEstadoPago` en `src/lib/sesion.ts`; el campo `pagoRetencionEnDosMeses` de `ConfigMunicipio` |
+| Retenciones sin consignar: pantallas | `RetencionesSinConsignar` (`organisms/pagos/`), `AlertaSinConsignar` (`organisms/inicio/`), `AvisoSinConsignar` (`organisms/declaraciones/`) y el interruptor en `SeccionRetencion` |
+| Retención pagada después del límite que sale como pagada (§3.15) | `estadoPago`, en `src/lib/reglas.ts`: no mira la fecha de los pagos |
 
 ## 5. Para retomar
 

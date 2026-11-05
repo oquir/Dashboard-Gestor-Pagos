@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { TODOS_ACTIVOS } from '../../../../constants'
+import { conCargas } from '../../../../lib/calendario'
 import { erroresCalendario } from '../../../../lib/configuracion'
+import { nombreCompleto } from '../../../../lib/formato'
+import { useSesion } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import type { ConfigMunicipio } from '../../../../types'
+import { hoy } from '../../../../utils'
 import { BarraGuardar } from '../../../molecules'
 import SeccionCalendario from '../SeccionCalendario'
 import SeccionProntoPago from '../SeccionProntoPago'
@@ -14,6 +18,7 @@ import type { FormularioCalendarioProps } from './types'
  */
 export default function FormularioCalendario({ config, editable }: FormularioCalendarioProps) {
   const guardarConfiguracion = useDatos((s) => s.guardarConfiguracion)
+  const { usuario } = useSesion()
   // Solo se ponen fechas de los formularios que el municipio tiene activos (los define 1cero1).
   const impuestos = useDatos((s) => s.municipios.find((m) => m.id === config.municipioId)?.impuestos) ?? TODOS_ACTIVOS
   const [b, setB] = useState(config)
@@ -44,7 +49,10 @@ export default function FormularioCalendario({ config, editable }: FormularioCal
             setGuardado(false)
           }}
           onGuardar={() => {
-            guardarConfiguracion({ ...config, calendarioTributario: b.calendarioTributario, prontoPago: b.prontoPago })
+            // Los años que se agregaron quedan cargados hoy: lo que se presentó antes queda marcado como presentado sin calendario.
+            const calendarioTributario = { porVigencia: conCargas(b.calendarioTributario.porVigencia, usuario ? nombreCompleto(usuario) : '', hoy()) }
+            guardarConfiguracion({ ...config, calendarioTributario, prontoPago: b.prontoPago })
+            setB((actual) => ({ ...actual, calendarioTributario }))
             setGuardado(true)
           }}
         />
