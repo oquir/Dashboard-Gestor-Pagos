@@ -6,6 +6,7 @@ import {
   AvisoSinCalendario,
   AvisoSinConsignar,
   DatosDeclaracion,
+  DeclaranteDeclaracion,
   Liquidacion,
   ListaArchivos,
   PagosDeclaracion,
@@ -96,14 +97,15 @@ export default function DeclaracionDetalle() {
       }
       lateral={
         <>
-          {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={ins?.correo ?? ''} puedeResolver={puede(usuario?.rol, 'revisar')} ventanilla={ventanilla} />}
-          <DatosDeclaracion d={d} ins={ins} corregida={corregida} enlazarRit={municipioConRit} />
+          {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={d.declarante.correo} puedeResolver={puede(usuario?.rol, 'revisar')} ventanilla={ventanilla} />}
+          <DatosDeclaracion d={d} corregida={corregida} />
+          <DeclaranteDeclaracion d={d} ins={municipioConRit ? ins : undefined} />
           <Card>
             <ListaArchivos
               titulo="Archivos adjuntos"
               descripcion="Anexos que el contribuyente cargó con la declaración."
               items={d.adjuntos.map((a) => ({ titulo: a.nombre, archivo: a.archivo }))}
-              contexto={[`Declaración ${d.numero}`, `Declarante: ${ins?.nombre ?? ''}`]}
+              contexto={[`Declaración ${d.numero}`, `Declarante: ${d.declarante.nombre}`]}
               nombreZip={`adjuntos_${d.numero}.zip`}
               vacio="No cargó archivos."
             />

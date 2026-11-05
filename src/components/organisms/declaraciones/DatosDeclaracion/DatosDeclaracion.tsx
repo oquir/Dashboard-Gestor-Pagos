@@ -4,17 +4,14 @@ import { Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import type { DatosDeclaracionProps } from './types'
 
-/** Ficha de la declaración: declarante, factura, fechas y la declaración que corrige. */
-export default function DatosDeclaracion({ d, ins, corregida, enlazarRit }: DatosDeclaracionProps) {
+/** Ficha de la declaración: factura, fechas y la declaración que corrige. */
+export default function DatosDeclaracion({ d, corregida }: DatosDeclaracionProps) {
   const diasMora = Math.round((Date.parse(d.fechaPresentacion) - Date.parse(d.fechaVencimiento)) / 86400000)
 
   return (
     <Card>
       <CardHeader titulo="Datos" />
       <dl className="space-y-4 p-5">
-        <Dato etiqueta="Declarante">
-          {!ins ? '—' : enlazarRit ? <Link className="font-medium text-brand-700 hover:underline" to={`/rit/${ins.id}`}>{ins.nombre}</Link> : ins.nombre}
-        </Dato>
         <Dato etiqueta="Número de factura">
           <span className="tabular-nums">{d.numeroFactura}</span>
         </Dato>
