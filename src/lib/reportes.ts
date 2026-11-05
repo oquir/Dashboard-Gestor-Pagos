@@ -86,7 +86,6 @@ export const COLUMNAS: Record<IdReporte, Columna[]> = {
 /** Sin declaraciones con aprobación previa, el reporte de declaraciones va sin esa columna, que es la última. */
 export const SIN_APROBACION = COLUMNAS.declaraciones.slice(0, -1)
 
-const documento = (i: Inscripcion | undefined) => (i ? formatoDocumento(i) : '')
 const DIA = 24 * 60 * 60 * 1000
 
 /** Cuenta o suma por categoría, en el orden de las etiquetas. */
@@ -140,7 +139,6 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
   const { declaraciones, inscripciones: todas, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, estadoDe, estadoAprobacion } = fuente
   const enRango = (fecha: string) => !rangoInvalido && fecha >= desde && fecha <= hasta
   const inscripciones = delMunicipio(todas, municipioId)
-  const porId = new Map(inscripciones.map((i) => [i.id, i]))
   const nombreMunicipio = new Map(municipios.map((m) => [m.id, m.nombre]))
   const reemplazadas = new Set(declaraciones.map((d) => d.corrigeA).filter(Boolean))
   const declaracionPorId = new Map(declaraciones.map((d) => [d.id, d]))
@@ -154,12 +152,12 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
 
   const presentadas = declaraciones
     .filter((d) => enRango(d.fechaPresentacion))
-    .map((d) => ({ d, ins: porId.get(d.inscripcionId), pagado: totalPagado(d.id, pagos), estado: estadoDe(d), a: aprobacion(d) }))
+    .map((d) => ({ d, pagado: totalPagado(d.id, pagos), estado: estadoDe(d), a: aprobacion(d) }))
     .filter((f) => !estadoAprobacion || (f.a?.estado ?? 'no_aplica') === estadoAprobacion)
 
   const recibidos = pagos.flatMap((p) => {
     const d = declaracionPorId.get(p.declaracionId)
-    return d && enRango(p.fecha) ? [{ p, d, ins: porId.get(d.inscripcionId) }] : []
+    return d && enRango(p.fecha) ? [{ p, d }] : []
   })
   const medios = [...new Set(recibidos.map(({ p }) => p.medio))].sort()
   const meses = [...new Set(recibidos.map(({ p }) => p.fecha.slice(0, 7)))].sort()
@@ -168,16 +166,16 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
     const pagado = totalPagado(d.id, pagos)
     // Lo que aún espera la aprobación previa no se puede pagar: no es cartera.
     if (reemplazadas.has(d.id) || d.totalAPagar <= 0 || pagado >= d.totalAPagar || !sePuedePagar(aprobacion(d))) return []
-    return [{ d, ins: porId.get(d.inscripcionId), pagado, saldo: d.totalAPagar - pagado, estado: estadoDe(d) }]
+    return [{ d, pagado, saldo: d.totalAPagar - pagado, estado: estadoDe(d) }]
   })
 
   const inscritos = inscripciones.filter(conRit(municipios))
 
   return {
     declaraciones: {
-      filas: presentadas.map(({ d, ins, pagado, estado, a }) => [
+      filas: presentadas.map(({ d, pagado, estado, a }) => [
         nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo),
-        etiquetaTipoDeclaracion[d.tipo], ins?.nombre ?? '', documento(ins), d.fechaPresentacion, d.fechaVencimiento, d.totalAPagar,
+        etiquetaTipoDeclaracion[d.tipo], d.declarante.nombre, formatoDocumento(d.declarante), d.fechaPresentacion, d.fechaVencimiento, d.totalAPagar,
         pagado, etiquetaEstadoPago[estado], a ? etiquetaEstadoAprobacion[a.estado] : 'No aplica',
       ]),
       graficas: [
@@ -187,9 +185,9 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
       ],
     },
     recaudo: {
-      filas: recibidos.map(({ p, d, ins }) => [
+      filas: recibidos.map(({ p, d }) => [
         nombreMunicipio.get(d.municipioId) ?? '', p.fecha, d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto],
-        etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo), ins?.nombre ?? '', documento(ins), p.medio, p.valor,
+        etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo), d.declarante.nombre, formatoDocumento(d.declarante), p.medio, p.valor,
       ]),
       graficas: [
         { titulo: 'Por impuesto', descripcion: 'Valor recaudado.', formato: 'pesos', barras: porImpuesto(recibidos, (f) => f.d.impuesto, (f) => f.p.valor) },
@@ -211,9 +209,9 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
       ],
     },
     cartera: {
-      filas: cartera.map(({ d, ins, pagado, saldo, estado }) => [
+      filas: cartera.map(({ d, pagado, saldo, estado }) => [
         nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo),
-        ins?.nombre ?? '', documento(ins), d.fechaVencimiento, d.totalAPagar, pagado, saldo, etiquetaEstadoPago[estado],
+        d.declarante.nombre, formatoDocumento(d.declarante), d.fechaVencimiento, d.totalAPagar, pagado, saldo, etiquetaEstadoPago[estado],
       ]),
       graficas: [
         { titulo: 'Por impuesto', descripcion: 'Saldo por pagar.', formato: 'pesos', barras: porImpuesto(cartera, (f) => f.d.impuesto, (f) => f.saldo) },
@@ -230,7 +228,7 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
       filas: inscritos.map((i) => {
         const principal = i.actividades.find((a) => a.principal)
         return [
-          nombreMunicipio.get(i.municipioId) ?? '', i.numeroRit, i.nombre, documento(i), etiquetaTipoPersona[i.tipoPersona], etiquetaEstadoInscripcion[i.estado],
+          nombreMunicipio.get(i.municipioId) ?? '', i.numeroRit, i.nombre, formatoDocumento(i), etiquetaTipoPersona[i.tipoPersona], etiquetaEstadoInscripcion[i.estado],
           i.calidades.map((c) => etiquetaCalidad[c.calidad]).join(', '), principal ? `${principal.ciiu} ${principal.descripcion}` : '', i.direccion, i.telefono, i.correo,
         ]
       }),
