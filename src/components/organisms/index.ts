@@ -10,6 +10,9 @@ export { default as Tabla } from './Tabla'
 
 export { default as CatalogoActividades } from './actividades/CatalogoActividades'
 
+export { default as DatosEnviados } from './bitacora/DatosEnviados'
+export { default as PeticionBitacora } from './bitacora/PeticionBitacora'
+export { default as RecorridoBitacora } from './bitacora/RecorridoBitacora'
 export { default as TablaBitacora } from './bitacora/TablaBitacora'
 
 export { default as FormularioCalendario } from './calendario/FormularioCalendario'
