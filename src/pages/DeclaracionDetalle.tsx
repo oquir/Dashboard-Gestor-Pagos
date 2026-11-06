@@ -5,8 +5,9 @@ import {
   AprobacionPrevia,
   AvisoSinCalendario,
   AvisoSinConsignar,
+  ContribuyenteDeclaracion,
   DatosDeclaracion,
-  DeclaranteDeclaracion,
+  FirmasDeclaracion,
   Liquidacion,
   ListaArchivos,
   PagosDeclaracion,
@@ -50,6 +51,8 @@ export default function DeclaracionDetalle() {
   const corregida = d.corrigeA ? declaraciones.find((x) => x.id === d.corrigeA) : undefined
   const reemplazo = declaraciones.find((x) => x.corrigeA === d.id)
   const municipioConRit = conRit(municipios)(d)
+  // Su ficha del RIT: solo si el municipio tiene el RIT en el aplicativo y el contribuyente está inscrito.
+  const enRit = municipioConRit ? ins : undefined
   const situacion = aprobacion(d)
   const municipio = municipios.find((m) => m.id === d.municipioId)
   // Efectivo y cheque se activan por formulario: solo se ofrece lo que tiene el de esta declaración.
@@ -65,7 +68,7 @@ export default function DeclaracionDetalle() {
   return (
     <PlantillaDetalle
       volver={{ a: '/declaraciones', texto: 'Declaraciones' }}
-      titulo={`${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}`}
+      titulo={`${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d)}`}
       descripcion={`Radicado ${d.numero}`}
       acciones={
         <>
@@ -90,6 +93,8 @@ export default function DeclaracionDetalle() {
       }
       principal={
         <>
+          {/* Sin ficha del RIT, lo que dice la declaración es todo lo que se sabe del contribuyente: va arriba de la liquidación. */}
+          {!enRit && <ContribuyenteDeclaracion d={d} noInscrito={municipioConRit && !d.inscripcionId} ancha />}
           <Liquidacion d={d} />
           <PagosDeclaracion d={d} pagos={pagos} cheques={cheques} />
           {recibeVentanilla && <PagoVentanilla key={d.id} d={d} saldo={saldo} medios={ventanilla} chequeParcial={chequeParcial} />}
@@ -97,15 +102,16 @@ export default function DeclaracionDetalle() {
       }
       lateral={
         <>
-          {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={d.declarante.correo} puedeResolver={puede(usuario?.rol, 'revisar')} ventanilla={ventanilla} />}
+          {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={d.contribuyente.correo} puedeResolver={puede(usuario?.rol, 'revisar')} ventanilla={ventanilla} />}
           <DatosDeclaracion d={d} corregida={corregida} />
-          <DeclaranteDeclaracion d={d} ins={municipioConRit ? ins : undefined} noInscrito={municipioConRit && !d.inscripcionId} />
+          {enRit && <ContribuyenteDeclaracion d={d} ins={enRit} />}
+          <FirmasDeclaracion d={d} />
           <Card>
             <ListaArchivos
               titulo="Archivos adjuntos"
               descripcion="Anexos que el contribuyente cargó con la declaración."
               items={d.adjuntos.map((a) => ({ titulo: a.nombre, archivo: a.archivo }))}
-              contexto={[`Declaración ${d.numero}`, `Declarante: ${d.declarante.nombre}`]}
+              contexto={[`Declaración ${d.numero}`, `Contribuyente: ${d.contribuyente.nombre}`]}
               nombreZip={`adjuntos_${d.numero}.zip`}
               vacio="No cargó archivos."
             />
