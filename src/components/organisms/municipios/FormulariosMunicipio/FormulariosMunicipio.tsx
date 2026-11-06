@@ -1,15 +1,23 @@
-import { etiquetaImpuesto, textoDesactivado } from '../../../../lib/formato'
+import { useState } from 'react'
+import { etiquetaImpuesto, textoDesactivado, textoSalidaProduccion } from '../../../../lib/formato'
 import { IMPUESTOS } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import type { Impuesto } from '../../../../types'
 import { Badge, Card, Conmutador } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
+import ModalSalidaProduccion from '../ModalSalidaProduccion'
 import { GRUPOS, LEYENDA } from './constants'
 import type { FormulariosMunicipioProps, OpcionFormulario } from './types'
 
-/** Matriz de los formularios del municipio: cuáles gestiona y, para cada uno, su revisión y lo que recibe en la ventanilla. */
+/**
+ * Matriz de los formularios del municipio: cuáles gestiona y, para cada uno, su revisión y lo que recibe en la ventanilla.
+ * La primera vez que se activa un formulario se pide su fecha de salida a producción.
+ */
 export default function FormulariosMunicipio({ municipio: m, pausas }: FormulariosMunicipioProps) {
   const alternarImpuesto = useDatos((s) => s.alternarImpuesto)
+  const activarFormulario = useDatos((s) => s.activarFormulario)
+  /** El impuesto que se activa por primera vez, mientras se pide su fecha. */
+  const [pidiendo, setPidiendo] = useState<Impuesto | null>(null)
   const alternar: Record<OpcionFormulario, (municipioId: string, impuesto: Impuesto) => void> = {
     validarContraRit: useDatos((s) => s.alternarValidacionRit),
     aprobacionPrevia: useDatos((s) => s.alternarAprobacionPrevia),
@@ -52,6 +60,7 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
                 <tr key={i} className={gestiona ? '' : 'bg-slate-50/70'}>
                   <th scope="row" className="px-5 py-3 text-left align-top font-medium">
                     <span className={gestiona ? 'text-slate-900' : 'text-slate-500'}>{etiquetaImpuesto[i]}</span>
+                    <span className="mt-0.5 block text-xs font-normal text-slate-500">{textoSalidaProduccion(m.enProduccionDesde[i])}</span>
                     {pausa && (
                       <span className="mt-1 block max-w-xs text-xs font-normal">
                         <Badge tono="alerta">Desactivado por el municipio</Badge>
@@ -63,7 +72,7 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
                     <Conmutador
                       checked={gestiona}
                       aria-label={`Gestiona ${etiquetaImpuesto[i]}`}
-                      onChange={() => alternarImpuesto(m.id, i)}
+                      onChange={() => (!gestiona && !m.enProduccionDesde[i] ? setPidiendo(i) : alternarImpuesto(m.id, i))}
                     />
                   </td>
                   {GRUPOS.map((g) =>
@@ -100,6 +109,17 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
           </div>
         ))}
       </dl>
+
+      {pidiendo && (
+        <ModalSalidaProduccion
+          formulario={pidiendo}
+          alConfirmar={(fecha) => {
+            activarFormulario(m.id, pidiendo, fecha)
+            setPidiendo(null)
+          }}
+          cerrar={() => setPidiendo(null)}
+        />
+      )}
     </Card>
   )
 }

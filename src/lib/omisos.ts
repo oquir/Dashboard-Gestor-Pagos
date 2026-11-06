@@ -58,15 +58,20 @@ export function calcularOmisos({ municipios, configuraciones, inscripciones, dec
     const calendarios = cfg.calendarioTributario.porVigencia
     const inscritos = inscripciones.filter((i) => i.municipioId === m.id && (i.estado === 'activa' || i.estado === 'cancelada'))
 
+    // Los impuestos activos con su salida a producción; sin ella, el impuesto no se revisa.
+    const enProduccion = IMPUESTOS.flatMap((i) => {
+      const fecha = m.impuestos[i] && m.enProduccionDesde[i]
+      return fecha ? [{ impuesto: i, desde: fecha }] : []
+    })
     // Desde el año anterior al de la primera salida a producción, porque su ICA anual vence en el año siguiente, hasta el año en curso.
-    const desde = IMPUESTOS.filter((i) => m.impuestos[i]).map((i) => m.enProduccionDesde[i]).sort()[0]
+    const desde = enProduccion.map((x) => x.desde).sort()[0]
     if (!desde) continue
     for (let vigencia = Number(desde.slice(0, 4)) - 1; vigencia <= Number(hoy.slice(0, 4)); vigencia++) {
       if (!calendarios.some((c) => c.vigencia === vigencia)) sinCalendario.push({ municipioId: m.id, vigencia })
     }
 
     for (const cal of calendarios) {
-      for (const impuesto of IMPUESTOS.filter((i) => m.impuestos[i])) {
+      for (const { impuesto, desde: desdeImpuesto } of enProduccion) {
         const f = cal[impuesto]
         const pausa = cfg.formulariosDesactivados[impuesto]?.fecha
         for (const p of f.periodos) {
@@ -78,7 +83,7 @@ export function calcularOmisos({ municipios, configuraciones, inscripciones, dec
             const cese = fechaCese(ins)
             if (cese && cese < inicio) continue
             const vencimiento = vencimientoPara(f, p, ins.documento)
-            if (!vencimiento || vencimiento < m.enProduccionDesde[impuesto] || vencimiento >= hoy || (pausa && vencimiento >= pausa)) continue
+            if (!vencimiento || vencimiento < desdeImpuesto || vencimiento >= hoy || (pausa && vencimiento >= pausa)) continue
             if (cubierto(`${ins.id}|${impuesto}|${cal.vigencia}`, inicio, fin)) continue
             if (impuesto === 'reteica' && !cfg.declaracionEnCeros) {
               agentesSinCeros.add(ins.id)

@@ -35,10 +35,17 @@ interface Estado extends Datos {
   /** Borra el usuario de la demo. Lo que hizo queda con su nombre, que se guarda como texto. */
   eliminarUsuario: (id: string) => void
   alternarMunicipio: (id: string) => void
-  /** Fecha desde la que el municipio recibe declaraciones en el aplicativo; desde ahí se revisan los omisos. */
-  cambiarEnProduccionDesde: (municipioId: string, formulario: Formulario, fecha: string) => void
-  /** Activa o desactiva un impuesto del municipio; puede quedar sin ninguno activo. */
+  /**
+   * Activa el RIT o un impuesto del municipio. Si nunca se había activado, guarda la fecha de salida a producción, que ya
+   * no cambia; si ya la tenía, la conserva e ignora la que llega.
+   */
+  activarFormulario: (municipioId: string, formulario: Formulario, fecha: string) => void
+  /**
+   * Activa o desactiva un impuesto del municipio; puede quedar sin ninguno activo. Para activar uno que nunca se ha
+   * activado, activarFormulario, que pide la fecha de salida a producción.
+   */
   alternarImpuesto: (municipioId: string, impuesto: Impuesto) => void
+  /** Lo mismo con el RIT. */
   alternarRit: (municipioId: string) => void
   /** Activa o desactiva la validación contra el RIT de un formulario del municipio. */
   alternarValidacionRit: (municipioId: string, impuesto: Impuesto) => void
@@ -213,11 +220,18 @@ export const useDatos = create<Estado>()(
           registrar(PETICIONES.eliminarUsuario, municipioId, { id })
         },
         alternarMunicipio: (id) => alternarModulo(id, 'activo'),
-        cambiarEnProduccionDesde: (municipioId, formulario, fecha) => {
+        activarFormulario: (municipioId, formulario, fecha) => {
           const m = get().municipios.find((x) => x.id === municipioId)
           if (!m) return
-          cambiarMunicipio(municipioId, { enProduccionDesde: { ...m.enProduccionDesde, [formulario]: fecha } })
-          registrar(PETICIONES.cambiarEnProduccionDesde, municipioId, { municipioId, formulario, fecha })
+          const activo = formulario === 'rit' ? { rit: true } : { impuestos: { ...m.impuestos, [formulario]: true } }
+          // La fecha de salida a producción se pone una sola vez.
+          const nueva = m.enProduccionDesde[formulario] ? {} : { enProduccionDesde: { [formulario]: fecha } }
+          cambiarMunicipio(municipioId, { ...activo, enProduccionDesde: { [formulario]: fecha, ...m.enProduccionDesde } })
+          registrar(PETICIONES.cambiarModulo, municipioId, {
+            municipioId,
+            ...(formulario === 'rit' ? { rit: true } : { impuestos: { [formulario]: true } }),
+            ...nueva,
+          })
         },
         alternarImpuesto: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'impuestos', impuesto),
         alternarRit: (municipioId) => alternarModulo(municipioId, 'rit'),
@@ -292,6 +306,6 @@ export const useDatos = create<Estado>()(
         reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
       }
     },
-    { name: 'gestor-pagos-demo', version: 41 },
+    { name: 'gestor-pagos-demo', version: 42 },
   ),
 )

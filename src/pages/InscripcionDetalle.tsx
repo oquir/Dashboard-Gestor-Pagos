@@ -51,8 +51,9 @@ export default function InscripcionDetalle() {
   const municipio = municipios.find((m) => m.id === inscripcion.municipioId)
   // La inscripción se juzga con los datos que radicó, aunque luego los haya actualizado.
   const radicada = inscripcion.novedades.find((n) => n.tipo === 'inscripcion')
+  const ritDesde = municipio?.enProduccionDesde.rit
   const tardia =
-    radicada?.datos && config && municipio ? diasInscripcionTardia(radicada.datos.fechaInicioActividades, radicada.fecha, config.plazoInscripcionMeses, municipio.enProduccionDesde.rit) : null
+    radicada?.datos && config && ritDesde ? diasInscripcionTardia(radicada.datos.fechaInicioActividades, radicada.fecha, config.plazoInscripcionMeses, ritDesde) : null
   const soportes = solicitud ? solicitud.soportes : inscripcion.soportes
   const elegir = (novedadId: string | null) => {
     setSeleccion(novedadId)

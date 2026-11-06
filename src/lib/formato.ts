@@ -160,6 +160,9 @@ export const etiquetaPeriodicidad: Record<Periodicidad, string> = {
 export const etiquetaPeriodo = ({ impuesto, periodicidad, vigencia, periodo }: { impuesto: Impuesto; periodicidad: Periodicidad; vigencia: number; periodo: number }) =>
   impuesto === 'ica' ? `Año gravable ${vigencia}` : `${NOMBRES_PERIODOS[periodicidad][periodo - 1]} de ${vigencia}`
 
+/** La fecha de salida a producción de un formulario, de solo lectura; sin fecha, el formulario nunca se ha activado. */
+export const textoSalidaProduccion = (fecha: string | undefined) => (fecha ? `En producción desde el ${formatoFecha(fecha)}` : 'Nunca se ha activado')
+
 /**
  * Desde cuándo recibe el aplicativo los impuestos activos del municipio: "el 1 feb 2026" si todos salieron el mismo día,
  * o "el 1 feb 2026 (ICA) y el 1 mar 2026 (ReteICA)" si no. Es null si el municipio no tiene ningún impuesto activo.

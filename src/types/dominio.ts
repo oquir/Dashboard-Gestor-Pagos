@@ -11,9 +11,10 @@ export interface Municipio {
   /**
    * Fecha de salida a producción de cada formulario: desde ahí el aplicativo lo recibe; lo anterior quedó en otro sistema.
    * Los omisos de cada impuesto se revisan desde su fecha, y la del RIT decide si se puede juzgar una inscripción tardía.
-   * La pone 1cero1.
+   * La pone 1cero1 al activar el formulario por primera vez y no se cambia: desactivarlo y volverlo a activar la
+   * conserva. El formulario que nunca se ha activado no la tiene.
    */
-  enProduccionDesde: Record<Formulario, string>
+  enProduccionDesde: Partial<Record<Formulario, string>>
   /** Impuestos que el municipio gestiona en el aplicativo; los activa 1cero1. */
   impuestos: Record<Impuesto, boolean>
   /** El RIT del municipio está en el aplicativo (inscripciones y novedades); lo activa 1cero1. */

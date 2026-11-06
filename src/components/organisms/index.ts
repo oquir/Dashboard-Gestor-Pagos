@@ -52,6 +52,7 @@ export { default as TablaInscripciones } from './inscripciones/TablaInscripcione
 
 export { default as EncabezadoMunicipio } from './municipios/EncabezadoMunicipio'
 export { default as FormulariosMunicipio } from './municipios/FormulariosMunicipio'
+export { default as ModalSalidaProduccion } from './municipios/ModalSalidaProduccion'
 export { default as ModulosMunicipio } from './municipios/ModulosMunicipio'
 
 export { default as CargaAsobancaria } from './pagos/CargaAsobancaria'
