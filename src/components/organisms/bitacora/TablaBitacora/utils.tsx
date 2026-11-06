@@ -1,5 +1,8 @@
+import { Link } from 'react-router'
+import { DocumentText } from 'reicon-react'
+import { CLASE_BOTON_FILA } from '../../../../constants'
 import { fueraDeHorario } from '../../../../lib/bitacora'
-import { etiquetaCategoriaBitacora, etiquetaRol, formatoFecha, formatoHora } from '../../../../lib/formato'
+import { etiquetaRol, formatoFecha, formatoHora } from '../../../../lib/formato'
 import { ayudanteColumnas } from '../../../../lib/tabla'
 import type { Municipio, RegistroBitacora } from '../../../../types'
 import { Badge } from '../../../atoms'
@@ -12,11 +15,27 @@ export const SIN_MUNICIPIO = 'Todo el aplicativo'
 export const nombreMunicipio = (r: RegistroBitacora, municipios: Municipio[]) =>
   municipios.find((m) => m.id === r.municipioId)?.nombre ?? SIN_MUNICIPIO
 
-/** Lo más reciente primero. */
-export const ORDEN_INICIAL = [{ id: 'fecha', desc: true }]
+export const textoResultado = (r: RegistroBitacora) => (r.exito ? 'Salió bien' : 'Falló')
+
+/** Lo más reciente primero: el número más alto. */
+export const ORDEN_INICIAL = [{ id: 'id', desc: true }]
 
 export function columnasBitacora(municipios: Municipio[]) {
   return col.columns([
+    col.accessor('id', {
+      header: 'N.º',
+      meta: { clase: 'whitespace-nowrap' },
+      cell: ({ row: { original: r } }) => (
+        <Link
+          to={`/bitacora/${r.id}`}
+          aria-label={`Ver el registro ${r.id}`}
+          className={CLASE_BOTON_FILA}
+        >
+          <DocumentText className="size-4 text-brand-600" aria-hidden />
+          {r.id}
+        </Link>
+      ),
+    }),
     col.accessor('fechaHora', {
       id: 'fecha',
       header: 'Fecha y hora',
@@ -52,26 +71,17 @@ export function columnasBitacora(municipios: Municipio[]) {
       meta: { clase: 'min-w-64' },
       cell: ({ row: { original: r } }) => (
         <>
-          <p className="text-slate-900">{r.accion}</p>
-          <p className="text-xs text-slate-500">{etiquetaCategoriaBitacora[r.categoria]}</p>
+          <p className="font-mono text-sm text-slate-900">{r.accion}</p>
+          <p className="text-xs text-slate-500">
+            {r.controlador} · <span className="break-all font-mono">{r.endpoint}</span>
+          </p>
         </>
       ),
     }),
-    col.display({
-      id: 'cambio',
-      header: 'Antes → después',
-      meta: { clase: 'min-w-56 max-w-sm' },
-      cell: ({ row: { original: r } }) =>
-        r.antes ? (
-          <p className="text-slate-700">
-            <span className="text-slate-400 line-through">{r.antes}</span> <span aria-hidden>→</span>
-            <span className="sr-only">cambió a</span> {r.despues}
-          </p>
-        ) : r.despues ? (
-          <p className="text-slate-700">{r.despues}</p>
-        ) : (
-          <span className="text-slate-400">—</span>
-        ),
+    col.accessor('exito', {
+      header: 'Resultado',
+      meta: { clase: 'whitespace-nowrap' },
+      cell: ({ row: { original: r } }) => <Badge tono={r.exito ? 'exito' : 'peligro'}>{textoResultado(r)}</Badge>,
     }),
   ])
 }

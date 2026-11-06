@@ -1,2 +1,2 @@
 export { default } from './TablaBitacora'
-export { nombreMunicipio } from './utils'
+export { nombreMunicipio, textoResultado } from './utils'
