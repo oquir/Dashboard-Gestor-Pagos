@@ -7,7 +7,7 @@
 >
 > El dashboard es un **mock**: corre en localhost, sin API ni base de datos, y sirve para mostrarles a los municipios cómo se verá el aplicativo. Complementa a [`Dominio-ICA.md`](Dominio-ICA.md) y a [`Contexto-RIT.md`](Contexto-RIT.md).
 >
-> **Revisado el 2026-10-27; actualizado el 2026-11-05.** Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
+> **Revisado el 2026-10-27; actualizado el 2026-11-06.** Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
 
 ## 1. Decisiones del 2026-10-27
 
@@ -43,6 +43,11 @@
 | Datos del declarante en la declaración (2026-11-05) | **En todas las declaraciones**: cada una guarda lo que escribió el declarante y quiénes la firman (§3.16). El detalle, el PDF, las tablas y los reportes los toman de ahí, no del RIT | Lo que vale es lo que se firmó ese día, aunque después cambie el RIT. Y hay municipios sin RIT, o que no validan un formulario contra el RIT |
 | Municipios sin RIT (2026-11-05) | Sus declaraciones se ven con lo que trae cada una, sin cruces con el RIT ni omisos. Lo configura 1cero1. En la demo, Santa Rosa de los Andes no tiene RIT | Hay municipios que llevan el RIT en papel, o que no lo llevan en ningún sistema, y quieren seguir así |
 | Declarante que no está inscrito en el RIT (2026-11-05) | Donde un formulario no se valida contra el RIT, su declaración dice **"No inscrito en el RIT"**, y Declaraciones tiene un filtro para verlas. En la demo, Puerto Esperanza no valida la ReteICA y tres sociedades la declaran sin estar inscritas | Es una pista de fiscalización: declara, pero nunca se inscribió |
+| Contribuyente y declarante (2026-11-06) | **Son dos cosas distintas** (§3.16). El contribuyente es la empresa o la persona. El declarante es quien diligencia el formulario, y de él solo se piden el tipo y el número de documento y el nombre. Si la declaración no tiene ficha del RIT, la tarjeta del contribuyente va en la columna ancha, encima de la liquidación. El declarante y el contador o revisor fiscal van juntos en la tarjeta "Firmas" de la lateral. Las tablas, los reportes y el buscador de Declaraciones dicen "Contribuyente" | Sin RIT, lo que dice la declaración es todo lo que se sabe del contribuyente. Las firmas son pocos datos para una tarjeta cada una |
+| Periodicidad de las declaraciones (2026-11-06) | **Cada declaración guarda la periodicidad con que se presentó**, y su periodo se nombra igual en todo el aplicativo: "Marzo de 2026", "Bimestre 3 (may – jun) de 2026", "Trimestre 1 (ene – mar) de 2026". En la demo, Puerto Esperanza declara la ReteICA de 2026 por mes y Santa Rosa por trimestre. Si en Calendario se cambia la periodicidad de un año que ya tiene declaraciones, sale un aviso, y lo presentado conserva su periodo (§3.5) | La etiqueta larga no deja lugar a interpretaciones. Y el aviso es para que el municipio se dé cuenta del error antes de cometerlo |
+| Alerta de retenciones sin consignar para 1cero1 (2026-11-06) | **No le sale en Inicio** (permiso `verAlertaSinConsignar`). La ven el administrador y los funcionarios del municipio | 1cero1 no se encarga de lo jurídico del municipio |
+| Bitácora como la guarda el back (2026-11-06) | **Cada registro trae lo que el back guarda al terminar cada endpoint**: quién y cuándo, el controlador, la acción y el endpoint con los nombres del back, los datos enviados y si salió bien. Ya no trae frases ni el valor de antes y después. Lo que se hace en la demo también queda registrado. Cada registro tiene un número consecutivo que abre su página, con "Anterior" y "Siguiente" dentro del municipio elegido (§3.9) | El back solo tiene a mano lo que le envían: guardar el valor anterior lo obligaría a consultarlo en cada petición |
+| Motivo al desactivar un formulario en Configuración (2026-11-06) | **En una ventana** (`ModalMotivo`, genérica para todo el aplicativo), no en un cuadro de texto debajo del interruptor. Si se cancela, el formulario sigue activo. El motivo queda escrito debajo del interruptor, con un botón para cambiarlo | Más limpio, y la misma ventana sirve donde haga falta pedir un motivo |
 
 ## 2. Lo que falta, con su estado
 
@@ -54,7 +59,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 
 | Campo | Qué pasa hoy | Estado |
 |---|---|---|
-| Periodicidad de ReteICA y AutoReteICA | Desde el 2026-11-03 se pone en Calendario, por año gravable y por formulario (mensual, bimestral o trimestral), y la usan los vencimientos y la tarjeta de Inicio. Pero las declaraciones de la demo y su etiqueta siguen diciendo "bimestre" (Ricaurte declara mensual) | Pendiente |
+| Periodicidad de ReteICA y AutoReteICA | Desde el 2026-11-03 se pone en Calendario, por año gravable y por formulario (mensual, bimestral o trimestral), y la usan los vencimientos y la tarjeta de Inicio. Desde el 2026-11-06, las declaraciones de la demo salen del calendario de cada municipio, con su periodicidad, sus vencimientos y montos según la duración del periodo, y cada una dice su periodo. Como la tarifa, se aplica al generar los datos: cambiar la periodicidad después no cambia lo ya declarado | **Con efecto** |
 | Formulario conjunto | Se quitó el interruptor y el campo (2026-11-04) | **Quitado** |
 | Corrección a la baja (art. 589 clásico o corrección directa) | El flujo no existe (§3.2) | En revisión |
 | Plazo para inscribirse en el RIT | Nada marca una inscripción tardía (§3.3) | En revisión |
@@ -80,7 +85,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 |---|---|---|
 | Flujo de la corrección a la baja | Los estados proyecto, aceptada, rechazada y aceptada por silencio, con los plazos de 1 año y 6 meses (§3.2) | En revisión |
 | Emplazamientos | Registrar los emplazamientos para declarar y para corregir, con su fecha de notificación, y usar la sanción más alta cuando se presenta o se corrige después de esa fecha (§3.13). Las tasas ya se configuran, pero la liquidación no las usa | Pendiente |
-| Bitácora de cambios | Página Bitácora, solo para 1cero1, con datos de prueba (§3.9). Falta que lo que se hace en la demo también se registre | **Implementada con datos de prueba** (2026-11-04) |
+| Bitácora de cambios | Página Bitácora, solo para 1cero1, con datos de prueba y lo que se hace en la demo, como lo guardará el back (§3.9) | **Implementada** (2026-11-04; rehecha el 2026-11-06) |
 | Usuarios | Botón en cada fila que abre el detalle del usuario: editar sus datos (también el correo, cuando el municipio pierde el acceso al que tenía), desactivar o reactivar, eliminar y reenviar las credenciales (el correo es simulado) | **Implementado** (2026-11-04). Separar permisos: descartado |
 | Recibos de caja y de pago | Poder descargarlos (§3.10) | Descartado |
 | Causales del art. 580 | Escoger la causal al rechazar en la aprobación previa; hoy es texto libre (§3.11) | En revisión |
@@ -171,7 +176,7 @@ Los omisos son los inscritos que debían declarar y todavía no lo han hecho en 
 - Cualquier declaración del periodo lo cubre: inicial, corrección, clausura o pendiente de aprobación. La rechazada en la aprobación previa no, porque se tiene por no presentada (§3.11). La ineficaz sí lo cubre: es asunto de la alerta de ReteICA sin consignar.
 - Si falta el calendario de un año, sus periodos no se pueden revisar y la página lo avisa.
 
-**Límite conocido**: las declaraciones de la demo van por bimestres. Si en Calendario se cambia la periodicidad de la ReteICA o la AutoReteICA, los periodos ya no coinciden y salen omisos que no lo son.
+**Si cambia la periodicidad** (2026-11-06): cada declaración guarda la periodicidad con que se presentó, y el cruce se hace por fechas, no por el número del periodo. Un periodo del calendario queda cubierto si el inscrito presentó alguna declaración cuyas fechas se crucen con las suyas. Por ejemplo, si un municipio pasa la ReteICA de mensual a bimestral, quien declaró marzo cubre el bimestre de marzo y abril. Así, cambiar la periodicidad en Calendario no crea omisos falsos, y la página Calendario avisa que el calendario dejará de coincidir con lo ya declarado.
 
 ### 3.6 Calendario de vencimientos
 
@@ -199,14 +204,43 @@ En el mock, el funcionario solo escribe el número del recibo de caja, que sale 
 
 ### 3.9 Bitácora de cambios
 
-Sirve para que 1cero1 le pueda decir a un municipio quién hizo un cambio y cuándo; por ejemplo, quién cambió la configuración a la 1 a. m. sin avisarle a nadie. Registraría:
-- **quién y cuándo**: el usuario, con la fecha y la hora;
-- **qué hizo**: cambios de configuración, módulos activados, aprobaciones y rechazos, pagos en ventanilla, cheques y usuarios;
-- **cómo estaba antes**: el valor previo de lo que cambió.
+Sirve para que 1cero1 le pueda decir a un municipio quién hizo un cambio y cuándo; por ejemplo, quién cambió la configuración a la 1 a. m. sin avisarle a nadie.
 
-En el mock viviría en el navegador; la de verdad la guardaría la API.
+**Qué guarda el back** (lo definió el usuario el 2026-11-06): al terminar cada endpoint, en el `finally`, un registro con:
+- quién hizo la petición, con la fecha y la hora;
+- el controlador (`Pagos`, `Usuarios`, `Configuracion`…), el nombre de la acción y el endpoint, tal como vienen del back;
+- los datos enviados en el cuerpo o en la URL;
+- si la petición salió bien o falló, porque el `finally` corre también cuando hay un error.
 
-**Cómo quedó en el mock** (2026-11-04): la página Bitácora, solo para 1cero1, con unos 50 registros de prueba entre agosto y octubre de 2026 (`src/data/bitacora.ts`). Trae acciones de los tres roles, también de 1cero1, y un caso de madrugada: Carlos Restrepo cambió la sobretasa bomberil y el anticipo de San José del Valle el 9 de septiembre a la 1 a. m. Los cambios terminan en los valores que hoy tiene la demo, para no contradecir las demás pantallas, y los registros del RIT y de los cheques salen de los datos de la demo. Se filtra por municipio, texto, categoría, rol y "fuera de horario" (antes de las 7 a. m. o desde las 7 p. m.), y se descarga en Excel. **Límite**: lo que se hace en la demo no se registra; para eso, cada acción del store tendría que agregar su registro.
+No guarda el valor anterior, porque para eso tendría que consultarlo en cada petición. Por eso la bitácora dice qué se envió, no qué cambió.
+
+**Cómo quedó en el mock** (2026-11-06). La primera versión, del 2026-11-04, traía una frase por cambio y el valor de antes y el de después.
+- **El número**: cada registro tiene un consecutivo. El más antiguo es el 1 y el más reciente tiene el número más alto, así que ordenar por número dice qué pasó antes, aunque dos registros tengan la misma hora (la hora solo llega al minuto). La tabla arranca ordenada así, de mayor a menor.
+- **La página Bitácora**, solo para 1cero1, muestra:
+  - el número, que abre la página del registro, como el radicado en Declaraciones;
+  - la fecha y la hora, con la marca "Fuera de horario" antes de las 7 a. m. o desde las 7 p. m.;
+  - el usuario y el municipio;
+  - la acción con su controlador y su endpoint;
+  - el resultado.
+- **Filtros y Excel**: se filtra por municipio, por texto (también en el número, el endpoint y los datos), por controlador y por rol, y con las casillas "Solo fuera de horario" y "Solo las que fallaron". Se descarga en Excel, con el número y los datos enviados.
+- **La página del registro** (`/bitacora/47`): los datos enviados completos, en JSON con formato, y los de la petición. Los botones "Anterior" y "Siguiente" van al número inmediatamente menor o mayor:
+  - con un municipio elegido en la Bitácora, solo entre los registros de ese municipio, así que los números saltan;
+  - sin municipio elegido, entre todos los registros, también los que no son de ningún municipio.
+  
+  Solo respetan el municipio, no los demás filtros de la tabla, y la página no tiene selector de municipio (lo decidió el usuario el 2026-11-06).
+- **Lo que se hace en la demo queda registrado**: cada acción del store que en el aplicativo real haría una petición deja su registro al terminar.
+  - Los interruptores guardan el valor nuevo (`"rit": false`), no un "alternar".
+  - Fallan, y quedan como fallidas, desactivar el último impuesto de un municipio y confirmar o devolver un cheque que ya no está en canje.
+- **Datos de prueba** (`src/data/bitacora.ts`): 47 registros de los tres roles entre agosto y octubre de 2026. Los datos enviados terminan en los valores que hoy tiene la demo. Los registros del RIT, los cheques y los formularios desactivados salen de los datos de la demo.
+  - El caso de madrugada: Carlos Restrepo inició sesión y guardó la configuración de San José del Valle el 9 de septiembre a la 1 a. m.
+  - Uno que falló: Laura Méndez guardó la configuración de Puerto Esperanza el 20 de octubre a las 7:41 p. m. La petición falló y la volvió a guardar a las 7:45 p. m.
+- **Nombres de ejemplo**: los controladores, las acciones y los endpoints de la demo están en `PETICIONES` (`src/constants/bitacora.ts`). Los de verdad vienen del back.
+
+**Límites**:
+- Sin el valor anterior, para saber qué cambió en una configuración hay que compararla con el registro anterior del mismo endpoint.
+- Los datos traen ids, no nombres: el pago en ventanilla dice `"declaracionId": "d13"`, no el número de la declaración.
+- Guardar la configuración, también desde Calendario, envía la configuración completa, porque así la guarda hoy el front.
+- No dejan registro el cierre de sesión, elegir un municipio (es solo de la pantalla), las descargas, el reenvío de las credenciales ni la carga del Asobancaria, porque en la demo no cambian ningún dato.
 
 ### 3.10 Recibo de caja y recibo de pago
 
@@ -287,7 +321,7 @@ El acto que un municipio expide para "su calendario de 2027" suele traer la Rete
 - **Declaraciones**: las que se presentaron antes de que el municipio cargara el calendario de su año gravable dicen "Sin calendario cargado" junto a la fecha de presentación. Hay un filtro para verlas. En el detalle, un aviso dice cuándo se cargó el calendario y pide revisar el vencimiento, la sanción y los intereses.
 - **Calendario**: cada año dice cuándo y quién lo cargó.
 - **En la demo**:
-  - Puerto Esperanza cargó el calendario de 2026 el 8 de abril de 2026, así que sus declaraciones de 2026 presentadas antes están marcadas: las ReteICA del bimestre 1 y una clausura de ICA.
+  - Puerto Esperanza cargó el calendario de 2026 el 8 de abril de 2026, así que sus declaraciones de 2026 presentadas antes están marcadas: las ReteICA de enero y febrero y una de marzo.
   - El aviso de Inicio sale en los tres municipios desde el 1 de enero de 2027.
 
 **Lo que falta de la versión mínima**:
@@ -310,7 +344,7 @@ Si el plazo termina en sábado o domingo, se corre al día hábil siguiente (art
 
 **Cómo quedó en el aplicativo** (2026-11-04):
 - **Pagos › Retenciones sin consignar**: las ReteICA y AutoReteICA vigentes que tienen saldo, con su vencimiento, su límite para consignar y cuánto falta o hace cuánto venció. No cuentan las reemplazadas por una corrección, las que esperan la aprobación previa (el agente aún no puede pagar) ni lo que está en cheques en canje.
-- **Inicio**: un aviso rojo si alguna ya pasó los 2 meses, o amarillo si todas siguen en plazo. Sin retenciones pendientes, no sale.
+- **Inicio**: un aviso rojo si alguna ya pasó los 2 meses, o amarillo si todas siguen en plazo. Sin retenciones pendientes, no sale. Desde el 2026-11-06 no lo ve 1cero1: lo jurídico lo atiende el municipio.
 - **Detalle de la declaración**: un aviso con el límite y lo que pasa si no se paga.
 - **Configuración › ReteICA y AutoReteICA**: el interruptor "Plazo de 2 meses para pagar", encendido en los tres municipios de la demo. Si está encendido, la declaración que se presentó a tiempo sale "Sin pago" o "Pago parcial" hasta el límite, y después "Ineficaz". Si está apagado, sale "Ineficaz" desde el principio. La alerta sale igual en los dos casos, porque el delito no depende del estatuto del municipio.
 
@@ -323,7 +357,7 @@ Si el plazo termina en sábado o domingo, se corre al día hábil siguiente (art
 - Una retención que se paga completa después del límite sale "Pagada". En la ley sigue siendo ineficaz y el agente tiene que presentarla de nuevo, con sanción e intereses (DIAN, Concepto 8678 de 2024). El mock no tiene ese flujo.
 - No se descuentan los festivos (§1).
 - A los omisos no los cubre: si el agente no declaró, el municipio no sabe cuánto retuvo.
-- En la demo, las declaraciones se pagan el mismo día en que se presentan o nunca. Como el plazo se mide contra la fecha real, las de los bimestres 1 a 3 ya pasaron los 2 meses y las del bimestre 4 vencen el 18 de noviembre de 2026.
+- En la demo, las declaraciones se pagan el mismo día en que se presentan o nunca. El plazo se mide contra la fecha real. Por eso siguen en plazo las ReteICA de agosto y septiembre de Puerto Esperanza (vencen el 18 de noviembre y el 21 de diciembre de 2026) y la del trimestre 3 de Santa Rosa (el 21 de diciembre), y las anteriores ya pasaron los 2 meses. De las que siguen en plazo, la demo deja algunas sin pagar a propósito.
 
 **Fuentes**: [art. 402 del Código Penal](https://leyes.co/codigo_penal/402.htm); [DIAN, Concepto 8678 de 2024](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_8678_2024.htm), que cita el art. 580-1 del Estatuto Tributario; [Acuerdo 093 de 2023 de Medellín](https://www.medellin.gov.co/es/wp-content/uploads/2024/01/ACUERDO-093-2023-GACETA.pdf), art. 76; el estatuto de Ricaurte (§10 de `Contexto-RIT.md`).
 
@@ -334,9 +368,10 @@ Si el plazo termina en sábado o domingo, se corre al día hábil siguiente (art
 - donde un formulario no se valida contra el RIT, puede declarar alguien que no está inscrito;
 - si el contribuyente actualiza el RIT, sus declaraciones viejas mostraban los datos nuevos, y no lo que firmó.
 
-**La decisión**: cada declaración guarda lo que escribió el declarante, haya RIT o no:
-- sus datos: tipo y número de documento con el DV, nombre o razón social, dirección, teléfono y correo. En el ICA anual, también el número de establecimientos en el municipio (renglón 6); el formulario de ReteICA no lo trae;
-- quiénes la firman: el representante legal (o el propio declarante, si es persona natural) y el contador o revisor fiscal, con su tipo y número de documento, su nombre y su tarjeta profesional. Quien no está obligado a llevar contabilidad no tiene contador que firme.
+**La decisión**: cada declaración guarda lo que se escribió en ella, haya RIT o no. Son tres grupos de datos, y el usuario aclaró el 2026-11-06 que el contribuyente y el declarante no son lo mismo:
+- **el contribuyente**, que es la empresa o la persona: tipo y número de documento con el DV, nombre o razón social, dirección, teléfono y correo. En el ICA anual, también el número de establecimientos en el municipio (renglón 6); el formulario de ReteICA no lo trae;
+- **el declarante**, que es quien diligencia y firma el formulario: la persona natural misma o, en una empresa, su representante legal. De él solo se piden el tipo y el número de documento y el nombre;
+- **el contador o revisor fiscal**, con su tipo y número de documento, su nombre y su tarjeta profesional. Quien no está obligado a llevar contabilidad no tiene contador que firme.
 
 El cruce con el RIT queda como un extra:
 
@@ -346,16 +381,20 @@ El cruce con el RIT queda como un extra:
 | Con RIT, pero el formulario no se valida contra el RIT | Lo mismo si está inscrito. Si no lo está, "No inscrito en el RIT" |
 | Sin RIT | Solo los datos de la declaración: sin enlace, sin cruces y sin omisos |
 
-**Cómo quedó en el aplicativo** (2026-11-05):
-- **Detalle de la declaración**: una tarjeta "Declarante" y otra "Firmas". Si no está inscrito donde hay RIT, la tarjeta del declarante lo dice.
-- **Declaraciones**: "No inscrito en el RIT" debajo del documento, y un filtro para ver solo esas declaraciones. El filtro sale cuando hay alguna.
-- **PDF**: la sección B (declarante) sale de la declaración, y hay una sección E (firmas).
+**Cómo quedó en el aplicativo** (2026-11-05; el detalle se reorganizó el 2026-11-06):
+- **Detalle de la declaración**: una tarjeta "Contribuyente" y otra "Firmas", con el declarante y su documento y el contador o revisor fiscal.
+  - Sin ficha del RIT (el municipio no tiene RIT, o el contribuyente no está inscrito): la tarjeta del contribuyente va en la columna ancha, encima de la liquidación, con los datos en varias columnas. Si no está inscrito donde hay RIT, la tarjeta lo dice.
+  - Con ficha del RIT: va en la columna lateral, y el nombre del contribuyente lleva a la ficha.
+  - "Firmas" va en la lateral en los dos casos.
+- **Declaraciones**: la columna "Contribuyente", con "No inscrito en el RIT" debajo del documento, y un filtro para ver solo esas declaraciones. El filtro sale cuando hay alguna. Las tablas de Pagos y los reportes en Excel también dicen "Contribuyente".
+- **PDF**: la sección B (contribuyente) sale de la declaración, y la sección E (firmas) trae al declarante con su documento y al contador o revisor fiscal.
 - **Pagos, Inicio y Reportes**: el nombre y el documento salen de la declaración.
 
 **En la demo**:
-- Los datos de cada declaración son los que el contribuyente tenía en el RIT el día que la presentó. Tres declaraciones ya muestran datos distintos de los del RIT de hoy, porque el contribuyente lo actualizó después.
+- Los datos de cada declaración son los que el contribuyente tenía en el RIT el día que la presentó. Una declaración de San José del Valle ya muestra datos distintos de los del RIT de hoy, porque el contribuyente lo actualizó después.
+- El declarante es la persona natural misma o el representante legal que dice el RIT. El RIT solo guarda el nombre del representante, así que la demo le inventa una cédula, siempre la misma para la misma persona.
 - **Santa Rosa de los Andes no tiene RIT**: sus contribuyentes solo aparecen en sus declaraciones.
-- **Puerto Esperanza** valida el ICA contra el RIT, pero no la ReteICA. Tres sociedades declaran ReteICA sin estar inscritas: 10 declaraciones de los bimestres 1 a 4 de 2026.
+- **Puerto Esperanza** valida el ICA contra el RIT, pero no la ReteICA. Tres sociedades declaran ReteICA sin estar inscritas: 24 declaraciones de enero a septiembre de 2026.
 
 **Límites conocidos**:
 - En la demo, el cruce con el RIT queda guardado al generar los datos. En el aplicativo real se haría por el tipo y el número de documento, así que si alguien se inscribe después, sus declaraciones anteriores también se enlazarían.
@@ -367,8 +406,9 @@ El cruce con el RIT queda como un extra:
 | Qué | Dónde |
 |---|---|
 | Campos de configuración sin efecto (`correccionABaja`, `plazoInscripcionMeses` y las tasas con emplazamiento de `sanciones`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionSanciones` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
-| Etiqueta del periodo ("bimestre") | `etiquetaPeriodo`, en `src/lib/formato.ts` |
-| Vencimientos fijos | `VENCIMIENTO_ICA_2025` y `VENCIMIENTOS_BIMESTRE_2026`, en `src/data/catalogos.ts` |
+| Periodicidad de cada declaración y nombre del periodo | El campo `periodicidad` de `Declaracion` (`src/types/dominio.ts`); `etiquetaPeriodo`, en `src/lib/formato.ts`, la misma para declaraciones, omisos y vencimientos |
+| Declaraciones de la demo según el calendario | `formularioDe`, `vencimientoIca` y `periodosVencidos` en `src/data/generar.ts`, que leen el calendario de `CONFIGURACIONES` (`src/data/catalogos.ts`); los montos según la duración del periodo, en `liquidarReteica` y `liquidarAutorretencion`; las retenciones en plazo que se dejan sin pagar, en `yaPagada` |
+| Aviso al cambiar la periodicidad de un año con declaraciones | `textoOtraPeriodicidad`, en `src/components/organisms/calendario/SeccionCalendario/utils.ts`, que se muestra en `TablaVencimientos` |
 | Omisos: cálculo y pantallas | `calcularOmisos` en `src/lib/omisos.ts` y `useOmisos` en `src/lib/sesion.ts`; la vista en `ListaOmisos` y `TablaOmisos` (`src/components/organisms/declaraciones/`); `DeclaracionesFaltantes` en `src/components/organisms/inscripciones/`; la fecha `declaracionesDesde` del tipo `Municipio` |
 | Omisos de la demo | En `generarDatos` (`src/data/generar.ts`): los inscritos que no declararon el ICA 2025 y, con su propio azar, algunas ReteICA y AutoReteICA que se quitan al final |
 | Soportes fijos del RIT | `soportesRequeridos`, en `src/data/generar.ts` |
@@ -380,15 +420,15 @@ El cruce con el RIT queda como un extra:
 | Rechazo en la aprobación previa (texto libre) | `src/components/organisms/declaraciones/AprobacionPrevia/AprobacionPrevia.tsx` |
 | Calendario: modelo y reglas (periodicidad, fechas por dígito, año nuevo copiado del más cercano) | `CalendarioVigencia` en `src/types/dominio.ts`; `src/lib/calendario.ts`; la página en `src/pages/Calendario.tsx` y sus secciones en `src/components/organisms/calendario/` |
 | Año nuevo con las fechas del año más cercano corridas, sin marcarlas como no oficiales (§3.14) | `calendarioNuevo`, en `src/lib/calendario.ts` |
-| Liquidación que no lee el calendario configurado | `generar.ts` usa `VENCIMIENTO_ICA_2025` y `VENCIMIENTOS_BIMESTRE_2026`, no `calendarioTributario` |
 | Tasas con emplazamiento que se configuran pero no se usan (`extemporaneidadEmplazamiento`, `correccionEmplazamiento`) | Se editan en `SeccionSanciones`; la liquidación de `src/data/generar.ts` solo usa `extemporaneidad` y `correccion` |
 | Calendario cargado, aviso de inicio de año y declaraciones marcadas | El campo `cargado` de `CalendarioVigencia` (`src/types/dominio.ts`), que se pone al guardar en `FormularioCalendario`; `cargaCalendario`, `presentadaSinCalendario`, `municipiosSinCalendario` y `conCargas` en `src/lib/calendario.ts`; `useSinCalendario` en `src/lib/sesion.ts`; `AlertaCalendario` (`organisms/inicio/`) y `AvisoSinCalendario` (`organisms/declaraciones/`) |
 | Retenciones sin consignar: límite, plazo de 2 meses y lista | `limiteConsignacion` y `estadoPago` en `src/lib/reglas.ts`; `calcularSinConsignar` en `src/lib/consignacion.ts`; `useSinConsignar` y `useEstadoPago` en `src/lib/sesion.ts`; el campo `pagoRetencionEnDosMeses` de `ConfigMunicipio` |
 | Retenciones sin consignar: pantallas | `RetencionesSinConsignar` (`organisms/pagos/`), `AlertaSinConsignar` (`organisms/inicio/`), `AvisoSinConsignar` (`organisms/declaraciones/`) y el interruptor en `SeccionRetencion` |
 | Retención pagada después del límite que sale como pagada (§3.15) | `estadoPago`, en `src/lib/reglas.ts`: no mira la fecha de los pagos |
 | Establecimientos y contador o revisor fiscal del RIT | `establecimientos`, `contador` y `FirmanteContable` en `src/types/dominio.ts`; `datosContables` en `src/data/generar.ts`; `FichaRit` (`organisms/inscripciones/`) |
-| Datos del declarante en la declaración (§3.16) | `DatosDeclarante` y el campo `declarante` de `Declaracion` (`src/types/dominio.ts`); `declaranteDe` en `src/data/generar.ts`; `DeclaranteDeclaracion` (`organisms/declaraciones/`); las secciones B y E de `src/lib/pdfDeclaracion.ts` |
-| Declarante no inscrito en el RIT (§3.16) | `inscripcionId`, opcional en `Declaracion`; `noInscrito` de `FilaDeclaracion` (`src/types/declaraciones.ts`) y su filtro en `src/pages/Declaraciones/Declaraciones.tsx`; en la demo, `declaranteNoInscrito` y `AGENTES_NO_INSCRITOS` en `src/data/generar.ts` |
+| Contribuyente, declarante y contador en la declaración (§3.16) | `DatosContribuyente`, `Firmante` y los campos `contribuyente`, `declarante` y `contador` de `Declaracion` (`src/types/dominio.ts`); `diligenciadoPor` en `src/data/generar.ts`; `ContribuyenteDeclaracion` y `FirmasDeclaracion` (`organisms/declaraciones/`), y dónde va cada una en `src/pages/DeclaracionDetalle.tsx`; las secciones B y E de `src/lib/pdfDeclaracion.ts` |
+| Declarante no inscrito en el RIT (§3.16) | `inscripcionId`, opcional en `Declaracion`; `noInscrito` de `FilaDeclaracion` (`src/types/declaraciones.ts`) y su filtro en `src/pages/Declaraciones/Declaraciones.tsx`; en la demo, `noInscritoPor` y `AGENTES_NO_INSCRITOS` en `src/data/generar.ts` |
+| Bitácora (§3.9) | `RegistroBitacora` en `src/types/dominio.ts`; los nombres de ejemplo en `PETICIONES` (`src/constants/bitacora.ts`); `registrar` en `src/store.ts`, que llama cada acción al terminar y le da el siguiente número; los datos de prueba en `src/data/bitacora.ts`; los filtros y `vecinos` (Anterior y Siguiente) en `src/lib/bitacora.ts`; la tabla en `src/pages/Bitacora.tsx` y `TablaBitacora`; la página del registro en `src/pages/BitacoraDetalle.tsx`, con `DatosEnviados`, `PeticionBitacora` y `RecorridoBitacora` (`organisms/bitacora/`) |
 | Municipio sin RIT en la demo (§3.16) | `rit: false` de Santa Rosa en `src/data/catalogos.ts`; al final de `generarDatos` se quitan sus inscripciones |
 
 ## 5. Para retomar
@@ -401,4 +441,4 @@ El cruce con el RIT queda como un extra:
 
   Las explicaciones están en §3.
 - **Por confirmar**: el buscador global, porque la respuesta quedó a medias, y el cuadre de caja.
-- **Siguiente paso**: el usuario decide qué hacer. Cada punto se hace en su versión mínima. La sugerencia del 2026-11-04 es que las declaraciones de la demo sigan la periodicidad del calendario (§2.1).
+- **Siguiente paso**: el usuario decide qué hacer. Cada punto se hace en su versión mínima. La sugerencia del 2026-11-04, que las declaraciones de la demo sigan la periodicidad del calendario (§2.1), quedó hecha el 2026-11-06.
