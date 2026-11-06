@@ -18,8 +18,8 @@ export default function ListaDeudas({ titulo, descripcion, vacio, deudas }: List
             <ItemEnlace
               key={d.id}
               a={`/declaraciones/${d.id}`}
-              titulo={d.declarante.nombre}
-              detalle={`${d.numero} · ${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}`}
+              titulo={d.contribuyente.nombre}
+              detalle={`${d.numero} · ${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d)}`}
               derecha={
                 <>
                   <Badge tono={tonoPago[estado]}>

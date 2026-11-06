@@ -1,5 +1,4 @@
-import { etiquetaPeriodoCalendario } from '../../../../lib/calendario'
-import { etiquetaEstadoInscripcion, etiquetaImpuesto, formatoDocumento, formatoFecha, normalizar } from '../../../../lib/formato'
+import { etiquetaEstadoInscripcion, etiquetaImpuesto, etiquetaPeriodo, formatoDocumento, formatoFecha, normalizar } from '../../../../lib/formato'
 import type { Municipio, Omiso, ResultadoOmisos } from '../../../../types'
 import { diferenciaDias } from '../../../../utils'
 
@@ -47,7 +46,7 @@ export function filaExcel(o: Omiso, nombres: Map<string, string>, hoy: string): 
     formatoDocumento(i),
     etiquetaEstadoInscripcion[i.estado],
     etiquetaImpuesto[o.impuesto],
-    etiquetaPeriodoCalendario(o.impuesto, o.periodicidad, o.vigencia, o.periodo),
+    etiquetaPeriodo(o),
     o.vencimiento,
     diferenciaDias(o.vencimiento, hoy),
     i.telefono,

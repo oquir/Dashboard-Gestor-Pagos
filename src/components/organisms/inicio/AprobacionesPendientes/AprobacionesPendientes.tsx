@@ -34,8 +34,8 @@ export default function AprobacionesPendientes({ aprobaciones, className = '' }:
             <ItemEnlace
               key={d.id}
               a={`/declaraciones/${d.id}`}
-              titulo={d.declarante.nombre}
-              detalle={`${d.numero} · ${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}`}
+              titulo={d.contribuyente.nombre}
+              detalle={`${d.numero} · ${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d)}`}
               derecha={
                 <>
                   <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>

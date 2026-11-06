@@ -16,7 +16,7 @@ export default function DeclaracionesPresentadas({ declaraciones, regimenSimple 
             <ItemEnlace
               key={d.id}
               a={`/declaraciones/${d.id}`}
-              titulo={`${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}`}
+              titulo={`${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d)}`}
               detalle={`${d.numero} · ${etiquetaTipoDeclaracion[d.tipo]} · presentada el ${formatoFecha(d.fechaPresentacion)}`}
               derecha={<span className="whitespace-nowrap text-sm tabular-nums text-slate-700">{formatoPesos(d.totalAPagar)}</span>}
             />

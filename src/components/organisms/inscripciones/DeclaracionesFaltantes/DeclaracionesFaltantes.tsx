@@ -1,5 +1,4 @@
-import { etiquetaPeriodoCalendario } from '../../../../lib/calendario'
-import { etiquetaImpuesto, formatoFecha, formatoHaceDias } from '../../../../lib/formato'
+import { etiquetaImpuesto, etiquetaPeriodo, formatoFecha, formatoHaceDias } from '../../../../lib/formato'
 import { idOmiso } from '../../../../lib/omisos'
 import { useOmisos } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
@@ -28,7 +27,7 @@ export default function DeclaracionesFaltantes({ inscripcion }: DeclaracionesFal
             <li key={idOmiso(o)} className="flex items-center justify-between gap-3 px-5 py-3">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-slate-900">
-                  {etiquetaImpuesto[o.impuesto]} · {etiquetaPeriodoCalendario(o.impuesto, o.periodicidad, o.vigencia, o.periodo)}
+                  {etiquetaImpuesto[o.impuesto]} · {etiquetaPeriodo(o)}
                 </p>
                 <p className="truncate text-xs text-slate-500">Venció el {formatoFecha(o.vencimiento)}</p>
               </div>
