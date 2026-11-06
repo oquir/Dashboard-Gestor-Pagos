@@ -20,7 +20,7 @@ export const GRUPOS: GrupoOpciones[] = [
 
 export const LEYENDA = [
   { termino: 'Gestiona', definicion: 'El municipio tiene el formulario en el aplicativo. Debe quedar al menos uno.' },
-  { termino: 'Contra el RIT', definicion: 'Antes de diligenciarlo se validan los datos del declarante contra el RIT. Requiere el RIT en el aplicativo.' },
+  { termino: 'Contra el RIT', definicion: 'Antes de diligenciarlo se validan los datos del contribuyente contra el RIT. Requiere el RIT en el aplicativo.' },
   { termino: 'Aprobación previa', definicion: 'El contribuyente paga cuando el municipio aprueba. Aplica a lo que se radique desde que se activa.' },
   { termino: 'Efectivo y cheque de gerencia', definicion: 'Se reciben en la ventanilla del municipio. El cheque cuenta como pago cuando se confirma que el banco lo pagó.' },
 ]

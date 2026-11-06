@@ -10,13 +10,13 @@ export function validaciones(d: Declaracion, ins: Inscripcion | undefined, contr
   // Cruces con el RIT: solo si el municipio tiene el RIT y la validación activa en este formulario.
   if (contraRit) {
     if (d.impuesto === 'reteica') {
-      resultado.push({ ok: tiene('agente_retenedor'), texto: 'El declarante tiene la calidad de agente retenedor en el RIT' })
+      resultado.push({ ok: tiene('agente_retenedor'), texto: 'El contribuyente tiene la calidad de agente retenedor en el RIT' })
     }
     if (d.impuesto === 'autorretencion') {
-      resultado.push({ ok: tiene('autorretenedor'), texto: 'El declarante está designado como autorretenedor en el RIT' })
+      resultado.push({ ok: tiene('autorretenedor'), texto: 'El contribuyente está designado como autorretenedor en el RIT' })
     }
     if (d.impuesto === 'ica') {
-      resultado.push({ ok: !ins?.regimenSimple, texto: 'El declarante no está en el SIMPLE según el RIT (allí el ICA se declara ante la DIAN)' })
+      resultado.push({ ok: !ins?.regimenSimple, texto: 'El contribuyente no está en el SIMPLE según el RIT (allí el ICA se declara ante la DIAN)' })
       if (valor('28') > 0) resultado.push({ ok: tiene('autorretenedor'), texto: 'Las autorretenciones (renglón 28) corresponden a un autorretenedor del RIT' })
     }
   }
