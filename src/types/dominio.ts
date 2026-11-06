@@ -17,7 +17,7 @@ export interface Municipio {
   impuestos: Record<Impuesto, boolean>
   /** El RIT del municipio está en el aplicativo (inscripciones y novedades); lo activa 1cero1. */
   rit: boolean
-  /** Por formulario: antes de diligenciarlo se validan los datos del declarante contra el RIT. */
+  /** Por formulario: antes de diligenciarlo se validan los datos del contribuyente contra el RIT. */
   validarContraRit: Record<Impuesto, boolean>
   /** Por formulario: el municipio aprueba la declaración antes de que se pueda pagar; lo activa 1cero1. */
   aprobacionPrevia: Record<Impuesto, boolean>
@@ -113,12 +113,16 @@ export interface Adjunto {
   archivo: Archivo
 }
 
-/** Contador o revisor fiscal que el inscrito registra en el RIT: el que firma sus declaraciones. */
-export interface FirmanteContable {
-  cargo: 'contador' | 'revisor_fiscal'
+/** Persona que firma una declaración. */
+export interface Firmante {
   tipoDocumento: 'CC' | 'CE'
   documento: string
   nombre: string
+}
+
+/** Contador o revisor fiscal que el inscrito registra en el RIT: el que firma sus declaraciones. */
+export interface FirmanteContable extends Firmante {
+  cargo: 'contador' | 'revisor_fiscal'
   /** Número de la tarjeta profesional que expide la Junta Central de Contadores. */
   tarjetaProfesional: string
 }
@@ -172,14 +176,11 @@ export type DatosRit = Pick<
 // --- Declaraciones y pagos ---
 
 /**
- * Lo que el declarante escribe en la declaración: sus datos y los de quienes la firman (el representante legal y el
- * contador o revisor fiscal). Es lo de ese día: no cambia si después actualiza el RIT, y es lo único que se sabe de él
- * cuando el municipio no tiene el RIT o él no está inscrito.
+ * Los datos de la empresa o de la persona que declara, tal como se escriben en la declaración. Son los de ese día: no
+ * cambian si después actualiza el RIT, y son lo único que se sabe de ella cuando el municipio no tiene el RIT o ella no
+ * está inscrita.
  */
-export type DatosDeclarante = Pick<
-  Inscripcion,
-  'tipoPersona' | 'tipoDocumento' | 'documento' | 'dv' | 'nombre' | 'representanteLegal' | 'direccion' | 'telefono' | 'correo' | 'contador'
-> & {
+export type DatosContribuyente = Pick<Inscripcion, 'tipoPersona' | 'tipoDocumento' | 'documento' | 'dv' | 'nombre' | 'direccion' | 'telefono' | 'correo'> & {
   /** Solo lo pide el formulario del ICA anual (renglón 6). */
   establecimientos?: number
 }
@@ -198,14 +199,26 @@ export interface Declaracion {
   id: string
   municipioId: string
   /**
-   * Su inscripción en el RIT. No la tiene si el municipio no tiene el RIT en el aplicativo, ni si el declarante no está
+   * Su inscripción en el RIT. No la tiene si el municipio no tiene el RIT en el aplicativo, ni si el contribuyente no está
    * inscrito y el formulario no se valida contra el RIT.
    */
   inscripcionId?: string
-  declarante: DatosDeclarante
+  contribuyente: DatosContribuyente
+  /**
+   * Quien diligencia y firma la declaración: la persona natural misma o, en una empresa, su representante legal. Del
+   * declarante solo se piden el tipo y el número de documento y el nombre.
+   */
+  declarante: Firmante
+  /** Solo si el contribuyente está obligado a llevar contabilidad. */
+  contador?: FirmanteContable
   impuesto: Impuesto
   vigencia: number
-  /** 1 en el ICA anual; bimestre (1–6) en retención y autorretención. */
+  /**
+   * La del calendario del año gravable cuando se presentó: anual en el ICA; mensual, bimestral o trimestral en ReteICA y
+   * AutoReteICA. No cambia si después el municipio cambia la periodicidad en el calendario.
+   */
+  periodicidad: Periodicidad
+  /** El periodo dentro del año gravable: 1 en el ICA anual; el mes, el bimestre o el trimestre en ReteICA y AutoReteICA. */
   periodo: number
   tipo: TipoDeclaracion
   /** Radicado: la referencia de la declaración, que también acompaña el pago. */
@@ -316,7 +329,7 @@ export interface VencimientoPeriodo {
 /** Vencimientos de un formulario en un año gravable. */
 export interface VencimientosFormulario {
   periodicidad: Periodicidad
-  /** La fecha cambia según el último dígito del NIT o de la cédula del declarante. */
+  /** La fecha cambia según el último dígito del NIT o de la cédula del contribuyente. */
   porDigito: boolean
   periodos: VencimientoPeriodo[]
 }

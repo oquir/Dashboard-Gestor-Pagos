@@ -8,7 +8,7 @@ export type VistaDeclaraciones = 'presentadas' | 'omisos'
 export interface FilaDeclaracion {
   d: Declaracion
   nombre: string
-  /** NIT o cédula del declarante, con su tipo. */
+  /** NIT o cédula del contribuyente, con su tipo. */
   documento: string
   pago: EstadoPago
   /** Radicado de la declaración que corrige, si es una corrección. */
@@ -16,6 +16,6 @@ export interface FilaDeclaracion {
   aprobacion?: SituacionAprobacion
   /** Se presentó antes de que el municipio cargara el calendario de su año gravable. */
   sinCalendario: boolean
-  /** El municipio tiene el RIT en el aplicativo, pero el declarante no está inscrito. */
+  /** El municipio tiene el RIT en el aplicativo, pero el contribuyente no está inscrito. */
   noInscrito: boolean
 }
