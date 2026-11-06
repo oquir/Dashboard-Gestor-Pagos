@@ -1,6 +1,8 @@
 // Genera los datos de la demo con una semilla fija: siempre salen los mismos.
+import { MESES_POR_PERIODO } from '../constants'
+import { vencimientoPara } from '../lib/calendario'
 import { etiquetaCalidad, formatoPesos, nombreCompleto } from '../lib/formato'
-import { porcentajeProntoPago, redondearMil, sumarDiasHabiles, UVT } from '../lib/reglas'
+import { limiteConsignacion, porcentajeProntoPago, redondearMil, sumarDiasHabiles, UVT } from '../lib/reglas'
 import type {
   Archivo,
   Calidad,
@@ -8,15 +10,16 @@ import type {
   CalidadInscrita,
   ConfigMunicipio,
   Datos,
-  DatosDeclarante,
   DatosRit,
   Declaracion,
   EstadoInscripcion,
+  Firmante,
   Impuesto,
   Inscripcion,
   Municipio,
   Novedad,
   Pago,
+  Periodicidad,
   RecaudoMensual,
   Renglon,
   Tarifa,
@@ -33,8 +36,6 @@ import {
   MUNICIPIOS,
   NOMBRES,
   USUARIOS,
-  VENCIMIENTO_ICA_2025,
-  VENCIMIENTOS_BIMESTRE_2026,
 } from './catalogos'
 import { crearAzar, fechaAleatoria, sumarDias } from './azar'
 import type { Azar } from './azar'
@@ -46,6 +47,34 @@ const AGENTES_NO_INSCRITOS = 3
 const FECHA_DEMO = '2026-10-21'
 
 const menor = (a: string, b: string) => (a < b ? a : b)
+
+/** Los vencimientos de un formulario en el año gravable, según el calendario que trae la demo para el municipio. */
+const formularioDe = (cfg: ConfigMunicipio, impuesto: Impuesto, vigencia: number) =>
+  cfg.calendarioTributario.porVigencia.find((c) => c.vigencia === vigencia)![impuesto]
+
+/** Vencimiento del ICA anual del año gravable para el contribuyente: la fecha única o la de su último dígito. */
+function vencimientoIca(cfg: ConfigMunicipio, vigencia: number, documento: string) {
+  const f = formularioDe(cfg, 'ica', vigencia)
+  return vencimientoPara(f, f.periodos[0], documento)!
+}
+
+/**
+ * Periodos de ReteICA o AutoReteICA del año gravable que ya vencieron a la fecha de la demo para el contribuyente, con
+ * la periodicidad y el vencimiento (el de su último dígito, si el calendario los separa) del calendario.
+ */
+function periodosVencidos(cfg: ConfigMunicipio, impuesto: Impuesto, vigencia: number, documento: string) {
+  const f = formularioDe(cfg, impuesto, vigencia)
+  return f.periodos.flatMap((p) => {
+    const vencimiento = vencimientoPara(f, p, documento)
+    return vencimiento && vencimiento <= FECHA_DEMO ? [{ periodicidad: f.periodicidad, periodo: p.periodo, vencimiento }] : []
+  })
+}
+
+/** La calidad del RIT que obliga a presentar cada formulario de retención. */
+const CALIDAD_RETENCION = { reteica: 'agente_retenedor', autorretencion: 'autorretenedor' } as const
+
+/** Cómo se llama la duración del periodo en los renglones: "Base gravable del mes". */
+const DURACION: Record<Periodicidad, string> = { anual: 'año', mensual: 'mes', bimestral: 'bimestre', trimestral: 'trimestre' }
 
 /**
  * Cada declaración sorteaba un estado de revisión, que ya no existe. Se conservan esos sorteos
@@ -323,37 +352,53 @@ function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripci
 
 // --- Declaraciones ---
 
+/** Lo que se escribe en la declaración sobre quien la presenta: el contribuyente, el declarante y el contador o revisor fiscal. */
+type Diligenciado = Pick<Declaracion, 'contribuyente' | 'declarante' | 'contador'>
+
+/** Cédula de una persona de la demo: la misma para la misma clave. Usa su propio azar para no cambiar el resto de los datos. */
+const cedulaDe = (clave: string) => String(crearAzar(semilla(clave)).entero(10_000_000, 1_199_999_999))
+
 /**
- * Lo que el declarante escribe en la declaración: lo que tenía inscrito en el RIT el día que la presenta, así que las
- * declaraciones viejas conservan los datos de antes de una actualización. El número de establecimientos solo lo pide el
- * formulario del ICA anual.
+ * Lo que se escribe en la declaración: lo que el contribuyente tenía inscrito en el RIT el día que la presenta, así que
+ * las declaraciones viejas conservan los datos de antes de una actualización. La persona natural se declara a sí misma;
+ * por una empresa declara su representante legal. El número de establecimientos solo lo pide el formulario del ICA anual.
  */
-function declaranteDe(ins: Inscripcion, fecha: string, impuesto: Impuesto): DatosDeclarante {
+function diligenciadoPor(ins: Inscripcion, fecha: string, impuesto: Impuesto): Diligenciado {
   const vigente = ins.novedades.findLast((n) => n.estado === 'aprobada' && n.datos && (n.fechaRevision ?? n.fecha) <= fecha)?.datos ?? ins
   const { tipoPersona, tipoDocumento, documento, dv, nombre, representanteLegal, direccion, telefono, correo, contador, establecimientos } = vigente
-  return { tipoPersona, tipoDocumento, documento, dv, nombre, representanteLegal, direccion, telefono, correo, contador, ...(impuesto === 'ica' && { establecimientos }) }
+  const declarante: Firmante = representanteLegal
+    ? { tipoDocumento: 'CC', documento: cedulaDe(`${ins.id}-${representanteLegal}`), nombre: representanteLegal }
+    : { tipoDocumento: tipoDocumento === 'CE' ? 'CE' : 'CC', documento, nombre }
+  return {
+    contribuyente: { tipoPersona, tipoDocumento, documento, dv, nombre, direccion, telefono, correo, ...(impuesto === 'ica' && { establecimientos }) },
+    declarante,
+    contador,
+  }
 }
 
 /**
  * Una sociedad que declara ReteICA sin estar inscrita en el RIT: lo que escribe en sus declaraciones. Su nombre no es
  * ninguno de los `usados`, para que no se confunda con un inscrito, y queda entre ellos.
  */
-function declaranteNoInscrito(az: Azar, municipioId: string, n: number, usados: Set<string>): DatosDeclarante {
+function noInscritoPor(az: Azar, municipioId: string, n: number, usados: Set<string>): Diligenciado {
   const documento = String(az.entero(900_100_000, 901_999_999))
   const dv = String(az.entero(0, 9))
   let nombre = nombreSujeto(az, 'juridica')
   while (usados.has(nombre)) nombre = nombreSujeto(az, 'juridica')
   usados.add(nombre)
+  const representante = `${az.elegir(NOMBRES)} ${az.elegir(APELLIDOS)}`
   return {
-    tipoPersona: 'juridica',
-    tipoDocumento: 'NIT',
-    documento,
-    dv,
-    nombre,
-    representanteLegal: `${az.elegir(NOMBRES)} ${az.elegir(APELLIDOS)}`,
-    direccion: direccionAleatoria(az),
-    telefono: telefonoAleatorio(az),
-    correo: `tesoreria${n}@empresa.demo`,
+    contribuyente: {
+      tipoPersona: 'juridica',
+      tipoDocumento: 'NIT',
+      documento,
+      dv,
+      nombre,
+      direccion: direccionAleatoria(az),
+      telefono: telefonoAleatorio(az),
+      correo: `tesoreria${n}@empresa.demo`,
+    },
+    declarante: { tipoDocumento: 'CC', documento: cedulaDe(`${municipioId}-sin-rit-${n}-${representante}`), nombre: representante },
     contador: datosContables(`${municipioId}-sin-rit-${n}`, 'juridica').contador,
   }
 }
@@ -431,10 +476,11 @@ function presentarRetencion(az: Azar, vencimiento: string) {
 }
 
 /**
- * Renglones 13 a 18 de la ReteICA de un bimestre: lo retenido en cada concepto y lo que no se retuvo por estar debajo
- * de la base mínima, menos las devoluciones. `azBases` sortea solo los pagos por debajo de la base mínima.
+ * Renglones 13 a 18 de la ReteICA de un periodo: lo retenido en cada concepto y lo que no se retuvo por estar debajo
+ * de la base mínima, menos las devoluciones. Lo pagado crece con los meses del periodo. `azBases` sortea solo los
+ * pagos por debajo de la base mínima.
  */
-function liquidarReteica(az: Azar, azBases: Azar, cfg: ConfigMunicipio, tarifas: Tarifa[]) {
+function liquidarReteica(az: Azar, azBases: Azar, cfg: ConfigMunicipio, tarifas: Tarifa[], periodicidad: Periodicidad) {
   const renglones: Renglon[] = []
   const { baseMinimaServiciosUvt: minServicios, baseMinimaComprasUvt: minCompras } = cfg.reteica
   // Con tarifa única va un solo renglón para servicios y compras, con la menor de las dos bases mínimas.
@@ -447,8 +493,8 @@ function liquidarReteica(az: Azar, azBases: Azar, cfg: ConfigMunicipio, tarifas:
         ]
   let retenciones = 0
   for (const { tarifa, de, minimaUvt } of conceptos) {
-    // La base es la suma de los pagos que llegan a la base mínima; los menores no se retienen.
-    const base = az.entero(15, 900) * 1_000_000
+    // La base es la suma de los pagos que llegan a la base mínima; los menores no se retienen. En un bimestre, de 15 a 900 millones.
+    const base = az.entero(15, 900) * 500_000 * MESES_POR_PERIODO[periodicidad]
     const retencion = redondearMil((base * tarifa) / 1000)
     retenciones += retencion
     const minima = minimaUvt * UVT
@@ -474,14 +520,17 @@ function liquidarReteica(az: Azar, azBases: Azar, cfg: ConfigMunicipio, tarifas:
   return { renglones, impuesto }
 }
 
-/** Renglones 1 y 2 de la AutoReteICA de un bimestre: la base, cerca de un sexto de los ingresos del año, y lo autorretenido. */
-function liquidarAutorretencion(az: Azar, cfg: ConfigMunicipio, tarifas: Tarifa[], ciiu: string, ingresos: number) {
+/**
+ * Renglones 1 y 2 de la AutoReteICA de un periodo: la base, cerca de la parte de los ingresos del año que le toca al
+ * periodo (un sexto en un bimestre), y lo autorretenido.
+ */
+function liquidarAutorretencion(az: Azar, cfg: ConfigMunicipio, tarifas: Tarifa[], ciiu: string, ingresos: number, periodicidad: Periodicidad) {
   const principal = tarifas.find((t) => t.ciiu === ciiu)?.porMil ?? 7
   const tarifa = cfg.autorretencion.modalidad === 'plena' ? principal : (principal * cfg.autorretencion.porcentaje) / 100
-  const base = redondearMil((ingresos / 6) * (0.8 + az.num() * 0.4))
+  const base = redondearMil((ingresos / (12 / MESES_POR_PERIODO[periodicidad])) * (0.8 + az.num() * 0.4))
   const impuesto = redondearMil((base * tarifa) / 1000)
   const renglones: Renglon[] = [
-    { codigo: '1', concepto: 'Base gravable del bimestre', valor: base },
+    { codigo: '1', concepto: `Base gravable del ${DURACION[periodicidad]}`, valor: base },
     { codigo: '2', concepto: `Autorretención a ${tarifa.toLocaleString('es-CO')} por mil`, valor: impuesto },
   ]
   return { renglones, impuesto }
@@ -513,9 +562,16 @@ export function generarDatos(): Datos {
   const omisos: { municipio: Municipio; ins: Inscripcion; perfil: PerfilIca; cfg: ConfigMunicipio; tarifas: Tarifa[] }[] = []
   let consecutivo = 1
 
-  const agregarPago = (declaracionId: string, fecha: string, valor: number, azar = az) => {
-    if (valor > 0) pagos.push({ id: `p${pagos.length + 1}`, declaracionId, fecha, valor, medio: azar.elegir(['PSE', 'Banco de Bogotá', 'Bancolombia', 'Davivienda']) })
+  // Con `registrar` en falso sortea el medio igual, pero no deja el pago: así no cambia el resto de los datos.
+  const agregarPago = (declaracionId: string, fecha: string, valor: number, azar = az, registrar = true) => {
+    if (valor <= 0) return
+    const medio = azar.elegir(['PSE', 'Banco de Bogotá', 'Bancolombia', 'Davivienda'])
+    if (registrar) pagos.push({ id: `p${pagos.length + 1}`, declaracionId, fecha, valor, medio })
   }
+  // Si a la fecha de la demo aún no vence el plazo de 2 meses para consignar, algunas retenciones que se pagarían siguen
+  // sin pagar, para que la demo siempre tenga retenciones en plazo. Lo decide su propio azar.
+  const azPlazo = crearAzar(5801)
+  const yaPagada = (vencimiento: string) => limiteConsignacion(vencimiento) <= FECHA_DEMO || azPlazo.prob(0.7)
   const numero = (prefijo: string, vigencia: number) => `${prefijo}-${vigencia}-${String(consecutivo++).padStart(6, '0')}`
   // La factura lleva su propio consecutivo y no usa el azar, para no cambiar el resto de los datos.
   let factura = 4_810_200_000
@@ -544,7 +600,7 @@ export function generarDatos(): Datos {
 
       // ICA anual, año gravable 2025.
       if (ins.estado === 'activa' && puedeDeclararIca && az.prob(0.9)) {
-        const vencimiento = VENCIMIENTO_ICA_2025[municipio.id]
+        const vencimiento = vencimientoIca(cfg, 2025, ins.documento)
         const diasMora = az.prob(0.12) ? az.entero(5, 120) : 0
         const presentacion = diasMora > 0 ? sumarDias(vencimiento, diasMora) : sumarDias(vencimiento, -az.entero(1, 60))
         const patron = az.prob(0.8) ? 'total' : az.prob(0.6) ? 'parcial' : 'ninguno'
@@ -555,8 +611,8 @@ export function generarDatos(): Datos {
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
           adjuntos: [],
-          declarante: declaranteDe(ins, presentacion, 'ica'),
-          id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'inicial',
+          ...diligenciadoPor(ins, presentacion, 'ica'),
+          id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodicidad: 'anual', periodo: 1, tipo: 'inicial',
           numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
           totalAPagar: liq.r38, saldoAFavor: liq.r34,
         })
@@ -576,8 +632,8 @@ export function generarDatos(): Datos {
           const idCorreccion = `d${declaraciones.length + 1}`
           declaraciones.push({
             adjuntos: [],
-            declarante: declaranteDe(ins, fecha, 'ica'),
-            id: idCorreccion, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'correccion',
+            ...diligenciadoPor(ins, fecha, 'ica'),
+            id: idCorreccion, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodicidad: 'anual', periodo: 1, tipo: 'correccion',
             corrigeA: id, numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: fecha, fechaVencimiento: vencimiento,
             renglones: [...nueva.renglones, { codigo: '—', concepto: 'Menos lo pagado con la declaración que se corrige', valor: pagado }],
             totalAPagar: aPagar, saldoAFavor: nueva.r34,
@@ -597,8 +653,8 @@ export function generarDatos(): Datos {
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
           adjuntos: [],
-          declarante: declaranteDe(ins, presentacion, 'ica'),
-          id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2026, periodo: 1, tipo: 'clausura',
+          ...diligenciadoPor(ins, presentacion, 'ica'),
+          id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2026, periodicidad: 'anual', periodo: 1, tipo: 'clausura',
           fechaCierre: cierre, numero: numero('ICA', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: sumarDias(cierre, 60),
           renglones: liq.renglones, totalAPagar: liq.r38, saldoAFavor: liq.r34,
         })
@@ -607,30 +663,36 @@ export function generarDatos(): Datos {
 
       if (ins.estado !== 'activa') continue
 
-      // Retención (ReteICA) y autorretención, bimestres 1 a 4 de 2026.
-      VENCIMIENTOS_BIMESTRE_2026.forEach((vencimiento, i) => {
-        const bimestre = i + 1
-        for (const calidad of ['agente_retenedor', 'autorretenedor'] as const) {
-          if (!ins.calidades.some((c) => c.calidad === calidad)) continue
-          const { diasMora, presentacion } = presentarRetencion(az, vencimiento)
-          const { renglones, impuesto } =
-            calidad === 'agente_retenedor'
-              ? liquidarReteica(az, azBases, cfg, tarifas2026)
-              : liquidarAutorretencion(az, cfg, tarifas2026, ins.actividades[0].ciiu, perfil.ingresos)
-          const total = cerrarRetencion(renglones, impuesto, diasMora, cfg)
-          sorteoDeRevision(az, bimestre === 4 ? 0.7 : 0.1)
+      // Retención (ReteICA) y autorretención de 2026: los periodos del calendario de cada formulario que ya vencieron a la
+      // fecha de la demo. Los dos formularios se recorren a la par, periodo a periodo.
+      const formularios = (['reteica', 'autorretencion'] as const)
+        .filter((impuesto) => ins.calidades.some((c) => c.calidad === CALIDAD_RETENCION[impuesto]))
+        .map((impuesto) => ({ impuesto, periodos: periodosVencidos(cfg, impuesto, 2026, ins.documento) }))
+      for (let i = 0; i < Math.max(0, ...formularios.map((f) => f.periodos.length)); i++) {
+        for (const { impuesto, periodos } of formularios) {
+          const p = periodos[i]
+          if (!p) continue
+          const { diasMora, presentacion } = presentarRetencion(az, p.vencimiento)
+          // Si la presentaría después de la fecha de la demo, todavía no la ha presentado.
+          if (presentacion > FECHA_DEMO) continue
+          const esRete = impuesto === 'reteica'
+          const liquidacion = esRete
+            ? liquidarReteica(az, azBases, cfg, tarifas2026, p.periodicidad)
+            : liquidarAutorretencion(az, cfg, tarifas2026, ins.actividades[0].ciiu, perfil.ingresos, p.periodicidad)
+          const total = cerrarRetencion(liquidacion.renglones, liquidacion.impuesto, diasMora, cfg)
+          // El último periodo vencido sortea distinto, como el bimestre 4 cuando la demo solo tenía bimestres.
+          sorteoDeRevision(az, i === periodos.length - 1 ? 0.7 : 0.1)
           const id = `d${declaraciones.length + 1}`
-          const esRete = calidad === 'agente_retenedor'
           declaraciones.push({
             adjuntos: [],
-            declarante: declaranteDe(ins, presentacion, esRete ? 'reteica' : 'autorretencion'),
-            id, municipioId: municipio.id, inscripcionId: ins.id, impuesto: esRete ? 'reteica' : 'autorretencion', vigencia: 2026, periodo: bimestre,
-            tipo: 'inicial', numero: numero(esRete ? 'RET' : 'AUT', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento,
-            renglones, totalAPagar: total, saldoAFavor: 0,
+            ...diligenciadoPor(ins, presentacion, impuesto),
+            id, municipioId: municipio.id, inscripcionId: ins.id, impuesto, vigencia: 2026, periodicidad: p.periodicidad, periodo: p.periodo,
+            tipo: 'inicial', numero: numero(esRete ? 'RET' : 'AUT', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: p.vencimiento,
+            renglones: liquidacion.renglones, totalAPagar: total, saldoAFavor: 0,
           })
-          if (az.prob(esRete ? 0.9 : 0.95)) agregarPago(id, presentacion, total)
+          if (az.prob(esRete ? 0.9 : 0.95)) agregarPago(id, presentacion, total, az, yaPagada(p.vencimiento))
         }
-      })
+      }
     }
   }
 
@@ -646,14 +708,14 @@ export function generarDatos(): Datos {
   const hoy = new Date().toISOString().slice(0, 10)
   for (const { municipio, ins, perfil, cfg, tarifas } of omisos) {
     if (!municipio.aprobacionPrevia.ica) continue
-    const vencimiento = VENCIMIENTO_ICA_2025[municipio.id]
+    const vencimiento = vencimientoIca(cfg, 2025, ins.documento)
     const presentacion = sumarDiasHabiles(hoy, -azAprobacion.entero(0, 9))
     const diasMora = Math.max(Math.round((Date.parse(presentacion) - Date.parse(vencimiento)) / 86400000), 0)
     const liq = liquidarIca(perfil, ins, cfg, tarifas, diasMora, 0)
     declaraciones.push({
       adjuntos: ANEXOS.ica.filter(() => azAprobacion.prob(0.45)).map((nombre) => ({ nombre, archivo: archivoAleatorio(azAprobacion, nombre, presentacion) })),
-      declarante: declaranteDe(ins, presentacion, 'ica'),
-      id: `d${declaraciones.length + 1}`, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodo: 1, tipo: 'inicial',
+      ...diligenciadoPor(ins, presentacion, 'ica'),
+      id: `d${declaraciones.length + 1}`, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodicidad: 'anual', periodo: 1, tipo: 'inicial',
       numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
       totalAPagar: liq.r38, saldoAFavor: liq.r34, aprobacion: { estado: 'pendiente' },
     })
@@ -667,29 +729,30 @@ export function generarDatos(): Datos {
     const cfg = CONFIGURACIONES.find((c) => c.municipioId === municipio.id)!
     const tarifas = ACTIVIDADES_POR_VIGENCIA.find((a) => a.municipioId === municipio.id && a.vigencia === 2026)!.tarifas
     for (let n = 1; n <= AGENTES_NO_INSCRITOS; n++) {
-      const declarante = declaranteNoInscrito(azNoInscritos, municipio.id, n, nombresUsados)
-      VENCIMIENTOS_BIMESTRE_2026.forEach((vencimiento, i) => {
-        const { diasMora, presentacion } = presentarRetencion(azNoInscritos, vencimiento)
-        const { renglones, impuesto } = liquidarReteica(azNoInscritos, azNoInscritos, cfg, tarifas)
+      const diligenciado = noInscritoPor(azNoInscritos, municipio.id, n, nombresUsados)
+      for (const p of periodosVencidos(cfg, 'reteica', 2026, diligenciado.contribuyente.documento)) {
+        const { diasMora, presentacion } = presentarRetencion(azNoInscritos, p.vencimiento)
+        if (presentacion > FECHA_DEMO) continue
+        const { renglones, impuesto } = liquidarReteica(azNoInscritos, azNoInscritos, cfg, tarifas, p.periodicidad)
         const total = cerrarRetencion(renglones, impuesto, diasMora, cfg)
         const id = `d${declaraciones.length + 1}`
         declaraciones.push({
           adjuntos: ANEXOS.reteica.filter(() => azNoInscritos.prob(0.6)).map((nombre) => ({ nombre, archivo: archivoAleatorio(azNoInscritos, nombre, presentacion) })),
-          declarante: { ...declarante },
-          id, municipioId: municipio.id, impuesto: 'reteica', vigencia: 2026, periodo: i + 1, tipo: 'inicial',
-          numero: numero('RET', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento,
+          ...structuredClone(diligenciado),
+          id, municipioId: municipio.id, impuesto: 'reteica', vigencia: 2026, periodicidad: p.periodicidad, periodo: p.periodo, tipo: 'inicial',
+          numero: numero('RET', 2026), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: p.vencimiento,
           renglones, totalAPagar: total, saldoAFavor: 0,
         })
-        if (azNoInscritos.prob(0.9)) agregarPago(id, presentacion, total, azNoInscritos)
-      })
+        if (azNoInscritos.prob(0.9)) agregarPago(id, presentacion, total, azNoInscritos, yaPagada(p.vencimiento))
+      }
     }
   }
 
   const cheques = generarCheques(declaraciones, pagos)
   const recaudoHistorico = generarHistorico(az, declaraciones, pagos)
 
-  // Omisos de retención: algunos agentes y autorretenedores no declararon un bimestre. Se quitan al final y con su
-  // propio azar para no cambiar el resto de los datos; no se tocan las declaraciones que tienen un cheque.
+  // Omisos de retención: algunos agentes y autorretenedores no declararon un periodo, salvo el primero. Se quitan al final
+  // y con su propio azar para no cambiar el resto de los datos; no se tocan las declaraciones que tienen un cheque.
   const azOmisos = crearAzar(580)
   const conCheque = new Set(cheques.map((c) => c.declaracionId))
   const omitidas = new Set(
@@ -741,6 +804,7 @@ function generarHistorico(az: Azar, declaraciones: Declaracion[], pagos: Pago[])
   const historico: RecaudoMensual[] = []
 
   for (const m of MUNICIPIOS) {
+    const cfg = CONFIGURACIONES.find((c) => c.municipioId === m.id)!
     const base = Array.from({ length: 12 }, () => ({ ica: 0, reteica: 0, autorretencion: 0 }))
     for (const p of pagos) {
       const d = porId.get(p.declaracionId)
@@ -748,17 +812,20 @@ function generarHistorico(az: Azar, declaraciones: Declaracion[], pagos: Pago[])
       base[Number(p.fecha.slice(5, 7)) - 1][d.impuesto] += p.valor
     }
 
-    // Retención y autorretención se pagan todos los bimestres: se toma el promedio de los bimestres
-    // de 2026 que ya tienen recaudo y se reparte entre sus dos meses como se repartió en 2026.
-    const bimestral = (impuesto: Impuesto) => {
-      const bimestres = [0, 2, 4, 6, 8, 10].map((i) => base[i][impuesto] + base[i + 1][impuesto]).filter((v) => v > 0)
-      const total = bimestres.reduce((s, v) => s + v, 0)
-      const primerMes = base.filter((_, i) => i % 2 === 0).reduce((s, b) => s + b[impuesto], 0)
-      return { promedio: bimestres.length === 0 ? 0 : total / bimestres.length, primerMes: total === 0 ? 0.5 : primerMes / total }
+    // Retención y autorretención se pagan todos los periodos, con la periodicidad del calendario de 2026: se toma el
+    // promedio de los periodos de 2026 que ya tienen recaudo y se reparte entre sus meses como se repartió en 2026.
+    const porPeriodo = (impuesto: Impuesto) => {
+      const meses = MESES_POR_PERIODO[formularioDe(cfg, impuesto, 2026).periodicidad]
+      const periodos = Array.from({ length: 12 / meses }, (_, k) => base.slice(k * meses, (k + 1) * meses).reduce((s, b) => s + b[impuesto], 0)).filter((v) => v > 0)
+      const total = periodos.reduce((s, v) => s + v, 0)
+      // La parte de cada mes del periodo; la del último es lo que les falta a los demás.
+      const reparto = Array.from({ length: meses - 1 }, (_, j) => (total === 0 ? 1 / meses : base.filter((_, i) => i % meses === j).reduce((s, b) => s + b[impuesto], 0) / total))
+      reparto.push(1 - reparto.reduce((s, v) => s + v, 0))
+      return { promedio: periodos.length === 0 ? 0 : total / periodos.length, reparto }
     }
-    const reteica = bimestral('reteica')
-    const autorretencion = bimestral('autorretencion')
-    const enMes = (b: { promedio: number; primerMes: number }, i: number) => b.promedio * (i % 2 === 0 ? b.primerMes : 1 - b.primerMes)
+    const reteica = porPeriodo('reteica')
+    const autorretencion = porPeriodo('autorretencion')
+    const enMes = (b: { promedio: number; reparto: number[] }, i: number) => b.promedio * b.reparto[i % b.reparto.length]
 
     for (const anio of [2025, 2024, 2023]) {
       const factor = 0.94 ** (2026 - anio)
