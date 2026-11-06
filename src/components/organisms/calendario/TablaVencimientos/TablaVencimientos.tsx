@@ -12,7 +12,7 @@ import type { TablaVencimientosProps } from './types'
  * último dígito del NIT o la cédula, una tabla con un renglón por dígito y una columna por periodo. El dígito
  * siempre es sin el de verificación (DV), y la pantalla lo dice: los municipios se confunden con eso.
  */
-export default function TablaVencimientos({ titulo, descripcion, valor, onChange, editable, errores }: TablaVencimientosProps) {
+export default function TablaVencimientos({ titulo, descripcion, valor, onChange, editable, errores, avisoPeriodicidad }: TablaVencimientosProps) {
   const nombres = NOMBRES_PERIODOS[valor.periodicidad]
 
   return (
@@ -34,6 +34,12 @@ export default function TablaVencimientos({ titulo, descripcion, valor, onChange
           </Campo>
         )}
       </div>
+
+      {avisoPeriodicidad && (
+        <Aviso tono="alerta" rol="alert">
+          {avisoPeriodicidad}
+        </Aviso>
+      )}
 
       <Interruptor
         etiqueta="La fecha cambia según el último dígito del NIT o la cédula"

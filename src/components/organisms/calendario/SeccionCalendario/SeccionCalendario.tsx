@@ -4,16 +4,18 @@ import { ANIO_EN_CURSO } from '../../../../constants'
 import { calendarioNuevo } from '../../../../lib/calendario'
 import { etiquetaImpuesto, formatoFecha } from '../../../../lib/formato'
 import { IMPUESTOS } from '../../../../lib/sesion'
+import { useDatos } from '../../../../store'
 import type { CalendarioVigencia } from '../../../../types'
 import { Boton, Input, Select } from '../../../atoms'
 import { Aviso, Campo, Seccion } from '../../../molecules'
 import TablaVencimientos from '../TablaVencimientos'
 import { DESCRIPCION_FORMULARIO } from './constants'
 import type { SeccionCalendarioProps } from './types'
-import { aniosParaAgregar, calendarioMasCercano, erroresDelFormulario, textoAgregado } from './utils'
+import { aniosParaAgregar, calendarioMasCercano, erroresDelFormulario, textoAgregado, textoOtraPeriodicidad } from './utils'
 
 /** Vencimientos de cada año gravable, también de años pasados: un calendario por cada formulario activo del municipio. */
 export default function SeccionCalendario({ b, cambiar, editable, errores, impuestos }: SeccionCalendarioProps) {
+  const declaraciones = useDatos((s) => s.declaraciones)
   const calendarios = b.calendarioTributario.porVigencia
   const vigencias = calendarios.map((c) => c.vigencia).sort((x, y) => y - x)
   const [elegida, setElegida] = useState<number>()
@@ -113,6 +115,7 @@ export default function SeccionCalendario({ b, cambiar, editable, errores, impue
                 onChange={(valor) => cambiarCal({ [impuesto]: valor })}
                 editable={editable}
                 errores={erroresDelFormulario(errores, vigencia, impuesto)}
+                avisoPeriodicidad={textoOtraPeriodicidad(declaraciones, b.municipioId, impuesto, vigencia, cal[impuesto].periodicidad)}
               />
             ))}
           </div>

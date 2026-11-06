@@ -1,6 +1,22 @@
 import { ANIO_EN_CURSO } from '../../../../constants'
-import type { CalendarioVigencia, Impuesto } from '../../../../types'
+import { etiquetaImpuesto, etiquetaPeriodicidad, formatoLista } from '../../../../lib/formato'
+import type { CalendarioVigencia, Declaracion, Impuesto, Periodicidad } from '../../../../types'
 import { ANIOS_ATRAS } from './constants'
+
+/**
+ * Aviso cuando el calendario del año ya no tiene la periodicidad con que se presentaron sus declaraciones: ellas
+ * conservan su periodo, así que el calendario deja de coincidir con lo declarado. Sin declaraciones así, undefined.
+ */
+export function textoOtraPeriodicidad(declaraciones: Declaracion[], municipioId: string, impuesto: Impuesto, vigencia: number, periodicidad: Periodicidad) {
+  const otras = declaraciones.filter((d) => d.municipioId === municipioId && d.impuesto === impuesto && d.vigencia === vigencia && d.periodicidad !== periodicidad)
+  if (otras.length === 0) return undefined
+  const cuales = formatoLista([...new Set(otras.map((d) => etiquetaPeriodicidad[d.periodicidad].toLowerCase()))])
+  const cuantas = otras.length === 1 ? 'una declaración' : `${otras.length} declaraciones`
+  return (
+    `Ya hay ${cuantas} de ${etiquetaImpuesto[impuesto]} de ${vigencia} ${otras.length === 1 ? 'presentada' : 'presentadas'} con periodicidad ${cuales}. ` +
+    `${otras.length === 1 ? 'Conserva su periodo' : 'Conservan su periodo'} aunque la cambies aquí, así que el calendario dejará de coincidir con lo que ya se declaró.`
+  )
+}
 
 /** Años que aún no están en el calendario: el siguiente y los pasados, del más reciente al más antiguo. */
 export const aniosParaAgregar = (vigencias: number[]) =>

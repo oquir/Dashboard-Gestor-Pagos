@@ -8,4 +8,6 @@ export interface TablaVencimientosProps {
   editable: boolean
   /** Error de cada periodo, por número de periodo. */
   errores: Record<number, string>
+  /** Si ya hay declaraciones del año presentadas con otra periodicidad, el aviso que lo dice. */
+  avisoPeriodicidad?: string
 }
