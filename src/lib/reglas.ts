@@ -1,5 +1,6 @@
 // Reglas del dominio que usa el dashboard (ver docs/Dominio-ICA.md, secciones 5 y 6).
 import type { ActividadesVigencia, Cheque, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoPago, Inscripcion, Pago, Sector, Tarifa } from '../types'
+import { diferenciaDias, sumarMeses } from '../utils'
 
 /** UVT 2026 (dato que caduca, sección 7 del dominio). */
 export const UVT = 52374
@@ -149,3 +150,14 @@ export const RENGLONES_TOTALES = new Set(['16', '25', '33', '34', '38', '18', 'T
 
 /** El trámite más reciente del RIT: inscripción, actualización o cancelación. */
 export const ultimoTramite = (i: Inscripcion) => i.novedades.reduce((ultimo, n) => (n.fecha >= ultimo.fecha ? n : ultimo))
+
+/**
+ * Días de retraso de una inscripción en el RIT: el plazo corre desde el inicio de actividades (docs/Pendientes-y-decisiones.md §3.3).
+ * Es null si se inscribió a tiempo o si el plazo vencía antes de que el RIT saliera a producción: entonces le tocaba
+ * inscribirse en el sistema anterior y el aplicativo no sabe si lo hizo.
+ */
+export function diasInscripcionTardia(inicioActividades: string, radicado: string, plazoMeses: number, ritDesde: string) {
+  const limite = sumarMeses(inicioActividades, plazoMeses)
+  if (limite < ritDesde || radicado <= limite) return null
+  return { limite, dias: diferenciaDias(limite, radicado) }
+}

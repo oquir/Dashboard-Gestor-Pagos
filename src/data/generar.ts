@@ -284,7 +284,8 @@ function generarInscripcion(az: Azar, municipioId: string, n: number): Inscripci
 
   const revisores = USUARIOS.filter((u) => u.municipioId === municipioId && u.rol === 'funcionario')
   const revisor = nombreCompleto(az.elegir(revisores))
-  const fechaInscripcion = sumarDias(fechaInicio, az.entero(5, 50))
+  // Hasta 4 meses: con plazos de 2 y 3 meses, algunas de las recientes llegan tarde.
+  const fechaInscripcion = sumarDias(fechaInicio, az.entero(5, 120))
   const novedades: Novedad[] = []
   const novedad = (datos: Omit<Novedad, 'id' | 'soportes'>) => novedades.push({ id: `${id}-n${novedades.length + 1}`, soportes: [], ...datos })
 

@@ -15,7 +15,7 @@ import {
 import { PlantillaDetalle } from '../components/templates'
 import { etiquetaEstadoInscripcion } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { actividadesDe } from '../lib/reglas'
+import { actividadesDe, diasInscripcionTardia } from '../lib/reglas'
 import { conRit, impuestoActivo, useSesion } from '../lib/sesion'
 import { tonoInscripcion } from '../lib/tonos'
 import { useDatos } from '../store'
@@ -48,6 +48,11 @@ export default function InscripcionDetalle() {
   const solicitud = inscripcion.novedades.find((n) => n.id === seleccion)
   // Se compara con la última solicitud aprobada antes de la elegida.
   const anterior = solicitud && inscripcion.novedades.slice(0, inscripcion.novedades.indexOf(solicitud)).findLast((n) => n.estado === 'aprobada' && n.datos)?.datos
+  const municipio = municipios.find((m) => m.id === inscripcion.municipioId)
+  // La inscripción se juzga con los datos que radicó, aunque luego los haya actualizado.
+  const radicada = inscripcion.novedades.find((n) => n.tipo === 'inscripcion')
+  const tardia =
+    radicada?.datos && config && municipio ? diasInscripcionTardia(radicada.datos.fechaInicioActividades, radicada.fecha, config.plazoInscripcionMeses, municipio.enProduccionDesde.rit) : null
   const soportes = solicitud ? solicitud.soportes : inscripcion.soportes
   const elegir = (novedadId: string | null) => {
     setSeleccion(novedadId)
@@ -60,12 +65,17 @@ export default function InscripcionDetalle() {
     <PlantillaDetalle
       volver={{ a: '/rit', texto: 'Inscripciones RIT' }}
       titulo={inscripcion.nombre}
-      descripcion={`RIT ${inscripcion.numeroRit} · ${municipios.find((m) => m.id === inscripcion.municipioId)?.nombre}`}
-      acciones={<Badge tono={tonoInscripcion[inscripcion.estado]}>{etiquetaEstadoInscripcion[inscripcion.estado]}</Badge>}
+      descripcion={`RIT ${inscripcion.numeroRit} · ${municipio?.nombre}`}
+      acciones={
+        <div className="flex flex-wrap gap-2">
+          {tardia && <Badge tono="alerta">Inscripción tardía</Badge>}
+          <Badge tono={tonoInscripcion[inscripcion.estado]}>{etiquetaEstadoInscripcion[inscripcion.estado]}</Badge>
+        </div>
+      }
       idPrincipal="ficha"
       principal={
         <>
-          {solicitud && <EncabezadoSolicitud solicitud={solicitud} comparada={Boolean(anterior)} verActuales={() => elegir(null)} />}
+          {solicitud && <EncabezadoSolicitud solicitud={solicitud} comparada={Boolean(anterior)} verActuales={() => elegir(null)} tardia={solicitud === radicada ? tardia : null} />}
           {solicitud?.cancelacion ? (
             <FichaCancelacion inscripcion={inscripcion} cancelacion={solicitud.cancelacion} />
           ) : (
