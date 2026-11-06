@@ -1,6 +1,6 @@
+import { NOMBRES_PERIODOS } from '../constants'
 import type {
   Calidad,
-  CategoriaBitacora,
   EstadoAprobacion,
   EstadoCheque,
   EstadoInscripcion,
@@ -65,8 +65,17 @@ export const nombreCompleto =(u: Pick<Usuario, 'nombres' | 'apellidos'>) => `${u
 /** Cuándo, quién y por qué el municipio desactivó un formulario. */
 export const textoDesactivado = (d: FormularioDesactivado) => `Desactivado por el municipio el ${formatoFecha(d.fecha)} (${d.por}): ${d.motivo}`
 
+/** Número de documento, con el dígito de verificación si lo tiene. */
+export const numeroDocumento = (d: Pick<Inscripcion, 'documento' | 'dv'>) => `${d.documento}${d.dv ? `-${d.dv}` : ''}`
+
 /** Tipo y número de documento, con el dígito de verificación si lo tiene. */
-export const formatoDocumento = (d: Pick<Inscripcion, 'tipoDocumento' | 'documento' | 'dv'>) => `${d.tipoDocumento} ${d.documento}${d.dv ? `-${d.dv}` : ''}`
+export const formatoDocumento = (d: Pick<Inscripcion, 'tipoDocumento' | 'documento' | 'dv'>) => `${d.tipoDocumento} ${numeroDocumento(d)}`
+
+export const etiquetaTipoDocumento: Record<Inscripcion['tipoDocumento'], string> = {
+  CC: 'Cédula de ciudadanía',
+  CE: 'Cédula de extranjería',
+  NIT: 'NIT',
+}
 
 export const etiquetaTipoPersona: Record<TipoPersona, string> = {
   natural: 'Persona natural',
@@ -153,6 +162,9 @@ export const etiquetaPeriodicidad: Record<Periodicidad, string> = {
   trimestral: 'Trimestral',
 }
 
-export function etiquetaPeriodo(impuesto: Impuesto, vigencia: number, periodo: number) {
-  return impuesto === 'ica' ? `Año gravable ${vigencia}` : `${vigencia} · bimestre ${periodo}`
-}
+/**
+ * Nombre del periodo, el mismo en declaraciones, omisos y vencimientos: el año gravable en el ICA anual; en ReteICA y
+ * AutoReteICA, el mes, el bimestre o el trimestre con sus meses y su año, como "Bimestre 3 (may – jun) de 2026".
+ */
+export const etiquetaPeriodo = ({ impuesto, periodicidad, vigencia, periodo }: { impuesto: Impuesto; periodicidad: Periodicidad; vigencia: number; periodo: number }) =>
+  impuesto === 'ica' ? `Año gravable ${vigencia}` : `${NOMBRES_PERIODOS[periodicidad][periodo - 1]} de ${vigencia}`

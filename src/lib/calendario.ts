@@ -57,15 +57,11 @@ export function rangoPeriodo(periodicidad: Periodicidad, vigencia: number, perio
 }
 
 /**
- * Vencimiento del periodo para un declarante: la fecha única o la de su último dígito. El documento se guarda sin el
+ * Vencimiento del periodo para un contribuyente: la fecha única o la de su último dígito. El documento se guarda sin el
  * dígito de verificación, así que su último carácter es el dígito que cuenta. Sin fecha, undefined.
  */
 export const vencimientoPara = (f: VencimientosFormulario, p: VencimientoPeriodo, documento: string) =>
   (f.porDigito ? p.fechas[Number(documento.trim().slice(-1))] : p.fechas[0]) || undefined
-
-/** Nombre del periodo: el año gravable en el ICA anual; el periodo y su año en ReteICA y AutoReteICA. */
-export const etiquetaPeriodoCalendario = (impuesto: Impuesto, periodicidad: Periodicidad, vigencia: number, periodo: number) =>
-  impuesto === 'ica' ? `Año gravable ${vigencia}` : `${NOMBRES_PERIODOS[periodicidad][periodo - 1]} de ${vigencia}`
 
 /** Primera y última fecha del periodo; con fecha única, las dos son la misma. Sin fechas, undefined. */
 export function rangoFechas(f: VencimientosFormulario, p: VencimientoPeriodo) {
