@@ -424,23 +424,28 @@ export interface RecaudoMensual {
 
 // --- Bitácora ---
 
-export type CategoriaBitacora = 'sesion' | 'configuracion' | 'calendario' | 'municipios' | 'usuarios' | 'rit' | 'pagos'
-
-/** Un cambio hecho en el aplicativo: quién, cuándo, qué y cómo estaba antes. Solo la ve 1cero1. */
+/**
+ * Una petición a la API que cambió algo, como la guarda el back al terminar cada endpoint: quién y cuándo, el
+ * controlador, la acción, el endpoint, los datos enviados y si salió bien. No trae el valor anterior: para eso el back
+ * tendría que consultarlo en cada petición. Solo la ve 1cero1.
+ */
 export interface RegistroBitacora {
-  id: string
-  /** Fecha y hora local, AAAA-MM-DDTHH:MM. */
+  /** Consecutivo: el registro más reciente tiene el número más alto, así que ordena aunque dos tengan la misma hora. */
+  id: number
+  /** Fecha y hora local de la petición, AAAA-MM-DDTHH:MM. */
   fechaHora: string
-  /** Quién lo hizo, como era en ese momento: el usuario puede cambiar o eliminarse después. */
+  /** Quién la hizo, como era en ese momento: el usuario puede cambiar o eliminarse después. */
   usuario: { id: string; nombre: string; rol: Rol }
-  /** Municipio en el que se hizo; null en lo que no es de un municipio, como el inicio de sesión de 1cero1. */
+  /** Municipio de lo que se cambió; null en lo que no es de un municipio, como el inicio de sesión de 1cero1. */
   municipioId: string | null
-  categoria: CategoriaBitacora
-  /** Qué hizo, en una frase: "Cambió la tarifa única de ReteICA". */
+  /** Nombres tal como vienen del back: "Pagos", "RegistrarPagoVentanilla", "POST /api/pagos/ventanilla". */
+  controlador: string
   accion: string
-  /** Valor anterior y nuevo, cuando la acción cambia un dato. */
-  antes?: string
-  despues?: string
+  endpoint: string
+  /** Lo que se envió en el cuerpo o en la URL, tal como llegó. */
+  datos: Record<string, unknown>
+  /** Si la petición salió bien: el back registra también las que fallan. */
+  exito: boolean
 }
 
 export interface Datos {
@@ -453,6 +458,6 @@ export interface Datos {
   recaudoHistorico: RecaudoMensual[]
   configuraciones: ConfigMunicipio[]
   actividades: ActividadesVigencia[]
-  /** Datos de prueba: en la demo, lo que se hace en el navegador no se registra. */
+  /** Datos de prueba, más lo que se hace en el navegador. */
   bitacora: RegistroBitacora[]
 }

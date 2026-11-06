@@ -50,16 +50,6 @@ export const etiquetaRol: Record<Rol, string> = {
   funcionario: 'Funcionario municipio',
 }
 
-export const etiquetaCategoriaBitacora: Record<CategoriaBitacora, string> = {
-  sesion: 'Inicio de sesión',
-  configuracion: 'Configuración',
-  calendario: 'Calendario',
-  municipios: 'Municipios',
-  usuarios: 'Usuarios',
-  rit: 'RIT',
-  pagos: 'Pagos',
-}
-
 export const nombreCompleto =(u: Pick<Usuario, 'nombres' | 'apellidos'>) => `${u.nombres} ${u.apellidos}`
 
 /** Cuándo, quién y por qué el municipio desactivó un formulario. */
