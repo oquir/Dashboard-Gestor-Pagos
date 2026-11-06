@@ -1,4 +1,6 @@
 import { Link } from 'react-router'
+import { AddressCard } from 'reicon-react'
+import { CLASE_BOTON_FILA } from '../../../../constants'
 import { etiquetaCalidad, etiquetaEstadoInscripcion, etiquetaEstadoNovedad, etiquetaTipoNovedad, etiquetaTipoPersona, formatoDocumento, formatoFecha } from '../../../../lib/formato'
 import { ultimoTramite } from '../../../../lib/reglas'
 import { tonoInscripcion } from '../../../../lib/tonos'
@@ -6,12 +8,23 @@ import { Badge } from '../../../atoms'
 import { col } from './utils'
 
 export const COLUMNAS = col.columns([
-  col.accessor('numeroRit', { header: 'RIT', meta: { clase: 'whitespace-nowrap tabular-nums text-slate-600' } }),
+  col.accessor('numeroRit', {
+    header: 'RIT',
+    meta: { clase: 'whitespace-nowrap' },
+    cell: ({ row: { original: i } }) => (
+      <Link to={`/rit/${i.id}`} aria-label={`Ver la inscripción ${i.numeroRit} de ${i.nombre}`} className={CLASE_BOTON_FILA}>
+        <AddressCard className="size-4 text-brand-600" aria-hidden />
+        {i.numeroRit}
+      </Link>
+    ),
+  }),
   col.accessor('nombre', {
     header: 'Nombre o razón social',
+    // Sin ancho mínimo, las razones sociales largas se partían en tres o cuatro líneas.
+    meta: { clase: 'min-w-72' },
     cell: ({ row: { original: i } }) => (
       <>
-        <Link to={`/rit/${i.id}`} className="font-medium text-slate-900 hover:text-brand-700">{i.nombre}</Link>
+        <p className="font-medium text-slate-900">{i.nombre}</p>
         <p className="text-xs text-slate-500">{formatoDocumento(i)}</p>
       </>
     ),
