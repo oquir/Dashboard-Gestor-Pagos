@@ -31,7 +31,7 @@
 | Vencimientos por último dígito (2026-11-03) | El dígito es siempre **sin el dígito de verificación (DV)**, y la página Calendario lo dice con un ejemplo | Los municipios se quejan cuando no queda claro |
 | Vencimientos por rango de ingresos, como en Cali (2026-11-03) | **No por ahora**: el municipio pone a mano las fechas que necesite | No hace falta todavía |
 | Dónde se ven los omisos (2026-11-03) | **En Declaraciones**, con el selector "Presentadas / Omisos". Además, una tarjeta en Inicio y "Declaraciones que faltan" en el detalle del inscrito | Es donde el municipio ya revisa lo declarado |
-| Desde cuándo se revisan los omisos (2026-11-03) | **Desde la fecha "declaraciones en el aplicativo desde" de cada municipio**, que pone 1cero1 en Municipios | Lo anterior está en otro sistema: revisarlo marcaría como omisos a quienes sí declararon |
+| Desde cuándo se revisan los omisos (2026-11-03) | **Desde la salida a producción de cada impuesto** en el municipio. Hasta el 2026-11-06 era una sola fecha, "declaraciones en el aplicativo desde" | Lo anterior está en otro sistema: revisarlo marcaría como omisos a quienes sí declararon |
 | ReteICA sin declaración donde no se exige la declaración en ceros (2026-11-03) | **Solo un aviso** con cuántos agentes son; no salen en la lista | Pudieron no haber retenido nada: no se les puede llamar omisos |
 | Alerta de retenciones sin consignar (2026-11-04) | **Sí**, para la ReteICA y también para la AutoReteICA (§3.15) | El art. 402 del Código Penal habla del agente retenedor y del autorretenedor |
 | Aviso de datos anuales (2026-11-04) | **Solo del calendario**: sale en Inicio de cada municipio activo desde el 1 de enero, hasta que cargue el año (§3.14). La UVT no va en el aviso | La UVT se actualiza sola, sin pedirle nada al municipio |
@@ -48,7 +48,8 @@
 | Alerta de retenciones sin consignar para 1cero1 (2026-11-06) | **No le sale en Inicio** (permiso `verAlertaSinConsignar`). La ven el administrador y los funcionarios del municipio | 1cero1 no se encarga de lo jurídico del municipio |
 | Bitácora como la guarda el back (2026-11-06) | **Cada registro trae lo que el back guarda al terminar cada endpoint**: quién y cuándo, el controlador, la acción y el endpoint con los nombres del back, los datos enviados y si salió bien. Ya no trae frases ni el valor de antes y después. Lo que se hace en la demo también queda registrado. Cada registro tiene un número consecutivo que abre su página, con "Anterior" y "Siguiente" dentro del municipio elegido (§3.9) | El back solo tiene a mano lo que le envían: guardar el valor anterior lo obligaría a consultarlo en cada petición |
 | Motivo al desactivar un formulario en Configuración (2026-11-06) | **En una ventana** (`ModalMotivo`, genérica para todo el aplicativo), no en un cuadro de texto debajo del interruptor. Si se cancela, el formulario sigue activo. El motivo queda escrito debajo del interruptor, con un botón para cambiarlo | Más limpio, y la misma ventana sirve donde haga falta pedir un motivo |
-| Salida a producción de cada formulario (2026-11-06) | **Una fecha por formulario** (RIT, ICA, ReteICA y AutoReteICA) en Municipios › Módulos, en lugar de la fecha única de declaraciones. La pone 1cero1 | Los omisos de cada impuesto se revisan desde su fecha, y la del RIT decide si una inscripción tardía se puede juzgar (§3.3) |
+| Salida a producción de cada formulario (2026-11-06) | **Una fecha por formulario** (RIT, ICA, ReteICA y AutoReteICA), en lugar de la fecha única de declaraciones. **La pone 1cero1 una sola vez**: la pide una ventana (`ModalSalidaProduccion`) la primera vez que se activa el formulario en Municipios, con hoy por defecto. Después queda fija y solo se lee junto al formulario. Desactivarlo y volver a activarlo la conserva. El formulario que nunca se ha activado no tiene fecha | Los omisos de cada impuesto se revisan desde su fecha, y la del RIT decide si una inscripción tardía se puede juzgar (§3.3). Cambiarla después cambiaría hacia atrás lo que ya se mostró |
+| Municipio con todo desactivado (2026-11-06) | **Se permite**: un municipio puede quedar sin el RIT y sin ningún impuesto. Ya no hace falta dejar al menos un formulario activo. Sin impuestos activos no se le pide el calendario ni tiene omisos | Puede haber municipios recién agregados que aún no tienen nada, y en algún momento puede hacer falta desactivarlo todo |
 
 ## 2. Lo que falta, con su estado
 
@@ -233,7 +234,7 @@ No guarda el valor anterior, porque para eso tendría que consultarlo en cada pe
   Solo respetan el municipio, no los demás filtros de la tabla, y la página no tiene selector de municipio (lo decidió el usuario el 2026-11-06).
 - **Lo que se hace en la demo queda registrado**: cada acción del store que en el aplicativo real haría una petición deja su registro al terminar.
   - Los interruptores guardan el valor nuevo (`"rit": false`), no un "alternar".
-  - Fallan, y quedan como fallidas, desactivar el último impuesto de un municipio y confirmar o devolver un cheque que ya no está en canje.
+  - Fallan, y quedan como fallidas, confirmar o devolver un cheque que ya no está en canje.
 - **Datos de prueba** (`src/data/bitacora.ts`): 47 registros de los tres roles entre agosto y octubre de 2026. Los datos enviados terminan en los valores que hoy tiene la demo. Los registros del RIT, los cheques y los formularios desactivados salen de los datos de la demo.
   - El caso de madrugada: Carlos Restrepo inició sesión y guardó la configuración de San José del Valle el 9 de septiembre a la 1 a. m.
   - Uno que falló: Laura Méndez guardó la configuración de Puerto Esperanza el 20 de octubre a las 7:41 p. m. La petición falló y la volvió a guardar a las 7:45 p. m.
@@ -408,11 +409,12 @@ El cruce con el RIT queda como un extra:
 
 | Qué | Dónde |
 |---|---|
-| Campos de configuración sin efecto (`correccionABaja`, `plazoInscripcionMeses` y las tasas con emplazamiento de `sanciones`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionSanciones` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
+| Campos de configuración sin efecto (`correccionABaja` y las tasas con emplazamiento de `sanciones`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionSanciones` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
 | Periodicidad de cada declaración y nombre del periodo | El campo `periodicidad` de `Declaracion` (`src/types/dominio.ts`); `etiquetaPeriodo`, en `src/lib/formato.ts`, la misma para declaraciones, omisos y vencimientos |
 | Declaraciones de la demo según el calendario | `formularioDe`, `vencimientoIca` y `periodosVencidos` en `src/data/generar.ts`, que leen el calendario de `CONFIGURACIONES` (`src/data/catalogos.ts`); los montos según la duración del periodo, en `liquidarReteica` y `liquidarAutorretencion`; las retenciones en plazo que se dejan sin pagar, en `yaPagada` |
 | Aviso al cambiar la periodicidad de un año con declaraciones | `textoOtraPeriodicidad`, en `src/components/organisms/calendario/SeccionCalendario/utils.ts`, que se muestra en `TablaVencimientos` |
 | Omisos: cálculo y pantallas | `calcularOmisos` en `src/lib/omisos.ts` y `useOmisos` en `src/lib/sesion.ts`; la vista en `ListaOmisos` y `TablaOmisos` (`src/components/organisms/declaraciones/`); `DeclaracionesFaltantes` en `src/components/organisms/inscripciones/`; la fecha `enProduccionDesde` del tipo `Municipio`, por formulario |
+| Salida a producción e inscripción tardía | `enProduccionDesde` de `Municipio` (`src/types/dominio.ts`); `activarFormulario` en `src/store.ts`, que la pone una sola vez; `ModalSalidaProduccion`, `FormulariosMunicipio` y `ModulosMunicipio` (`organisms/municipios/`); `textoSalidaProduccion` y `textoEnProduccion` en `src/lib/formato.ts`; `diasInscripcionTardia` en `src/lib/reglas.ts`, que usa `src/pages/InscripcionDetalle.tsx` |
 | Omisos de la demo | En `generarDatos` (`src/data/generar.ts`): los inscritos que no declararon el ICA 2025 y, con su propio azar, algunas ReteICA y AutoReteICA que se quitan al final |
 | Soportes fijos del RIT | `soportesRequeridos`, en `src/data/generar.ts` |
 | Resultado simulado del Asobancaria | `simular`, en `src/components/organisms/pagos/CargaAsobancaria/utils.ts` |
