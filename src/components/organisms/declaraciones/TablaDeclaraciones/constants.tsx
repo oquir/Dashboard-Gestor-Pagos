@@ -1,4 +1,6 @@
 import { Link } from 'react-router'
+import { Document } from 'reicon-react'
+import { CLASE_BOTON_FILA } from '../../../../constants'
 import {
   etiquetaEstadoAprobacion,
   etiquetaEstadoPago,
@@ -19,7 +21,10 @@ export const COLUMNAS = col.columns([
     header: 'Radicado',
     meta: { clase: 'whitespace-nowrap' },
     cell: ({ row: { original: { d } } }) => (
-      <Link to={`/declaraciones/${d.id}`} className="font-medium tabular-nums text-slate-900 hover:text-brand-700">{d.numero}</Link>
+      <Link to={`/declaraciones/${d.id}`} aria-label={`Ver la declaración ${d.numero}`} className={CLASE_BOTON_FILA}>
+        <Document className="size-4 text-brand-600" aria-hidden />
+        {d.numero}
+      </Link>
     ),
   }),
   col.accessor((f) => f.d.numeroFactura, {
