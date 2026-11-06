@@ -104,11 +104,16 @@ export function presentadaSinCalendario(d: Declaracion, cfg: ConfigMunicipio | u
 
 /**
  * Municipios activos (todos, o solo el elegido) que no han cargado el calendario del año en curso. Se avisa desde el
- * 1 de enero, cuando empiezan a correr los periodos de ReteICA y AutoReteICA del año.
+ * 1 de enero, cuando empiezan a correr los periodos de ReteICA y AutoReteICA del año. Al que no tiene ningún impuesto
+ * activo no se le pide: no hay vencimientos que poner.
  */
 export const municipiosSinCalendario = (municipios: Municipio[], configuraciones: ConfigMunicipio[], municipioId: string | null, anio: number) =>
   municipios.filter(
-    (m) => m.activo && (municipioId === null || m.id === municipioId) && !cargaCalendario(configuraciones.find((c) => c.municipioId === m.id), anio),
+    (m) =>
+      m.activo &&
+      (municipioId === null || m.id === municipioId) &&
+      Object.values(m.impuestos).some(Boolean) &&
+      !cargaCalendario(configuraciones.find((c) => c.municipioId === m.id), anio),
   )
 
 /** Al guardar, los años recién agregados quedan cargados hoy por quien guarda; los que ya estaban conservan su fecha. */

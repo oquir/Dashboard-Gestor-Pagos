@@ -16,7 +16,6 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
     pagoEfectivo: useDatos((s) => s.alternarPagoEfectivo),
     pagoCheque: useDatos((s) => s.alternarPagoCheque),
   }
-  const activos = IMPUESTOS.filter((i) => m.impuestos[i]).length
   // Sin el RIT en el aplicativo no hay contra qué validar.
   const marcada = (clave: OpcionFormulario, i: Impuesto) => (clave === 'validarContraRit' ? m.rit && m.validarContraRit[i] : m[clave][i])
 
@@ -48,7 +47,6 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
           <tbody className="divide-y divide-slate-100">
             {IMPUESTOS.map((i) => {
               const gestiona = m.impuestos[i]
-              const unico = gestiona && activos === 1
               const pausa = gestiona ? pausas[i] : undefined
               return (
                 <tr key={i} className={gestiona ? '' : 'bg-slate-50/70'}>
@@ -64,8 +62,6 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
                   <td className="px-3 py-3 text-center align-top">
                     <Conmutador
                       checked={gestiona}
-                      disabled={unico}
-                      title={unico ? 'Debe quedar al menos un formulario activo' : undefined}
                       aria-label={`Gestiona ${etiquetaImpuesto[i]}`}
                       onChange={() => alternarImpuesto(m.id, i)}
                     />

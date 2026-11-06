@@ -19,10 +19,13 @@ export function filtrarOmisos(omisos: Omiso[], texto: string, anio: string) {
 }
 
 /** Desde cuándo se revisa: lo anterior a la salida a producción de cada formulario está en otro sistema. */
-export const textoDesde = (municipio: Municipio | undefined) =>
-  municipio
-    ? `Se revisan los vencimientos desde ${textoEnProduccion(municipio)}, cuando los formularios de ${municipio.nombre} salieron a producción en el aplicativo. Lo anterior está en otro sistema.`
-    : 'Se revisan los vencimientos desde que los formularios de cada municipio salieron a producción en el aplicativo. Lo anterior está en otro sistema.'
+export function textoDesde(municipio: Municipio | undefined) {
+  if (!municipio) return 'Se revisan los vencimientos desde que los formularios de cada municipio salieron a producción en el aplicativo. Lo anterior está en otro sistema.'
+  const desde = textoEnProduccion(municipio)
+  return desde
+    ? `Se revisan los vencimientos desde ${desde}, cuando los formularios de ${municipio.nombre} salieron a producción en el aplicativo. Lo anterior está en otro sistema.`
+    : `${municipio.nombre} no tiene formularios activos en el aplicativo, así que no hay vencimientos que revisar.`
+}
 
 /** Años sin calendario: sus omisos no se pueden revisar. Con todos los municipios, dice de cuál es cada año. */
 export function textoSinCalendario(lista: ResultadoOmisos['sinCalendario'], nombres: Map<string, string>, todos: boolean) {

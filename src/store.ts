@@ -37,7 +37,7 @@ interface Estado extends Datos {
   alternarMunicipio: (id: string) => void
   /** Fecha desde la que el municipio recibe declaraciones en el aplicativo; desde ahí se revisan los omisos. */
   cambiarEnProduccionDesde: (municipioId: string, formulario: Formulario, fecha: string) => void
-  /** Activa o desactiva un impuesto del municipio; siempre debe quedar al menos uno activo. */
+  /** Activa o desactiva un impuesto del municipio; puede quedar sin ninguno activo. */
   alternarImpuesto: (municipioId: string, impuesto: Impuesto) => void
   alternarRit: (municipioId: string) => void
   /** Activa o desactiva la validación contra el RIT de un formulario del municipio. */
@@ -97,15 +97,16 @@ export const useDatos = create<Estado>()(
         registrar(modulo === 'activo' ? PETICIONES.cambiarEstadoMunicipio : PETICIONES.cambiarModulo, municipioId, { municipioId, [modulo]: !m[modulo] })
       }
 
-      /** Lo mismo, para lo que se activa por formulario. Desactivar el último impuesto activo falla. */
+      /**
+       * Lo mismo, para lo que se activa por formulario. Un municipio puede quedar sin ningún impuesto activo: uno recién
+       * agregado, o uno al que hubo que desactivarle todo.
+       */
       const alternarModuloPorImpuesto = (municipioId: string, modulo: ModuloPorImpuesto, impuesto: Impuesto) => {
         const m = get().municipios.find((x) => x.id === municipioId)
         if (!m) return
         const valor = !m[modulo][impuesto]
-        const nuevo = { ...m[modulo], [impuesto]: valor }
-        const exito = modulo !== 'impuestos' || Object.values(nuevo).some(Boolean)
-        if (exito) cambiarMunicipio(municipioId, { [modulo]: nuevo })
-        registrar(PETICIONES.cambiarModulo, municipioId, { municipioId, [modulo]: { [impuesto]: valor } }, exito)
+        cambiarMunicipio(municipioId, { [modulo]: { ...m[modulo], [impuesto]: valor } })
+        registrar(PETICIONES.cambiarModulo, municipioId, { municipioId, [modulo]: { [impuesto]: valor } })
       }
 
       return {

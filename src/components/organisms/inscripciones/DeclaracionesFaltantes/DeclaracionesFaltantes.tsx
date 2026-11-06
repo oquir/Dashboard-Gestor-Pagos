@@ -12,12 +12,17 @@ export default function DeclaracionesFaltantes({ inscripcion }: DeclaracionesFal
   const { omisos } = useOmisos(inscripcion.municipioId)
   const municipio = useDatos((s) => s.municipios.find((m) => m.id === inscripcion.municipioId))
   const suyos = omisos.filter((o) => o.inscripcion.id === inscripcion.id)
+  const desde = municipio && textoEnProduccion(municipio)
 
   return (
     <Card>
       <CardHeader
         titulo="Declaraciones que faltan"
-        descripcion={municipio && `Periodos vencidos sin declarar desde ${textoEnProduccion(municipio)}, cuando los formularios salieron a producción en el aplicativo.`}
+        descripcion={
+          desde
+            ? `Periodos vencidos sin declarar desde ${desde}, cuando los formularios salieron a producción en el aplicativo.`
+            : 'El municipio no tiene formularios activos en el aplicativo.'
+        }
       />
       {suyos.length === 0 ? (
         <Vacio titulo="Está al día" descripcion="No le falta ninguna declaración vencida." />
