@@ -41,8 +41,8 @@ export default function Declaraciones() {
     const enRit = conRit(municipios)
     return declaraciones.map((d) => ({
       d,
-      nombre: d.declarante.nombre,
-      documento: formatoDocumento(d.declarante),
+      nombre: d.contribuyente.nombre,
+      documento: formatoDocumento(d.contribuyente),
       pago: estadoDe(d),
       corrige: d.corrigeA && numeros.get(d.corrigeA),
       aprobacion: aprobacion(d),
@@ -131,7 +131,7 @@ export default function Declaraciones() {
       ) : (
         <Card>
           <BarraFiltros
-            buscador={<Buscador placeholder="Buscar por declarante, NIT o cédula, radicado o factura" value={texto} onChange={(e) => setTexto(e.target.value)} />}
+            buscador={<Buscador placeholder="Buscar por contribuyente, NIT o cédula, radicado o factura" value={texto} onChange={(e) => setTexto(e.target.value)} />}
             acciones={<DescargaDeclaraciones declaraciones={marcadas.map((f) => f.d)} />}
           >
             <Filtro etiqueta="Tipo de declaración" opciones={OPCIONES_TIPO} valor={tipo} cambiar={setTipo} />

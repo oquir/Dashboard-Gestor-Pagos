@@ -12,7 +12,7 @@ export const COLUMNAS = col.columns([
     meta: { clase: 'whitespace-nowrap text-slate-700' },
     cell: ({ getValue }) => formatoFecha(getValue()),
   }),
-  col.accessor('nombre', { header: 'Declarante', meta: { clase: 'max-w-64 truncate text-slate-900' } }),
+  col.accessor('nombre', { header: 'Contribuyente', meta: { clase: 'max-w-64 truncate text-slate-900' } }),
   col.accessor((f) => f.d.numero, {
     id: 'declaracion',
     header: 'Declaración',

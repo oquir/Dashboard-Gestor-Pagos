@@ -1,6 +1,5 @@
 import { Link } from 'react-router'
-import { etiquetaPeriodoCalendario } from '../../../../lib/calendario'
-import { etiquetaImpuesto, formatoDocumento, formatoFecha, formatoHaceDias } from '../../../../lib/formato'
+import { etiquetaImpuesto, etiquetaPeriodo, formatoDocumento, formatoFecha, formatoHaceDias } from '../../../../lib/formato'
 import { diferenciaDias, hoy } from '../../../../utils'
 import { col } from './utils'
 
@@ -28,7 +27,7 @@ export const COLUMNAS = col.columns([
     cell: ({ row: { original: o } }) => (
       <>
         <p className="text-slate-900">{etiquetaImpuesto[o.impuesto]}</p>
-        <p className="text-xs text-slate-500">{etiquetaPeriodoCalendario(o.impuesto, o.periodicidad, o.vigencia, o.periodo)}</p>
+        <p className="text-xs text-slate-500">{etiquetaPeriodo(o)}</p>
       </>
     ),
   }),

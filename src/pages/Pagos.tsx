@@ -37,20 +37,20 @@ export default function Pagos() {
 
     const cartera: FilaCartera[] = declaraciones
       .filter((d) => !reemplazadas.has(d.id))
-      .map((d) => ({ d, estado: estadoDe(d), pagado: totalPagado(d.id, pagos), nombre: d.declarante.nombre }))
+      .map((d) => ({ d, estado: estadoDe(d), pagado: totalPagado(d.id, pagos), nombre: d.contribuyente.nombre }))
       .filter((f) => f.estado === 'parcial' || f.estado === 'sin_pago' || f.estado === 'ineficaz')
 
     const recibidos: FilaPago[] = pagos.flatMap((p) => {
       const d = porId.get(p.declaracionId)
-      return d ? [{ p, d, nombre: d.declarante.nombre }] : []
+      return d ? [{ p, d, nombre: d.contribuyente.nombre }] : []
     })
 
     const enCanje: FilaCheque[] = cheques.flatMap((c) => {
       const d = porId.get(c.declaracionId)
-      return d && c.estado === 'en_canje' ? [{ c, d, nombre: d.declarante.nombre }] : []
+      return d && c.estado === 'en_canje' ? [{ c, d, nombre: d.contribuyente.nombre }] : []
     })
 
-    const sinConsignar: FilaSinConsignar[] = retenciones.map((r) => ({ ...r, nombre: r.d.declarante.nombre }))
+    const sinConsignar: FilaSinConsignar[] = retenciones.map((r) => ({ ...r, nombre: r.d.contribuyente.nombre }))
     return {
       cartera,
       recibidos,

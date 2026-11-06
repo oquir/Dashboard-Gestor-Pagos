@@ -40,7 +40,7 @@ export const COLUMNAS = col.columns([
     ),
   }),
   col.accessor('nombre', {
-    header: 'Declarante',
+    header: 'Contribuyente',
     meta: { clase: 'max-w-64' },
     cell: ({ row: { original: f } }) => (
       <>
@@ -57,7 +57,7 @@ export const COLUMNAS = col.columns([
     cell: ({ row: { original: { d } } }) => (
       <>
         <p className="text-slate-900">{etiquetaImpuesto[d.impuesto]}</p>
-        <p className="text-xs text-slate-500">{etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}</p>
+        <p className="text-xs text-slate-500">{etiquetaPeriodo(d)}</p>
       </>
     ),
   }),

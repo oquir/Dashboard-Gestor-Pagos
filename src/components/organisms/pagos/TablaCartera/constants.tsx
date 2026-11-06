@@ -10,7 +10,7 @@ const VALOR = { alinear: 'derecha', clase: 'whitespace-nowrap tabular-nums text-
 const col = ayudanteColumnas<FilaCartera>()
 
 export const COLUMNAS = col.columns([
-  col.accessor('nombre', { header: 'Declarante', meta: { clase: 'max-w-64 truncate text-slate-900' } }),
+  col.accessor('nombre', { header: 'Contribuyente', meta: { clase: 'max-w-64 truncate text-slate-900' } }),
   col.accessor((f) => f.d.numero, {
     id: 'declaracion',
     header: 'Declaración',
@@ -19,7 +19,7 @@ export const COLUMNAS = col.columns([
       <>
         <Link to={`/declaraciones/${d.id}`} className="font-medium text-slate-900 hover:text-brand-700">{d.numero}</Link>
         <p className="text-xs text-slate-500">
-          {etiquetaImpuesto[d.impuesto]} · {etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)}
+          {etiquetaImpuesto[d.impuesto]} · {etiquetaPeriodo(d)}
         </p>
       </>
     ),
