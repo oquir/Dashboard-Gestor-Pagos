@@ -105,7 +105,7 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   seccion('A. Datos de la declaración')
   const datos: [string, string][] = [
     ['Impuesto', etiquetaImpuesto[d.impuesto]],
-    ['Periodo', etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo)],
+    ['Periodo', etiquetaPeriodo(d)],
     ['Número de factura', String(d.numeroFactura)],
     ['Fecha de presentación', formatoFecha(d.fechaPresentacion)],
     ['Fecha de vencimiento', formatoFecha(d.fechaVencimiento)],
@@ -114,19 +114,19 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   if (d.fechaCierre) datos.push(['Fecha de cierre', formatoFecha(d.fechaCierre)])
   campos(datos)
 
-  // Lo que escribió el declarante, aunque después haya cambiado sus datos en el RIT.
-  const { declarante: dec } = d
-  seccion('B. Declarante')
-  const declarante: [string, string][] = [
-    ['Nombre o razón social', dec.nombre],
-    ['Documento', formatoDocumento(dec)],
-    ['Dirección', dec.direccion],
-    ['Teléfono', dec.telefono],
-    ['Correo electrónico', dec.correo],
+  // Lo que se escribió en la declaración, aunque después hayan cambiado los datos en el RIT.
+  const { contribuyente: con } = d
+  seccion('B. Contribuyente')
+  const contribuyente: [string, string][] = [
+    ['Nombre o razón social', con.nombre],
+    ['Documento', formatoDocumento(con)],
+    ['Dirección', con.direccion],
+    ['Teléfono', con.telefono],
+    ['Correo electrónico', con.correo],
   ]
-  if (dec.establecimientos !== undefined) declarante.push(['Establecimientos en el municipio', String(dec.establecimientos)])
-  if (ins && municipio?.rit) declarante.push(['Número de RIT', ins.numeroRit])
-  campos(declarante)
+  if (con.establecimientos !== undefined) contribuyente.push(['Establecimientos en el municipio', String(con.establecimientos)])
+  if (ins && municipio?.rit) contribuyente.push(['Número de RIT', ins.numeroRit])
+  campos(contribuyente)
 
   seccion('C. Liquidación')
   const colConcepto = MARGEN + 64
@@ -177,9 +177,10 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   campos(pago)
 
   seccion('E. Firmas')
-  const c = dec.contador
+  const c = d.contador
   const firmas: [string, string][] = [
-    [dec.representanteLegal ? 'Representante legal' : 'Declarante', dec.representanteLegal ?? dec.nombre],
+    ['Declarante', d.declarante.nombre],
+    ['Documento del declarante', formatoDocumento(d.declarante)],
     c ? [etiquetaCargoContable[c.cargo], c.nombre] : ['Contador o revisor fiscal', 'No firma'],
   ]
   if (c) firmas.push([`Documento del ${etiquetaCargoContable[c.cargo].toLowerCase()}`, formatoDocumento(c)], ['Tarjeta profesional', c.tarjetaProfesional])
