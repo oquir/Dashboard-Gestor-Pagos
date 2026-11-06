@@ -1,10 +1,15 @@
 // Estado de la demo. Vive en el navegador (localStorage): no hay API.
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { PETICIONES } from './constants'
+import type { Peticion } from './constants'
 import { generarDatos } from './data/generar'
 import { nombreCompleto } from './lib/formato'
-import type { Archivo, Cheque, ConfigMunicipio, Datos, EstadoNovedad, Impuesto, Tarifa, Usuario } from './types'
-import { hoy } from './utils'
+import type { Archivo, Cheque, ConfigMunicipio, Datos, EstadoNovedad, Impuesto, Municipio, RegistroBitacora, Tarifa, Usuario } from './types'
+import { ahora, hoy } from './utils'
+
+/** Lo del municipio que se activa por formulario. */
+type ModuloPorImpuesto = 'impuestos' | 'validarContraRit' | 'aprobacionPrevia' | 'pagoEfectivo' | 'pagoCheque'
 
 interface Estado extends Datos {
   usuarioId: string | null
@@ -58,175 +63,232 @@ interface Estado extends Datos {
 
 export const useDatos = create<Estado>()(
   persist(
-    (set, get) => ({
-      ...generarDatos(),
-      usuarioId: null,
-      municipioSeleccionado: null,
+    (set, get) => {
+      const usuarioActual = () => get().usuarios.find((u) => u.id === get().usuarioId)
+      const municipioDeDeclaracion = (declaracionId: string | undefined) => get().declaraciones.find((d) => d.id === declaracionId)?.municipioId ?? null
 
-      iniciarSesion: (usuarioId) => set({ usuarioId, municipioSeleccionado: null }),
-      cerrarSesion: () => set({ usuarioId: null }),
-      seleccionarMunicipio: (id) => set({ municipioSeleccionado: id }),
+      /**
+       * Lo que hará el back al terminar cada endpoint, salga bien o mal: deja en la bitácora quién hizo la petición,
+       * cuándo y con qué datos.
+       */
+      const registrar = (peticion: Peticion, municipioId: string | null, datos: Record<string, unknown>, exito = true) => {
+        const u = usuarioActual()
+        if (!u) return
+        const registro: RegistroBitacora = {
+          id: Math.max(0, ...get().bitacora.map((r) => r.id)) + 1,
+          fechaHora: ahora(),
+          usuario: { id: u.id, nombre: nombreCompleto(u), rol: u.rol },
+          municipioId,
+          ...peticion,
+          datos,
+          exito,
+        }
+        set((s) => ({ bitacora: [registro, ...s.bitacora] }))
+      }
 
-      resolverNovedad: (inscripcionId, novedadId, estado, observacion, documentos) => {
-        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
-        const revisor = usuario && nombreCompleto(usuario)
-        set((s) => ({
-          inscripciones: s.inscripciones.map((ins) => {
-            if (ins.id !== inscripcionId) return ins
-            const novedad = ins.novedades.find((n) => n.id === novedadId)
-            if (!novedad) return ins
-            const novedades = ins.novedades.map((n) =>
-              n.id === novedadId
-                ? {
-                    ...n,
-                    estado,
-                    observacion: observacion || undefined,
-                    documentosRespuesta: documentos.length > 0 ? documentos : undefined,
-                    revisadaPor: revisor,
-                    fechaRevision: hoy(),
-                  }
-                : n,
-            )
-            let { estado: estadoInscripcion, calidades } = ins
-            if (estado === 'aprobada') {
-              if (novedad.tipo === 'inscripcion') estadoInscripcion = 'activa'
-              if (novedad.tipo === 'cancelacion') estadoInscripcion = 'cancelada'
-              if (novedad.tipo === 'actualizacion' && novedad.calidad) {
-                const acto = /\(([^)]+)\)/.exec(novedad.descripcion)?.[1]
-                calidades = [...calidades, { calidad: novedad.calidad, desde: hoy(), acto }]
+      const cambiarMunicipio = (municipioId: string, cambio: Partial<Municipio>) =>
+        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, ...cambio } : m)) }))
+
+      /** Activa o desactiva un módulo del municipio. La bitácora guarda el valor nuevo, no un "alternar". */
+      const alternarModulo = (municipioId: string, modulo: 'activo' | 'rit' | 'cargaAsobancaria') => {
+        const m = get().municipios.find((x) => x.id === municipioId)
+        if (!m) return
+        cambiarMunicipio(municipioId, { [modulo]: !m[modulo] })
+        registrar(modulo === 'activo' ? PETICIONES.cambiarEstadoMunicipio : PETICIONES.cambiarModulo, municipioId, { municipioId, [modulo]: !m[modulo] })
+      }
+
+      /** Lo mismo, para lo que se activa por formulario. Desactivar el último impuesto activo falla. */
+      const alternarModuloPorImpuesto = (municipioId: string, modulo: ModuloPorImpuesto, impuesto: Impuesto) => {
+        const m = get().municipios.find((x) => x.id === municipioId)
+        if (!m) return
+        const valor = !m[modulo][impuesto]
+        const nuevo = { ...m[modulo], [impuesto]: valor }
+        const exito = modulo !== 'impuestos' || Object.values(nuevo).some(Boolean)
+        if (exito) cambiarMunicipio(municipioId, { [modulo]: nuevo })
+        registrar(PETICIONES.cambiarModulo, municipioId, { municipioId, [modulo]: { [impuesto]: valor } }, exito)
+      }
+
+      return {
+        ...generarDatos(),
+        usuarioId: null,
+        municipioSeleccionado: null,
+
+        iniciarSesion: (usuarioId) => {
+          set({ usuarioId, municipioSeleccionado: null })
+          const u = usuarioActual()
+          if (u) registrar(PETICIONES.iniciarSesion, u.municipioId, { correo: u.correo })
+        },
+        cerrarSesion: () => set({ usuarioId: null }),
+        seleccionarMunicipio: (id) => set({ municipioSeleccionado: id }),
+
+        resolverNovedad: (inscripcionId, novedadId, estado, observacion, documentos) => {
+          const usuario = usuarioActual()
+          const revisor = usuario && nombreCompleto(usuario)
+          set((s) => ({
+            inscripciones: s.inscripciones.map((ins) => {
+              if (ins.id !== inscripcionId) return ins
+              const novedad = ins.novedades.find((n) => n.id === novedadId)
+              if (!novedad) return ins
+              const novedades = ins.novedades.map((n) =>
+                n.id === novedadId
+                  ? {
+                      ...n,
+                      estado,
+                      observacion: observacion || undefined,
+                      documentosRespuesta: documentos.length > 0 ? documentos : undefined,
+                      revisadaPor: revisor,
+                      fechaRevision: hoy(),
+                    }
+                  : n,
+              )
+              let { estado: estadoInscripcion, calidades } = ins
+              if (estado === 'aprobada') {
+                if (novedad.tipo === 'inscripcion') estadoInscripcion = 'activa'
+                if (novedad.tipo === 'cancelacion') estadoInscripcion = 'cancelada'
+                if (novedad.tipo === 'actualizacion' && novedad.calidad) {
+                  const acto = /\(([^)]+)\)/.exec(novedad.descripcion)?.[1]
+                  calidades = [...calidades, { calidad: novedad.calidad, desde: hoy(), acto }]
+                }
+              } else if (novedad.tipo === 'inscripcion') {
+                estadoInscripcion = 'rechazada'
               }
-            } else if (novedad.tipo === 'inscripcion') {
-              estadoInscripcion = 'rechazada'
-            }
-            return { ...ins, novedades, estado: estadoInscripcion, calidades }
-          }),
-        }))
-      },
+              return { ...ins, novedades, estado: estadoInscripcion, calidades }
+            }),
+          }))
+          // De los archivos, el back guarda el nombre.
+          registrar(PETICIONES.resolverNovedad, get().inscripciones.find((i) => i.id === inscripcionId)?.municipioId ?? null, {
+            inscripcionId,
+            novedadId,
+            estado,
+            observacion,
+            documentos: documentos.map((d) => d.nombre),
+          })
+        },
 
-      resolverAprobacion: (id, estado, observacion) => {
-        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
-        const por = usuario ? nombreCompleto(usuario) : ''
-        set((s) => ({
-          declaraciones: s.declaraciones.map((d) =>
-            d.id === id ? { ...d, aprobacion: { estado, fecha: hoy(), por, observacion: observacion || undefined } } : d,
-          ),
-        }))
-      },
+        resolverAprobacion: (id, estado, observacion) => {
+          const usuario = usuarioActual()
+          const por = usuario ? nombreCompleto(usuario) : ''
+          set((s) => ({
+            declaraciones: s.declaraciones.map((d) =>
+              d.id === id ? { ...d, aprobacion: { estado, fecha: hoy(), por, observacion: observacion || undefined } } : d,
+            ),
+          }))
+          registrar(PETICIONES.resolverAprobacion, municipioDeDeclaracion(id), { id, estado, observacion })
+        },
 
-      guardarConfiguracion: (config) =>
-        set((s) => ({
-          configuraciones: s.configuraciones.map((c) => (c.municipioId === config.municipioId ? config : c)),
-        })),
+        guardarConfiguracion: (config) => {
+          set((s) => ({
+            configuraciones: s.configuraciones.map((c) => (c.municipioId === config.municipioId ? config : c)),
+          }))
+          registrar(PETICIONES.guardarConfiguracion, config.municipioId, { ...config })
+        },
 
-      cargarActividades: (municipioId, vigencia, tarifas, archivo) => {
-        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
-        const carga = { municipioId, vigencia, tarifas, archivo, cargadoPor: usuario ? nombreCompleto(usuario) : '', fechaCarga: hoy() }
-        set((s) => ({
-          actividades: [...s.actividades.filter((a) => a.municipioId !== municipioId || a.vigencia !== vigencia), carga],
-        }))
-      },
+        cargarActividades: (municipioId, vigencia, tarifas, archivo) => {
+          const usuario = usuarioActual()
+          const carga = { municipioId, vigencia, tarifas, archivo, cargadoPor: usuario ? nombreCompleto(usuario) : '', fechaCarga: hoy() }
+          set((s) => ({
+            actividades: [...s.actividades.filter((a) => a.municipioId !== municipioId || a.vigencia !== vigencia), carga],
+          }))
+          registrar(PETICIONES.cargarActividades, municipioId, { municipioId, vigencia, archivo, tarifas })
+        },
 
-      guardarUsuario: (usuario) =>
-        set((s) => ({
-          usuarios: s.usuarios.some((u) => u.id === usuario.id)
-            ? s.usuarios.map((u) => (u.id === usuario.id ? usuario : u))
-            : [...s.usuarios, usuario],
-        })),
+        guardarUsuario: (usuario) => {
+          const existe = get().usuarios.some((u) => u.id === usuario.id)
+          set((s) => ({
+            usuarios: existe ? s.usuarios.map((u) => (u.id === usuario.id ? usuario : u)) : [...s.usuarios, usuario],
+          }))
+          registrar(existe ? PETICIONES.editarUsuario : PETICIONES.crearUsuario, usuario.municipioId, { ...usuario })
+        },
 
-      alternarUsuario: (id) => set((s) => ({ usuarios: s.usuarios.map((u) => (u.id === id ? { ...u, activo: !u.activo } : u)) })),
-      eliminarUsuario: (id) => set((s) => ({ usuarios: s.usuarios.filter((u) => u.id !== id) })),
-      alternarMunicipio: (id) => set((s) => ({ municipios: s.municipios.map((m) => (m.id === id ? { ...m, activo: !m.activo } : m)) })),
-      cambiarDeclaracionesDesde: (municipioId, fecha) =>
-        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, declaracionesDesde: fecha } : m)) })),
-      alternarImpuesto: (municipioId, impuesto) =>
-        set((s) => ({
-          municipios: s.municipios.map((m) => {
-            if (m.id !== municipioId) return m
-            const impuestos = { ...m.impuestos, [impuesto]: !m.impuestos[impuesto] }
-            return Object.values(impuestos).some(Boolean) ? { ...m, impuestos } : m
-          }),
-        })),
-      alternarRit: (municipioId) => set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, rit: !m.rit } : m)) })),
-      alternarValidacionRit: (municipioId, impuesto) =>
-        set((s) => ({
-          municipios: s.municipios.map((m) =>
-            m.id === municipioId ? { ...m, validarContraRit: { ...m.validarContraRit, [impuesto]: !m.validarContraRit[impuesto] } } : m,
-          ),
-        })),
+        alternarUsuario: (id) => {
+          const u = get().usuarios.find((x) => x.id === id)
+          if (!u) return
+          set((s) => ({ usuarios: s.usuarios.map((x) => (x.id === id ? { ...x, activo: !x.activo } : x)) }))
+          registrar(PETICIONES.cambiarEstadoUsuario, u.municipioId, { id, activo: !u.activo })
+        },
+        eliminarUsuario: (id) => {
+          const municipioId = get().usuarios.find((u) => u.id === id)?.municipioId ?? null
+          set((s) => ({ usuarios: s.usuarios.filter((u) => u.id !== id) }))
+          registrar(PETICIONES.eliminarUsuario, municipioId, { id })
+        },
+        alternarMunicipio: (id) => alternarModulo(id, 'activo'),
+        cambiarDeclaracionesDesde: (municipioId, fecha) => {
+          cambiarMunicipio(municipioId, { declaracionesDesde: fecha })
+          registrar(PETICIONES.cambiarDeclaracionesDesde, municipioId, { municipioId, fecha })
+        },
+        alternarImpuesto: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'impuestos', impuesto),
+        alternarRit: (municipioId) => alternarModulo(municipioId, 'rit'),
+        alternarValidacionRit: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'validarContraRit', impuesto),
+        alternarAprobacionPrevia: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'aprobacionPrevia', impuesto),
+        alternarCargaAsobancaria: (municipioId) => alternarModulo(municipioId, 'cargaAsobancaria'),
+        alternarPagoEfectivo: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'pagoEfectivo', impuesto),
 
-      alternarAprobacionPrevia: (municipioId, impuesto) =>
-        set((s) => ({
-          municipios: s.municipios.map((m) =>
-            m.id === municipioId ? { ...m, aprobacionPrevia: { ...m.aprobacionPrevia, [impuesto]: !m.aprobacionPrevia[impuesto] } } : m,
-          ),
-        })),
+        registrarPagoVentanilla: (declaracionId, valor, recibo) => {
+          const usuario = usuarioActual()
+          set((s) => ({
+            pagos: [
+              ...s.pagos,
+              {
+                id: `p${s.pagos.length + 1}`,
+                declaracionId,
+                fecha: hoy(),
+                valor,
+                medio: 'Ventanilla del municipio',
+                recibo,
+                registradoPor: usuario ? nombreCompleto(usuario) : undefined,
+              },
+            ],
+          }))
+          registrar(PETICIONES.registrarPagoVentanilla, municipioDeDeclaracion(declaracionId), { declaracionId, valor, recibo })
+        },
 
-      alternarCargaAsobancaria: (municipioId) =>
-        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, cargaAsobancaria: !m.cargaAsobancaria } : m)) })),
-      alternarPagoEfectivo: (municipioId, impuesto) =>
-        set((s) => ({
-          municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, pagoEfectivo: { ...m.pagoEfectivo, [impuesto]: !m.pagoEfectivo[impuesto] } } : m)),
-        })),
+        alternarPagoCheque: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'pagoCheque', impuesto),
 
-      registrarPagoVentanilla: (declaracionId, valor, recibo) => {
-        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
-        set((s) => ({
-          pagos: [
-            ...s.pagos,
-            {
-              id: `p${s.pagos.length + 1}`,
-              declaracionId,
-              fecha: hoy(),
-              valor,
-              medio: 'Ventanilla del municipio',
-              recibo,
-              registradoPor: usuario ? nombreCompleto(usuario) : undefined,
-            },
-          ],
-        }))
-      },
+        recibirCheque: (declaracionId, cheque) => {
+          const usuario = usuarioActual()
+          set((s) => ({
+            cheques: [
+              ...s.cheques,
+              { ...cheque, id: `ch${s.cheques.length + 1}`, declaracionId, fechaRecibo: hoy(), recibidoPor: usuario ? nombreCompleto(usuario) : '', estado: 'en_canje' },
+            ],
+          }))
+          registrar(PETICIONES.recibirCheque, municipioDeDeclaracion(declaracionId), { declaracionId, ...cheque })
+        },
 
-      alternarPagoCheque: (municipioId, impuesto) =>
-        set((s) => ({
-          municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, pagoCheque: { ...m.pagoCheque, [impuesto]: !m.pagoCheque[impuesto] } } : m)),
-        })),
+        // Un cheque que ya no está en canje no se puede confirmar ni devolver: la petición falla.
+        confirmarCheque: (id) => {
+          const usuario = usuarioActual()
+          const c = get().cheques.find((x) => x.id === id)
+          const exito = c?.estado === 'en_canje'
+          if (c && exito) {
+            set((s) => ({
+              cheques: s.cheques.map((x) => (x.id === id ? { ...x, estado: 'pagado', fechaResolucion: hoy(), resueltoPor: usuario ? nombreCompleto(usuario) : '' } : x)),
+              pagos: [
+                ...s.pagos,
+                { id: `p${s.pagos.length + 1}`, declaracionId: c.declaracionId, fecha: c.fechaRecibo, valor: c.valor, medio: 'Cheque de gerencia', recibo: c.recibo, registradoPor: c.recibidoPor },
+              ],
+            }))
+          }
+          registrar(PETICIONES.confirmarCheque, municipioDeDeclaracion(c?.declaracionId), { id }, exito)
+        },
 
-      recibirCheque: (declaracionId, cheque) => {
-        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
-        set((s) => ({
-          cheques: [
-            ...s.cheques,
-            { ...cheque, id: `ch${s.cheques.length + 1}`, declaracionId, fechaRecibo: hoy(), recibidoPor: usuario ? nombreCompleto(usuario) : '', estado: 'en_canje' },
-          ],
-        }))
-      },
+        devolverCheque: (id, motivo) => {
+          const usuario = usuarioActual()
+          const c = get().cheques.find((x) => x.id === id)
+          const exito = c?.estado === 'en_canje'
+          if (exito) {
+            set((s) => ({
+              cheques: s.cheques.map((x) =>
+                x.id === id ? { ...x, estado: 'devuelto', fechaResolucion: hoy(), resueltoPor: usuario ? nombreCompleto(usuario) : '', motivoDevolucion: motivo } : x,
+              ),
+            }))
+          }
+          registrar(PETICIONES.devolverCheque, municipioDeDeclaracion(c?.declaracionId), { id, motivo }, exito)
+        },
 
-      confirmarCheque: (id) => {
-        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
-        const c = get().cheques.find((x) => x.id === id)
-        if (!c || c.estado !== 'en_canje') return
-        set((s) => ({
-          cheques: s.cheques.map((x) => (x.id === id ? { ...x, estado: 'pagado', fechaResolucion: hoy(), resueltoPor: usuario ? nombreCompleto(usuario) : '' } : x)),
-          pagos: [
-            ...s.pagos,
-            { id: `p${s.pagos.length + 1}`, declaracionId: c.declaracionId, fecha: c.fechaRecibo, valor: c.valor, medio: 'Cheque de gerencia', recibo: c.recibo, registradoPor: c.recibidoPor },
-          ],
-        }))
-      },
-
-      devolverCheque: (id, motivo) => {
-        const usuario = get().usuarios.find((u) => u.id === get().usuarioId)
-        set((s) => ({
-          cheques: s.cheques.map((x) =>
-            x.id === id && x.estado === 'en_canje'
-              ? { ...x, estado: 'devuelto', fechaResolucion: hoy(), resueltoPor: usuario ? nombreCompleto(usuario) : '', motivoDevolucion: motivo }
-              : x,
-          ),
-        }))
-      },
-
-      reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
-    }),
-    { name: 'gestor-pagos-demo', version: 36 },
+        reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
+      }
+    },
+    { name: 'gestor-pagos-demo', version: 40 },
   ),
 )
