@@ -31,20 +31,25 @@ interface Fuente {
  * - si la canceló, cesó después de que empezó el periodo;
  * - su vencimiento (por último dígito, si el calendario los separa) ya pasó, es desde que el municipio recibe
  *   declaraciones en el aplicativo y el municipio no tenía desactivado el formulario;
- * - no presentó ninguna declaración del periodo. La rechazada en la aprobación previa se tiene por no presentada
- *   (art. 580 ET); la ineficaz cuenta como presentada.
+ * - no presentó ninguna declaración que cubra fechas del periodo. Se compara por fechas y no por el número del periodo,
+ *   porque cada declaración conserva la periodicidad con que se presentó: si después el municipio la cambia en el
+ *   calendario, lo presentado sigue contando. La rechazada en la aprobación previa se tiene por no presentada (art. 580
+ *   ET); la ineficaz cuenta como presentada.
  * La ReteICA de un municipio que no exige la declaración en ceros no se marca: el agente pudo no retener nada.
  */
 export function calcularOmisos({ municipios, configuraciones, inscripciones, declaraciones }: Fuente, municipioId: string | null, hoy: string): ResultadoOmisos {
   const omisos: Omiso[] = []
   const agentesSinCeros = new Set<string>()
   const sinCalendario: ResultadoOmisos['sinCalendario'] = []
-  // Los omisos salen del RIT: solo cuentan las declaraciones de los inscritos.
-  const presentadas = new Set(
-    declaraciones
-      .filter((d) => d.inscripcionId && d.aprobacion?.estado !== 'rechazada')
-      .map((d) => `${d.inscripcionId}|${d.impuesto}|${d.vigencia}|${d.periodo}`),
-  )
+  // Los omisos salen del RIT: solo cuentan las declaraciones de los inscritos. Por inscrito, formulario y año, las
+  // fechas que cubre cada una.
+  const presentadas = new Map<string, { inicio: string; fin: string }[]>()
+  for (const d of declaraciones) {
+    if (!d.inscripcionId || d.aprobacion?.estado === 'rechazada') continue
+    const clave = `${d.inscripcionId}|${d.impuesto}|${d.vigencia}`
+    presentadas.set(clave, [...(presentadas.get(clave) ?? []), rangoPeriodo(d.periodicidad, d.vigencia, d.periodo)])
+  }
+  const cubierto = (clave: string, inicio: string, fin: string) => presentadas.get(clave)?.some((r) => r.inicio <= fin && inicio <= r.fin) ?? false
 
   for (const m of municipios) {
     if (!m.rit || (municipioId !== null && m.id !== municipioId)) continue
@@ -72,7 +77,7 @@ export function calcularOmisos({ municipios, configuraciones, inscripciones, dec
             if (cese && cese < inicio) continue
             const vencimiento = vencimientoPara(f, p, ins.documento)
             if (!vencimiento || vencimiento < m.declaracionesDesde || vencimiento >= hoy || (pausa && vencimiento >= pausa)) continue
-            if (presentadas.has(`${ins.id}|${impuesto}|${cal.vigencia}|${p.periodo}`)) continue
+            if (cubierto(`${ins.id}|${impuesto}|${cal.vigencia}`, inicio, fin)) continue
             if (impuesto === 'reteica' && !cfg.declaracionEnCeros) {
               agentesSinCeros.add(ins.id)
               continue
