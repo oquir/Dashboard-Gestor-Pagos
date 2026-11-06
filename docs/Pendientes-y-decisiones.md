@@ -48,6 +48,7 @@
 | Alerta de retenciones sin consignar para 1cero1 (2026-11-06) | **No le sale en Inicio** (permiso `verAlertaSinConsignar`). La ven el administrador y los funcionarios del municipio | 1cero1 no se encarga de lo jurídico del municipio |
 | Bitácora como la guarda el back (2026-11-06) | **Cada registro trae lo que el back guarda al terminar cada endpoint**: quién y cuándo, el controlador, la acción y el endpoint con los nombres del back, los datos enviados y si salió bien. Ya no trae frases ni el valor de antes y después. Lo que se hace en la demo también queda registrado. Cada registro tiene un número consecutivo que abre su página, con "Anterior" y "Siguiente" dentro del municipio elegido (§3.9) | El back solo tiene a mano lo que le envían: guardar el valor anterior lo obligaría a consultarlo en cada petición |
 | Motivo al desactivar un formulario en Configuración (2026-11-06) | **En una ventana** (`ModalMotivo`, genérica para todo el aplicativo), no en un cuadro de texto debajo del interruptor. Si se cancela, el formulario sigue activo. El motivo queda escrito debajo del interruptor, con un botón para cambiarlo | Más limpio, y la misma ventana sirve donde haga falta pedir un motivo |
+| Salida a producción de cada formulario (2026-11-06) | **Una fecha por formulario** (RIT, ICA, ReteICA y AutoReteICA) en Municipios › Módulos, en lugar de la fecha única de declaraciones. La pone 1cero1 | Los omisos de cada impuesto se revisan desde su fecha, y la del RIT decide si una inscripción tardía se puede juzgar (§3.3) |
 
 ## 2. Lo que falta, con su estado
 
@@ -62,7 +63,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 | Periodicidad de ReteICA y AutoReteICA | Desde el 2026-11-03 se pone en Calendario, por año gravable y por formulario (mensual, bimestral o trimestral), y la usan los vencimientos y la tarjeta de Inicio. Desde el 2026-11-06, las declaraciones de la demo salen del calendario de cada municipio, con su periodicidad, sus vencimientos y montos según la duración del periodo, y cada una dice su periodo. Como la tarifa, se aplica al generar los datos: cambiar la periodicidad después no cambia lo ya declarado | **Con efecto** |
 | Formulario conjunto | Se quitó el interruptor y el campo (2026-11-04) | **Quitado** |
 | Corrección a la baja (art. 589 clásico o corrección directa) | El flujo no existe (§3.2) | En revisión |
-| Plazo para inscribirse en el RIT | Nada marca una inscripción tardía (§3.3) | En revisión |
+| Plazo para inscribirse en el RIT | Desde el 2026-11-06, la inscripción radicada después del plazo sale como tardía en su detalle, con los días de retraso. Solo se juzga si el plazo vencía después de que el RIT salió a producción (§3.3) | **Con efecto** |
 | Declaración en ceros | Desde el 2026-11-03 decide si un agente de ReteICA sin declaración sale como omiso o solo en el aviso (§3.4 y §3.5) | **Con efecto** |
 | Bases mínimas de ReteICA (servicios y compras) | Desde el 2026-11-04, en las declaraciones de ReteICA de la demo, los pagos por debajo de la base mínima no se retienen, y el renglón lo dice. Como el resto de la configuración de la liquidación (tarifa, anticipo, sobretasa), se aplica al generar los datos de la demo: cambiarla no recalcula lo ya declarado | **Con efecto** |
 | Tasas de sanción con emplazamiento | La liquidación no las usa: falta registrar los emplazamientos (§3.13) | Pendiente |
@@ -140,6 +141,8 @@ Mientras sea proyecto, no sirve para pagar.
 Cada estatuto fija cuánto tiempo tiene un negocio para inscribirse desde que empieza actividades. En Bogotá son 2 meses; en Ricaurte, el mes siguiente a su inscripción en la Cámara de Comercio o en el RUT. Si se inscribe después, la inscripción es tardía y el municipio puede sancionarla según su estatuto. El monto de esa sanción no está documentado.
 
 El dashboard no puede **evitar** que alguien se inscriba tarde, pero sí **detectarlo**, porque el formulario del RIT trae la fecha de inicio de actividades. Por ejemplo, si empezó el 10 de enero y el plazo es de 2 meses, el límite era el 10 de marzo. Si radicó el 2 de mayo, se inscribió 53 días tarde, y el funcionario lo vería al revisar la solicitud.
+
+**Implementado el 2026-11-06** (`diasInscripcionTardia` en `src/lib/reglas.ts`): el detalle de la inscripción muestra "Inscripción tardía" y, en la solicitud de inscripción, la fecha límite y los días de retraso. Se juzga con los datos que radicó el contribuyente. Si el plazo vencía antes de la salida a producción del RIT, no se marca: al negocio le tocaba inscribirse en el sistema anterior y el aplicativo no sabe si lo hizo. El monto de la sanción sigue sin documentarse, así que no se liquida.
 
 ### 3.4 Declaración en ceros
 
@@ -409,7 +412,7 @@ El cruce con el RIT queda como un extra:
 | Periodicidad de cada declaración y nombre del periodo | El campo `periodicidad` de `Declaracion` (`src/types/dominio.ts`); `etiquetaPeriodo`, en `src/lib/formato.ts`, la misma para declaraciones, omisos y vencimientos |
 | Declaraciones de la demo según el calendario | `formularioDe`, `vencimientoIca` y `periodosVencidos` en `src/data/generar.ts`, que leen el calendario de `CONFIGURACIONES` (`src/data/catalogos.ts`); los montos según la duración del periodo, en `liquidarReteica` y `liquidarAutorretencion`; las retenciones en plazo que se dejan sin pagar, en `yaPagada` |
 | Aviso al cambiar la periodicidad de un año con declaraciones | `textoOtraPeriodicidad`, en `src/components/organisms/calendario/SeccionCalendario/utils.ts`, que se muestra en `TablaVencimientos` |
-| Omisos: cálculo y pantallas | `calcularOmisos` en `src/lib/omisos.ts` y `useOmisos` en `src/lib/sesion.ts`; la vista en `ListaOmisos` y `TablaOmisos` (`src/components/organisms/declaraciones/`); `DeclaracionesFaltantes` en `src/components/organisms/inscripciones/`; la fecha `declaracionesDesde` del tipo `Municipio` |
+| Omisos: cálculo y pantallas | `calcularOmisos` en `src/lib/omisos.ts` y `useOmisos` en `src/lib/sesion.ts`; la vista en `ListaOmisos` y `TablaOmisos` (`src/components/organisms/declaraciones/`); `DeclaracionesFaltantes` en `src/components/organisms/inscripciones/`; la fecha `enProduccionDesde` del tipo `Municipio`, por formulario |
 | Omisos de la demo | En `generarDatos` (`src/data/generar.ts`): los inscritos que no declararon el ICA 2025 y, con su propio azar, algunas ReteICA y AutoReteICA que se quitan al final |
 | Soportes fijos del RIT | `soportesRequeridos`, en `src/data/generar.ts` |
 | Resultado simulado del Asobancaria | `simular`, en `src/components/organisms/pagos/CargaAsobancaria/utils.ts` |
@@ -435,7 +438,6 @@ El cruce con el RIT queda como un extra:
 
 - **En revisión por el usuario**:
   - la corrección a la baja;
-  - el plazo de inscripción en el RIT;
   - las causales del art. 580;
   - los soportes por calidad.
 
