@@ -4,7 +4,7 @@ import type { ModalProps } from './types'
 
 /**
  * Ventana sobre la página, hecha con el `<dialog>` del navegador: se abre al montarse, atrapa el foco y se cierra
- * con la X, con Esc o al hacer clic en el fondo.
+ * con la X, con Esc o al hacer clic en el fondo. Al abrirse enfoca el control marcado con `data-autofocus`, si hay uno.
  */
 export default function Modal({ titulo, descripcion, cerrar, pie, children }: ModalProps) {
   const ventana = useRef<HTMLDialogElement>(null)
@@ -13,6 +13,8 @@ export default function Modal({ titulo, descripcion, cerrar, pie, children }: Mo
   useEffect(() => {
     const dialogo = ventana.current
     dialogo?.showModal()
+    // Al abrirse, el navegador enfoca lo primero que encuentra, que es la X.
+    dialogo?.querySelector<HTMLElement>('[data-autofocus]')?.focus()
     return () => dialogo?.close()
   }, [])
 
