@@ -219,13 +219,17 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
         {
           vigencia: 2026,
           decreto: 'Resolución 008 de 2026',
-          // Lo cargó tarde: las ReteICA del bimestre 1 se presentaron sin él y quedan marcadas.
+          // Lo cargó tarde: las primeras ReteICA del año se presentaron sin él y quedan marcadas.
           cargado: cargadoPorAdministrador('m2', '2026-04-08'),
           // Desde este año el ICA anual vence según el último dígito del NIT o la cédula: un día hábil por dígito.
           ica: fechasPorDigito('anual', [
             ['2027-04-05', '2027-04-06', '2027-04-07', '2027-04-08', '2027-04-09', '2027-04-12', '2027-04-13', '2027-04-14', '2027-04-15', '2027-04-16'],
           ]),
-          reteica: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
+          // Desde este año la ReteICA es mensual, como en Ricaurte (Nariño); hasta 2025 era bimestral.
+          reteica: fechasUnicas('mensual', [
+            '2026-02-18', '2026-03-18', '2026-04-20', '2026-05-19', '2026-06-18', '2026-07-17',
+            '2026-08-19', '2026-09-18', '2026-10-20', '2026-11-19', '2026-12-18', '2027-01-19',
+          ]),
           autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
         },
       ],
@@ -264,7 +268,8 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
           decreto: 'Decreto 015 de 2026',
           cargado: cargadoPorAdministrador('m3', '2026-01-27'),
           ica: fechasUnicas('anual', ['2027-04-30']),
-          reteica: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
+          // Desde este año la ReteICA es trimestral; la AutoReteICA sigue bimestral.
+          reteica: fechasUnicas('trimestral', ['2026-04-20', '2026-07-17', '2026-10-20', '2027-01-19']),
           autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2026-12-21']),
         },
       ],
@@ -283,16 +288,6 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
     chequeParcial: false,
   },
 ]
-
-/** Vencimiento del ICA anual del año gravable 2025, por municipio. */
-export const VENCIMIENTO_ICA_2025: Record<string, string> = {
-  m1: '2026-04-17',
-  m2: '2026-03-31',
-  m3: '2026-04-30',
-}
-
-/** Vencimientos de retención y autorretención 2026 por bimestre. */
-export const VENCIMIENTOS_BIMESTRE_2026 = ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18']
 
 export const NOMBRES = ['Ana', 'Luis', 'María', 'Jorge', 'Camila', 'Andrés', 'Paula', 'Felipe', 'Natalia', 'Santiago', 'Valentina', 'Mateo', 'Carolina', 'Sebastián', 'Daniela', 'Alejandro']
 export const APELLIDOS = ['García', 'Rodríguez', 'Martínez', 'López', 'Hernández', 'Gómez', 'Zapata', 'Ramírez', 'Torres', 'Castaño', 'Vargas', 'Rojas', 'Cárdenas', 'Mejía', 'Ospina', 'Arango']
