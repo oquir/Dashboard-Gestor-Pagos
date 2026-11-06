@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { StatTile } from '../../components/molecules'
 import { AlertaCalendario, AlertaSinConsignar, AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, ProximosVencimientos, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
 import { formatoCompacto } from '../../lib/formato'
+import { puede } from '../../lib/permisos'
 import { esperaAprobacion, sePuedePagar, totalPagado } from '../../lib/reglas'
 import {
   aprobacionVisible,
@@ -24,7 +25,7 @@ import type { Deuda } from '../../types'
 import { ANIO_ACTUAL, COLUMNAS_TARJETAS } from './constants'
 
 export default function Inicio() {
-  const { municipioId } = useSesion()
+  const { usuario, municipioId } = useSesion()
   const todasInscripciones = useDatos((s) => s.inscripciones)
   const declaraciones = useDeclaraciones()
   const municipios = useDatos((s) => s.municipios)
@@ -103,7 +104,7 @@ export default function Inicio() {
     <>
       <BuscadorMunicipios />
       <AlertaCalendario anio={sinCalendario.anio} municipios={sinCalendario.municipios} className="mb-6" />
-      <AlertaSinConsignar retenciones={sinConsignar} className="mb-6" />
+      {puede(usuario?.rol, 'verAlertaSinConsignar') && <AlertaSinConsignar retenciones={sinConsignar} className="mb-6" />}
       <div className={`grid gap-4 sm:grid-cols-2 ${COLUMNAS_TARJETAS[tarjetas]}`}>
         {conRitVisible && (
           <StatTile

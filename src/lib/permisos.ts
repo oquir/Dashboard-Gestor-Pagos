@@ -15,6 +15,8 @@ export type Permiso =
   | 'registrarPagoVentanilla'
   /** Ver quién hizo cada cambio y cuándo, en todos los municipios. */
   | 'verBitacora'
+  /** Ver en Inicio la alerta de ReteICA y AutoReteICA sin consignar, que puede ser delito (art. 402 del Código Penal). */
+  | 'verAlertaSinConsignar'
 
 const PERMISOS: Record<Permiso, Rol[]> = {
   verTodosLosMunicipios: ['1cero1'],
@@ -30,6 +32,8 @@ const PERMISOS: Record<Permiso, Rol[]> = {
   registrarPagoVentanilla: ['admin_municipio', 'funcionario'],
   // Con la bitácora, 1cero1 le responde al municipio quién hizo un cambio; el municipio no la ve.
   verBitacora: ['1cero1'],
+  // Lo jurídico de lo que no se consigna lo atiende el municipio, no 1cero1.
+  verAlertaSinConsignar: ['admin_municipio', 'funcionario'],
 }
 
 export const puede = (rol: Rol | undefined, permiso: Permiso) => rol !== undefined && PERMISOS[permiso].includes(rol)
