@@ -1,4 +1,4 @@
-import { etiquetaImpuesto, etiquetaPeriodo, formatoFecha, formatoHaceDias } from '../../../../lib/formato'
+import { etiquetaImpuesto, etiquetaPeriodo, formatoFecha, formatoHaceDias, textoEnProduccion } from '../../../../lib/formato'
 import { idOmiso } from '../../../../lib/omisos'
 import { useOmisos } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
@@ -7,7 +7,7 @@ import { Badge, Card } from '../../../atoms'
 import { CardHeader, Vacio } from '../../../molecules'
 import type { DeclaracionesFaltantesProps } from './types'
 
-/** Periodos vencidos que el inscrito debía declarar y no ha declarado, desde que el municipio recibe declaraciones en el aplicativo. */
+/** Periodos vencidos que el inscrito debía declarar y no ha declarado, desde que cada formulario salió a producción en el aplicativo. */
 export default function DeclaracionesFaltantes({ inscripcion }: DeclaracionesFaltantesProps) {
   const { omisos } = useOmisos(inscripcion.municipioId)
   const municipio = useDatos((s) => s.municipios.find((m) => m.id === inscripcion.municipioId))
@@ -17,7 +17,7 @@ export default function DeclaracionesFaltantes({ inscripcion }: DeclaracionesFal
     <Card>
       <CardHeader
         titulo="Declaraciones que faltan"
-        descripcion={municipio && `Periodos vencidos sin declarar desde el ${formatoFecha(municipio.declaracionesDesde)}, cuando el municipio empezó a recibir declaraciones en el aplicativo.`}
+        descripcion={municipio && `Periodos vencidos sin declarar desde ${textoEnProduccion(municipio)}, cuando los formularios salieron a producción en el aplicativo.`}
       />
       {suyos.length === 0 ? (
         <Vacio titulo="Está al día" descripcion="No le falta ninguna declaración vencida." />

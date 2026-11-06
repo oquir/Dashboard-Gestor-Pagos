@@ -1,14 +1,24 @@
-import { textoDesactivado } from '../../../../lib/formato'
+import { etiquetaFormulario, textoDesactivado } from '../../../../lib/formato'
+import { IMPUESTOS } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import { Input } from '../../../atoms'
 import { Campo, Interruptor, Seccion } from '../../../molecules'
+import type { Formulario } from '../../../../types'
 import type { ModulosMunicipioProps } from './types'
+
+const AYUDA: Record<Formulario, string> = {
+  rit: 'Una inscripción se juzga tardía solo si su plazo vencía desde esta fecha; antes, al negocio le tocaba inscribirse en otro sistema.',
+  ica: 'Los omisos del ICA se revisan desde esta fecha; lo anterior está en otro sistema.',
+  reteica: 'Los omisos de la ReteICA se revisan desde esta fecha; lo anterior está en otro sistema.',
+  autorretencion: 'Los omisos de la AutoReteICA se revisan desde esta fecha; lo anterior está en otro sistema.',
+}
 
 /** Lo que el municipio tiene en el aplicativo además de sus formularios de impuestos. */
 export default function ModulosMunicipio({ municipio: m, pausas }: ModulosMunicipioProps) {
   const alternarRit = useDatos((s) => s.alternarRit)
   const alternarCargaAsobancaria = useDatos((s) => s.alternarCargaAsobancaria)
-  const cambiarDeclaracionesDesde = useDatos((s) => s.cambiarDeclaracionesDesde)
+  const cambiarEnProduccionDesde = useDatos((s) => s.cambiarEnProduccionDesde)
+  const formularios: Formulario[] = [...(m.rit ? ['rit' as const] : []), ...IMPUESTOS.filter((i) => m.impuestos[i])]
 
   return (
     <Seccion titulo="Módulos" descripcion="Lo que el municipio tiene en el aplicativo además de sus formularios.">
@@ -22,9 +32,17 @@ export default function ModulosMunicipio({ municipio: m, pausas }: ModulosMunici
         valor={m.cargaAsobancaria}
         onChange={() => alternarCargaAsobancaria(m.id)}
       />
-      <Campo etiqueta="Declaraciones en el aplicativo desde" ayuda="Los omisos se revisan desde esta fecha; lo anterior está en otro sistema.">
-        <Input type="date" value={m.declaracionesDesde} onChange={(e) => e.target.value && cambiarDeclaracionesDesde(m.id, e.target.value)} />
-      </Campo>
+      <div>
+        <p className="text-sm font-medium text-slate-900">Salida a producción</p>
+        <p className="text-xs text-slate-500">Desde cuándo recibe el aplicativo cada formulario. Se tiene en cuenta en los omisos y en las inscripciones tardías.</p>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          {formularios.map((f) => (
+            <Campo key={f} etiqueta={etiquetaFormulario[f]} ayuda={AYUDA[f]}>
+              <Input type="date" value={m.enProduccionDesde[f]} onChange={(e) => e.target.value && cambiarEnProduccionDesde(m.id, f, e.target.value)} />
+            </Campo>
+          ))}
+        </div>
+      </div>
     </Seccion>
   )
 }

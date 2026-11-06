@@ -11,6 +11,7 @@ import type {
   FormularioDesactivado,
   Impuesto,
   Inscripcion,
+  Municipio,
   Periodicidad,
   Rol,
   Sector,
@@ -158,3 +159,15 @@ export const etiquetaPeriodicidad: Record<Periodicidad, string> = {
  */
 export const etiquetaPeriodo = ({ impuesto, periodicidad, vigencia, periodo }: { impuesto: Impuesto; periodicidad: Periodicidad; vigencia: number; periodo: number }) =>
   impuesto === 'ica' ? `Año gravable ${vigencia}` : `${NOMBRES_PERIODOS[periodicidad][periodo - 1]} de ${vigencia}`
+
+/**
+ * Desde cuándo recibe el aplicativo los impuestos activos del municipio: "el 1 feb 2026" si todos salieron el mismo día,
+ * o "el 1 feb 2026 (ICA) y el 1 mar 2026 (ReteICA)" si no.
+ */
+export function textoEnProduccion(m: Municipio) {
+  const porFecha = new Map<string, string[]>()
+  for (const i of (Object.keys(etiquetaImpuesto) as Impuesto[]).filter((x) => m.impuestos[x])) porFecha.set(m.enProduccionDesde[i], [...(porFecha.get(m.enProduccionDesde[i]) ?? []), etiquetaImpuesto[i]])
+  const grupos = [...porFecha].sort(([a], [b]) => a.localeCompare(b))
+  if (grupos.length === 1) return `el ${formatoFecha(grupos[0][0])}`
+  return formatoLista(grupos.map(([f, nombres]) => `el ${formatoFecha(f)} (${formatoLista(nombres)})`))
+}

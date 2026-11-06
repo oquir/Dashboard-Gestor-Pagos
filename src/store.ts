@@ -5,7 +5,7 @@ import { PETICIONES } from './constants'
 import type { Peticion } from './constants'
 import { generarDatos } from './data/generar'
 import { nombreCompleto } from './lib/formato'
-import type { Archivo, Cheque, ConfigMunicipio, Datos, EstadoNovedad, Impuesto, Municipio, RegistroBitacora, Tarifa, Usuario } from './types'
+import type { Archivo, Cheque, ConfigMunicipio, Datos, EstadoNovedad, Formulario, Impuesto, Municipio, RegistroBitacora, Tarifa, Usuario } from './types'
 import { ahora, hoy } from './utils'
 
 /** Lo del municipio que se activa por formulario. */
@@ -36,7 +36,7 @@ interface Estado extends Datos {
   eliminarUsuario: (id: string) => void
   alternarMunicipio: (id: string) => void
   /** Fecha desde la que el municipio recibe declaraciones en el aplicativo; desde ahí se revisan los omisos. */
-  cambiarDeclaracionesDesde: (municipioId: string, fecha: string) => void
+  cambiarEnProduccionDesde: (municipioId: string, formulario: Formulario, fecha: string) => void
   /** Activa o desactiva un impuesto del municipio; siempre debe quedar al menos uno activo. */
   alternarImpuesto: (municipioId: string, impuesto: Impuesto) => void
   alternarRit: (municipioId: string) => void
@@ -212,9 +212,11 @@ export const useDatos = create<Estado>()(
           registrar(PETICIONES.eliminarUsuario, municipioId, { id })
         },
         alternarMunicipio: (id) => alternarModulo(id, 'activo'),
-        cambiarDeclaracionesDesde: (municipioId, fecha) => {
-          cambiarMunicipio(municipioId, { declaracionesDesde: fecha })
-          registrar(PETICIONES.cambiarDeclaracionesDesde, municipioId, { municipioId, fecha })
+        cambiarEnProduccionDesde: (municipioId, formulario, fecha) => {
+          const m = get().municipios.find((x) => x.id === municipioId)
+          if (!m) return
+          cambiarMunicipio(municipioId, { enProduccionDesde: { ...m.enProduccionDesde, [formulario]: fecha } })
+          registrar(PETICIONES.cambiarEnProduccionDesde, municipioId, { municipioId, formulario, fecha })
         },
         alternarImpuesto: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'impuestos', impuesto),
         alternarRit: (municipioId) => alternarModulo(municipioId, 'rit'),
@@ -289,6 +291,6 @@ export const useDatos = create<Estado>()(
         reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
       }
     },
-    { name: 'gestor-pagos-demo', version: 40 },
+    { name: 'gestor-pagos-demo', version: 41 },
   ),
 )

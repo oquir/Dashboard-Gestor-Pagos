@@ -4,9 +4,12 @@ import { nombreCompleto } from '../lib/formato'
 import { SANCIONES_LEY } from '../lib/reglas'
 import type { ActividadesVigencia, ConfigMunicipio, Municipio, Periodicidad, Sector, Tarifa, Usuario, VencimientosFormulario } from '../types'
 
+/** Todos los formularios de la demo salieron a producción el mismo día. */
+const PRODUCCION = { rit: '2026-02-01', ica: '2026-02-01', reteica: '2026-02-01', autorretencion: '2026-02-01' }
+
 export const MUNICIPIOS: Municipio[] = [
   {
-    id: 'm1', nombre: 'San José del Valle', departamento: 'Antioquia', codigoDane: '05901', activo: true, declaracionesDesde: '2026-02-01',
+    id: 'm1', nombre: 'San José del Valle', departamento: 'Antioquia', codigoDane: '05901', activo: true, enProduccionDesde: PRODUCCION,
     impuestos: { ica: true, reteica: false, autorretencion: false },
     rit: true,
     validarContraRit: { ica: true, reteica: true, autorretencion: true },
@@ -16,7 +19,7 @@ export const MUNICIPIOS: Municipio[] = [
     pagoCheque: { ica: true, reteica: false, autorretencion: false },
   },
   {
-    id: 'm2', nombre: 'Puerto Esperanza', departamento: 'Bolívar', codigoDane: '13901', activo: true, declaracionesDesde: '2026-02-01',
+    id: 'm2', nombre: 'Puerto Esperanza', departamento: 'Bolívar', codigoDane: '13901', activo: true, enProduccionDesde: PRODUCCION,
     impuestos: { ica: true, reteica: true, autorretencion: false },
     rit: true,
     // La ReteICA no se valida contra el RIT: también la declaran agentes que no se han inscrito.
@@ -27,7 +30,7 @@ export const MUNICIPIOS: Municipio[] = [
     pagoCheque: { ica: false, reteica: false, autorretencion: false },
   },
   {
-    id: 'm3', nombre: 'Santa Rosa de los Andes', departamento: 'Santander', codigoDane: '68901', activo: true, declaracionesDesde: '2026-02-01',
+    id: 'm3', nombre: 'Santa Rosa de los Andes', departamento: 'Santander', codigoDane: '68901', activo: true, enProduccionDesde: PRODUCCION,
     impuestos: { ica: true, reteica: true, autorretencion: true },
     // No lleva el RIT en ningún sistema: de sus contribuyentes solo se sabe lo que escriben en las declaraciones.
     rit: false,

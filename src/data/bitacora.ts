@@ -48,7 +48,7 @@ function escritas(datos: Omit<Datos, 'bitacora'>): Llamada[] {
     llamada('2026-08-11T10:40', 'u1', 'm3', PETICIONES.cambiarModulo, { municipioId: 'm3', pagoEfectivo: { reteica: municipio('m3').pagoEfectivo.reteica } }),
     llamada('2026-08-11T10:46', 'u1', 'm3', PETICIONES.cambiarModulo, { municipioId: 'm3', pagoCheque: { reteica: municipio('m3').pagoCheque.reteica } }),
     llamada('2026-08-19T15:05', 'u1', 'm1', PETICIONES.cambiarModulo, { municipioId: 'm1', cargaAsobancaria: municipio('m1').cargaAsobancaria }),
-    llamada('2026-10-06T16:10', 'u1', 'm1', PETICIONES.cambiarDeclaracionesDesde, { municipioId: 'm1', fecha: municipio('m1').declaracionesDesde }),
+    llamada('2026-10-06T16:10', 'u1', 'm1', PETICIONES.cambiarEnProduccionDesde, { municipioId: 'm1', formulario: 'ica', fecha: municipio('m1').enProduccionDesde.ica }),
     llamada('2026-10-20T19:41', 'u1', 'm2', PETICIONES.guardarConfiguracion, config('m2'), false),
     llamada('2026-10-20T19:45', 'u1', 'm2', PETICIONES.guardarConfiguracion, config('m2')),
 

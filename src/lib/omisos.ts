@@ -58,8 +58,10 @@ export function calcularOmisos({ municipios, configuraciones, inscripciones, dec
     const calendarios = cfg.calendarioTributario.porVigencia
     const inscritos = inscripciones.filter((i) => i.municipioId === m.id && (i.estado === 'activa' || i.estado === 'cancelada'))
 
-    // Desde el año anterior al de inicio, porque su ICA anual vence en el año siguiente, hasta el año en curso.
-    for (let vigencia = Number(m.declaracionesDesde.slice(0, 4)) - 1; vigencia <= Number(hoy.slice(0, 4)); vigencia++) {
+    // Desde el año anterior al de la primera salida a producción, porque su ICA anual vence en el año siguiente, hasta el año en curso.
+    const desde = IMPUESTOS.filter((i) => m.impuestos[i]).map((i) => m.enProduccionDesde[i]).sort()[0]
+    if (!desde) continue
+    for (let vigencia = Number(desde.slice(0, 4)) - 1; vigencia <= Number(hoy.slice(0, 4)); vigencia++) {
       if (!calendarios.some((c) => c.vigencia === vigencia)) sinCalendario.push({ municipioId: m.id, vigencia })
     }
 
@@ -76,7 +78,7 @@ export function calcularOmisos({ municipios, configuraciones, inscripciones, dec
             const cese = fechaCese(ins)
             if (cese && cese < inicio) continue
             const vencimiento = vencimientoPara(f, p, ins.documento)
-            if (!vencimiento || vencimiento < m.declaracionesDesde || vencimiento >= hoy || (pausa && vencimiento >= pausa)) continue
+            if (!vencimiento || vencimiento < m.enProduccionDesde[impuesto] || vencimiento >= hoy || (pausa && vencimiento >= pausa)) continue
             if (cubierto(`${ins.id}|${impuesto}|${cal.vigencia}`, inicio, fin)) continue
             if (impuesto === 'reteica' && !cfg.declaracionEnCeros) {
               agentesSinCeros.add(ins.id)

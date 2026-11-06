@@ -17,7 +17,7 @@ export const PETICIONES = {
   eliminarUsuario: peticion('Usuarios', 'EliminarUsuario', 'DELETE /api/usuarios/{id}'),
   cambiarEstadoMunicipio: peticion('Municipios', 'CambiarEstado', 'PATCH /api/municipios/{municipioId}/estado'),
   cambiarModulo: peticion('Municipios', 'CambiarModulo', 'PATCH /api/municipios/{municipioId}/modulos'),
-  cambiarDeclaracionesDesde: peticion('Municipios', 'CambiarDeclaracionesDesde', 'PATCH /api/municipios/{municipioId}/declaraciones-desde'),
+  cambiarEnProduccionDesde: peticion('Municipios', 'CambiarEnProduccionDesde', 'PATCH /api/municipios/{municipioId}/en-produccion-desde'),
   registrarPagoVentanilla: peticion('Pagos', 'RegistrarPagoVentanilla', 'POST /api/pagos/ventanilla'),
   recibirCheque: peticion('Pagos', 'RecibirCheque', 'POST /api/pagos/cheques'),
   confirmarCheque: peticion('Pagos', 'ConfirmarCheque', 'PUT /api/pagos/cheques/{id}/confirmar'),

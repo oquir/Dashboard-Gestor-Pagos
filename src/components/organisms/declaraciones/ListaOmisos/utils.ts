@@ -1,4 +1,4 @@
-import { etiquetaEstadoInscripcion, etiquetaImpuesto, etiquetaPeriodo, formatoDocumento, formatoFecha, normalizar } from '../../../../lib/formato'
+import { etiquetaEstadoInscripcion, etiquetaImpuesto, etiquetaPeriodo, formatoDocumento, normalizar, textoEnProduccion } from '../../../../lib/formato'
 import type { Municipio, Omiso, ResultadoOmisos } from '../../../../types'
 import { diferenciaDias } from '../../../../utils'
 
@@ -18,11 +18,11 @@ export function filtrarOmisos(omisos: Omiso[], texto: string, anio: string) {
   )
 }
 
-/** Desde cuándo se revisa: lo anterior a que el municipio recibiera declaraciones en el aplicativo está en otro sistema. */
+/** Desde cuándo se revisa: lo anterior a la salida a producción de cada formulario está en otro sistema. */
 export const textoDesde = (municipio: Municipio | undefined) =>
   municipio
-    ? `Se revisan los vencimientos desde el ${formatoFecha(municipio.declaracionesDesde)}, cuando ${municipio.nombre} empezó a recibir declaraciones en el aplicativo. Lo anterior está en otro sistema.`
-    : 'Se revisan los vencimientos desde que cada municipio empezó a recibir declaraciones en el aplicativo. Lo anterior está en otro sistema.'
+    ? `Se revisan los vencimientos desde ${textoEnProduccion(municipio)}, cuando los formularios de ${municipio.nombre} salieron a producción en el aplicativo. Lo anterior está en otro sistema.`
+    : 'Se revisan los vencimientos desde que los formularios de cada municipio salieron a producción en el aplicativo. Lo anterior está en otro sistema.'
 
 /** Años sin calendario: sus omisos no se pueden revisar. Con todos los municipios, dice de cuál es cada año. */
 export function textoSinCalendario(lista: ResultadoOmisos['sinCalendario'], nombres: Map<string, string>, todos: boolean) {
