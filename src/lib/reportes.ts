@@ -55,7 +55,7 @@ const RADICADO: Columna = { titulo: 'Radicado', ancho: 18 }
 const FACTURA: Columna = { titulo: 'N.º de factura', ancho: 14 }
 const IMPUESTO: Columna = { titulo: 'Impuesto', ancho: 13 }
 const PERIODO: Columna = { titulo: 'Periodo', ancho: 20 }
-const DECLARANTE: Columna = { titulo: 'Declarante', ancho: 36 }
+const CONTRIBUYENTE: Columna = { titulo: 'Contribuyente', ancho: 36 }
 const DOCUMENTO: Columna = { titulo: 'Documento', ancho: 18 }
 const VENCIMIENTO: Columna = { titulo: 'Vencimiento', ancho: 13, formato: 'fecha' }
 const TOTAL: Columna = { titulo: 'Total a pagar', ancho: 16, formato: 'pesos' }
@@ -65,15 +65,15 @@ const APROBACION: Columna = { titulo: 'Aprobación', ancho: 26 }
 
 export const COLUMNAS: Record<IdReporte, Columna[]> = {
   declaraciones: [
-    MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, { titulo: 'Tipo', ancho: 12 }, DECLARANTE, DOCUMENTO,
+    MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, { titulo: 'Tipo', ancho: 12 }, CONTRIBUYENTE, DOCUMENTO,
     { titulo: 'Presentación', ancho: 13, formato: 'fecha' }, VENCIMIENTO, TOTAL, PAGADO, ESTADO_PAGO, APROBACION,
   ],
   recaudo: [
-    MUNICIPIO, { titulo: 'Fecha de pago', ancho: 13, formato: 'fecha' }, RADICADO, FACTURA, IMPUESTO, PERIODO, DECLARANTE, DOCUMENTO,
+    MUNICIPIO, { titulo: 'Fecha de pago', ancho: 13, formato: 'fecha' }, RADICADO, FACTURA, IMPUESTO, PERIODO, CONTRIBUYENTE, DOCUMENTO,
     { titulo: 'Medio de pago', ancho: 18 }, { titulo: 'Valor', ancho: 16, formato: 'pesos' },
   ],
   cartera: [
-    MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, DECLARANTE, DOCUMENTO, VENCIMIENTO, TOTAL, PAGADO,
+    MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, CONTRIBUYENTE, DOCUMENTO, VENCIMIENTO, TOTAL, PAGADO,
     { titulo: 'Saldo', ancho: 16, formato: 'pesos' }, ESTADO_PAGO,
   ],
   rit: [
@@ -174,8 +174,8 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
   return {
     declaraciones: {
       filas: presentadas.map(({ d, pagado, estado, a }) => [
-        nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo),
-        etiquetaTipoDeclaracion[d.tipo], d.declarante.nombre, formatoDocumento(d.declarante), d.fechaPresentacion, d.fechaVencimiento, d.totalAPagar,
+        nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d),
+        etiquetaTipoDeclaracion[d.tipo], d.contribuyente.nombre, formatoDocumento(d.contribuyente), d.fechaPresentacion, d.fechaVencimiento, d.totalAPagar,
         pagado, etiquetaEstadoPago[estado], a ? etiquetaEstadoAprobacion[a.estado] : 'No aplica',
       ]),
       graficas: [
@@ -187,7 +187,7 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
     recaudo: {
       filas: recibidos.map(({ p, d }) => [
         nombreMunicipio.get(d.municipioId) ?? '', p.fecha, d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto],
-        etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo), d.declarante.nombre, formatoDocumento(d.declarante), p.medio, p.valor,
+        etiquetaPeriodo(d), d.contribuyente.nombre, formatoDocumento(d.contribuyente), p.medio, p.valor,
       ]),
       graficas: [
         { titulo: 'Por impuesto', descripcion: 'Valor recaudado.', formato: 'pesos', barras: porImpuesto(recibidos, (f) => f.d.impuesto, (f) => f.p.valor) },
@@ -210,8 +210,8 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
     },
     cartera: {
       filas: cartera.map(({ d, pagado, saldo, estado }) => [
-        nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d.impuesto, d.vigencia, d.periodo),
-        d.declarante.nombre, formatoDocumento(d.declarante), d.fechaVencimiento, d.totalAPagar, pagado, saldo, etiquetaEstadoPago[estado],
+        nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d),
+        d.contribuyente.nombre, formatoDocumento(d.contribuyente), d.fechaVencimiento, d.totalAPagar, pagado, saldo, etiquetaEstadoPago[estado],
       ]),
       graficas: [
         { titulo: 'Por impuesto', descripcion: 'Saldo por pagar.', formato: 'pesos', barras: porImpuesto(cartera, (f) => f.d.impuesto, (f) => f.saldo) },
