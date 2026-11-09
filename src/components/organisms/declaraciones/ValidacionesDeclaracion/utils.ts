@@ -1,8 +1,10 @@
+import { formatoFecha } from '../../../../lib/formato'
+import { esCorreccionABaja, limiteCorreccionABaja } from '../../../../lib/reglas'
 import type { Declaracion, Inscripcion } from '../../../../types'
 import type { Validacion } from './types'
 
 /** Cruces automáticos que el funcionario ve antes de aprobar la declaración. */
-export function validaciones(d: Declaracion, ins: Inscripcion | undefined, contraRit: boolean) {
+export function validaciones(d: Declaracion, ins: Inscripcion | undefined, contraRit: boolean, corregida?: Declaracion) {
   const resultado: Validacion[] = []
   const valor = (codigo: string) => d.renglones.find((r) => r.codigo === codigo)?.valor ?? 0
   const tiene = (calidad: string) => ins?.calidades.some((c) => c.calidad === calidad) ?? false
@@ -32,6 +34,13 @@ export function validaciones(d: Declaracion, ins: Inscripcion | undefined, contr
     )
   }
   if (d.tipo === 'correccion') resultado.push({ ok: Boolean(d.corrigeA), texto: 'Indica la declaración que corrige' })
+  // La corrección a la baja, directa o con solicitud, se presenta dentro del año siguiente al vencimiento (art. 589).
+  if (esCorreccionABaja(d, corregida)) {
+    resultado.push({
+      ok: d.fechaPresentacion <= limiteCorreccionABaja(d.fechaVencimiento),
+      texto: `Se presentó dentro del año siguiente al vencimiento, hasta el ${formatoFecha(limiteCorreccionABaja(d.fechaVencimiento))} (art. 589)`,
+    })
+  }
   if (d.tipo === 'clausura') resultado.push({ ok: Boolean(d.fechaCierre), texto: 'Indica la fecha exacta de cierre' })
   return resultado
 }

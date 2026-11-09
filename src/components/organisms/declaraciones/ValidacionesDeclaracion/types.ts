@@ -12,4 +12,6 @@ export interface ValidacionesDeclaracionProps {
   /** El municipio tiene el RIT y la validación activa en este formulario. */
   contraRit: boolean
   municipioConRit: boolean
+  /** En una corrección, la declaración que corrige. */
+  corregida?: Declaracion
 }

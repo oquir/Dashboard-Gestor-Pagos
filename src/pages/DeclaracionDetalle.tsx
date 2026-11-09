@@ -157,7 +157,7 @@ export default function DeclaracionDetalle() {
               vacio="No cargó archivos."
             />
           </Card>
-          <ValidacionesDeclaracion d={d} ins={ins} contraRit={seValidaContraRit(municipios, d)} municipioConRit={municipioConRit} />
+          <ValidacionesDeclaracion d={d} ins={ins} contraRit={seValidaContraRit(municipios, d)} municipioConRit={municipioConRit} corregida={corregida} />
         </>
       }
     />

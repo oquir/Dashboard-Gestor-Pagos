@@ -5,7 +5,7 @@ import type { ValidacionesDeclaracionProps } from './types'
 import { validaciones } from './utils'
 
 /** Lo que cumple y las inconsistencias de la declaración. */
-export default function ValidacionesDeclaracion({ d, ins, contraRit, municipioConRit }: ValidacionesDeclaracionProps) {
+export default function ValidacionesDeclaracion({ d, ins, contraRit, municipioConRit, corregida }: ValidacionesDeclaracionProps) {
   return (
     <Card>
       <CardHeader
@@ -19,7 +19,7 @@ export default function ValidacionesDeclaracion({ d, ins, contraRit, municipioCo
         }
       />
       <ul className="space-y-2 p-5">
-        {validaciones(d, ins, contraRit).map((v) => (
+        {validaciones(d, ins, contraRit, corregida).map((v) => (
           <li key={v.texto} className="flex items-start gap-2 text-sm">
             {v.ok ? (
               <TickCircle className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-label="Cumple" />
