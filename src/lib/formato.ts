@@ -3,6 +3,7 @@ import type {
   Calidad,
   EstadoAprobacion,
   EstadoCheque,
+  EstadoCorreccion,
   EstadoInscripcion,
   EstadoNovedad,
   EstadoPago,
@@ -124,11 +125,21 @@ export const etiquetaTipoDeclaracion: Record<TipoDeclaracion, string> = {
   clausura: 'Clausura',
 }
 
+/** El tipo de la declaración; la corrección que baja el valor a pagar se llama "Corrección a la baja". */
+export const textoTipoDeclaracion = (tipo: TipoDeclaracion, aLaBaja: boolean) => (aLaBaja ? 'Corrección a la baja' : etiquetaTipoDeclaracion[tipo])
+
 export const etiquetaEstadoAprobacion: Record<EstadoAprobacion, string> = {
   por_aprobar: 'Por aprobar',
   vencida: 'Aprobación vencida',
   aprobada: 'Aprobada',
   aprobada_automatica: 'Aprobada automáticamente',
+  rechazada: 'Rechazada',
+}
+
+export const etiquetaEstadoCorreccion: Record<EstadoCorreccion, string> = {
+  por_resolver: 'Por resolver',
+  aceptada: 'Aceptada',
+  aceptada_por_silencio: 'Aceptada por silencio',
   rechazada: 'Rechazada',
 }
 
