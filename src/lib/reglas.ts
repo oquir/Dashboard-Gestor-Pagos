@@ -1,5 +1,5 @@
 // Reglas del dominio que usa el dashboard (ver docs/Dominio-ICA.md, secciones 5 y 6).
-import type { ActividadesVigencia, Cheque, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoPago, Inscripcion, Pago, Sector, Tarifa } from '../types'
+import type { ActividadesVigencia, Cheque, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoCorreccion, EstadoPago, Inscripcion, Pago, Sector, Tarifa } from '../types'
 import { diferenciaDias, sumarMeses } from '../utils'
 
 /** UVT 2026 (dato que caduca, sección 7 del dominio). */
@@ -142,6 +142,83 @@ export const sePuedePagar = (a: SituacionAprobacion | undefined) => !a || a.esta
 
 /** Espera la aprobación previa: mientras tanto el contribuyente no puede pagar. */
 export const esperaAprobacion = (a: SituacionAprobacion | undefined) => a?.estado === 'por_aprobar' || a?.estado === 'vencida'
+
+// --- Corrección a la baja (art. 589 del Estatuto Tributario) ---
+
+/** Plazo para corregir a la baja: el año siguiente al vencimiento del plazo para declarar (art. 589). */
+export const MESES_PARA_CORREGIR_A_LA_BAJA = 12
+
+/** Meses que tiene el municipio para resolver la solicitud de corrección a la baja; si no responde, se acepta sola (art. 589 anterior). */
+export const MESES_PARA_RESOLVER_CORRECCION = 6
+
+/** Código del renglón con lo que se pagó con la declaración que se corrige: la corrección lo trae como crédito. */
+export const CODIGO_PAGADO_CON_LA_CORREGIDA = '—'
+
+/**
+ * Valor a pagar que liquida la declaración: el total del ICA anual (renglón 38) o de la retención, antes de restar lo
+ * que se pagó con la declaración que corrige.
+ */
+export const valorLiquidado = (d: Declaracion) => d.renglones.find((r) => r.codigo === '38' || r.codigo === 'T')?.valor ?? d.totalAPagar
+
+/**
+ * La corrección baja el valor a pagar o sube el saldo a favor de la declaración que corrige. El valor a pagar es el
+ * resultado final de la liquidación, no solo el impuesto a cargo (DIAN, conceptos 901809 de 2021 y 13304 de 2025).
+ */
+export const esCorreccionABaja = (d: Declaracion, corregida: Declaracion | undefined) =>
+  d.tipo === 'correccion' && corregida !== undefined && (valorLiquidado(d) < valorLiquidado(corregida) || d.saldoAFavor > corregida.saldoAFavor)
+
+/** Lo que la corrección le baja al valor a pagar, más lo que le sube al saldo a favor. */
+export const menorValor = (d: Declaracion, corregida: Declaracion) =>
+  Math.max(valorLiquidado(corregida) - valorLiquidado(d), 0) + Math.max(d.saldoAFavor - corregida.saldoAFavor, 0)
+
+/**
+ * Lo que se pagó con la declaración que se corrige por encima de lo que liquida la corrección. Es un pago en exceso, no
+ * un saldo a favor de la declaración: el contribuyente lo pide en devolución o compensación.
+ */
+export const pagoEnExceso = (d: Declaracion) =>
+  Math.max((d.renglones.find((r) => r.codigo === CODIGO_PAGADO_CON_LA_CORREGIDA)?.valor ?? 0) - valorLiquidado(d), 0)
+
+/** Último día para corregir a la baja: un año después del vencimiento, o el día hábil siguiente. */
+export const limiteCorreccionABaja = (vencimiento: string) => plazoEnMeses(vencimiento, MESES_PARA_CORREGIR_A_LA_BAJA)
+
+export interface SituacionCorreccion {
+  estado: EstadoCorreccion
+  /** Último día para resolverla. Después se acepta sola. */
+  limite: string
+  /** Día en que se resolvió; en la aceptación por silencio, el día límite. */
+  fecha?: string
+  por?: string
+  observacion?: string
+  /** Lo que explica el contribuyente al radicarla. */
+  motivo: string
+}
+
+/**
+ * Solicitud de corrección a la baja al día de hoy, con el trámite del art. 589 anterior a la Ley 1819 de 2016: el
+ * municipio tiene 6 meses desde la radicación para aceptarla o rechazarla y, si no responde, el proyecto reemplaza a la
+ * declaración (silencio positivo). Es undefined en las declaraciones que no se radicaron como solicitud.
+ */
+export function situacionCorreccion(d: Declaracion, hoy: string): SituacionCorreccion | undefined {
+  const s = d.solicitudCorreccion
+  if (!s) return undefined
+  const limite = plazoEnMeses(d.fechaPresentacion, MESES_PARA_RESOLVER_CORRECCION)
+  if (s.estado !== 'pendiente') return { ...s, limite }
+  if (hoy <= limite) return { estado: 'por_resolver', limite, motivo: s.motivo }
+  return { estado: 'aceptada_por_silencio', limite, fecha: limite, motivo: s.motivo }
+}
+
+/** La corrección reemplaza a la que corrige: no es una solicitud, o se aceptó, expresamente o por silencio. */
+export const correccionVigente = (s: SituacionCorreccion | undefined) => !s || s.estado === 'aceptada' || s.estado === 'aceptada_por_silencio'
+
+/** Espera que el municipio la resuelva: si no lo hace antes del límite, se acepta sola. */
+export const correccionPorResolver = (s: SituacionCorreccion | undefined) => s?.estado === 'por_resolver'
+
+/**
+ * Las declaraciones que reemplazó una corrección vigente. La solicitud de corrección que no se ha aceptado no reemplaza
+ * a la que corrige: esa sigue vigente.
+ */
+export const reemplazadas = (declaraciones: Declaracion[], situacion: (d: Declaracion) => SituacionCorreccion | undefined) =>
+  new Set(declaraciones.flatMap((d) => (d.corrigeA && correccionVigente(situacion(d)) ? [d.corrigeA] : [])))
 
 export const redondearMil =(valor: number) => Math.round(valor / 1000) * 1000
 
