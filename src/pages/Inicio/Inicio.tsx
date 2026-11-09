@@ -1,16 +1,17 @@
-import { ClipboardList, Document, AlertTriangle, UserSearch, Wallet } from 'reicon-react'
+import { ClipboardList, Document, AlertTriangle, ReceiptMinus, UserSearch, Wallet } from 'reicon-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { StatTile } from '../../components/molecules'
 import { AlertaCalendario, AlertaSinConsignar, AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, ProximosVencimientos, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
-import { formatoCompacto } from '../../lib/formato'
+import { formatoCompacto, formatoFecha } from '../../lib/formato'
 import { puede } from '../../lib/permisos'
-import { correccionVigente, esperaAprobacion, reemplazadas, sePuedePagar, totalPagado } from '../../lib/reglas'
+import { correccionPorResolver, correccionVigente, esperaAprobacion, reemplazadas, sePuedePagar, totalPagado } from '../../lib/reglas'
 import {
   aprobacionVisible,
   conRit,
   delMunicipio,
   ritVisible,
+  solicitudCorreccionVisible,
   useAprobacion,
   useDeclaraciones,
   useEstadoPago,
@@ -23,6 +24,7 @@ import {
 } from '../../lib/sesion'
 import { useDatos } from '../../store'
 import type { Deuda } from '../../types'
+import { diferenciaDias, hoy } from '../../utils'
 import { ANIO_ACTUAL, COLUMNAS_TARJETAS } from './constants'
 
 export default function Inicio() {
@@ -30,6 +32,7 @@ export default function Inicio() {
   const todasInscripciones = useDatos((s) => s.inscripciones)
   const declaraciones = useDeclaraciones()
   const municipios = useDatos((s) => s.municipios)
+  const configuraciones = useDatos((s) => s.configuraciones)
   const pagos = useDatos((s) => s.pagos)
   const aprobacion = useAprobacion()
   const correccion = useSolicitudCorreccion()
@@ -82,8 +85,17 @@ export default function Inicio() {
       })
     const porAprobar = aprobaciones.filter((x) => esperaAprobacion(x.a))
 
+    // Las solicitudes de corrección a la baja por resolver, de la que vence primero a la última.
+    const correccionesPorResolver = declaraciones
+      .flatMap((d) => {
+        const c = correccion(d)
+        return c && correccionPorResolver(c) ? [{ d, c }] : []
+      })
+      .sort((x, y) => x.c.limite.localeCompare(y.c.limite))
+
     return {
       pendientes,
+      correccionesPorResolver,
       noPagadas,
       pagoIncompleto,
       saldoNoPagadas: saldo(noPagadas),
@@ -99,8 +111,13 @@ export default function Inicio() {
   // Si 1cero1 apaga la aprobación previa, lo que quedó pendiente se sigue mostrando hasta resolverlo.
   const conAprobacion = aprobacionVisible(municipios, municipioId) || datos.porAprobar.length > 0
   const vencidas = datos.porAprobar.filter((x) => x.a.estado === 'vencida').length
+  // Igual con las solicitudes de corrección a la baja: si el municipio cambia de trámite, las que quedaron se siguen mostrando.
+  const conCorrecciones = solicitudCorreccionVisible(configuraciones, municipioId) || datos.correccionesPorResolver.length > 0
+  const primeraCorreccion = datos.correccionesPorResolver[0]
+  // Si al municipio se le acaba el plazo, se acepta sola: se avisa en ámbar desde 15 días antes.
+  const correccionPronto = primeraCorreccion && diferenciaDias(hoy(), primeraCorreccion.c.limite) <= 15
   // Con el RIT van dos tarjetas: las solicitudes por revisar y los omisos.
-  const tarjetas = 2 + 2 * Number(conRitVisible) + Number(conAprobacion) + Number(verRecaudo)
+  const tarjetas = 2 + 2 * Number(conRitVisible) + Number(conAprobacion) + Number(conCorrecciones) + Number(verRecaudo)
   // Con un número impar de listas, la primera ocupa toda la fila para que las de deuda vayan juntas.
   const primeraAncha = (1 + Number(conRitVisible) + Number(conAprobacion)) % 2 === 1 ? 'lg:col-span-2' : ''
 
@@ -143,6 +160,28 @@ export default function Inicio() {
             valor={String(datos.porAprobar.length)}
             icono={<Document className="size-5" />}
             detalle={vencidas > 0 ? <span className="text-red-700">{vencidas} con el plazo vencido</span> : 'Dentro del plazo'}
+          />
+        )}
+        {conCorrecciones && (
+          <StatTile
+            etiqueta="Correcciones a la baja por resolver"
+            valor={String(datos.correccionesPorResolver.length)}
+            icono={<ReceiptMinus className="size-5" />}
+            detalle={
+              primeraCorreccion ? (
+                <>
+                  <span className={correccionPronto ? 'font-medium text-amber-700' : undefined}>
+                    La primera vence el {formatoFecha(primeraCorreccion.c.limite)}
+                  </span>{' '}
+                  ·{' '}
+                  <Link to="/declaraciones?correccion=por_resolver" className="font-medium text-brand-700 hover:underline">
+                    Ver
+                  </Link>
+                </>
+              ) : (
+                'Ninguna por resolver'
+              )
+            }
           />
         )}
         {verRecaudo && (

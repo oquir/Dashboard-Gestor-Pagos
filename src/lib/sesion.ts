@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useDatos } from '../store'
-import type { Declaracion, Formulario, Impuesto, MediosVentanilla, Municipio } from '../types'
+import type { ConfigMunicipio, Declaracion, Formulario, Impuesto, MediosVentanilla, Municipio } from '../types'
 import { hoy } from '../utils'
 import { municipiosSinCalendario } from './calendario'
 import { calcularSinConsignar } from './consignacion'
@@ -56,6 +56,13 @@ export const ritVisible = (municipios: Municipio[], municipioId: string | null) 
 /** La aprobación previa se ve si algún formulario activo del municipio elegido la tiene, o de cualquiera cuando 1cero1 mira todos. */
 export const aprobacionVisible = (municipios: Municipio[], municipioId: string | null) =>
   municipios.some((m) => (municipioId === null || m.id === municipioId) && IMPUESTOS.some((i) => m.impuestos[i] && m.aprobacionPrevia[i]))
+
+/**
+ * Las solicitudes de corrección a la baja se ven si el municipio elegido corrige a la baja con el trámite del art. 589
+ * anterior, o si alguno lo hace cuando 1cero1 mira todos.
+ */
+export const solicitudCorreccionVisible = (configuraciones: ConfigMunicipio[], municipioId: string | null) =>
+  configuraciones.some((c) => (municipioId === null || c.municipioId === municipioId) && c.correccionABaja === 'proyecto_589')
 
 /** La carga del Asobancaria 2001 se ve si el municipio elegido la tiene, o si alguno la tiene cuando 1cero1 mira todos. */
 export const cargaAsobancariaVisible = (municipios: Municipio[], municipioId: string | null) =>
