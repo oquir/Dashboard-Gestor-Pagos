@@ -17,11 +17,11 @@ import {
 } from '../components/organisms'
 import { PlantillaDetalle } from '../components/templates'
 import { cargaCalendario, presentadaSinCalendario } from '../lib/calendario'
-import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion } from '../lib/formato'
+import { etiquetaEstadoCorreccion, etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, formatoFecha, formatoPesos, textoTipoDeclaracion } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { correccionVigente, sePuedePagar, totalEnCanje, totalPagado } from '../lib/reglas'
+import { correccionPorResolver, correccionVigente, esCorreccionABaja, pagoEnExceso, sePuedePagar, totalEnCanje, totalPagado } from '../lib/reglas'
 import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useEstadoPago, useSesion, useSinConsignar, useSolicitudCorreccion, ventanillaDe } from '../lib/sesion'
-import { tonoPago } from '../lib/tonos'
+import { tonoCorreccion, tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
 
 export default function DeclaracionDetalle() {
@@ -53,7 +53,14 @@ export default function DeclaracionDetalle() {
   const corregida = d.corrigeA ? declaraciones.find((x) => x.id === d.corrigeA) : undefined
   // La solicitud de corrección que no se ha aceptado no la reemplaza: esta sigue vigente.
   const reemplazo = declaraciones.find((x) => x.corrigeA === d.id && correccionVigente(correccion(x)))
+  // La que espera respuesta: si el municipio no la resuelve a tiempo, se acepta sola y la reemplaza.
+  const porResolver = declaraciones.find((x) => x.corrigeA === d.id && correccionPorResolver(correccion(x)))
+  const limitePorResolver = porResolver && correccion(porResolver)?.limite
   const solicitud = correccion(d)
+  // Mientras no se acepte, la solicitud no se paga: su estado de pago no aplica.
+  const vigente = correccionVigente(solicitud)
+  const aLaBaja = esCorreccionABaja(d, corregida)
+  const exceso = vigente ? pagoEnExceso(d) : 0
   const municipioConRit = conRit(municipios)(d)
   // Su ficha del RIT: solo si el municipio tiene el RIT en el aplicativo y el contribuyente está inscrito.
   const enRit = municipioConRit ? ins : undefined
@@ -78,12 +85,16 @@ export default function DeclaracionDetalle() {
       descripcion={`Radicado ${d.numero}`}
       acciones={
         <>
-          <Badge tono="info">{etiquetaTipoDeclaracion[d.tipo]}</Badge>
-          <Badge tono={tonoPago[estado]}>{etiquetaEstadoPago[estado]}</Badge>
+          <Badge tono="info">{textoTipoDeclaracion(d.tipo, aLaBaja)}</Badge>
+          {solicitud && !vigente ? (
+            <Badge tono={tonoCorreccion[solicitud.estado]}>Solicitud {etiquetaEstadoCorreccion[solicitud.estado].toLowerCase()}</Badge>
+          ) : (
+            <Badge tono={tonoPago[estado]}>{etiquetaEstadoPago[estado]}</Badge>
+          )}
         </>
       }
       aviso={
-        (reemplazo || retencion || sinCalendario) && (
+        (reemplazo || porResolver || !vigente || exceso > 0 || retencion || sinCalendario) && (
           <div className="space-y-3">
             {reemplazo ? (
               <Aviso tono="info">
@@ -91,7 +102,28 @@ export default function DeclaracionDetalle() {
                 <Link className="font-medium underline" to={`/declaraciones/${reemplazo.id}`}>{reemplazo.numero}</Link>.
               </Aviso>
             ) : (
-              retencion && <AvisoSinConsignar r={retencion} />
+              <>
+                {porResolver && limitePorResolver && (
+                  <Aviso tono="alerta">
+                    Tiene una solicitud de corrección a la baja por resolver, la{' '}
+                    <Link className="font-medium underline" to={`/declaraciones/${porResolver.id}`}>{porResolver.numero}</Link>. Si el municipio
+                    no la resuelve antes del {formatoFecha(limitePorResolver)}, se acepta sola y reemplaza a esta declaración.
+                  </Aviso>
+                )}
+                {retencion && <AvisoSinConsignar r={retencion} />}
+              </>
+            )}
+            {!vigente && corregida && (
+              <Aviso tono={solicitud?.estado === 'rechazada' ? 'peligro' : 'info'}>
+                {solicitud?.estado === 'rechazada' ? 'Se rechazó esta solicitud de corrección a la baja: sigue vigente la declaración ' : 'Es una solicitud de corrección a la baja: mientras el municipio no la acepte, no se paga y sigue vigente la declaración '}
+                <Link className="font-medium underline" to={`/declaraciones/${corregida.id}`}>{corregida.numero}</Link>.
+              </Aviso>
+            )}
+            {exceso > 0 && corregida && (
+              <Aviso tono="info">
+                Con la declaración que corrige, la {corregida.numero}, se pagaron {formatoPesos(exceso)} más de lo que liquida esta corrección.
+                Es un pago en exceso: el contribuyente lo puede pedir al municipio en devolución o compensación.
+              </Aviso>
             )}
             {sinCalendario && <AvisoSinCalendario d={d} carga={cargaCalendario(cfg, d.vigencia)} />}
           </div>
@@ -102,7 +134,7 @@ export default function DeclaracionDetalle() {
           {/* Sin ficha del RIT, lo que dice la declaración es todo lo que se sabe del contribuyente: va arriba de la liquidación. */}
           {!enRit && <ContribuyenteDeclaracion d={d} noInscrito={municipioConRit && !d.inscripcionId} ancha />}
           <Liquidacion d={d} />
-          <PagosDeclaracion d={d} pagos={pagos} cheques={cheques} />
+          {vigente && <PagosDeclaracion d={d} pagos={pagos} cheques={cheques} />}
           {recibeVentanilla && <PagoVentanilla key={d.id} d={d} saldo={saldo} medios={ventanilla} chequeParcial={chequeParcial} />}
         </>
       }
@@ -112,7 +144,7 @@ export default function DeclaracionDetalle() {
             <SolicitudCorreccion d={d} corregida={corregida} situacion={solicitud} correo={d.contribuyente.correo} puedeResolver={puede(usuario?.rol, 'revisar')} />
           )}
           {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={d.contribuyente.correo} puedeResolver={puede(usuario?.rol, 'revisar')} ventanilla={ventanilla} />}
-          <DatosDeclaracion d={d} corregida={corregida} />
+          <DatosDeclaracion d={d} corregida={corregida} aLaBaja={aLaBaja} />
           {enRit && <ContribuyenteDeclaracion d={d} ins={enRit} />}
           <FirmasDeclaracion d={d} />
           <Card>

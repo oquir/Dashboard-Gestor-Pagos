@@ -1,11 +1,12 @@
 import { Link } from 'react-router'
-import { formatoFecha } from '../../../../lib/formato'
+import { formatoFecha, formatoPesos } from '../../../../lib/formato'
+import { menorValor } from '../../../../lib/reglas'
 import { Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import type { DatosDeclaracionProps } from './types'
 
 /** Ficha de la declaración: factura, fechas y la declaración que corrige. */
-export default function DatosDeclaracion({ d, corregida }: DatosDeclaracionProps) {
+export default function DatosDeclaracion({ d, corregida, aLaBaja = false }: DatosDeclaracionProps) {
   const diasMora = Math.round((Date.parse(d.fechaPresentacion) - Date.parse(d.fechaVencimiento)) / 86400000)
 
   return (
@@ -24,6 +25,11 @@ export default function DatosDeclaracion({ d, corregida }: DatosDeclaracionProps
         {corregida && (
           <Dato etiqueta="Corrige a">
             <Link className="font-medium text-brand-700 hover:underline" to={`/declaraciones/${corregida.id}`}>{corregida.numero}</Link>
+            {aLaBaja && (
+              <span className="block text-xs text-slate-500">
+                A la baja: {formatoPesos(menorValor(d, corregida))} menos. No lleva sanción por corrección.
+              </span>
+            )}
           </Dato>
         )}
       </dl>
