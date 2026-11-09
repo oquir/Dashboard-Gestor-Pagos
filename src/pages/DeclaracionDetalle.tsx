@@ -12,6 +12,7 @@ import {
   ListaArchivos,
   PagosDeclaracion,
   PagoVentanilla,
+  SolicitudCorreccion,
   ValidacionesDeclaracion,
 } from '../components/organisms'
 import { PlantillaDetalle } from '../components/templates'
@@ -107,6 +108,9 @@ export default function DeclaracionDetalle() {
       }
       lateral={
         <>
+          {solicitud && (
+            <SolicitudCorreccion d={d} corregida={corregida} situacion={solicitud} correo={d.contribuyente.correo} puedeResolver={puede(usuario?.rol, 'revisar')} />
+          )}
           {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={d.contribuyente.correo} puedeResolver={puede(usuario?.rol, 'revisar')} ventanilla={ventanilla} />}
           <DatosDeclaracion d={d} corregida={corregida} />
           {enRit && <ContribuyenteDeclaracion d={d} ins={enRit} />}

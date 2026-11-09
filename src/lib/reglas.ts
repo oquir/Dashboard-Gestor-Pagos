@@ -151,6 +151,13 @@ export const MESES_PARA_CORREGIR_A_LA_BAJA = 12
 /** Meses que tiene el municipio para resolver la solicitud de corrección a la baja; si no responde, se acepta sola (art. 589 anterior). */
 export const MESES_PARA_RESOLVER_CORRECCION = 6
 
+/**
+ * Sanción por rechazar por improcedente la solicitud de corrección a la baja: 20 % del menor valor que se pidió (art. 589
+ * anterior). La impone la administración en el mismo acto, después de un proceso previo (Corte Constitucional, C-005 de
+ * 1998); el dashboard solo la informa.
+ */
+export const SANCION_RECHAZO_CORRECCION = 0.2
+
 /** Código del renglón con lo que se pagó con la declaración que se corrige: la corrección lo trae como crédito. */
 export const CODIGO_PAGADO_CON_LA_CORREGIDA = '—'
 
