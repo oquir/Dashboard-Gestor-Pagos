@@ -23,7 +23,7 @@
 | Bitácora de cambios | **Sí**; hecha el 2026-11-04 con datos de prueba | Solo la ve 1cero1, con la fecha y la hora de cada cambio, también los de 1cero1 (§3.9) |
 | Buscador global | **Por ahora no** | La respuesta quedó a medias: confirmarla |
 | Cuadre de caja | **Descartado** (2026-11-09) | No le toca a 1cero1: lo hace el sistema de rentas del municipio (§3.8) |
-| Corrección a la baja, plazo de inscripción en el RIT, declaración en ceros, omisos, calendario de vencimientos, causales del art. 580 y soportes por calidad | **En revisión** | El usuario los está estudiando con las explicaciones de §3 |
+| Plazo de inscripción en el RIT, declaración en ceros, omisos, calendario de vencimientos, causales del art. 580 y soportes por calidad | **En revisión** | El usuario los está estudiando con las explicaciones de §3 |
 | Calendario como página aparte (2026-11-03) | **Sí**: vencimientos, periodicidad y pronto pago (también su interruptor) van en la página Calendario, no en Configuración | Hacerlo más sencillo |
 | Carga y exportación del calendario en JSON (2026-11-03) | **Descartado** | No le sirve a nadie |
 | Calendario combinado de ReteICA y AutoReteICA (2026-11-03) | **Descartado**: cada una tiene siempre sus propios vencimientos | En la práctica los municipios las separan |
@@ -50,6 +50,9 @@
 | Motivo al desactivar un formulario en Configuración (2026-11-06) | **En una ventana** (`ModalMotivo`, genérica para todo el aplicativo), no en un cuadro de texto debajo del interruptor. Si se cancela, el formulario sigue activo. El motivo queda escrito debajo del interruptor, con un botón para cambiarlo | Más limpio, y la misma ventana sirve donde haga falta pedir un motivo |
 | Salida a producción de cada formulario (2026-11-06) | **Una fecha por formulario** (RIT, ICA, ReteICA y AutoReteICA), en lugar de la fecha única de declaraciones. **La pone 1cero1 una sola vez**: la pide una ventana (`ModalSalidaProduccion`) la primera vez que se activa el formulario en Municipios, con hoy por defecto. Después queda fija y solo se lee junto al formulario. Desactivarlo y volver a activarlo la conserva. El formulario que nunca se ha activado no tiene fecha | Los omisos de cada impuesto se revisan desde su fecha, y la del RIT decide si una inscripción tardía se puede juzgar (§3.3). Cambiarla después cambiaría hacia atrás lo que ya se mostró |
 | Municipio con todo desactivado (2026-11-06) | **Se permite**: un municipio puede quedar sin el RIT y sin ningún impuesto. Ya no hace falta dejar al menos un formulario activo. Sin impuestos activos no se le pide el calendario ni tiene omisos | Puede haber municipios recién agregados que aún no tienen nada, y en algún momento puede hacer falta desactivarlo todo |
+| Corrección a la baja (2026-11-09) | **Las dos formas**, según el estatuto de cada municipio: la corrección directa del art. 589 vigente o la solicitud con proyecto de corrección del art. 589 anterior, con 6 meses para responder y silencio positivo. El municipio la elige en Configuración y aplica a lo que se radique desde el cambio (§3.2) | La DIAN y Bogotá reciben la corrección directa desde 2018, pero hay estatutos municipales que conservan el trámite anterior |
+| Sanción por rechazar la solicitud de corrección (2026-11-09) | **Solo se informa**: el 20 % del menor valor que se pidió. La impone la administración en el mismo acto, después de un proceso previo; el dashboard no la liquida | Es un acto de la administración, no algo que el dashboard liquide |
+| Dónde se ven las solicitudes de corrección por resolver (2026-11-09) | **En Inicio y en Declaraciones**: una tarjeta en Inicio con cuántas hay y cuándo vence la primera, que lleva a Declaraciones con el filtro puesto | Si el municipio no responde en 6 meses, se aceptan solas y el municipio pierde la diferencia |
 
 ## 2. Lo que falta, con su estado
 
@@ -63,7 +66,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 |---|---|---|
 | Periodicidad de ReteICA y AutoReteICA | Desde el 2026-11-03 se pone en Calendario, por año gravable y por formulario (mensual, bimestral o trimestral), y la usan los vencimientos y la tarjeta de Inicio. Desde el 2026-11-06, las declaraciones de la demo salen del calendario de cada municipio, con su periodicidad, sus vencimientos y montos según la duración del periodo, y cada una dice su periodo. Como la tarifa, se aplica al generar los datos: cambiar la periodicidad después no cambia lo ya declarado | **Con efecto** |
 | Formulario conjunto | Se quitó el interruptor y el campo (2026-11-04) | **Quitado** |
-| Corrección a la baja (art. 589 clásico o corrección directa) | El flujo no existe (§3.2) | En revisión |
+| Corrección a la baja (art. 589 vigente o anterior) | Desde el 2026-11-09, con la corrección directa la nueva reemplaza a la anterior al presentarse; con la solicitud, el municipio la acepta o la rechaza en 6 meses, o se acepta sola (§3.2) | **Con efecto** |
 | Plazo para inscribirse en el RIT | Desde el 2026-11-06, la inscripción radicada después del plazo sale como tardía en su detalle, con los días de retraso. Solo se juzga si el plazo vencía después de que el RIT salió a producción (§3.3) | **Con efecto** |
 | Declaración en ceros | Desde el 2026-11-03 decide si un agente de ReteICA sin declaración sale como omiso o solo en el aviso (§3.4 y §3.5) | **Con efecto** |
 | Bases mínimas de ReteICA (servicios y compras) | Desde el 2026-11-04, en las declaraciones de ReteICA de la demo, los pagos por debajo de la base mínima no se retienen, y el renglón lo dice. Como el resto de la configuración de la liquidación (tarifa, anticipo, sobretasa), se aplica al generar los datos de la demo: cambiarla no recalcula lo ya declarado | **Con efecto** |
@@ -85,7 +88,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 
 | Punto | Qué falta | Estado |
 |---|---|---|
-| Flujo de la corrección a la baja | Los estados proyecto, aceptada, rechazada y aceptada por silencio, con los plazos de 1 año y 6 meses (§3.2) | En revisión |
+| Flujo de la corrección a la baja | Los estados por resolver, aceptada, rechazada y aceptada por silencio, con los plazos de 1 año y 6 meses (§3.2) | **Implementado** (2026-11-09) |
 | Emplazamientos | Registrar los emplazamientos para declarar y para corregir, con su fecha de notificación, y usar la sanción más alta cuando se presenta o se corrige después de esa fecha (§3.13). Las tasas ya se configuran, pero la liquidación no las usa | Pendiente |
 | Bitácora de cambios | Página Bitácora, solo para 1cero1, con datos de prueba y lo que se hace en la demo, como lo guardará el back (§3.9) | **Implementada** (2026-11-04; rehecha el 2026-11-06) |
 | Usuarios | Botón en cada fila que abre el detalle del usuario: editar sus datos (también el correo, cuando el municipio pierde el acceso al que tenía), desactivar o reactivar, eliminar y reenviar las credenciales (el correo es simulado) | **Implementado** (2026-11-04). Separar permisos: descartado |
@@ -126,16 +129,64 @@ Una corrección es una declaración nueva del mismo periodo que reemplaza a la a
 - **Al alza**: el contribuyente se da cuenta de que debía más. Corrige por su cuenta y paga la diferencia. Si ya pasó el vencimiento, también paga una sanción del 10 % de esa diferencia y los intereses sobre ella. La corrección vale de inmediato, y este caso ya está en la demo.
 - **A la baja**: se da cuenta de que declaró de más. Por ejemplo, declaró un ICA de $10.000.000, pero incluyó ingresos de otro municipio, y el impuesto real era de $8.000.000. No puede corregir solo, porque sería muy fácil bajarse los impuestos: tiene que pedirlo.
 
-Cómo se pide depende del estatuto del municipio, y por eso es una opción de Configuración:
-- **Art. 589 clásico**: radica un *proyecto de corrección* dentro del año siguiente al vencimiento. El municipio tiene 6 meses para responder; si no responde, se entiende aceptado (silencio positivo).
-- **Corrección directa** (Ley 1819 de 2016): la presenta sin pedir permiso, como se hace hoy ante la DIAN.
+Cómo se pide depende del estatuto del municipio, y por eso es una opción de Configuración.
+
+**Qué dice la norma** (investigado el 2026-11-09):
+- **Art. 589 vigente**, modificado por el art. 274 de la Ley 1819 de 2016:
+  - el contribuyente presenta la corrección directamente, por el medio al que está obligado, **dentro del año siguiente al vencimiento** del plazo para declarar;
+  - no hay solicitud ni respuesta del municipio, y no lleva sanción por corrección;
+  - la administración la puede revisar, y ese plazo cuenta desde la fecha de la corrección;
+  - la DIAN la habilitó el 29 de diciembre de 2017, y Bogotá la recibe en los bancos desde el 1 de enero de 2018.
+- **Art. 589 anterior**:
+  - el contribuyente radica una solicitud con el *proyecto de corrección* dentro del año siguiente al vencimiento;
+  - la administración tiene **6 meses** desde la solicitud para aceptarla, con una liquidación oficial de corrección, o para rechazarla;
+  - si no responde, el proyecto reemplaza a la declaración (**silencio positivo**);
+  - si la rechaza por improcedente, impone en el mismo acto una **sanción del 20 % del menor valor que se pidió**. Se reduce a la mitad si, con el recurso, el contribuyente la acepta y la paga. La Corte Constitucional la declaró exequible siempre que salga de un proceso previo (C-005 de 1998).
+- **En los municipios**: aplican el procedimiento del Estatuto Tributario y pueden simplificarlo (art. 59 de la Ley 788 de 2002).
+  - El Acuerdo 093 de Medellín no trae un trámite propio, y dice que estas correcciones no llevan sanción (art. 355, parágrafo 4).
+  - Hay estatutos que copian el texto anterior, como el de Bucaramanga (Acuerdo 044 de 2008, art. 372), y el Consejo de Estado lo aplicó al ICA de Rionegro (exp. 20960).
+- **El valor a pagar** es el resultado final de la liquidación, no solo el impuesto a cargo (DIAN, conceptos 901809 de 2021 y 13304 de 2025). Pasado el año, la corrección ya no reemplaza a la anterior (DIAN, concepto 0403 de 2026).
+- **Lo ya pagado**: si la corrección deja el valor por debajo de lo que se pagó, la diferencia es un **pago en exceso**, que el contribuyente pide en devolución o compensación. No es el saldo a favor del renglón 34.
 
 El **flujo** son los estados por los que pasa la solicitud. Empieza como *proyecto* y termina en uno de tres:
-- **Aceptada**: la de $8.000.000 reemplaza a la anterior. Si ya había pagado los $10.000.000, le quedan $2.000.000 a favor.
+- **Aceptada**: la de $8.000.000 reemplaza a la anterior. Si ya había pagado los $10.000.000, pagó $2.000.000 de más.
 - **Rechazada**: sigue valiendo la de $10.000.000.
 - **Aceptada por silencio**: pasaron los 6 meses sin respuesta.
 
 Mientras sea proyecto, no sirve para pagar.
+
+**Cómo quedó en el aplicativo** (2026-11-09):
+- **Configuración › Procedimiento**: "Corrección directa (art. 589 vigente)" o "Solicitud con proyecto de corrección (art. 589 anterior)". Aplica a lo que se radique desde el cambio.
+- **Qué es a la baja**: la corrección cuyo valor liquidado (el renglón 38 del ICA, o el total de la retención) es menor que el de la declaración que corrige, o cuyo saldo a favor es mayor. En la tabla, el detalle, el Excel y el PDF se llama "Corrección a la baja", y las validaciones revisan que se presentó dentro del año siguiente al vencimiento.
+- **Directa**: reemplaza a la anterior desde que se presenta.
+- **Solicitud**: la tarjeta "Solicitud de corrección a la baja" del detalle muestra la radicación, el plazo de 6 meses con los días que quedan, el menor valor que pide y el motivo del contribuyente.
+  - El administrador o el funcionario la aceptan o la rechazan; la observación es obligatoria para rechazar, y al contribuyente le llega un correo.
+  - Al rechazar, la tarjeta informa la sanción del 20 %, pero el dashboard no la liquida.
+  - Pasados los 6 meses sin respuesta, se acepta sola. El plazo es en meses calendario y, si termina en fin de semana, pasa al lunes; no descuenta los festivos.
+  - Mientras no se acepte, no reemplaza a la que corrige: no se paga (el pago dice "No aplica"), no es cartera ni deuda en Inicio, y la declaración corregida avisa que tiene una solicitud por resolver.
+  - No pasa además por la aprobación previa.
+- **Pago en exceso**: si la corrección vigente deja lo pagado por encima de lo que liquida, el detalle lo avisa.
+- **Inicio**: la tarjeta "Correcciones a la baja por resolver", con cuántas hay y cuándo vence la primera, en ámbar si faltan 15 días o menos. Lleva a Declaraciones con el filtro puesto, y sale donde el municipio usa la solicitud o queda alguna por resolver.
+- **Declaraciones**: el filtro "Corrección a la baja" (todas, las directas o las solicitudes en cada estado), que sale cuando hay alguna.
+- **Bitácora**: aceptar o rechazar deja el registro `ResolverCorreccion`. Si la solicitud ya no estaba por resolver, la petición falla.
+- **Arreglo de paso**: una corrección ya no sale como extemporánea por presentarse después del vencimiento, porque la extemporaneidad es de la inicial (art. 644, parágrafo 1).
+
+**En la demo** (ICA anual de 2025):
+- **San José del Valle** (solicitud): dos por resolver, una con el plazo a punto de vencer; una aceptada por Diana Gómez en septiembre de 2026, y una aceptada por silencio, radicada en abril de 2026.
+- **Santa Rosa de los Andes** (solicitud, sin RIT): una por resolver y una rechazada por Sandra Vega en octubre de 2026, que no traía soporte.
+- **Puerto Esperanza** (directa): una de una declaración pagada, que deja un pago en exceso, y otra de una con pago parcial, que baja lo que falta por pagar.
+- Las por resolver se radican según la fecha en que se generan los datos, como las de la aprobación previa.
+
+**Límites conocidos**:
+- Lo pagado con la declaración que se corrige se acredita fijo al generar los datos, como en las correcciones de mayor valor. Por eso las solicitudes por resolver de la demo corrigen declaraciones pagadas por completo.
+- El pago en exceso no se devuelve ni se compensa: los saldos a favor son de la fase 2 (§2.4).
+- No se muestra la firmeza que cuenta desde la corrección.
+- Revisar después una corrección directa improcedente es fiscalización y queda fuera del dashboard.
+- La regla vale también para ReteICA y AutoReteICA, pero la demo solo trae casos del ICA anual. En la retención, lo retenido de más se recupera además en el renglón de devoluciones de los periodos siguientes (§3 de `Dominio-ICA.md`).
+- Si se abre la demo meses después de generar los datos, las solicitudes por resolver pasan a aceptadas por silencio.
+- **Sin confirmar**: si un municipio puede conservar el trámite anterior después de la Ley 1819, dado el art. 59 de la Ley 788. Se dejó como opción porque hay estatutos que lo conservan.
+
+**Fuentes**: [DIAN, concepto 14116 de 2017](https://normograma.dian.gov.co/dian/compilacion/docs/concepto_tributario_dian_0014116_2017.htm); [DIAN, oficio 901809 de 2021](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_901809_2021.htm); [DIAN, concepto 0403 de 2026](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_0403_2026.htm); [Asuntos Legales (KPMG, 2018)](https://www.asuntoslegales.com.co/analisis/camilo-andres-rodriguez-vargas-400361/eliminadas-las-liquidaciones-de-correccion-tributarias-2595612); [ICEF: Bogotá, 2018](https://icef.com.co/component/k2/item/3124-correcciones-de-pago-de-impuestos-por-menor-valor-se-presentaran-en-bancos); [Corte Constitucional, C-005 de 1998](https://www.corteconstitucional.gov.co/relatoria/1998/C-005-98.htm); [Acuerdo 093 de 2023 de Medellín](https://www.medellin.gov.co/es/wp-content/uploads/2024/01/ACUERDO-093-2023-GACETA.pdf), art. 355; [Consejo de Estado, exp. 20960](https://www.consejodeestado.gov.co/documentos/boletines/PDF/05001-23-33-000-2013-00758-01(20960).pdf).
 
 ### 3.3 Plazo para inscribirse en el RIT
 
@@ -237,7 +288,7 @@ No guarda el valor anterior, porque para eso tendría que consultarlo en cada pe
 - **Lo que se hace en la demo queda registrado**: cada acción del store que en el aplicativo real haría una petición deja su registro al terminar.
   - Los interruptores guardan el valor nuevo (`"rit": false`), no un "alternar".
   - Fallan, y quedan como fallidas, confirmar o devolver un cheque que ya no está en canje.
-- **Datos de prueba** (`src/data/bitacora.ts`): 47 registros de los tres roles entre agosto y octubre de 2026. Los datos enviados terminan en los valores que hoy tiene la demo. Los registros del RIT, los cheques y los formularios desactivados salen de los datos de la demo.
+- **Datos de prueba** (`src/data/bitacora.ts`): 49 registros de los tres roles entre agosto y octubre de 2026. Los datos enviados terminan en los valores que hoy tiene la demo. Los registros del RIT, los cheques, los formularios desactivados y las solicitudes de corrección a la baja resueltas salen de los datos de la demo.
   - El caso de madrugada: Carlos Restrepo inició sesión y guardó la configuración de San José del Valle el 9 de septiembre a la 1 a. m.
   - Uno que falló: Laura Méndez guardó la configuración de Puerto Esperanza el 20 de octubre a las 7:41 p. m. La petición falló y la volvió a guardar a las 7:45 p. m.
 - **Nombres de ejemplo**: los controladores, las acciones y los endpoints de la demo están en `PETICIONES` (`src/constants/bitacora.ts`). Los de verdad vienen del back.
@@ -411,7 +462,10 @@ El cruce con el RIT queda como un extra:
 
 | Qué | Dónde |
 |---|---|
-| Campos de configuración sin efecto (`correccionABaja` y las tasas con emplazamiento de `sanciones`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionSanciones` y `SeccionProcedimiento` (`src/components/organisms/configuracion/`) |
+| Campos de configuración sin efecto (las tasas con emplazamiento de `sanciones`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionSanciones` (`src/components/organisms/configuracion/`) |
+| Corrección a la baja: reglas (§3.2) | `esCorreccionABaja`, `valorLiquidado`, `menorValor`, `pagoEnExceso`, `limiteCorreccionABaja`, `situacionCorreccion`, `correccionVigente`, `reemplazadas` y `plazoEnMeses`, en `src/lib/reglas.ts`; `useSolicitudCorreccion`, en `src/lib/sesion.ts`; el campo `solicitudCorreccion` de `Declaracion` y la opción `correccionABaja` de `ConfigMunicipio` (`src/types/dominio.ts`) |
+| Corrección a la baja: pantallas | `SolicitudCorreccion` (`organisms/declaraciones/`) y los avisos de `src/pages/DeclaracionDetalle.tsx`; el filtro de `src/pages/Declaraciones/Declaraciones.tsx`; la tarjeta de `src/pages/Inicio/Inicio.tsx`; `resolverCorreccion`, en `src/store.ts`; las opciones de `SeccionProcedimiento` |
+| Correcciones a la baja de la demo | `agregarCorreccionesABaja` y `CORRECCIONES_A_LA_BAJA`, en `src/data/generar.ts`; sus registros de la bitácora, al final de `generarBitacora` (`src/data/bitacora.ts`) |
 | Periodicidad de cada declaración y nombre del periodo | El campo `periodicidad` de `Declaracion` (`src/types/dominio.ts`); `etiquetaPeriodo`, en `src/lib/formato.ts`, la misma para declaraciones, omisos y vencimientos |
 | Declaraciones de la demo según el calendario | `formularioDe`, `vencimientoIca` y `periodosVencidos` en `src/data/generar.ts`, que leen el calendario de `CONFIGURACIONES` (`src/data/catalogos.ts`); los montos según la duración del periodo, en `liquidarReteica` y `liquidarAutorretencion`; las retenciones en plazo que se dejan sin pagar, en `yaPagada` |
 | Aviso al cambiar la periodicidad de un año con declaraciones | `textoOtraPeriodicidad`, en `src/components/organisms/calendario/SeccionCalendario/utils.ts`, que se muestra en `TablaVencimientos` |
@@ -441,7 +495,6 @@ El cruce con el RIT queda como un extra:
 ## 5. Para retomar
 
 - **En revisión por el usuario**:
-  - la corrección a la baja;
   - las causales del art. 580;
   - los soportes por calidad.
 
