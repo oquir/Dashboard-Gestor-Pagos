@@ -12,8 +12,20 @@ import {
 } from '../components/organisms'
 import { formatoCompacto } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { totalPagado } from '../lib/reglas'
-import { cargaAsobancariaVisible, chequesVisibles, IMPUESTOS, impuestosVisibles, recibeCheques, useDeclaraciones, useEstadoPago, useSesion, useSinConsignar, useVerRecaudo } from '../lib/sesion'
+import { correccionVigente, reemplazadas, totalPagado } from '../lib/reglas'
+import {
+  cargaAsobancariaVisible,
+  chequesVisibles,
+  IMPUESTOS,
+  impuestosVisibles,
+  recibeCheques,
+  useDeclaraciones,
+  useEstadoPago,
+  useSesion,
+  useSinConsignar,
+  useSolicitudCorreccion,
+  useVerRecaudo,
+} from '../lib/sesion'
 import { useDatos } from '../store'
 import type { Barra, Declaracion, FilaCartera, FilaCheque, FilaPago, FilaSinConsignar, Municipio } from '../types'
 
@@ -22,6 +34,7 @@ export default function Pagos() {
   const pagos = useDatos((s) => s.pagos)
   const cheques = useDatos((s) => s.cheques)
   const estadoDe = useEstadoPago()
+  const correccion = useSolicitudCorreccion()
   const retenciones = useSinConsignar()
   const verRecaudo = useVerRecaudo()
   const { usuario, municipioId } = useSesion()
@@ -33,10 +46,11 @@ export default function Pagos() {
 
   const datos = useMemo(() => {
     const porId = new Map(declaraciones.map((d) => [d.id, d]))
-    const reemplazadas = new Set(declaraciones.map((d) => d.corrigeA).filter(Boolean))
+    // Ni lo reemplazado por una corrección ni las solicitudes de corrección que no se han aceptado son cartera.
+    const fuera = reemplazadas(declaraciones, correccion)
 
     const cartera: FilaCartera[] = declaraciones
-      .filter((d) => !reemplazadas.has(d.id))
+      .filter((d) => !fuera.has(d.id) && correccionVigente(correccion(d)))
       .map((d) => ({ d, estado: estadoDe(d), pagado: totalPagado(d.id, pagos), nombre: d.contribuyente.nombre }))
       .filter((f) => f.estado === 'parcial' || f.estado === 'sin_pago' || f.estado === 'ineficaz')
 
@@ -61,7 +75,7 @@ export default function Pagos() {
       saldoIca: cartera.filter((f) => f.d.impuesto === 'ica').reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0),
       saldoSinConsignar: retenciones.reduce((s, r) => s + r.saldo, 0),
     }
-  }, [declaraciones, pagos, cheques, estadoDe, retenciones])
+  }, [declaraciones, pagos, cheques, estadoDe, correccion, retenciones])
 
   return (
     <>

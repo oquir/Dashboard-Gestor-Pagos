@@ -14,8 +14,8 @@ import {
   formatoDocumento,
   MESES,
 } from './formato'
-import { sePuedePagar, totalPagado } from './reglas'
-import type { SituacionAprobacion } from './reglas'
+import { correccionVigente, reemplazadas as calcularReemplazadas, sePuedePagar, totalPagado } from './reglas'
+import type { SituacionAprobacion, SituacionCorreccion } from './reglas'
 import { conRit, delMunicipio, impuestosVisibles } from './sesion'
 
 export type IdReporte = 'declaraciones' | 'recaudo' | 'cartera' | 'rit'
@@ -129,6 +129,7 @@ interface Fuente {
   hasta: string
   rangoInvalido: boolean
   aprobacion: (d: Declaracion) => SituacionAprobacion | undefined
+  correccion: (d: Declaracion) => SituacionCorreccion | undefined
   /** Estado del pago al día de hoy, con el plazo de 2 meses de la retención si el municipio lo da. */
   estadoDe: (d: Declaracion) => EstadoPago
   estadoAprobacion: FiltroAprobacion
@@ -136,11 +137,11 @@ interface Fuente {
 
 /** Filas y gráficas de cada reporte. Declaraciones y recaudo van por rango de fechas; cartera y RIT, al día de hoy. */
 export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]; graficas: Grafica[] }> {
-  const { declaraciones, inscripciones: todas, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, estadoDe, estadoAprobacion } = fuente
+  const { declaraciones, inscripciones: todas, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, correccion, estadoDe, estadoAprobacion } = fuente
   const enRango = (fecha: string) => !rangoInvalido && fecha >= desde && fecha <= hasta
   const inscripciones = delMunicipio(todas, municipioId)
   const nombreMunicipio = new Map(municipios.map((m) => [m.id, m.nombre]))
-  const reemplazadas = new Set(declaraciones.map((d) => d.corrigeA).filter(Boolean))
+  const reemplazadas = calcularReemplazadas(declaraciones, correccion)
   const declaracionPorId = new Map(declaraciones.map((d) => [d.id, d]))
   const visibles = impuestosVisibles(municipios, municipioId)
   const porImpuesto = <T,>(items: T[], impuesto: (item: T) => Impuesto, valor: (item: T) => number = () => 1): Barra[] =>
@@ -164,8 +165,8 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
 
   const cartera = declaraciones.flatMap((d) => {
     const pagado = totalPagado(d.id, pagos)
-    // Lo que aún espera la aprobación previa no se puede pagar: no es cartera.
-    if (reemplazadas.has(d.id) || d.totalAPagar <= 0 || pagado >= d.totalAPagar || !sePuedePagar(aprobacion(d))) return []
+    // Lo que aún espera la aprobación previa no se puede pagar, y la solicitud de corrección sin aceptar no se paga: no son cartera.
+    if (reemplazadas.has(d.id) || d.totalAPagar <= 0 || pagado >= d.totalAPagar || !sePuedePagar(aprobacion(d)) || !correccionVigente(correccion(d))) return []
     return [{ d, pagado, saldo: d.totalAPagar - pagado, estado: estadoDe(d) }]
   })
 

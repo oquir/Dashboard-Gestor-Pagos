@@ -134,8 +134,12 @@ export function useSinConsignar(lista?: Declaracion[]) {
   const pagos = useDatos((s) => s.pagos)
   const cheques = useDatos((s) => s.cheques)
   const aprobacion = useAprobacion()
+  const correccion = useSolicitudCorreccion()
   const fecha = hoy()
-  return useMemo(() => calcularSinConsignar({ declaraciones, pagos, cheques, aprobacion }, fecha), [declaraciones, pagos, cheques, aprobacion, fecha])
+  return useMemo(
+    () => calcularSinConsignar({ declaraciones, pagos, cheques, aprobacion, correccion }, fecha),
+    [declaraciones, pagos, cheques, aprobacion, correccion, fecha],
+  )
 }
 
 /** El año en curso y los municipios que se están viendo que aún no cargan su calendario de ese año. */

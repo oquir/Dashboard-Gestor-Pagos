@@ -18,8 +18,8 @@ import { PlantillaDetalle } from '../components/templates'
 import { cargaCalendario, presentadaSinCalendario } from '../lib/calendario'
 import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoDeclaracion } from '../lib/formato'
 import { puede } from '../lib/permisos'
-import { sePuedePagar, totalEnCanje, totalPagado } from '../lib/reglas'
-import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useEstadoPago, useSesion, useSinConsignar, ventanillaDe } from '../lib/sesion'
+import { correccionVigente, sePuedePagar, totalEnCanje, totalPagado } from '../lib/reglas'
+import { conRit, impuestoActivo, seValidaContraRit, useAprobacion, useEstadoPago, useSesion, useSinConsignar, useSolicitudCorreccion, ventanillaDe } from '../lib/sesion'
 import { tonoPago } from '../lib/tonos'
 import { useDatos } from '../store'
 
@@ -33,6 +33,7 @@ export default function DeclaracionDetalle() {
   const municipios = useDatos((s) => s.municipios)
   const configuraciones = useDatos((s) => s.configuraciones)
   const aprobacion = useAprobacion()
+  const correccion = useSolicitudCorreccion()
   const estadoDe = useEstadoPago()
   // De todas las declaraciones: 1cero1 puede abrir una de un municipio distinto del que eligió en el buscador.
   const sinConsignar = useSinConsignar(declaraciones)
@@ -49,7 +50,9 @@ export default function DeclaracionDetalle() {
   const estado = estadoDe(d)
   const retencion = sinConsignar.find((r) => r.d.id === d.id)
   const corregida = d.corrigeA ? declaraciones.find((x) => x.id === d.corrigeA) : undefined
-  const reemplazo = declaraciones.find((x) => x.corrigeA === d.id)
+  // La solicitud de corrección que no se ha aceptado no la reemplaza: esta sigue vigente.
+  const reemplazo = declaraciones.find((x) => x.corrigeA === d.id && correccionVigente(correccion(x)))
+  const solicitud = correccion(d)
   const municipioConRit = conRit(municipios)(d)
   // Su ficha del RIT: solo si el municipio tiene el RIT en el aplicativo y el contribuyente está inscrito.
   const enRit = municipioConRit ? ins : undefined
@@ -62,8 +65,10 @@ export default function DeclaracionDetalle() {
   const sinCalendario = presentadaSinCalendario(d, cfg)
   // Lo que está en canje no se vuelve a cobrar mientras el banco responde.
   const saldo = Math.max(d.totalAPagar - totalPagado(d.id, pagos) - totalEnCanje(d.id, cheques), 0)
-  // En ventanilla solo se recibe lo que ya es deuda: ni lo reemplazado por una corrección ni lo que espera aprobación.
-  const recibeVentanilla = (ventanilla.efectivo || ventanilla.cheque) && puede(usuario?.rol, 'registrarPagoVentanilla') && !reemplazo && sePuedePagar(situacion)
+  // En ventanilla solo se recibe lo que ya es deuda: ni lo reemplazado por una corrección, ni lo que espera aprobación,
+  // ni la solicitud de corrección que no se ha aceptado.
+  const recibeVentanilla =
+    (ventanilla.efectivo || ventanilla.cheque) && puede(usuario?.rol, 'registrarPagoVentanilla') && !reemplazo && sePuedePagar(situacion) && correccionVigente(solicitud)
 
   return (
     <PlantillaDetalle

@@ -5,7 +5,7 @@ import { StatTile } from '../../components/molecules'
 import { AlertaCalendario, AlertaSinConsignar, AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, ProximosVencimientos, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
 import { formatoCompacto } from '../../lib/formato'
 import { puede } from '../../lib/permisos'
-import { esperaAprobacion, sePuedePagar, totalPagado } from '../../lib/reglas'
+import { correccionVigente, esperaAprobacion, reemplazadas, sePuedePagar, totalPagado } from '../../lib/reglas'
 import {
   aprobacionVisible,
   conRit,
@@ -18,6 +18,7 @@ import {
   useSesion,
   useSinCalendario,
   useSinConsignar,
+  useSolicitudCorreccion,
   useVerRecaudo,
 } from '../../lib/sesion'
 import { useDatos } from '../../store'
@@ -31,6 +32,7 @@ export default function Inicio() {
   const municipios = useDatos((s) => s.municipios)
   const pagos = useDatos((s) => s.pagos)
   const aprobacion = useAprobacion()
+  const correccion = useSolicitudCorreccion()
   const estadoDe = useEstadoPago()
   const sinConsignar = useSinConsignar()
   const sinCalendario = useSinCalendario()
@@ -52,12 +54,14 @@ export default function Inicio() {
     const recaudo = pagos
       .filter((p) => porId.has(p.declaracionId) && p.fecha.startsWith(String(ANIO_ACTUAL)))
       .reduce((s, p) => s + p.valor, 0)
-    // Una declaración corregida se reemplaza por su corrección: se cuenta solo la vigente.
-    const reemplazadas = new Set(declaraciones.map((d) => d.corrigeA).filter(Boolean))
-    const pagadas = declaraciones.filter((d) => !reemplazadas.has(d.id) && estadoDe(d) === 'pagada').length
+    // Una declaración corregida se reemplaza por su corrección: se cuenta solo la vigente. La solicitud de corrección que
+    // no se ha aceptado no cuenta: sigue vigente la que corrige.
+    const fuera = reemplazadas(declaraciones, correccion)
+    const vigentes = declaraciones.filter((d) => !fuera.has(d.id) && correccionVigente(correccion(d)))
+    const pagadas = vigentes.filter((d) => estadoDe(d) === 'pagada').length
 
-    const deudas: Deuda[] = declaraciones
-      .filter((d) => !reemplazadas.has(d.id) && d.totalAPagar > 0 && sePuedePagar(aprobacion(d)))
+    const deudas: Deuda[] = vigentes
+      .filter((d) => d.totalAPagar > 0 && sePuedePagar(aprobacion(d)))
       .map((d) => ({ d, estado: estadoDe(d), pagado: totalPagado(d.id, pagos) }))
       .filter((f) => f.pagado < f.d.totalAPagar)
       .sort((a, b) => b.d.fechaPresentacion.localeCompare(a.d.fechaPresentacion))
@@ -90,7 +94,7 @@ export default function Inicio() {
       porAprobar,
       activas: enRit.filter((i) => i.estado === 'activa').length,
     }
-  }, [todasInscripciones, declaraciones, pagos, municipios, municipioId, aprobacion, estadoDe])
+  }, [todasInscripciones, declaraciones, pagos, municipios, municipioId, aprobacion, correccion, estadoDe])
 
   // Si 1cero1 apaga la aprobación previa, lo que quedó pendiente se sigue mostrando hasta resolverlo.
   const conAprobacion = aprobacionVisible(municipios, municipioId) || datos.porAprobar.length > 0
