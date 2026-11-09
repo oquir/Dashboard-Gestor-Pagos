@@ -8,10 +8,13 @@ import type { SeccionProcedimientoProps } from './types'
 export default function SeccionProcedimiento({ b, cambiar, editable, conRit }: SeccionProcedimientoProps) {
   return (
     <Seccion titulo={conRit ? 'Procedimiento y RIT' : 'Procedimiento'}>
-      <Campo etiqueta="Corrección a la baja">
+      <Campo
+        etiqueta="Corrección a la baja"
+        ayuda="Directa: el contribuyente presenta la corrección dentro del año siguiente al vencimiento y reemplaza a la anterior. Con solicitud: el municipio tiene 6 meses para aceptarla o rechazarla, y si no responde, se acepta sola. Aplica a lo que se radique desde el cambio."
+      >
         <Select disabled={!editable} value={b.correccionABaja} onChange={(e) => cambiar({ correccionABaja: e.target.value as ConfigMunicipio['correccionABaja'] })}>
-          <option value="proyecto_589">Proyecto de corrección (art. 589 clásico)</option>
-          <option value="correccion_directa">Corrección directa (Ley 1819 de 2016)</option>
+          <option value="correccion_directa">Corrección directa (art. 589 vigente, Ley 1819 de 2016)</option>
+          <option value="proyecto_589">Solicitud con proyecto de corrección (art. 589 anterior)</option>
         </Select>
       </Campo>
       {conRit && (
