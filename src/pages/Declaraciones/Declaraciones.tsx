@@ -3,13 +3,13 @@ import { useSearchParams } from 'react-router'
 import { Card } from '../../components/atoms'
 import { BarraFiltros, Buscador, Filtro, FiltroCasilla, PageHeader, Segmentado } from '../../components/molecules'
 import { BuscadorMunicipios, DescargaDeclaraciones, ListaOmisos, SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
-import { OPCIONES_APROBACION } from '../../constants'
+import { OPCIONES_APROBACION, OPCIONES_CORRECCION } from '../../constants'
 import { presentadaSinCalendario } from '../../lib/calendario'
 import { formatoDocumento } from '../../lib/formato'
 import { correccionVigente, esCorreccionABaja } from '../../lib/reglas'
 import { conRit, impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useEstadoPago, useOmisos, useSesion, useSolicitudCorreccion } from '../../lib/sesion'
 import { useDatos } from '../../store'
-import type { EstadoPago, FilaDeclaracion, FiltroAprobacion, Impuesto, TipoDeclaracion, ValorFiltro, VistaDeclaraciones } from '../../types'
+import type { EstadoPago, FilaDeclaracion, FiltroAprobacion, FiltroCorreccion, Impuesto, TipoDeclaracion, ValorFiltro, VistaDeclaraciones } from '../../types'
 import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS, VISTAS } from './constants'
 
 export default function Declaraciones() {
@@ -36,6 +36,11 @@ export default function Declaraciones() {
   const [filtroAprobacion, setFiltroAprobacion] = useState<FiltroAprobacion>('')
   const [soloSinCalendario, setSoloSinCalendario] = useState(false)
   const [soloNoInscritos, setSoloNoInscritos] = useState(false)
+  // El filtro de correcciones a la baja puede venir en la dirección (?correccion=por_resolver), desde Inicio.
+  const [filtroCorreccion, setFiltroCorreccion] = useState<FiltroCorreccion>(() => {
+    const valor = parametros.get('correccion')
+    return valor && valor in OPCIONES_CORRECCION ? (valor as FiltroCorreccion) : ''
+  })
 
   const filas = useMemo<FilaDeclaracion[]>(() => {
     const porId = new Map(declaraciones.map((d) => [d.id, d]))
@@ -69,11 +74,18 @@ export default function Declaraciones() {
   // Lo mismo con las de quien no está inscrito en el RIT, que solo hay donde un formulario no se valida contra el RIT.
   const conNoInscritos = filas.some((f) => f.noInscrito)
   const filtrarNoInscritos = conNoInscritos && soloNoInscritos
+  // Y el de las correcciones a la baja: solo si hay alguna.
+  const conALaBaja = filas.some((f) => f.aLaBaja)
+  const estadoCorreccion = conALaBaja ? filtroCorreccion : ''
 
   const filtradas = useMemo(() => {
     const busqueda = texto.trim().toLowerCase()
+    // Todas las correcciones a la baja, las directas (sin solicitud) o las solicitudes en un estado.
+    const pasaCorreccion = (aLaBaja: boolean, c: FilaDeclaracion['correccion']) =>
+      !estadoCorreccion || (aLaBaja && (estadoCorreccion === 'todas' || (estadoCorreccion === 'directa' ? !c : c?.estado === estadoCorreccion)))
     return filas.filter(
-      ({ d, nombre, documento, pago: p, aprobacion: a, sinCalendario, noInscrito }) =>
+      ({ d, nombre, documento, pago: p, aprobacion: a, sinCalendario, noInscrito, aLaBaja, correccion: c }) =>
+        pasaCorreccion(aLaBaja, c) &&
         (!impuesto || d.impuesto === impuesto) &&
         (!busqueda ||
           nombre.toLowerCase().includes(busqueda) ||
@@ -86,7 +98,7 @@ export default function Declaraciones() {
         (!filtrarSinCalendario || sinCalendario) &&
         (!filtrarNoInscritos || noInscrito),
     )
-  }, [filas, impuesto, texto, tipo, pago, estadoAprobacion, filtrarSinCalendario, filtrarNoInscritos])
+  }, [filas, impuesto, texto, tipo, pago, estadoAprobacion, filtrarSinCalendario, filtrarNoInscritos, estadoCorreccion])
 
   // La selección sobrevive a los filtros, pero solo cuentan y se descargan las declaraciones que siguen visibles.
   const [seleccion, setSeleccion] = useState<ReadonlySet<string>>(new Set())
@@ -153,6 +165,7 @@ export default function Declaraciones() {
                 cambiar={setFiltroAprobacion}
               />
             )}
+            {conALaBaja && <Filtro etiqueta="Corrección a la baja" opciones={OPCIONES_CORRECCION} valor={estadoCorreccion} cambiar={setFiltroCorreccion} />}
             {conSinCalendario && <FiltroCasilla etiqueta="Sin calendario cargado" marcado={soloSinCalendario} cambiar={setSoloSinCalendario} />}
             {conNoInscritos && <FiltroCasilla etiqueta="No inscritos en el RIT" marcado={soloNoInscritos} cambiar={setSoloNoInscritos} />}
           </BarraFiltros>
