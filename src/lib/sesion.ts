@@ -5,7 +5,7 @@ import { hoy } from '../utils'
 import { municipiosSinCalendario } from './calendario'
 import { calcularSinConsignar } from './consignacion'
 import { calcularOmisos } from './omisos'
-import { aprobacionDe, estadoPago } from './reglas'
+import { aprobacionDe, estadoPago, situacionCorreccion } from './reglas'
 
 export const IMPUESTOS: Impuesto[] = ['ica', 'reteica', 'autorretencion']
 
@@ -105,6 +105,12 @@ export function useAprobacion() {
       return cfg && aprobacionDe(d, cfg, hoy)
     }
   }, [configuraciones])
+}
+
+/** Solicitud de corrección a la baja de cada declaración al día de hoy: si pasan los 6 meses sin respuesta, se acepta sola. */
+export function useSolicitudCorreccion() {
+  const fecha = hoy()
+  return useMemo(() => (d: Declaracion) => situacionCorreccion(d, fecha), [fecha])
 }
 
 /** Estado del pago de cada declaración al día de hoy, con el plazo de 2 meses de la retención si su municipio lo da. */
