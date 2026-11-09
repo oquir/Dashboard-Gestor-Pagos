@@ -3,15 +3,16 @@ import { Document } from 'reicon-react'
 import { CLASE_BOTON_FILA } from '../../../../constants'
 import {
   etiquetaEstadoAprobacion,
+  etiquetaEstadoCorreccion,
   etiquetaEstadoPago,
   etiquetaImpuesto,
   etiquetaPeriodo,
-  etiquetaTipoDeclaracion,
   formatoFecha,
   formatoPesos,
+  textoTipoDeclaracion,
 } from '../../../../lib/formato'
-import { esperaAprobacion } from '../../../../lib/reglas'
-import { tonoAprobacion, tonoPago } from '../../../../lib/tonos'
+import { correccionPorResolver, esperaAprobacion } from '../../../../lib/reglas'
+import { tonoAprobacion, tonoCorreccion, tonoPago } from '../../../../lib/tonos'
 import { Badge } from '../../../atoms'
 import { col } from './utils'
 
@@ -32,15 +33,21 @@ export const COLUMNAS = col.columns([
     header: 'N.º de factura',
     meta: { clase: 'whitespace-nowrap tabular-nums text-slate-700' },
   }),
-  col.accessor((f) => etiquetaTipoDeclaracion[f.d.tipo], {
+  col.accessor((f) => textoTipoDeclaracion(f.d.tipo, f.aLaBaja), {
     id: 'tipo',
     header: 'Tipo de declaración',
     meta: { clase: 'whitespace-nowrap' },
-    cell: ({ row: { original: { d, corrige } } }) => (
+    cell: ({ row: { original: { d, corrige, aLaBaja, correccion: c } } }) => (
       <>
-        <p className="text-slate-900">{etiquetaTipoDeclaracion[d.tipo]}</p>
+        <p className="text-slate-900">{textoTipoDeclaracion(d.tipo, aLaBaja)}</p>
         {corrige && <p className="text-xs tabular-nums text-slate-500">Corrige la {corrige}</p>}
         {d.fechaCierre && <p className="text-xs text-slate-500">Cierre: {formatoFecha(d.fechaCierre)}</p>}
+        {c && (
+          <div className="mt-1">
+            <Badge tono={tonoCorreccion[c.estado]}>Solicitud {etiquetaEstadoCorreccion[c.estado].toLowerCase()}</Badge>
+            {correccionPorResolver(c) && <p className="mt-1 text-xs text-slate-500">Plazo: {formatoFecha(c.limite)}</p>}
+          </div>
+        )}
       </>
     ),
   }),
@@ -85,10 +92,12 @@ export const COLUMNAS = col.columns([
     meta: { alinear: 'derecha', clase: 'whitespace-nowrap tabular-nums text-slate-900' },
     cell: ({ getValue }) => formatoPesos(getValue()),
   }),
-  col.accessor((f) => etiquetaEstadoPago[f.pago], {
+  col.accessor((f) => (f.pago ? etiquetaEstadoPago[f.pago] : ''), {
     id: 'pago',
     header: 'Pago',
-    cell: ({ row: { original: f } }) => <Badge tono={tonoPago[f.pago]}>{etiquetaEstadoPago[f.pago]}</Badge>,
+    // La solicitud de corrección que no se ha aceptado no se paga.
+    cell: ({ row: { original: f } }) =>
+      f.pago ? <Badge tono={tonoPago[f.pago]}>{etiquetaEstadoPago[f.pago]}</Badge> : <span className="text-slate-400">No aplica</span>,
   }),
 ])
 

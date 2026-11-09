@@ -6,7 +6,8 @@ import { BuscadorMunicipios, DescargaDeclaraciones, ListaOmisos, SeleccionDeclar
 import { OPCIONES_APROBACION } from '../../constants'
 import { presentadaSinCalendario } from '../../lib/calendario'
 import { formatoDocumento } from '../../lib/formato'
-import { conRit, impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useEstadoPago, useOmisos, useSesion } from '../../lib/sesion'
+import { correccionVigente, esCorreccionABaja } from '../../lib/reglas'
+import { conRit, impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useEstadoPago, useOmisos, useSesion, useSolicitudCorreccion } from '../../lib/sesion'
 import { useDatos } from '../../store'
 import type { EstadoPago, FilaDeclaracion, FiltroAprobacion, Impuesto, TipoDeclaracion, ValorFiltro, VistaDeclaraciones } from '../../types'
 import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS, VISTAS } from './constants'
@@ -18,6 +19,7 @@ export default function Declaraciones() {
   const configuraciones = useDatos((s) => s.configuraciones)
   const estadoDe = useEstadoPago()
   const aprobacion = useAprobacion()
+  const correccion = useSolicitudCorreccion()
   const omisos = useOmisos()
   // La vista va en la dirección (?vista=omisos) para que Inicio pueda enlazar directo a los omisos.
   const [parametros, setParametros] = useSearchParams()
@@ -36,20 +38,27 @@ export default function Declaraciones() {
   const [soloNoInscritos, setSoloNoInscritos] = useState(false)
 
   const filas = useMemo<FilaDeclaracion[]>(() => {
-    const numeros = new Map(declaraciones.map((d) => [d.id, d.numero]))
+    const porId = new Map(declaraciones.map((d) => [d.id, d]))
     const configPorMunicipio = new Map(configuraciones.map((c) => [c.municipioId, c]))
     const enRit = conRit(municipios)
-    return declaraciones.map((d) => ({
-      d,
-      nombre: d.contribuyente.nombre,
-      documento: formatoDocumento(d.contribuyente),
-      pago: estadoDe(d),
-      corrige: d.corrigeA && numeros.get(d.corrigeA),
-      aprobacion: aprobacion(d),
-      sinCalendario: presentadaSinCalendario(d, configPorMunicipio.get(d.municipioId)),
-      noInscrito: enRit(d) && !d.inscripcionId,
-    }))
-  }, [declaraciones, municipios, configuraciones, estadoDe, aprobacion])
+    return declaraciones.map((d) => {
+      const corregida = d.corrigeA ? porId.get(d.corrigeA) : undefined
+      const situacion = correccion(d)
+      return {
+        d,
+        nombre: d.contribuyente.nombre,
+        documento: formatoDocumento(d.contribuyente),
+        // La solicitud de corrección que no se ha aceptado no se paga: su estado de pago no aplica.
+        pago: correccionVigente(situacion) ? estadoDe(d) : undefined,
+        corrige: corregida?.numero,
+        aLaBaja: esCorreccionABaja(d, corregida),
+        correccion: situacion,
+        aprobacion: aprobacion(d),
+        sinCalendario: presentadaSinCalendario(d, configPorMunicipio.get(d.municipioId)),
+        noInscrito: enRit(d) && !d.inscripcionId,
+      }
+    })
+  }, [declaraciones, municipios, configuraciones, estadoDe, aprobacion, correccion])
 
   // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
   const conAprobacion = filas.some((f) => f.aprobacion)
