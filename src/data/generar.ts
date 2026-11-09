@@ -2,7 +2,16 @@
 import { MESES_POR_PERIODO } from '../constants'
 import { vencimientoPara } from '../lib/calendario'
 import { etiquetaCalidad, formatoPesos, nombreCompleto } from '../lib/formato'
-import { limiteConsignacion, porcentajeProntoPago, redondearMil, sumarDiasHabiles, UVT } from '../lib/reglas'
+import {
+  CODIGO_PAGADO_CON_LA_CORREGIDA,
+  limiteConsignacion,
+  limiteCorreccionABaja,
+  porcentajeProntoPago,
+  redondearMil,
+  sumarDiasHabiles,
+  UVT,
+  valorLiquidado,
+} from '../lib/reglas'
 import type {
   Archivo,
   Calidad,
@@ -22,9 +31,11 @@ import type {
   Periodicidad,
   RecaudoMensual,
   Renglon,
+  SolicitudCorreccion,
   Tarifa,
   TipoPersona,
 } from '../types'
+import { sumarMeses } from '../utils'
 import {
   ACTIVIDADES,
   ACTIVIDADES_POR_VIGENCIA,
@@ -537,6 +548,132 @@ function liquidarAutorretencion(az: Azar, cfg: ConfigMunicipio, tarifas: Tarifa[
   return { renglones, impuesto }
 }
 
+// --- Correcciones a la baja ---
+
+/** Lo que hace falta para volver a liquidar un ICA 2025 inicial: así se generan al final sus correcciones a la baja. */
+interface ParaCorregir {
+  ins: Inscripcion
+  perfil: PerfilIca
+  cfg: ConfigMunicipio
+  tarifas: Tarifa[]
+  descuento: number
+  diasMora: number
+  patron: 'total' | 'parcial' | 'ninguno'
+}
+
+/** Por qué corrige a la baja el contribuyente, el soporte que adjunta y qué cambia en su liquidación. */
+const MOTIVOS_A_LA_BAJA: { motivo: string; soporte: string; ajustar: (p: PerfilIca, x: number) => PerfilIca }[] = [
+  {
+    motivo: 'Incluí en este municipio ingresos de actividades que realicé en otro municipio.',
+    soporte: 'Declaración de ICA presentada en el otro municipio',
+    ajustar: (p, x) => ({ ...p, fueraPct: p.fueraPct + x }),
+  },
+  {
+    motivo: 'Declaré como gravados ingresos de actividades excluidas o no sujetas.',
+    soporte: 'Certificación de los ingresos excluidos',
+    ajustar: (p, x) => ({ ...p, excluidosPct: p.excluidosPct + x }),
+  },
+  {
+    motivo: 'No resté las devoluciones, rebajas y descuentos del año.',
+    soporte: 'Relación de notas crédito del año',
+    ajustar: (p, x) => ({ ...p, devolucionesPct: p.devolucionesPct + x }),
+  },
+]
+
+/**
+ * Cada corrección a la baja de la demo. Las solicitudes (art. 589 anterior) van donde el municipio las usa: por resolver,
+ * una de ellas con el plazo a punto de vencer, aceptada, aceptada por silencio y rechazada. Las directas, donde no: de una
+ * declaración pagada, que deja un pago en exceso, y de una con pago parcial, que baja lo que falta por pagar.
+ */
+type CasoCorreccion = 'por_resolver' | 'por_resolver_pronto' | 'aceptada' | 'silencio' | 'rechazada' | 'directa_pagada' | 'directa_pago_parcial'
+
+const CORRECCIONES_A_LA_BAJA: Record<string, CasoCorreccion[]> = {
+  m1: ['por_resolver_pronto', 'por_resolver', 'aceptada', 'silencio'],
+  m2: ['directa_pagada', 'directa_pago_parcial'],
+  m3: ['por_resolver', 'rechazada'],
+}
+
+interface FuenteCorrecciones {
+  az: Azar
+  declaraciones: Declaracion[]
+  pagos: Pago[]
+  /** Las que la demo no corrige: las que tienen un cheque o se quitaron. */
+  excluidas: Set<string>
+  paraCorregir: Map<string, ParaCorregir>
+  numero: () => string
+  numeroFactura: () => number
+  hoy: string
+}
+
+/**
+ * Agrega las correcciones a la baja del ICA 2025, todas dentro del año siguiente al vencimiento y sin sanción por
+ * corrección. Corrigen declaraciones presentadas a tiempo, sin corrección y sin cheque. Las solicitudes corrigen
+ * declaraciones pagadas por completo, porque lo pagado se acredita fijo al generar los datos, como en las correcciones de
+ * mayor valor, y no debe cambiar mientras se resuelven. Las por resolver y la aceptada por silencio se radican según la
+ * fecha de hoy, como las de la aprobación previa; las resueltas, dentro del rango de la bitácora.
+ */
+function agregarCorreccionesABaja({ az, declaraciones, pagos, excluidas, paraCorregir, numero, numeroFactura, hoy }: FuenteCorrecciones) {
+  const corregidas = new Set(declaraciones.map((d) => d.corrigeA).filter(Boolean))
+  const pagado = (id: string) => pagos.filter((p) => p.declaracionId === id).reduce((s, p) => s + p.valor, 0)
+  const funcionario = (municipioId: string) => nombreCompleto(USUARIOS.find((u) => u.municipioId === municipioId && u.rol === 'funcionario')!)
+
+  for (const [municipioId, casos] of Object.entries(CORRECCIONES_A_LA_BAJA)) {
+    const conSolicitud = CONFIGURACIONES.find((c) => c.municipioId === municipioId)!.correccionABaja === 'proyecto_589'
+    for (const caso of casos) {
+      if (caso.startsWith('directa') === conSolicitud) continue
+      const fecha =
+        caso === 'por_resolver_pronto'
+          ? sumarDias(sumarMeses(hoy, -6), az.entero(8, 12))
+          : caso === 'por_resolver'
+            ? sumarDias(hoy, -az.entero(20, 60))
+            : caso === 'silencio'
+              ? fechaAleatoria(az, '2026-04-20', '2026-04-28')
+              : caso === 'aceptada'
+                ? fechaAleatoria(az, '2026-06-01', '2026-06-30')
+                : caso === 'rechazada'
+                  ? fechaAleatoria(az, '2026-06-15', '2026-07-15')
+                  : fechaAleatoria(az, '2026-07-01', '2026-10-15')
+      const parcial = caso === 'directa_pago_parcial'
+      const candidatas = declaraciones.filter((d) => {
+        const x = paraCorregir.get(d.id)
+        return (
+          x !== undefined && d.municipioId === municipioId && x.diasMora === 0 && !corregidas.has(d.id) && !excluidas.has(d.id) &&
+          valorLiquidado(d) > 0 && d.saldoAFavor === 0 && x.patron === (parcial ? 'parcial' : 'total') && (parcial || pagado(d.id) >= d.totalAPagar) &&
+          d.fechaVencimiento < fecha && fecha <= limiteCorreccionABaja(d.fechaVencimiento)
+        )
+      })
+      if (candidatas.length === 0) continue
+      const original = az.elegir(candidatas)
+      corregidas.add(original.id)
+      const x = paraCorregir.get(original.id)!
+      const m = az.elegir(MOTIVOS_A_LA_BAJA)
+      const nueva = liquidarIca(m.ajustar(x.perfil, 0.08 + az.num() * 0.12), x.ins, x.cfg, x.tarifas, 0, x.descuento)
+      const yaPagado = pagado(original.id)
+      // Con el pago parcial, la corrección deja algo por pagar: baja la deuda sin que sobre.
+      if (nueva.r38 >= valorLiquidado(original) || (parcial && nueva.r38 <= yaPagado)) continue
+      const motivo = m.motivo
+      const solicitudCorreccion: SolicitudCorreccion | undefined =
+        caso === 'aceptada'
+          ? { estado: 'aceptada', motivo, fecha: fechaAleatoria(az, '2026-09-01', '2026-09-30'), por: funcionario(municipioId), observacion: 'Se revisó el soporte que adjuntó: la corrección procede.' }
+          : caso === 'rechazada'
+            ? { estado: 'rechazada', motivo, fecha: fechaAleatoria(az, '2026-10-01', '2026-10-20'), por: funcionario(municipioId), observacion: 'No adjuntó soportes que demuestren el menor valor que pide' }
+            : conSolicitud
+              ? { estado: 'pendiente', motivo }
+              : undefined
+      declaraciones.push({
+        // La rechazada no trae el soporte: por eso se rechaza.
+        adjuntos: caso === 'rechazada' ? [] : [{ nombre: m.soporte, archivo: archivoAleatorio(az, m.soporte, fecha) }],
+        ...diligenciadoPor(x.ins, fecha, 'ica'),
+        id: `d${declaraciones.length + 1}`, municipioId, inscripcionId: x.ins.id, impuesto: 'ica', vigencia: 2025, periodicidad: 'anual', periodo: 1, tipo: 'correccion',
+        corrigeA: original.id, numero: numero(), numeroFactura: numeroFactura(), fechaPresentacion: fecha, fechaVencimiento: original.fechaVencimiento,
+        renglones: yaPagado > 0 ? [...nueva.renglones, { codigo: CODIGO_PAGADO_CON_LA_CORREGIDA, concepto: 'Menos lo pagado con la declaración que se corrige', valor: yaPagado }] : nueva.renglones,
+        totalAPagar: Math.max(nueva.r38 - yaPagado, 0), saldoAFavor: nueva.r34,
+        ...(solicitudCorreccion && { solicitudCorreccion }),
+      })
+    }
+  }
+}
+
 /** Agrega a los renglones de una retención o autorretención la sanción, los intereses y el total, que devuelve. */
 function cerrarRetencion(renglones: Renglon[], impuesto: number, diasMora: number, cfg: ConfigMunicipio) {
   const meses = Math.ceil(diasMora / 30)
@@ -561,6 +698,8 @@ export function generarDatos(): Datos {
   const pagos: Pago[] = []
   /** Contribuyentes que no declararon el ICA 2025 en plazo. */
   const omisos: { municipio: Municipio; ins: Inscripcion; perfil: PerfilIca; cfg: ConfigMunicipio; tarifas: Tarifa[] }[] = []
+  /** Los ICA 2025 iniciales, para volver a liquidarlos en sus correcciones a la baja. Guardarlos no usa el azar. */
+  const paraCorregir = new Map<string, ParaCorregir>()
   let consecutivo = 1
 
   // Con `registrar` en falso sortea el medio igual, pero no deja el pago: así no cambia el resto de los datos.
@@ -617,6 +756,7 @@ export function generarDatos(): Datos {
           numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: vencimiento, renglones: liq.renglones,
           totalAPagar: liq.r38, saldoAFavor: liq.r34,
         })
+        paraCorregir.set(id, { ins, perfil, cfg, tarifas: tarifas2025, descuento, diasMora, patron })
         if (patron === 'total') agregarPago(id, presentacion, liq.r38)
         if (patron === 'parcial') agregarPago(id, presentacion, redondearMil(liq.r38 * (0.4 + az.num() * 0.3)))
 
@@ -636,7 +776,7 @@ export function generarDatos(): Datos {
             ...diligenciadoPor(ins, fecha, 'ica'),
             id: idCorreccion, municipioId: municipio.id, inscripcionId: ins.id, impuesto: 'ica', vigencia: 2025, periodicidad: 'anual', periodo: 1, tipo: 'correccion',
             corrigeA: id, numero: numero('ICA', 2025), numeroFactura: numeroFactura(), fechaPresentacion: fecha, fechaVencimiento: vencimiento,
-            renglones: [...nueva.renglones, { codigo: '—', concepto: 'Menos lo pagado con la declaración que se corrige', valor: pagado }],
+            renglones: [...nueva.renglones, { codigo: CODIGO_PAGADO_CON_LA_CORREGIDA, concepto: 'Menos lo pagado con la declaración que se corrige', valor: pagado }],
             totalAPagar: aPagar, saldoAFavor: nueva.r34,
           })
           agregarPago(idCorreccion, fecha, aPagar)
@@ -759,6 +899,18 @@ export function generarDatos(): Datos {
   const omitidas = new Set(
     declaraciones.filter((d) => d.impuesto !== 'ica' && d.periodo >= 2 && !conCheque.has(d.id) && azOmisos.prob(0.12)).map((d) => d.id),
   )
+
+  // Correcciones a la baja del ICA 2025: al final y con su propio azar, para no cambiar el resto de los datos.
+  agregarCorreccionesABaja({
+    az: crearAzar(589),
+    declaraciones,
+    pagos,
+    excluidas: new Set([...conCheque, ...omitidas]),
+    paraCorregir,
+    numero: () => numero('ICA', 2025),
+    numeroFactura,
+    hoy,
+  })
 
   // Donde el municipio no tiene el RIT en el aplicativo no hay inscripciones: de sus contribuyentes solo se sabe lo que
   // escriben en las declaraciones. Se generan igual y aquí se quitan, para no cambiar el resto de los datos.

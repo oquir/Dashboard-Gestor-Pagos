@@ -324,6 +324,6 @@ export const useDatos = create<Estado>()(
         reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
       }
     },
-    { name: 'gestor-pagos-demo', version: 42 },
+    { name: 'gestor-pagos-demo', version: 43 },
   ),
 )
