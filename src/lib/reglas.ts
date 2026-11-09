@@ -49,18 +49,18 @@ export const SANCION_CHEQUE_DEVUELTO = 0.2
 export const MESES_PARA_CONSIGNAR = 2
 
 /**
- * Último día para consignar la ReteICA o la AutoReteICA: el mismo día del mes, dos meses después del vencimiento, o el
- * último día del mes si ese mes es más corto. Si cae en sábado o domingo, pasa al día hábil siguiente (art. 62 de la
+ * Último día de un plazo en meses: el mismo día del mes, o el último día del mes si ese mes es más corto (el 31 de
+ * diciembre más 2 meses da el 28 de febrero). Si cae en sábado o domingo, pasa al día hábil siguiente (art. 62 de la
  * Ley 4 de 1913); la demo no descuenta los festivos.
  */
-export function limiteConsignacion(vencimiento: string) {
-  const [anio, mes, dia] = vencimiento.split('-').map(Number)
-  const mesLimite = mes - 1 + MESES_PARA_CONSIGNAR
-  const ultimoDia = new Date(Date.UTC(anio, mesLimite + 1, 0)).getUTCDate()
-  const limite = new Date(Date.UTC(anio, mesLimite, Math.min(dia, ultimoDia), 12))
+export function plazoEnMeses(desde: string, meses: number) {
+  const limite = new Date(`${sumarMeses(desde, meses)}T12:00:00Z`)
   while (limite.getUTCDay() % 6 === 0) limite.setUTCDate(limite.getUTCDate() + 1)
   return limite.toISOString().slice(0, 10)
 }
+
+/** Último día para consignar la ReteICA o la AutoReteICA: dos meses después del vencimiento. */
+export const limiteConsignacion = (vencimiento: string) => plazoEnMeses(vencimiento, MESES_PARA_CONSIGNAR)
 
 /**
  * ICA anual admite pago parcial y saldo a favor; ReteICA y autorretención sin pago total son ineficaces y no
