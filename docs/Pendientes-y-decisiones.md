@@ -7,7 +7,7 @@
 >
 > El dashboard es un **mock**: corre en localhost, sin API ni base de datos, y sirve para mostrarles a los municipios cómo se verá el aplicativo. Complementa a [`Dominio-ICA.md`](Dominio-ICA.md) y a [`Contexto-RIT.md`](Contexto-RIT.md).
 >
-> **Revisado el 2026-10-27; actualizado el 2026-11-06.** Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
+> **Revisado el 2026-10-27; actualizado el 2026-11-09.** Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
 
 ## 1. Decisiones del 2026-10-27
 
@@ -22,7 +22,7 @@
 | Carga del Asobancaria 2001 | **Se queda simulada** | Es un mock: basta con que muestre el flujo |
 | Bitácora de cambios | **Sí**; hecha el 2026-11-04 con datos de prueba | Solo la ve 1cero1, con la fecha y la hora de cada cambio, también los de 1cero1 (§3.9) |
 | Buscador global | **Por ahora no** | La respuesta quedó a medias: confirmarla |
-| Cuadre de caja | **Por decidir**; la sugerencia es dejarlo fuera | Seguramente lo hace el sistema de rentas del municipio (§3.8) |
+| Cuadre de caja | **Descartado** (2026-11-09) | No le toca a 1cero1: lo hace el sistema de rentas del municipio (§3.8) |
 | Corrección a la baja, plazo de inscripción en el RIT, declaración en ceros, omisos, calendario de vencimientos, causales del art. 580 y soportes por calidad | **En revisión** | El usuario los está estudiando con las explicaciones de §3 |
 | Calendario como página aparte (2026-11-03) | **Sí**: vencimientos, periodicidad y pronto pago (también su interruptor) van en la página Calendario, no en Configuración | Hacerlo más sencillo |
 | Carga y exportación del calendario en JSON (2026-11-03) | **Descartado** | No le sirve a nadie |
@@ -79,7 +79,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 | Alerta de ReteICA sin consignar | Una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§3.15): en Pagos, en Inicio y en el detalle de la declaración, también para la AutoReteICA. El plazo de 2 meses del art. 580-1 ET, que también trae Ricaurte, es un interruptor por municipio | **Implementado** (2026-11-04) |
 | Estado de cuenta del contribuyente | Ninguna vista junta lo que debe un contribuyente: sus vigencias, saldos y pagos. Donde no hay RIT, al contribuyente se le reconoce por su documento (§3.16) | Pendiente, **sin paz y salvo** |
 | Carga del Asobancaria | El resultado es aleatorio y no cambia la cartera; las referencias que no cruzan no quedan en ninguna parte | Se queda simulada |
-| Cuadre de caja de la ventanilla | El cierre del día por funcionario (§3.8) | Por decidir |
+| Cuadre de caja de la ventanilla | El cierre del día por funcionario (§3.8) | Descartado |
 
 ### 2.3 Prioridad media
 
@@ -205,6 +205,8 @@ El **certificado** de paz y salvo dice que alguien no debe nada. Si el dato est�
 Al final del día, el cajero de la ventanilla compara lo que el sistema dice que recibió con lo que tiene en la caja: el efectivo, los cheques y los recibos expedidos. Después entrega o consigna la plata. También se le dice arqueo o cierre de caja.
 
 En el mock, el funcionario solo escribe el número del recibo de caja, que sale de otro sistema o de un talonario. Así que el cuadre seguramente lo hace el sistema de rentas del municipio.
+
+**Descartado el 2026-11-09**: no le toca a 1cero1. Lo hace el sistema de rentas del municipio.
 
 ### 3.9 Bitácora de cambios
 
@@ -444,5 +446,5 @@ El cruce con el RIT queda como un extra:
   - los soportes por calidad.
 
   Las explicaciones están en §3.
-- **Por confirmar**: el buscador global, porque la respuesta quedó a medias, y el cuadre de caja.
+- **Por confirmar**: el buscador global, porque la respuesta quedó a medias.
 - **Siguiente paso**: el usuario decide qué hacer. Cada punto se hace en su versión mínima. La sugerencia del 2026-11-04, que las declaraciones de la demo sigan la periodicidad del calendario (§2.1), quedó hecha el 2026-11-06.
