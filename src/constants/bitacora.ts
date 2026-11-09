@@ -9,6 +9,7 @@ export const PETICIONES = {
   iniciarSesion: peticion('Autenticacion', 'IniciarSesion', 'POST /api/autenticacion/login'),
   resolverNovedad: peticion('Rit', 'ResolverNovedad', 'PUT /api/rit/{inscripcionId}/novedades/{novedadId}'),
   resolverAprobacion: peticion('Declaraciones', 'ResolverAprobacion', 'PUT /api/declaraciones/{id}/aprobacion'),
+  resolverCorreccion: peticion('Declaraciones', 'ResolverCorreccion', 'PUT /api/declaraciones/{id}/correccion'),
   guardarConfiguracion: peticion('Configuracion', 'GuardarConfiguracion', 'PUT /api/configuracion/{municipioId}'),
   cargarActividades: peticion('Actividades', 'CargarActividades', 'POST /api/actividades/{municipioId}/{vigencia}'),
   crearUsuario: peticion('Usuarios', 'CrearUsuario', 'POST /api/usuarios'),

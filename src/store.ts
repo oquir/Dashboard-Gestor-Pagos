@@ -5,6 +5,7 @@ import { PETICIONES } from './constants'
 import type { Peticion } from './constants'
 import { generarDatos } from './data/generar'
 import { nombreCompleto } from './lib/formato'
+import { correccionPorResolver, situacionCorreccion } from './lib/reglas'
 import type { Archivo, Cheque, ConfigMunicipio, Datos, EstadoNovedad, Formulario, Impuesto, Municipio, RegistroBitacora, Tarifa, Usuario } from './types'
 import { ahora, hoy } from './utils'
 
@@ -27,6 +28,11 @@ interface Estado extends Datos {
   ) => void
   /** Aprueba o rechaza una declaración con aprobación previa. */
   resolverAprobacion: (id: string, estado: 'aprobada' | 'rechazada', observacion: string) => void
+  /**
+   * Acepta o rechaza una solicitud de corrección a la baja. Si ya no está por resolver (se resolvió o pasaron los 6 meses
+   * y se aceptó por silencio), la petición falla.
+   */
+  resolverCorreccion: (id: string, estado: 'aceptada' | 'rechazada', observacion: string) => void
   guardarConfiguracion: (config: ConfigMunicipio) => void
   /** Reemplaza las actividades del año gravable con las del Excel cargado. */
   cargarActividades: (municipioId: string, vigencia: number, tarifas: Tarifa[], archivo: string) => void
@@ -182,6 +188,18 @@ export const useDatos = create<Estado>()(
             ),
           }))
           registrar(PETICIONES.resolverAprobacion, municipioDeDeclaracion(id), { id, estado, observacion })
+        },
+
+        resolverCorreccion: (id, estado, observacion) => {
+          const usuario = usuarioActual()
+          const d = get().declaraciones.find((x) => x.id === id)
+          const exito = d !== undefined && correccionPorResolver(situacionCorreccion(d, hoy()))
+          if (d?.solicitudCorreccion && exito) {
+            const { motivo } = d.solicitudCorreccion
+            const resuelta = { estado, motivo, fecha: hoy(), por: usuario ? nombreCompleto(usuario) : '', observacion: observacion || undefined }
+            set((s) => ({ declaraciones: s.declaraciones.map((x) => (x.id === id ? { ...x, solicitudCorreccion: resuelta } : x)) }))
+          }
+          registrar(PETICIONES.resolverCorreccion, municipioDeDeclaracion(id), { id, estado, observacion }, exito)
         },
 
         guardarConfiguracion: (config) => {
