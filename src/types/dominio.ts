@@ -238,6 +238,8 @@ export interface Declaracion {
   /** Anexos que el municipio pide cargar con la declaración. */
   adjuntos: Adjunto[]
   aprobacion?: Aprobacion
+  /** Solo en las correcciones a la baja que se radicaron como solicitud, con el trámite del art. 589 anterior. */
+  solicitudCorreccion?: SolicitudCorreccion
 }
 
 /**
@@ -251,6 +253,20 @@ export type Aprobacion =
 
 /** Estado de la aprobación previa al día de hoy: vencido el plazo, queda vencida o se aprueba sola (lib/reglas). */
 export type EstadoAprobacion = 'por_aprobar' | 'vencida' | 'aprobada' | 'aprobada_automatica' | 'rechazada'
+
+/**
+ * Solicitud de corrección a la baja con el trámite del art. 589 del Estatuto Tributario anterior a la Ley 1819 de 2016,
+ * que algunos estatutos municipales conservan: la corrección es un proyecto hasta que el municipio la acepta, y si no
+ * responde en 6 meses, se acepta sola. Mientras tanto sigue vigente la declaración que corrige.
+ */
+export type SolicitudCorreccion =
+  /** El motivo es lo que explica el contribuyente al radicarla. */
+  | { estado: 'pendiente'; motivo: string }
+  /** La observación le llega al contribuyente en el correo; al rechazar es obligatoria. */
+  | { estado: 'aceptada' | 'rechazada'; motivo: string; fecha: string; por: string; observacion?: string }
+
+/** Estado de la solicitud de corrección al día de hoy: si pasan los 6 meses sin respuesta, se acepta por silencio (lib/reglas). */
+export type EstadoCorreccion = 'por_resolver' | 'aceptada' | 'aceptada_por_silencio' | 'rechazada'
 
 export interface Pago {
   id: string
@@ -368,6 +384,11 @@ export interface ConfigMunicipio {
   cancelacionRitAutomatica: boolean
   /** Los funcionarios no ven en Inicio lo que ha recaudado el municipio. */
   ocultarRecaudoAFuncionarios: boolean
+  /**
+   * Cómo se corrige a la baja: con la corrección directa del art. 589 vigente o, si el estatuto del municipio lo
+   * conserva, con la solicitud y el proyecto de corrección del art. 589 anterior. Aplica a lo que se radique desde que
+   * se cambia.
+   */
   correccionABaja: 'proyecto_589' | 'correccion_directa'
   /** El concejo fija los tramos para cada año gravable; fuera de ellos no hay descuento. */
   prontoPago: { activo: boolean; porVigencia: { vigencia: number; tramos: TramoProntoPago[] }[] }
