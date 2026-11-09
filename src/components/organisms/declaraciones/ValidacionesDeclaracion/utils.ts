@@ -20,7 +20,9 @@ export function validaciones(d: Declaracion, ins: Inscripcion | undefined, contr
       if (valor('28') > 0) resultado.push({ ok: tiene('autorretenedor'), texto: 'Las autorretenciones (renglón 28) corresponden a un autorretenedor del RIT' })
     }
   }
-  if (d.tipo !== 'clausura') {
+  // La extemporaneidad es de la inicial: una corrección no es extemporánea por presentarse después del vencimiento
+  // (art. 644, parágrafo 1, del Estatuto Tributario).
+  if (d.tipo === 'inicial') {
     const extemporanea = d.fechaPresentacion > d.fechaVencimiento
     const sancion = valor('31') + valor('S')
     resultado.push(

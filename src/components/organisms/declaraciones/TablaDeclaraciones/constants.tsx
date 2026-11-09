@@ -73,7 +73,8 @@ export const COLUMNAS = col.columns([
     cell: ({ row: { original: { d, sinCalendario } } }) => (
       <>
         <p className="text-slate-700">{formatoFecha(d.fechaPresentacion)}</p>
-        {d.tipo !== 'clausura' && d.fechaPresentacion > d.fechaVencimiento && <p className="text-xs text-amber-700">Extemporánea</p>}
+        {/* Solo la inicial es extemporánea: la corrección se presenta después del vencimiento sin serlo. */}
+        {d.tipo === 'inicial' && d.fechaPresentacion > d.fechaVencimiento && <p className="text-xs text-amber-700">Extemporánea</p>}
         {sinCalendario && <p className="text-xs text-amber-700">Sin calendario cargado</p>}
       </>
     ),

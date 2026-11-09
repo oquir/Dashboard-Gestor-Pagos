@@ -19,7 +19,8 @@ export default function DatosDeclaracion({ d, corregida, aLaBaja = false }: Dato
         <Dato etiqueta="Vencimiento">{formatoFecha(d.fechaVencimiento)}</Dato>
         <Dato etiqueta="Presentación">
           {formatoFecha(d.fechaPresentacion)}
-          {d.tipo !== 'clausura' && diasMora > 0 && <span className="text-amber-700"> · {diasMora} días tarde</span>}
+          {/* Solo la inicial llega tarde: la corrección se presenta después del vencimiento sin ser extemporánea. */}
+          {d.tipo === 'inicial' && diasMora > 0 && <span className="text-amber-700"> · {diasMora} días tarde</span>}
         </Dato>
         {d.fechaCierre && <Dato etiqueta="Fecha de cierre">{formatoFecha(d.fechaCierre)}</Dato>}
         {corregida && (
