@@ -6,15 +6,16 @@ import { hoy } from '../utils'
 import { descargarBlob } from './archivos'
 import {
   etiquetaCargoContable,
+  etiquetaEstadoCorreccion,
   etiquetaEstadoPago,
   etiquetaImpuesto,
   etiquetaPeriodo,
-  etiquetaTipoDeclaracion,
   formatoDocumento,
   formatoFecha,
   formatoPesos,
+  textoTipoDeclaracion,
 } from './formato'
-import { estadoPago, RENGLONES_TOTALES, totalPagado } from './reglas'
+import { correccionVigente, esCorreccionABaja, estadoPago, RENGLONES_TOTALES, situacionCorreccion, totalPagado } from './reglas'
 
 /** Lo que el PDF necesita además de la declaración; el estado de la demo lo cumple. */
 export interface FuentePdf {
@@ -46,7 +47,9 @@ const limpio = (t: string) => t.replace(/[–—]/g, '-').replace(/\s/g, ' ')
 function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   const municipio = fuente.municipios.find((m) => m.id === d.municipioId)
   const ins = fuente.inscripciones.find((i) => i.id === d.inscripcionId)
-  const corrige = d.corrigeA ? fuente.declaraciones.find((x) => x.id === d.corrigeA)?.numero : undefined
+  const corregida = d.corrigeA ? fuente.declaraciones.find((x) => x.id === d.corrigeA) : undefined
+  const corrige = corregida?.numero
+  const solicitud = situacionCorreccion(d, hoy())
   let y = MARGEN
 
   const estilo = (negrita: boolean, tamano: number, color = TINTA) => {
@@ -99,7 +102,7 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   estilo(true, 12)
   doc.text(d.numero, DERECHA - 14, y + 36, { align: 'right' })
   estilo(false, 9)
-  doc.text(`Tipo: ${etiquetaTipoDeclaracion[d.tipo]}`, DERECHA - 14, y + 50, { align: 'right' })
+  doc.text(`Tipo: ${textoTipoDeclaracion(d.tipo, esCorreccionABaja(d, corregida))}`, DERECHA - 14, y + 50, { align: 'right' })
   y += alto + 26
 
   seccion('A. Datos de la declaración')
@@ -111,6 +114,11 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
     ['Fecha de vencimiento', formatoFecha(d.fechaVencimiento)],
   ]
   if (corrige) datos.push(['Corrige la declaración', corrige])
+  // Mientras el municipio no la acepte, la solicitud de corrección a la baja no sirve para pagar.
+  if (solicitud) {
+    const estado = etiquetaEstadoCorreccion[solicitud.estado]
+    datos.push(['Solicitud de corrección', correccionVigente(solicitud) ? estado : `${estado}: no sirve para pagar`])
+  }
   if (d.fechaCierre) datos.push(['Fecha de cierre', formatoFecha(d.fechaCierre)])
   campos(datos)
 
@@ -171,7 +179,11 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
     ['Total a pagar', formatoPesos(d.totalAPagar)],
     ['Total pagado', formatoPesos(pagado)],
     ['Saldo pendiente', formatoPesos(Math.max(d.totalAPagar - pagado, 0))],
-    ['Estado del pago', etiquetaEstadoPago[estadoPago(d, fuente.pagos, fuente.configuraciones.find((c) => c.municipioId === d.municipioId), hoy())]],
+    // La solicitud de corrección que no se ha aceptado no se paga.
+    [
+      'Estado del pago',
+      correccionVigente(solicitud) ? etiquetaEstadoPago[estadoPago(d, fuente.pagos, fuente.configuraciones.find((c) => c.municipioId === d.municipioId), hoy())] : 'No aplica',
+    ],
   ]
   if (d.saldoAFavor > 0) pago.push(['Saldo a favor', formatoPesos(d.saldoAFavor)])
   campos(pago)

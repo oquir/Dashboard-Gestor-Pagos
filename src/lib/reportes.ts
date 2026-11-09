@@ -5,6 +5,7 @@ import { hoy } from '../utils'
 import {
   etiquetaCalidad,
   etiquetaEstadoAprobacion,
+  etiquetaEstadoCorreccion,
   etiquetaEstadoInscripcion,
   etiquetaEstadoPago,
   etiquetaImpuesto,
@@ -13,8 +14,9 @@ import {
   etiquetaTipoPersona,
   formatoDocumento,
   MESES,
+  textoTipoDeclaracion,
 } from './formato'
-import { correccionVigente, reemplazadas as calcularReemplazadas, sePuedePagar, totalPagado } from './reglas'
+import { correccionVigente, esCorreccionABaja, reemplazadas as calcularReemplazadas, sePuedePagar, totalPagado } from './reglas'
 import type { SituacionAprobacion, SituacionCorreccion } from './reglas'
 import { conRit, delMunicipio, impuestosVisibles } from './sesion'
 
@@ -65,7 +67,7 @@ const APROBACION: Columna = { titulo: 'Aprobación', ancho: 26 }
 
 export const COLUMNAS: Record<IdReporte, Columna[]> = {
   declaraciones: [
-    MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, { titulo: 'Tipo', ancho: 12 }, CONTRIBUYENTE, DOCUMENTO,
+    MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, { titulo: 'Tipo', ancho: 30 }, CONTRIBUYENTE, DOCUMENTO,
     { titulo: 'Presentación', ancho: 13, formato: 'fecha' }, VENCIMIENTO, TOTAL, PAGADO, ESTADO_PAGO, APROBACION,
   ],
   recaudo: [
@@ -153,8 +155,13 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
 
   const presentadas = declaraciones
     .filter((d) => enRango(d.fechaPresentacion))
-    .map((d) => ({ d, pagado: totalPagado(d.id, pagos), estado: estadoDe(d), a: aprobacion(d) }))
+    .map((d) => ({ d, pagado: totalPagado(d.id, pagos), estado: estadoDe(d), a: aprobacion(d), c: correccion(d) }))
     .filter((f) => !estadoAprobacion || (f.a?.estado ?? 'no_aplica') === estadoAprobacion)
+  // La corrección a la baja se nombra así y, si se radicó como solicitud, lleva su estado.
+  const tipoDe = (d: Declaracion, c: SituacionCorreccion | undefined) => {
+    const texto = textoTipoDeclaracion(d.tipo, esCorreccionABaja(d, d.corrigeA ? declaracionPorId.get(d.corrigeA) : undefined))
+    return c ? `${texto} (solicitud ${etiquetaEstadoCorreccion[c.estado].toLowerCase()})` : texto
+  }
 
   const recibidos = pagos.flatMap((p) => {
     const d = declaracionPorId.get(p.declaracionId)
@@ -174,14 +181,20 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
 
   return {
     declaraciones: {
-      filas: presentadas.map(({ d, pagado, estado, a }) => [
+      filas: presentadas.map(({ d, pagado, estado, a, c }) => [
         nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d),
-        etiquetaTipoDeclaracion[d.tipo], d.contribuyente.nombre, formatoDocumento(d.contribuyente), d.fechaPresentacion, d.fechaVencimiento, d.totalAPagar,
-        pagado, etiquetaEstadoPago[estado], a ? etiquetaEstadoAprobacion[a.estado] : 'No aplica',
+        tipoDe(d, c), d.contribuyente.nombre, formatoDocumento(d.contribuyente), d.fechaPresentacion, d.fechaVencimiento, d.totalAPagar,
+        // La solicitud de corrección que no se ha aceptado no se paga.
+        pagado, correccionVigente(c) ? etiquetaEstadoPago[estado] : 'No aplica', a ? etiquetaEstadoAprobacion[a.estado] : 'No aplica',
       ]),
       graficas: [
         { titulo: 'Por impuesto', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: porImpuesto(presentadas, (f) => f.d.impuesto) },
-        { titulo: 'Por estado de pago', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: agrupar(presentadas, etiquetaEstadoPago, (f) => f.estado) },
+        {
+          titulo: 'Por estado de pago',
+          descripcion: 'Cantidad de declaraciones, sin las solicitudes de corrección que no se han aceptado.',
+          formato: 'cantidad',
+          barras: agrupar(presentadas.filter((f) => correccionVigente(f.c)), etiquetaEstadoPago, (f) => f.estado),
+        },
         { titulo: 'Por tipo de declaración', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: agrupar(presentadas, etiquetaTipoDeclaracion, (f) => f.d.tipo) },
       ],
     },
