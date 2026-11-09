@@ -124,6 +124,18 @@ export function generarBitacora(datos: Omit<Datos, 'bitacora'>): RegistroBitacor
     }
   }
 
+  // Las solicitudes de corrección a la baja que el municipio aceptó o rechazó en esas fechas. Van al final y con su
+  // propio azar para no cambiar las horas de los demás registros.
+  const azCorrecciones = crearAzar(589)
+  for (const d of datos.declaraciones) {
+    const s = d.solicitudCorreccion
+    const quien = s && s.estado !== 'pendiente' && enRango(s.fecha) ? porNombre.get(s.por) : undefined
+    if (!s || s.estado === 'pendiente' || !quien) continue
+    llamadas.push(
+      llamada(`${s.fecha}T${hora(azCorrecciones)}`, quien.id, d.municipioId, PETICIONES.resolverCorreccion, { id: d.id, estado: s.estado, observacion: s.observacion ?? '' }),
+    )
+  }
+
   const usuarios = new Map(datos.usuarios.map((u) => [u.id, u]))
   return llamadas
     .filter((l) => usuarios.has(l.usuarioId))
