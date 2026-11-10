@@ -1,12 +1,10 @@
-import { TickCircle, CloseCircle, Document, Paperclip, Xmark } from 'reicon-react'
+import { TickCircle, CloseCircle } from 'reicon-react'
 import { useState } from 'react'
-import type { ChangeEvent } from 'react'
-import { formatoTamano, guardarArchivo } from '../../../../lib/archivos'
+import { guardarArchivo } from '../../../../lib/archivos'
 import { etiquetaTipoNovedad, formatoFecha } from '../../../../lib/formato'
 import { useDatos } from '../../../../store'
 import { Boton, Card, Textarea } from '../../../atoms'
-import { Campo, CardHeader, SelectorArchivo } from '../../../molecules'
-import { FORMATOS, TAMANO_MAXIMO } from './constants'
+import { AdjuntarDocumentos, Campo, CardHeader } from '../../../molecules'
 import type { Respuesta, RespuestaSolicitudProps } from './types'
 
 /** Tarjeta con la que la administración resuelve una solicitud del RIT y le responde al contribuyente. */
@@ -15,15 +13,7 @@ export default function RespuestaSolicitud({ inscripcionId, novedad, correo }: R
   const [mensaje, setMensaje] = useState('')
   const [archivos, setArchivos] = useState<File[]>([])
   const [faltaMotivo, setFaltaMotivo] = useState(false)
-  const [muyGrandes, setMuyGrandes] = useState<string[]>([])
   const [enviando, setEnviando] = useState(false)
-
-  const agregar = (e: ChangeEvent<HTMLInputElement>) => {
-    const elegidos = Array.from(e.target.files ?? [])
-    e.target.value = ''
-    setMuyGrandes(elegidos.filter((f) => f.size > TAMANO_MAXIMO).map((f) => f.name))
-    setArchivos((actuales) => [...actuales, ...elegidos.filter((f) => f.size <= TAMANO_MAXIMO)])
-  }
 
   const responder = async (estado: Respuesta) => {
     if (estado === 'rechazada' && !mensaje.trim()) return setFaltaMotivo(true)
@@ -47,35 +37,7 @@ export default function RespuestaSolicitud({ inscripcionId, novedad, correo }: R
             onChange={(e) => { setMensaje(e.target.value); setFaltaMotivo(false) }}
           />
         </Campo>
-
-        <div>
-          <p className="mb-1 text-sm font-medium text-slate-700">Documentos para el contribuyente</p>
-          {archivos.length > 0 && (
-            <ul className="mb-2 divide-y divide-slate-100 rounded-lg ring-1 ring-slate-200">
-              {archivos.map((f, i) => (
-                <li key={`${f.name}-${i}`} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-700">
-                  <Document className="size-4 shrink-0 text-brand-600" aria-hidden />
-                  <span className="min-w-0 flex-1 truncate">{f.name}</span>
-                  <span className="shrink-0 text-xs text-slate-500">{formatoTamano(f.size)}</span>
-                  <button
-                    type="button"
-                    onClick={() => setArchivos((actuales) => actuales.filter((_, j) => j !== i))}
-                    className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-red-600"
-                    aria-label={`Quitar ${f.name}`}
-                  >
-                    <Xmark className="size-4" aria-hidden />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          <SelectorArchivo texto="Adjuntar documentos" icono={Paperclip} multiple accept={FORMATOS} onChange={agregar} />
-          {muyGrandes.length > 0 ? (
-            <p className="mt-1 text-xs text-red-600">Supera los 10 MB y no se adjuntó: {muyGrandes.join(', ')}.</p>
-          ) : (
-            <p className="mt-1 text-xs text-slate-500">PDF, Word, Excel o imagen, hasta 10 MB cada uno.</p>
-          )}
-        </div>
+        <AdjuntarDocumentos archivos={archivos} onChange={setArchivos} />
       </div>
       <div className="flex flex-wrap gap-2 border-t border-slate-100 px-5 py-3">
         <Boton variante="primario" disabled={enviando} onClick={() => responder('aprobada')}>

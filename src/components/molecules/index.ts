@@ -1,5 +1,6 @@
 // Moléculas: grupos pequeños de átomos con una sola función, como un campo con su etiqueta o un buscador.
 // Entre moléculas se importan por su ruta, no desde este índice.
+export { default as AdjuntarDocumentos } from './AdjuntarDocumentos'
 export { default as Aviso } from './Aviso'
 export { default as BarraFiltros } from './BarraFiltros'
 export { default as BarraGuardar } from './BarraGuardar'
@@ -8,6 +9,7 @@ export { default as Campo } from './Campo'
 export { default as CardHeader } from './CardHeader'
 export { default as Cifra } from './Cifra'
 export { default as Dato } from './Dato'
+export { default as DocumentosEnviados } from './DocumentosEnviados'
 export { default as ElegirMunicipio } from './ElegirMunicipio'
 export { default as Filtro } from './Filtro'
 export { default as FiltroCasilla } from './FiltroCasilla'
