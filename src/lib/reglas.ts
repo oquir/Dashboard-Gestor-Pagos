@@ -1,5 +1,5 @@
 // Reglas del dominio que usa el dashboard (ver docs/Dominio-ICA.md, secciones 5 y 6).
-import type { ActividadesVigencia, Archivo, CausalNoPresentada, Cheque, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoCorreccion, EstadoPago, Inscripcion, Pago, Sector, Tarifa } from '../types'
+import type { ActividadesVigencia, Archivo, CausalNoPresentada, Cheque, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoCorreccion, EstadoPago, Impuesto, Inscripcion, Pago, Sector, Tarifa } from '../types'
 import { diferenciaDias, sumarMeses } from '../utils'
 
 /** UVT 2026 (dato que caduca, sección 7 del dominio). */
@@ -12,6 +12,24 @@ export const SANCIONES_LEY: ConfigMunicipio['sanciones'] = {
   correccion: 10,
   correccionEmplazamiento: 20,
   minimaUvt: 10,
+}
+
+/** Tope de la extemporaneidad, en % del impuesto: antes del emplazamiento para declarar (art. 641) y después (art. 642). */
+export const TOPE_EXTEMPORANEIDAD = 100
+export const TOPE_EXTEMPORANEIDAD_EMPLAZAMIENTO = 200
+
+/**
+ * Sanción por extemporaneidad: la tasa del municipio por cada mes o fracción de retardo desde el vencimiento, sobre el
+ * impuesto a cargo, con su tope y sin bajar de la mínima. Quien declara después de notificado el emplazamiento para
+ * declarar usa la tasa y el tope del art. 642; si no, los del art. 641. Sin impuesto a cargo queda la mínima: la sanción
+ * sobre los ingresos brutos no se modela.
+ */
+export function sancionExtemporaneidad(base: number, diasMora: number, sanciones: ConfigMunicipio['sanciones'], emplazado = false) {
+  if (diasMora <= 0) return 0
+  const meses = Math.ceil(diasMora / 30)
+  const tasa = emplazado ? sanciones.extemporaneidadEmplazamiento : sanciones.extemporaneidad
+  const tope = emplazado ? TOPE_EXTEMPORANEIDAD_EMPLAZAMIENTO : TOPE_EXTEMPORANEIDAD
+  return Math.max(redondearMil((base * Math.min(meses * tasa, tope)) / 100), redondearMil(sanciones.minimaUvt * UVT))
 }
 
 export const ANTICIPO_MAXIMO = 40
@@ -169,6 +187,14 @@ export const CODIGO_PAGADO_CON_LA_CORREGIDA = '—'
  * que se pagó con la declaración que corrige.
  */
 export const valorLiquidado = (d: Declaracion) => d.renglones.find((r) => r.codigo === '38' || r.codigo === 'T')?.valor ?? d.totalAPagar
+
+/** Renglón del impuesto a cargo, sobre el que se liquida la extemporaneidad: el total del ICA o el subtotal de la retención. */
+const RENGLON_IMPUESTO: Record<Impuesto, string> = { ica: '25', reteica: '18', autorretencion: '2' }
+
+export const impuestoACargo = (d: Declaracion) => d.renglones.find((r) => r.codigo === RENGLON_IMPUESTO[d.impuesto])?.valor ?? 0
+
+/** Las sanciones que liquida la declaración: el renglón 31 del ICA o la "S" de la retención. */
+export const sancionLiquidada = (d: Declaracion) => d.renglones.filter((r) => r.codigo === '31' || r.codigo === 'S').reduce((suma, r) => suma + r.valor, 0)
 
 /**
  * La corrección baja el valor a pagar o sube el saldo a favor de la declaración que corrige. El valor a pagar es el
