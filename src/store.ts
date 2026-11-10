@@ -6,7 +6,7 @@ import type { Peticion } from './constants'
 import { generarDatos } from './data/generar'
 import { nombreCompleto } from './lib/formato'
 import { correccionPorResolver, situacionCorreccion } from './lib/reglas'
-import type { Archivo, Cheque, ConfigMunicipio, Datos, EstadoNovedad, Formulario, Impuesto, Municipio, RegistroBitacora, Tarifa, Usuario } from './types'
+import type { Aprobacion, Archivo, Cheque, ConfigMunicipio, Datos, EstadoNovedad, Formulario, Impuesto, Municipio, RegistroBitacora, ResolucionAprobacion, Tarifa, Usuario } from './types'
 import { ahora, hoy } from './utils'
 
 /** Lo del municipio que se activa por formulario. */
@@ -26,8 +26,8 @@ interface Estado extends Datos {
     observacion: string,
     documentos: Archivo[],
   ) => void
-  /** Aprueba o rechaza una declaración con aprobación previa. */
-  resolverAprobacion: (id: string, estado: 'aprobada' | 'rechazada', observacion: string) => void
+  /** Aprueba o rechaza una declaración con aprobación previa; se rechaza solo por una causal del art. 580. */
+  resolverAprobacion: (id: string, resolucion: ResolucionAprobacion, observacion: string, documentos: Archivo[]) => void
   /**
    * Acepta o rechaza una solicitud de corrección a la baja. Si ya no está por resolver (se resolvió o pasaron los 6 meses
    * y se aceptó por silencio), la petición falla.
@@ -179,15 +179,23 @@ export const useDatos = create<Estado>()(
           })
         },
 
-        resolverAprobacion: (id, estado, observacion) => {
+        resolverAprobacion: (id, resolucion, observacion, documentos) => {
           const usuario = usuarioActual()
-          const por = usuario ? nombreCompleto(usuario) : ''
-          set((s) => ({
-            declaraciones: s.declaraciones.map((d) =>
-              d.id === id ? { ...d, aprobacion: { estado, fecha: hoy(), por, observacion: observacion || undefined } } : d,
-            ),
-          }))
-          registrar(PETICIONES.resolverAprobacion, municipioDeDeclaracion(id), { id, estado, observacion })
+          const aprobacion: Aprobacion = {
+            ...resolucion,
+            fecha: hoy(),
+            por: usuario ? nombreCompleto(usuario) : '',
+            observacion: observacion || undefined,
+            documentos: documentos.length > 0 ? documentos : undefined,
+          }
+          set((s) => ({ declaraciones: s.declaraciones.map((d) => (d.id === id ? { ...d, aprobacion } : d)) }))
+          // De los archivos, el back guarda el nombre.
+          registrar(PETICIONES.resolverAprobacion, municipioDeDeclaracion(id), {
+            id,
+            ...resolucion,
+            observacion,
+            documentos: documentos.map((d) => d.nombre),
+          })
         },
 
         resolverCorreccion: (id, estado, observacion) => {
@@ -324,6 +332,6 @@ export const useDatos = create<Estado>()(
         reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
       }
     },
-    { name: 'gestor-pagos-demo', version: 43 },
+    { name: 'gestor-pagos-demo', version: 44 },
   ),
 )

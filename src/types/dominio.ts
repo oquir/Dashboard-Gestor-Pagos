@@ -248,8 +248,20 @@ export interface Declaracion {
  */
 export type Aprobacion =
   | { estado: 'pendiente' }
-  /** La observación le llega al contribuyente en el correo; al rechazar es obligatoria. */
-  | { estado: 'aprobada' | 'rechazada'; fecha: string; por: string; observacion?: string }
+  /** La observación y los documentos le llegan al contribuyente en el correo. */
+  | { estado: 'aprobada'; fecha: string; por: string; observacion?: string; documentos?: Archivo[] }
+  /** Solo se rechaza por una causal del art. 580: la declaración se tiene por no presentada. */
+  | { estado: 'rechazada'; fecha: string; por: string; causal: CausalNoPresentada; observacion?: string; documentos?: Archivo[] }
+
+/**
+ * Causales del art. 580 del Estatuto Tributario por las que la declaración se tiene por no presentada, una por literal:
+ * a) el lugar donde se presentó, b) la identificación del declarante, c) los datos para identificar las bases gravables y
+ * d) las firmas del declarante y del contador o revisor fiscal.
+ */
+export type CausalNoPresentada = 'lugar' | 'identificacion' | 'bases_gravables' | 'firmas'
+
+/** Lo que decide quien resuelve la aprobación previa; la fecha y quién la resolvió se ponen al guardarla. */
+export type ResolucionAprobacion = { estado: 'aprobada' } | { estado: 'rechazada'; causal: CausalNoPresentada }
 
 /** Estado de la aprobación previa al día de hoy: vencido el plazo, queda vencida o se aprueba sola (lib/reglas). */
 export type EstadoAprobacion = 'por_aprobar' | 'vencida' | 'aprobada' | 'aprobada_automatica' | 'rechazada'

@@ -1,5 +1,5 @@
 // Reglas del dominio que usa el dashboard (ver docs/Dominio-ICA.md, secciones 5 y 6).
-import type { ActividadesVigencia, Cheque, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoCorreccion, EstadoPago, Inscripcion, Pago, Sector, Tarifa } from '../types'
+import type { ActividadesVigencia, Archivo, CausalNoPresentada, Cheque, ConfigMunicipio, Declaracion, EstadoAprobacion, EstadoCorreccion, EstadoPago, Inscripcion, Pago, Sector, Tarifa } from '../types'
 import { diferenciaDias, sumarMeses } from '../utils'
 
 /** UVT 2026 (dato que caduca, sección 7 del dominio). */
@@ -114,6 +114,9 @@ export interface SituacionAprobacion {
   fecha?: string
   por?: string
   observacion?: string
+  /** Solo en la rechazada: la causal del art. 580. */
+  causal?: CausalNoPresentada
+  documentos?: Archivo[]
   /** Hasta cuándo vale el recibo de pago que se envía al aprobar. */
   reciboHasta?: string
 }
