@@ -4,9 +4,10 @@ import { persist } from 'zustand/middleware'
 import { PETICIONES } from './constants'
 import type { Peticion } from './constants'
 import { generarDatos } from './data/generar'
+import { sePuedeQuitar } from './lib/emplazamientos'
 import { nombreCompleto } from './lib/formato'
 import { correccionPorResolver, situacionCorreccion } from './lib/reglas'
-import type { Aprobacion, Archivo, Cheque, ConfigMunicipio, Datos, EstadoNovedad, Formulario, Impuesto, Municipio, RegistroBitacora, ResolucionAprobacion, Tarifa, Usuario } from './types'
+import type { Aprobacion, Archivo, Cheque, ConfigMunicipio, Datos, Emplazamiento, EstadoNovedad, Formulario, Impuesto, Municipio, NuevoEmplazamiento, RegistroBitacora, ResolucionAprobacion, Tarifa, Usuario } from './types'
 import { ahora, hoy } from './utils'
 
 /** Lo del municipio que se activa por formulario. */
@@ -33,6 +34,10 @@ interface Estado extends Datos {
    * y se aceptó por silencio), la petición falla.
    */
   resolverCorreccion: (id: string, estado: 'aceptada' | 'rechazada', observacion: string) => void
+  /** Registra emplazamientos ya notificados: uno, o un lote con la misma fecha de notificación. */
+  registrarEmplazamientos: (nuevos: NuevoEmplazamiento[]) => void
+  /** Quita un emplazamiento registrado por error. Si ya lo respondió una declaración, la petición falla. */
+  quitarEmplazamiento: (id: string) => void
   guardarConfiguracion: (config: ConfigMunicipio) => void
   /** Reemplaza las actividades del año gravable con las del Excel cargado. */
   cargarActividades: (municipioId: string, vigencia: number, tarifas: Tarifa[], archivo: string) => void
@@ -210,6 +215,26 @@ export const useDatos = create<Estado>()(
           registrar(PETICIONES.resolverCorreccion, municipioDeDeclaracion(id), { id, estado, observacion }, exito)
         },
 
+        registrarEmplazamientos: (nuevos) => {
+          if (nuevos.length === 0) return
+          const usuario = usuarioActual()
+          const registradoPor = usuario ? nombreCompleto(usuario) : ''
+          const siguiente = Math.max(0, ...get().emplazamientos.map((e) => Number(e.id.slice(2)))) + 1
+          const registrados: Emplazamiento[] = nuevos.map((e, i) => ({ ...e, id: `em${siguiente + i}`, registradoPor, fechaRegistro: hoy() }))
+          set((s) => ({ emplazamientos: [...s.emplazamientos, ...registrados] }))
+          // Un lote es una sola petición. De la copia, el back guarda el nombre.
+          registrar(PETICIONES.registrarEmplazamientos, nuevos[0].municipioId, {
+            emplazamientos: nuevos.map(({ copia, ...e }) => ({ ...e, copia: copia?.nombre ?? null })),
+          })
+        },
+
+        quitarEmplazamiento: (id) => {
+          const e = get().emplazamientos.find((x) => x.id === id)
+          const exito = e !== undefined && sePuedeQuitar(e, get().declaraciones)
+          if (exito) set((s) => ({ emplazamientos: s.emplazamientos.filter((x) => x.id !== id) }))
+          registrar(PETICIONES.quitarEmplazamiento, e?.municipioId ?? null, { id }, exito)
+        },
+
         guardarConfiguracion: (config) => {
           set((s) => ({
             configuraciones: s.configuraciones.map((c) => (c.municipioId === config.municipioId ? config : c)),
@@ -332,6 +357,6 @@ export const useDatos = create<Estado>()(
         reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),
       }
     },
-    { name: 'gestor-pagos-demo', version: 44 },
+    { name: 'gestor-pagos-demo', version: 45 },
   ),
 )
