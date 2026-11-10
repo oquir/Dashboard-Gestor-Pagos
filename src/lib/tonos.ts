@@ -1,5 +1,5 @@
 // Color de cada estado. Siempre va con su texto: el color nunca informa solo.
-import type { EstadoAprobacion, EstadoCheque, EstadoCorreccion, EstadoInscripcion, EstadoNovedad, EstadoPago } from '../types'
+import type { EstadoAprobacion, EstadoCheque, EstadoCorreccion, EstadoEmplazamiento, EstadoInscripcion, EstadoNovedad, EstadoPago } from '../types'
 
 export type Tono = 'neutral' | 'info' | 'exito' | 'alerta' | 'peligro'
 
@@ -29,6 +29,15 @@ export const tonoCorreccion: Record<EstadoCorreccion, Tono> = {
   aceptada: 'exito',
   aceptada_por_silencio: 'exito',
   rechazada: 'peligro',
+}
+
+/** El de declarar vencido es grave: siguen la sanción por no declarar y el aforo. El de corregir sin respuesta, no: no genera sanción. */
+export const tonoEmplazamiento: Record<EstadoEmplazamiento, Tono> = {
+  en_plazo: 'alerta',
+  vencido: 'peligro',
+  declarado: 'exito',
+  sin_respuesta: 'neutral',
+  corregido: 'exito',
 }
 
 export const tonoPago: Record<EstadoPago, Tono> = {

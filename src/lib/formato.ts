@@ -1,9 +1,11 @@
 import { NOMBRES_PERIODOS } from '../constants'
 import type {
   Calidad,
+  Emplazamiento,
   EstadoAprobacion,
   EstadoCheque,
   EstadoCorreccion,
+  EstadoEmplazamiento,
   EstadoInscripcion,
   EstadoNovedad,
   EstadoPago,
@@ -141,6 +143,19 @@ export const etiquetaEstadoCorreccion: Record<EstadoCorreccion, string> = {
   aceptada: 'Aceptada',
   aceptada_por_silencio: 'Aceptada por silencio',
   rechazada: 'Rechazada',
+}
+
+export const etiquetaTipoEmplazamiento: Record<Emplazamiento['tipo'], string> = {
+  declarar: 'Emplazamiento para declarar',
+  corregir: 'Emplazamiento para corregir',
+}
+
+export const etiquetaEstadoEmplazamiento: Record<EstadoEmplazamiento, string> = {
+  en_plazo: 'En plazo',
+  vencido: 'Plazo vencido',
+  declarado: 'Declarado',
+  sin_respuesta: 'Sin respuesta',
+  corregido: 'Corregido',
 }
 
 export const etiquetaEstadoPago: Record<EstadoPago, string> = {
