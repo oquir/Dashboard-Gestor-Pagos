@@ -18,6 +18,7 @@ import {
 } from '../components/organisms'
 import { PlantillaDetalle } from '../components/templates'
 import { cargaCalendario, presentadaSinCalendario } from '../lib/calendario'
+import { emplazamientoPrevio } from '../lib/emplazamientos'
 import { etiquetaEstadoCorreccion, etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, formatoFecha, formatoPesos, textoTipoDeclaracion } from '../lib/formato'
 import { puede } from '../lib/permisos'
 import { correccionPorResolver, correccionVigente, esCorreccionABaja, pagoEnExceso, sePuedePagar, totalEnCanje, totalPagado } from '../lib/reglas'
@@ -34,6 +35,7 @@ export default function DeclaracionDetalle() {
   const cheques = useDatos((s) => s.cheques)
   const municipios = useDatos((s) => s.municipios)
   const configuraciones = useDatos((s) => s.configuraciones)
+  const emplazamientos = useDatos((s) => s.emplazamientos)
   const aprobacion = useAprobacion()
   const correccion = useSolicitudCorreccion()
   const estadoDe = useEstadoPago()
@@ -162,7 +164,14 @@ export default function DeclaracionDetalle() {
               vacio="No cargó archivos."
             />
           </Card>
-          <ValidacionesDeclaracion d={d} ins={ins} contraRit={seValidaContraRit(municipios, d)} municipioConRit={municipioConRit} corregida={corregida} />
+          <ValidacionesDeclaracion
+            d={d}
+            ins={ins}
+            contraRit={seValidaContraRit(municipios, d)}
+            municipioConRit={municipioConRit}
+            corregida={corregida}
+            sancion={{ emplazamiento: emplazamientoPrevio(d, declaraciones, emplazamientos), sanciones: cfg?.sanciones }}
+          />
         </>
       }
     />
