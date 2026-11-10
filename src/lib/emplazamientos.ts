@@ -1,5 +1,5 @@
 // Emplazamientos para declarar y para corregir (docs/Pendientes-y-decisiones.md, §3.13).
-import type { Declaracion, Emplazamiento, EstadoEmplazamiento, Omiso } from '../types'
+import type { Declaracion, Emplazamiento, EstadoEmplazamiento, NuevoEmplazamiento, Omiso } from '../types'
 import { rangoPeriodo } from './calendario'
 import { formatoFecha } from './formato'
 import { plazoEnMeses } from './reglas'
@@ -112,6 +112,14 @@ export function textoSituacion(e: Emplazamiento, { estado, limite, respuesta }: 
   return e.tipo === 'declarar'
     ? `Venció el ${hasta} sin declarar: siguen la sanción por no declarar (art. 643) y la liquidación de aforo (art. 717), que expide el municipio en su sistema.`
     : `Venció el ${hasta} sin corrección. No responder no genera sanción (art. 685); si corrige después, igual lleva la sanción del art. 644, numeral 2.`
+}
+
+/** Cómo queda un emplazamiento en la bitácora: lo que manda la pantalla; de la copia, el back guarda el nombre. */
+export function datosEnviados(e: NuevoEmplazamiento) {
+  const comunes = { tipo: e.tipo, municipioId: e.municipioId, numero: e.numero, fechaNotificacion: e.fechaNotificacion, copia: e.copia?.nombre ?? null }
+  return e.tipo === 'declarar'
+    ? { ...comunes, inscripcionId: e.inscripcionId, impuesto: e.impuesto, vigencia: e.vigencia, periodicidad: e.periodicidad, periodo: e.periodo }
+    : { ...comunes, declaracionId: e.declaracionId }
 }
 
 /** Otro emplazamiento del municipio ya tiene ese número de acto. */

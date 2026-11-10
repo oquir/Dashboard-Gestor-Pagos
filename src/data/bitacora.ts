@@ -2,8 +2,9 @@
 // Los datos enviados terminan en los valores que hoy tiene la demo, para que la bitácora no contradiga lo que se ve en las pantallas.
 import { PETICIONES } from '../constants'
 import type { Peticion } from '../constants'
+import { datosEnviados } from '../lib/emplazamientos'
 import { nombreCompleto } from '../lib/formato'
-import type { Datos, RegistroBitacora } from '../types'
+import type { Datos, Emplazamiento, RegistroBitacora } from '../types'
 import { crearAzar, fechaAleatoria } from './azar'
 import type { Azar } from './azar'
 
@@ -133,6 +134,25 @@ export function generarBitacora(datos: Omit<Datos, 'bitacora'>): RegistroBitacor
     if (!s || s.estado === 'pendiente' || !quien) continue
     llamadas.push(
       llamada(`${s.fecha}T${hora(azCorrecciones)}`, quien.id, d.municipioId, PETICIONES.resolverCorreccion, { id: d.id, estado: s.estado, observacion: s.observacion ?? '' }),
+    )
+  }
+
+  // Los emplazamientos registrados en esas fechas: cada lote (el mismo día, del mismo funcionario) es una petición, como
+  // la manda la pantalla. Van al final y con su propio azar.
+  const azEmplazamientos = crearAzar(715)
+  const lotes = new Map<string, Emplazamiento[]>()
+  for (const e of datos.emplazamientos.filter((x) => enRango(x.fechaRegistro))) {
+    const clave = `${e.municipioId}|${e.fechaRegistro}|${e.registradoPor}`
+    lotes.set(clave, [...(lotes.get(clave) ?? []), e])
+  }
+  for (const lote of lotes.values()) {
+    const { municipioId, fechaRegistro, registradoPor } = lote[0]
+    const quien = porNombre.get(registradoPor)
+    if (!quien) continue
+    llamadas.push(
+      llamada(`${fechaRegistro}T${hora(azEmplazamientos)}`, quien.id, municipioId, PETICIONES.registrarEmplazamientos, {
+        emplazamientos: lote.map(datosEnviados),
+      }),
     )
   }
 

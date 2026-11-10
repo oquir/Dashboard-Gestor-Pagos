@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware'
 import { PETICIONES } from './constants'
 import type { Peticion } from './constants'
 import { generarDatos } from './data/generar'
-import { sePuedeQuitar } from './lib/emplazamientos'
+import { datosEnviados, sePuedeQuitar } from './lib/emplazamientos'
 import { nombreCompleto } from './lib/formato'
 import { correccionPorResolver, situacionCorreccion } from './lib/reglas'
 import type { Aprobacion, Archivo, Cheque, ConfigMunicipio, Datos, Emplazamiento, EstadoNovedad, Formulario, Impuesto, Municipio, NuevoEmplazamiento, RegistroBitacora, ResolucionAprobacion, Tarifa, Usuario } from './types'
@@ -222,10 +222,8 @@ export const useDatos = create<Estado>()(
           const siguiente = Math.max(0, ...get().emplazamientos.map((e) => Number(e.id.slice(2)))) + 1
           const registrados: Emplazamiento[] = nuevos.map((e, i) => ({ ...e, id: `em${siguiente + i}`, registradoPor, fechaRegistro: hoy() }))
           set((s) => ({ emplazamientos: [...s.emplazamientos, ...registrados] }))
-          // Un lote es una sola petición. De la copia, el back guarda el nombre.
-          registrar(PETICIONES.registrarEmplazamientos, nuevos[0].municipioId, {
-            emplazamientos: nuevos.map(({ copia, ...e }) => ({ ...e, copia: copia?.nombre ?? null })),
-          })
+          // Un lote es una sola petición.
+          registrar(PETICIONES.registrarEmplazamientos, nuevos[0].municipioId, { emplazamientos: nuevos.map(datosEnviados) })
         },
 
         quitarEmplazamiento: (id) => {
