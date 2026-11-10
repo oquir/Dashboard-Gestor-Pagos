@@ -1,6 +1,7 @@
 // Genera los datos de la demo con una semilla fija: siempre salen los mismos.
 import { MESES_POR_PERIODO } from '../constants'
 import { vencimientoPara } from '../lib/calendario'
+import { calcularOmisos } from '../lib/omisos'
 import { etiquetaCalidad, formatoPesos, nombreCompleto } from '../lib/formato'
 import {
   CODIGO_PAGADO_CON_LA_CORREGIDA,
@@ -22,12 +23,15 @@ import type {
   Datos,
   DatosRit,
   Declaracion,
+  DestinoEmplazamiento,
+  Emplazamiento,
   EstadoInscripcion,
   Firmante,
   Impuesto,
   Inscripcion,
   Municipio,
   Novedad,
+  Omiso,
   Pago,
   Periodicidad,
   RecaudoMensual,
@@ -36,7 +40,7 @@ import type {
   Tarifa,
   TipoPersona,
 } from '../types'
-import { sumarMeses } from '../utils'
+import { diferenciaDias, sumarMeses } from '../utils'
 import {
   ACTIVIDADES,
   ACTIVIDADES_POR_VIGENCIA,
@@ -673,6 +677,140 @@ function agregarCorreccionesABaja({ az, declaraciones, pagos, excluidas, paraCor
   }
 }
 
+// --- Emplazamientos ---
+
+interface FuenteEmplazamientos {
+  az: Azar
+  declaraciones: Declaracion[]
+  inscripciones: Inscripcion[]
+  pagos: Pago[]
+  /** Las retenciones que se quitaron para que haya omisos. */
+  omitidas: Set<string>
+  /** Las que la demo no emplaza para corregir: las que tienen un cheque o se quitaron. */
+  excluidas: Set<string>
+  /** Los ICA 2025 omisos, con lo que hace falta para liquidar su declaración si responden. */
+  omisosIca: { ins: Inscripcion; perfil: PerfilIca; cfg: ConfigMunicipio; tarifas: Tarifa[] }[]
+  paraCorregir: Map<string, ParaCorregir>
+  numero: () => string
+  numeroFactura: () => number
+  agregarPago: (declaracionId: string, fecha: string, valor: number, azar: Azar) => void
+  hoy: string
+}
+
+/**
+ * Los emplazamientos de la demo, en cada estado:
+ * - San José del Valle emplaza en un lote del 18 de agosto de 2026 a sus dos omisos del ICA 2025: uno declara dentro del
+ *   mes, con la extemporaneidad del art. 642, y el otro deja vencer el plazo. Además emplaza para corregir un ICA 2025
+ *   pagado, que se corrige con la sanción de corrección tras emplazamiento.
+ * - Puerto Esperanza emplaza a dos agentes de ReteICA omisos hace unos días hábiles (siguen en plazo) y para corregir a
+ *   un contribuyente que no responde.
+ * - Santa Rosa, sin RIT ni omisos, emplaza para corregir hace unos días.
+ * Los de fecha fija caen en el rango de la bitácora; los demás se cuentan desde hoy, como la aprobación previa.
+ */
+function agregarEmplazamientos(f: FuenteEmplazamientos): Emplazamiento[] {
+  const { az, declaraciones, pagos, excluidas, paraCorregir, hoy } = f
+  const emplazamientos: Emplazamiento[] = []
+  const quien = (id: string) => nombreCompleto(USUARIOS.find((u) => u.id === id)!)
+  const emplazar = (destino: DestinoEmplazamiento, numero: string, fechaNotificacion: string, registradoPor: string, fechaRegistro: string, conCopia = false) => {
+    const copia = conCopia ? archivoAleatorio(az, `Emplazamiento ${numero}`, fechaRegistro) : undefined
+    emplazamientos.push({ ...destino, id: `em${emplazamientos.length + 1}`, numero, fechaNotificacion, registradoPor, fechaRegistro, ...(copia && { copia }) })
+  }
+  const paraDeclarar = (o: Omiso): DestinoEmplazamiento => ({
+    tipo: 'declarar',
+    municipioId: o.inscripcion.municipioId,
+    inscripcionId: o.inscripcion.id,
+    impuesto: o.impuesto,
+    vigencia: o.vigencia,
+    periodicidad: o.periodicidad,
+    periodo: o.periodo,
+  })
+  const pagado = (id: string) => pagos.filter((p) => p.declaracionId === id).reduce((s, p) => s + p.valor, 0)
+  const corregidas = new Set(declaraciones.map((d) => d.corrigeA).filter(Boolean))
+  // Para corregir: un ICA 2025 a tiempo, pagado por completo, sin corrección ni cheque, presentado antes de la notificación.
+  const aEmplazar = (municipioId: string, notificacion: string) => {
+    const candidatas = declaraciones.filter((d) => {
+      const x = paraCorregir.get(d.id)
+      return (
+        x !== undefined && d.municipioId === municipioId && x.diasMora === 0 && x.patron === 'total' && !corregidas.has(d.id) && !excluidas.has(d.id) &&
+        valorLiquidado(d) > 0 && d.saldoAFavor === 0 && pagado(d.id) >= d.totalAPagar && d.fechaPresentacion < notificacion
+      )
+    })
+    if (candidatas.length === 0) return undefined
+    const elegida = az.elegir(candidatas)
+    corregidas.add(elegida.id)
+    return elegida
+  }
+
+  const { omisos } = calcularOmisos(
+    { municipios: MUNICIPIOS, configuraciones: CONFIGURACIONES, inscripciones: f.inscripciones, declaraciones: declaraciones.filter((d) => !f.omitidas.has(d.id)) },
+    null,
+    hoy,
+  )
+
+  // San José del Valle: el lote de los omisos del ICA 2025. Declara el que tiene con qué liquidar su ICA.
+  const LOTE = '2026-08-18'
+  const icaM1 = omisos.filter((o) => o.inscripcion.municipioId === 'm1' && o.impuesto === 'ica' && o.vigencia === 2025 && o.vencimiento < LOTE)
+  const declara = icaM1.find((o) => f.omisosIca.some((x) => x.ins.id === o.inscripcion.id))
+  const deja = icaM1.find((o) => o !== declara)
+  if (declara) emplazar(paraDeclarar(declara), 'EPD-2026-014', LOTE, quien('u3'), '2026-08-19', true)
+  if (deja) emplazar(paraDeclarar(deja), 'EPD-2026-015', LOTE, quien('u3'), '2026-08-19')
+  if (declara) {
+    const x = f.omisosIca.find((y) => y.ins.id === declara.inscripcion.id)!
+    const presentacion = '2026-09-08'
+    const liq = liquidarIca(x.perfil, x.ins, x.cfg, x.tarifas, diferenciaDias(declara.vencimiento, presentacion), 0, 0, true)
+    const id = `d${declaraciones.length + 1}`
+    declaraciones.push({
+      adjuntos: [],
+      ...diligenciadoPor(x.ins, presentacion, 'ica'),
+      id, municipioId: 'm1', inscripcionId: x.ins.id, impuesto: 'ica', vigencia: 2025, periodicidad: 'anual', periodo: 1, tipo: 'inicial',
+      numero: f.numero(), numeroFactura: f.numeroFactura(), fechaPresentacion: presentacion, fechaVencimiento: declara.vencimiento, renglones: liq.renglones,
+      totalAPagar: liq.r38, saldoAFavor: liq.r34,
+    })
+    f.agregarPago(id, presentacion, liq.r38, az)
+  }
+
+  // San José del Valle: para corregir, y la corrección con la sanción de corrección tras emplazamiento.
+  const original = aEmplazar('m1', '2026-09-01')
+  if (original) {
+    emplazar({ tipo: 'corregir', municipioId: 'm1', declaracionId: original.id }, 'EPC-2026-007', '2026-09-01', quien('u3'), '2026-09-02', true)
+    const x = paraCorregir.get(original.id)!
+    const corregido = { ...x.perfil, ingresos: x.perfil.ingresos * (1.06 + az.num() * 0.08) }
+    const base = liquidarIca(corregido, x.ins, x.cfg, x.tarifas, 0, 0)
+    const r33 = original.renglones.find((r) => r.codigo === '33')?.valor ?? 0
+    const mayorValor = Math.max(base.r33 - r33, 0)
+    const sancion = Math.max(redondearMil((mayorValor * x.cfg.sanciones.correccionEmplazamiento) / 100), redondearMil(x.cfg.sanciones.minimaUvt * UVT))
+    const nueva = liquidarIca(corregido, x.ins, x.cfg, x.tarifas, 0, 0, sancion)
+    const yaPagado = pagado(original.id)
+    const fecha = '2026-09-22'
+    const id = `d${declaraciones.length + 1}`
+    declaraciones.push({
+      adjuntos: [],
+      ...diligenciadoPor(x.ins, fecha, 'ica'),
+      id, municipioId: 'm1', inscripcionId: x.ins.id, impuesto: 'ica', vigencia: 2025, periodicidad: 'anual', periodo: 1, tipo: 'correccion',
+      corrigeA: original.id, numero: f.numero(), numeroFactura: f.numeroFactura(), fechaPresentacion: fecha, fechaVencimiento: original.fechaVencimiento,
+      renglones: [...nueva.renglones, { codigo: CODIGO_PAGADO_CON_LA_CORREGIDA, concepto: 'Menos lo pagado con la declaración que se corrige', valor: yaPagado }],
+      totalAPagar: Math.max(nueva.r38 - yaPagado, 0), saldoAFavor: nueva.r34,
+    })
+    f.agregarPago(id, fecha, Math.max(nueva.r38 - yaPagado, 0), az)
+  }
+
+  // Puerto Esperanza: para corregir sin respuesta, y dos agentes de ReteICA omisos, distintos, emplazados hace unos días.
+  const sinRespuesta = aEmplazar('m2', '2026-09-10')
+  if (sinRespuesta) emplazar({ tipo: 'corregir', municipioId: 'm2', declaracionId: sinRespuesta.id }, 'EPC-2026-031', '2026-09-10', quien('u6'), '2026-09-11')
+  const reciente = sumarDiasHabiles(hoy, -3)
+  const agentes = omisos
+    .filter((o) => o.inscripcion.municipioId === 'm2' && o.impuesto === 'reteica' && o.inscripcion.estado === 'activa' && o.vencimiento < reciente)
+    .filter((o, i, lista) => lista.findIndex((y) => y.inscripcion.id === o.inscripcion.id) === i)
+    .slice(0, 2)
+  agentes.forEach((o, i) => emplazar(paraDeclarar(o), `EPD-2026-${102 + i}`, reciente, quien('u6'), reciente, i === 0))
+
+  // Santa Rosa: para corregir, en plazo.
+  const enPlazo = aEmplazar('m3', sumarDiasHabiles(hoy, -4))
+  if (enPlazo) emplazar({ tipo: 'corregir', municipioId: 'm3', declaracionId: enPlazo.id }, 'EPC-2026-005', sumarDiasHabiles(hoy, -4), quien('u8'), sumarDiasHabiles(hoy, -4), true)
+
+  return emplazamientos
+}
+
 /**
  * Agrega a los renglones de una retención o autorretención la sanción, los intereses y el total, que devuelve. Con
  * `emplazado`, la declaración llega después del emplazamiento para declarar (art. 642).
@@ -912,6 +1050,22 @@ export function generarDatos(): Datos {
     hoy,
   })
 
+  // Emplazamientos: al final y con su propio azar, para no cambiar el resto de los datos.
+  const emplazamientos = agregarEmplazamientos({
+    az: crearAzar(715),
+    declaraciones,
+    inscripciones,
+    pagos,
+    omitidas,
+    excluidas: new Set([...conCheque, ...omitidas]),
+    omisosIca: omisos,
+    paraCorregir,
+    numero: () => numero('ICA', 2025),
+    numeroFactura,
+    agregarPago,
+    hoy,
+  })
+
   // Donde el municipio no tiene el RIT en el aplicativo no hay inscripciones: de sus contribuyentes solo se sabe lo que
   // escriben en las declaraciones. Se generan igual y aquí se quitan, para no cambiar el resto de los datos.
   const conRit = new Set(MUNICIPIOS.filter((m) => m.rit).map((m) => m.id))
@@ -927,7 +1081,7 @@ export function generarDatos(): Datos {
     recaudoHistorico,
     configuraciones: structuredClone(CONFIGURACIONES),
     actividades: structuredClone(ACTIVIDADES_POR_VIGENCIA),
-    emplazamientos: [],
+    emplazamientos,
   }
   return { ...datos, bitacora: generarBitacora(datos) }
 }
