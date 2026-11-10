@@ -5,15 +5,25 @@ import { useDatos } from '../../../../store'
 import Tabla from '../../Tabla'
 import { COLUMNAS, ORDEN_INICIAL } from './constants'
 import type { TablaOmisosProps } from './types'
-import { col, columnaMunicipio } from './utils'
+import { col, columnaEmplazamiento, columnaMunicipio, columnaSeleccion } from './utils'
 
-/** Periodos vencidos sin declarar, del más antiguo al más reciente. Cuando 1cero1 mira todos los municipios, agrega la columna de municipio. */
-export default function TablaOmisos({ omisos, total }: TablaOmisosProps) {
+/**
+ * Periodos vencidos sin declarar, del más antiguo al más reciente, con su emplazamiento. Quien puede emplazar tiene
+ * casillas para elegirlos. Cuando 1cero1 mira todos los municipios, agrega la columna de municipio.
+ */
+export default function TablaOmisos({ omisos, total, seleccion }: TablaOmisosProps) {
   const { municipioId } = useSesion()
   const municipios = useDatos((s) => s.municipios)
+  const emplazamientos = useDatos((s) => s.emplazamientos)
   const columnas = useMemo(
-    () => (municipioId === null ? col.columns([...COLUMNAS, columnaMunicipio(municipios)]) : COLUMNAS),
-    [municipioId, municipios],
+    () =>
+      col.columns([
+        ...(seleccion ? [columnaSeleccion(omisos, emplazamientos, seleccion)] : []),
+        ...COLUMNAS,
+        columnaEmplazamiento(emplazamientos),
+        ...(municipioId === null ? [columnaMunicipio(municipios)] : []),
+      ]),
+    [omisos, emplazamientos, seleccion, municipioId, municipios],
   )
 
   return (

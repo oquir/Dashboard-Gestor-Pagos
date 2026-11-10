@@ -1,6 +1,18 @@
-import { etiquetaEstadoInscripcion, etiquetaImpuesto, etiquetaPeriodo, formatoDocumento, normalizar, textoEnProduccion } from '../../../../lib/formato'
-import type { Municipio, Omiso, ResultadoOmisos } from '../../../../types'
+import { emplazamientoDelOmiso, situacionEmplazamiento } from '../../../../lib/emplazamientos'
+import {
+  etiquetaEstadoEmplazamiento,
+  etiquetaEstadoInscripcion,
+  etiquetaImpuesto,
+  etiquetaPeriodo,
+  formatoDocumento,
+  formatoFecha,
+  normalizar,
+  textoEnProduccion,
+} from '../../../../lib/formato'
+import { idOmiso } from '../../../../lib/omisos'
+import type { Declaracion, Emplazamiento, EstadoEmplazamiento, Municipio, Omiso, ResultadoOmisos } from '../../../../types'
 import { diferenciaDias } from '../../../../utils'
+import type { Destinatario } from '../ModalEmplazamiento'
 
 /** Opciones del filtro de año gravable: los años que tienen omisos, del más reciente al más antiguo. */
 export function opcionesAnio(omisos: Omiso[]) {
@@ -39,8 +51,36 @@ export function textoSinCalendario(lista: ResultadoOmisos['sinCalendario'], nomb
 export const textoSinCeros = (agentes: number) =>
   `${agentes === 1 ? 'Un agente de ReteICA no presentó' : `${agentes} agentes de ReteICA no presentaron`} alguna declaración y no se ${agentes === 1 ? 'marca como omiso' : 'marcan como omisos'}: el municipio no exige la declaración en ceros, así que pudieron no haber retenido nada en ese periodo.`
 
+/** Si el omiso tiene emplazamiento y en qué va; mientras sea omiso, solo puede estar en plazo o vencido. */
+export function estadoEmplazamientoDe(o: Omiso, emplazamientos: Emplazamiento[], declaraciones: Declaracion[], hoy: string) {
+  const e = emplazamientoDelOmiso(o, emplazamientos)
+  return e ? situacionEmplazamiento(e, declaraciones, hoy).estado : 'sin_emplazamiento'
+}
+
+/** El omiso como destinatario de un emplazamiento para declarar. */
+export const destinatarioDe = (o: Omiso): Destinatario => ({
+  clave: idOmiso(o),
+  titulo: o.inscripcion.nombre,
+  descripcion: `${etiquetaImpuesto[o.impuesto]} · ${etiquetaPeriodo(o)} · venció el ${formatoFecha(o.vencimiento)}`,
+  desde: o.vencimiento,
+  destino: {
+    tipo: 'declarar',
+    municipioId: o.inscripcion.municipioId,
+    inscripcionId: o.inscripcion.id,
+    impuesto: o.impuesto,
+    vigencia: o.vigencia,
+    periodicidad: o.periodicidad,
+    periodo: o.periodo,
+  },
+})
+
 /** Una fila del Excel, en el orden de COLUMNAS_EXCEL. */
-export function filaExcel(o: Omiso, nombres: Map<string, string>, hoy: string): (string | number)[] {
+export function filaExcel(
+  o: Omiso,
+  nombres: Map<string, string>,
+  hoy: string,
+  emplazamiento?: { e: Emplazamiento; estado: EstadoEmplazamiento },
+): (string | number)[] {
   const i = o.inscripcion
   return [
     nombres.get(i.municipioId) ?? '',
@@ -52,6 +92,9 @@ export function filaExcel(o: Omiso, nombres: Map<string, string>, hoy: string): 
     etiquetaPeriodo(o),
     o.vencimiento,
     diferenciaDias(o.vencimiento, hoy),
+    emplazamiento?.e.numero ?? '',
+    emplazamiento?.e.fechaNotificacion ?? '',
+    emplazamiento ? etiquetaEstadoEmplazamiento[emplazamiento.estado] : 'Sin emplazamiento',
     i.telefono,
     i.correo,
     i.direccion,
