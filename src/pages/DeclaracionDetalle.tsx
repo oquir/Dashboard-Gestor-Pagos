@@ -7,6 +7,7 @@ import {
   AvisoSinConsignar,
   ContribuyenteDeclaracion,
   DatosDeclaracion,
+  EmplazamientosDeclaracion,
   FirmasDeclaracion,
   Liquidacion,
   ListaArchivos,
@@ -75,6 +76,9 @@ export default function DeclaracionDetalle() {
   const saldo = Math.max(d.totalAPagar - totalPagado(d.id, pagos) - totalEnCanje(d.id, cheques), 0)
   // En ventanilla solo se recibe lo que ya es deuda: ni lo reemplazado por una corrección, ni lo que espera aprobación,
   // ni la solicitud de corrección que no se ha aceptado.
+  // Solo se emplaza para corregir la declaración vigente: ni la reemplazada, ni la solicitud sin aceptar, ni la rechazada
+  // en la aprobación previa, que se tiene por no presentada.
+  const emplazable = !reemplazo && vigente && situacion?.estado !== 'rechazada'
   const recibeVentanilla =
     (ventanilla.efectivo || ventanilla.cheque) && puede(usuario?.rol, 'registrarPagoVentanilla') && !reemplazo && sePuedePagar(situacion) && correccionVigente(solicitud)
 
@@ -145,6 +149,7 @@ export default function DeclaracionDetalle() {
           )}
           {situacion && <AprobacionPrevia d={d} situacion={situacion} correo={d.contribuyente.correo} puedeResolver={puede(usuario?.rol, 'revisar')} ventanilla={ventanilla} />}
           <DatosDeclaracion d={d} corregida={corregida} aLaBaja={aLaBaja} />
+          <EmplazamientosDeclaracion d={d} puedeRegistrar={puede(usuario?.rol, 'revisar') && emplazable} />
           {enRit && <ContribuyenteDeclaracion d={d} ins={enRit} />}
           <FirmasDeclaracion d={d} />
           <Card>

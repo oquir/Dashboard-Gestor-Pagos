@@ -24,6 +24,7 @@ export { default as AvisoSinCalendario } from './declaraciones/AvisoSinCalendari
 export { default as AvisoSinConsignar } from './declaraciones/AvisoSinConsignar'
 export { default as ContribuyenteDeclaracion } from './declaraciones/ContribuyenteDeclaracion'
 export { default as DatosDeclaracion } from './declaraciones/DatosDeclaracion'
+export { default as EmplazamientosDeclaracion } from './declaraciones/EmplazamientosDeclaracion'
 export { default as DescargaDeclaraciones } from './declaraciones/DescargaDeclaraciones'
 export { default as FirmasDeclaracion } from './declaraciones/FirmasDeclaracion'
 export { default as Liquidacion } from './declaraciones/Liquidacion'
