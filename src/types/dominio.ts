@@ -309,6 +309,9 @@ type SinCampos<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : neve
 /** Lo que se registra desde la pantalla; el id, quién y cuándo los pone el store. */
 export type NuevoEmplazamiento = SinCampos<Emplazamiento, 'id' | 'registradoPor' | 'fechaRegistro'>
 
+/** A quién va el emplazamiento, antes de ponerle el número del acto, la fecha de notificación y la copia. */
+export type DestinoEmplazamiento = SinCampos<NuevoEmplazamiento, 'numero' | 'fechaNotificacion' | 'copia'>
+
 /**
  * Estado del emplazamiento al día de hoy (lib/emplazamientos). El de declarar está en plazo, vencido o declarado; el de
  * corregir, en plazo, sin respuesta o corregido.

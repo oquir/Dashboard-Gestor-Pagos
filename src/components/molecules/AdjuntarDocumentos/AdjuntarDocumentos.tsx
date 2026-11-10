@@ -1,9 +1,9 @@
 import { Document, Paperclip, Xmark } from 'reicon-react'
 import { useState } from 'react'
 import type { ChangeEvent } from 'react'
+import { FORMATOS_DOCUMENTO, TAMANO_MAXIMO_ARCHIVO } from '../../../constants'
 import { formatoTamano } from '../../../lib/archivos'
 import SelectorArchivo from '../SelectorArchivo'
-import { FORMATOS, TAMANO_MAXIMO } from './constants'
 import type { AdjuntarDocumentosProps } from './types'
 
 /** Documentos que la administración le envía al contribuyente con su respuesta: los elegidos, para quitarlos, y el botón para agregar. */
@@ -13,8 +13,8 @@ export default function AdjuntarDocumentos({ etiqueta = 'Documentos para el cont
   const agregar = (e: ChangeEvent<HTMLInputElement>) => {
     const elegidos = Array.from(e.target.files ?? [])
     e.target.value = ''
-    setMuyGrandes(elegidos.filter((f) => f.size > TAMANO_MAXIMO).map((f) => f.name))
-    onChange([...archivos, ...elegidos.filter((f) => f.size <= TAMANO_MAXIMO)])
+    setMuyGrandes(elegidos.filter((f) => f.size > TAMANO_MAXIMO_ARCHIVO).map((f) => f.name))
+    onChange([...archivos, ...elegidos.filter((f) => f.size <= TAMANO_MAXIMO_ARCHIVO)])
   }
 
   return (
@@ -39,7 +39,7 @@ export default function AdjuntarDocumentos({ etiqueta = 'Documentos para el cont
           ))}
         </ul>
       )}
-      <SelectorArchivo texto="Adjuntar documentos" icono={Paperclip} multiple accept={FORMATOS} onChange={agregar} />
+      <SelectorArchivo texto="Adjuntar documentos" icono={Paperclip} multiple accept={FORMATOS_DOCUMENTO} onChange={agregar} />
       {muyGrandes.length > 0 ? (
         <p className="mt-1 text-xs text-red-600">Supera los 10 MB y no se adjuntó: {muyGrandes.join(', ')}.</p>
       ) : (
