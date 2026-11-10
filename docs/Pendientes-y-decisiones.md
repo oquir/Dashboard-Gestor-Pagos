@@ -55,6 +55,10 @@
 | Dónde se ven las solicitudes de corrección por resolver (2026-11-09) | **En Inicio y en Declaraciones**: una tarjeta en Inicio con cuántas hay y cuándo vence la primera, que lleva a Declaraciones con el filtro puesto | Si el municipio no responde en 6 meses, se aceptan solas y el municipio pierde la diferencia |
 | Causales del art. 580 (2026-11-10) | **Solo en la aprobación previa**: se rechaza escogiendo una de las 4 causales de la ley, sin opción "Otra" (§3.11) | Es el único momento en que el municipio actúa antes del pago. Después, declarar una declaración no presentada es un acto de fiscalización, que queda fuera del dashboard |
 | Comentario y documentos al resolver la aprobación previa (2026-11-10) | **Opcionales**, al aprobar y al rechazar, como en la respuesta a una solicitud del RIT. Le llegan al contribuyente en el correo | El usuario espera que a los funcionarios les haga falta explicar más que la causal |
+| Emplazamientos para declarar (2026-11-10) | **Varios a la vez**: en Omisos se marcan los emplazados y se registran con la misma fecha de notificación, cada uno con su número de acto (§3.13) | Los municipios emplazan en lote a sus omisos |
+| Quitar un emplazamiento (2026-11-10) | **Sí**, si se registró por error, y queda en la bitácora. Solo mientras nadie lo haya respondido | Un error de fecha o de contribuyente le cobraría al contribuyente una sanción que no debe |
+| Copia del acto del emplazamiento (2026-11-10) | **Opcional**, una por emplazamiento, y se descarga desde el dashboard | El acto lo expide el municipio en su sistema; la copia ayuda a quien revisa |
+| Emplazamientos en Inicio (2026-11-10) | **No**: se ven en Omisos, en el detalle de la declaración y en el inscrito del RIT | Lo que sigue al vencer el plazo, la sanción por no declarar y el aforo, lo hace el municipio en su sistema |
 
 ## 2. Lo que falta, con su estado
 
@@ -72,7 +76,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 | Plazo para inscribirse en el RIT | Desde el 2026-11-06, la inscripción radicada después del plazo sale como tardía en su detalle, con los días de retraso. Solo se juzga si el plazo vencía después de que el RIT salió a producción (§3.3) | **Con efecto** |
 | Declaración en ceros | Desde el 2026-11-03 decide si un agente de ReteICA sin declaración sale como omiso o solo en el aviso (§3.4 y §3.5) | **Con efecto** |
 | Bases mínimas de ReteICA (servicios y compras) | Desde el 2026-11-04, en las declaraciones de ReteICA de la demo, los pagos por debajo de la base mínima no se retienen, y el renglón lo dice. Como el resto de la configuración de la liquidación (tarifa, anticipo, sobretasa), se aplica al generar los datos de la demo: cambiarla no recalcula lo ya declarado | **Con efecto** |
-| Tasas de sanción con emplazamiento | La liquidación no las usa: falta registrar los emplazamientos (§3.13) | Pendiente |
+| Tasas de sanción con emplazamiento | Desde el 2026-11-10 se registran los emplazamientos. Con la extemporaneidad tras emplazamiento se liquida y se valida la declaración presentada después de notificado el de declarar, hasta el 200 %. Con la corrección tras emplazamiento se liquida la corrección presentada después del de corregir (§3.13) | **Con efecto** |
 
 ### 2.2 Prioridad alta
 
@@ -91,7 +95,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 | Punto | Qué falta | Estado |
 |---|---|---|
 | Flujo de la corrección a la baja | Los estados por resolver, aceptada, rechazada y aceptada por silencio, con los plazos de 1 año y 6 meses (§3.2) | **Implementado** (2026-11-09) |
-| Emplazamientos | Registrar los emplazamientos para declarar y para corregir, con su fecha de notificación, y usar la sanción más alta cuando se presenta o se corrige después de esa fecha (§3.13). Las tasas ya se configuran, pero la liquidación no las usa | Pendiente |
+| Emplazamientos | Registrar los emplazamientos para declarar y para corregir, con su fecha de notificación, y usar la sanción más alta cuando se presenta o se corrige después de esa fecha (§3.13) | **Implementado** (2026-11-10) |
 | Bitácora de cambios | Página Bitácora, solo para 1cero1, con datos de prueba y lo que se hace en la demo, como lo guardará el back (§3.9) | **Implementada** (2026-11-04; rehecha el 2026-11-06) |
 | Usuarios | Botón en cada fila que abre el detalle del usuario: editar sus datos (también el correo, cuando el municipio pierde el acceso al que tenía), desactivar o reactivar, eliminar y reenviar las credenciales (el correo es simulado) | **Implementado** (2026-11-04). Separar permisos: descartado |
 | Recibos de caja y de pago | Poder descargarlos (§3.10) | Descartado |
@@ -290,7 +294,7 @@ No guarda el valor anterior, porque para eso tendría que consultarlo en cada pe
 - **Lo que se hace en la demo queda registrado**: cada acción del store que en el aplicativo real haría una petición deja su registro al terminar.
   - Los interruptores guardan el valor nuevo (`"rit": false`), no un "alternar".
   - Fallan, y quedan como fallidas, confirmar o devolver un cheque que ya no está en canje.
-- **Datos de prueba** (`src/data/bitacora.ts`): 49 registros de los tres roles entre agosto y octubre de 2026. Los datos enviados terminan en los valores que hoy tiene la demo. Los registros del RIT, los cheques, los formularios desactivados y las solicitudes de corrección a la baja resueltas salen de los datos de la demo.
+- **Datos de prueba** (`src/data/bitacora.ts`): 52 registros de los tres roles entre agosto y octubre de 2026. Los datos enviados terminan en los valores que hoy tiene la demo. Los registros del RIT, los cheques, los formularios desactivados, las solicitudes de corrección a la baja resueltas y los lotes de emplazamientos con fecha fija salen de los datos de la demo.
   - El caso de madrugada: Carlos Restrepo inició sesión y guardó la configuración de San José del Valle el 9 de septiembre a la 1 a. m.
   - Uno que falló: Laura Méndez guardó la configuración de Puerto Esperanza el 20 de octubre a las 7:41 p. m. La petición falló y la volvió a guardar a las 7:45 p. m.
 - **Nombres de ejemplo**: los controladores, las acciones y los endpoints de la demo están en `PETICIONES` (`src/constants/bitacora.ts`). Los de verdad vienen del back.
@@ -351,14 +355,34 @@ En el mock, la lista de documentos está fija y es igual para todos los municipi
 
 Un emplazamiento no es una fecha general como el calendario: es un aviso que la alcaldía le notifica a un contribuyente por un periodo concreto (un año gravable en el ICA; un bimestre o mes en ReteICA y AutoReteICA). No sube la sanción por sí solo: la sube presentar o corregir después de notificado. Hay dos:
 
-- **Para declarar** (art. 715 ET): el contribuyente no ha presentado. Tiene 1 mes. Si presenta después de notificado, la extemporaneidad pasa de 5 % a 10 % por mes, con tope de 200 %. Si no presenta, viene la sanción por no declarar y después la liquidación de aforo.
-- **Para corregir** (art. 685 ET): ya presentó y hay indicios de error. Tiene 1 mes para responder, pero el 20 % aplica a toda corrección hecha entre la notificación y el requerimiento especial. Antes del emplazamiento es 10 %. No responder no genera sanción por sí solo. Es facultativo: la alcaldía puede ir directo al requerimiento.
+- **Para declarar** (arts. 715 y 716 ET): el contribuyente no ha presentado. Se envía "previa comprobación de su obligación" y da un término perentorio de 1 mes. Si presenta después de notificado, la extemporaneidad es la del art. 642: 10 % por mes o fracción desde el vencimiento, con tope del 200 % del impuesto o la retención (antes, art. 641: 5 % y tope del 100 %). Sin impuesto a cargo, es el 1 % de los ingresos brutos por mes. Si no presenta, vienen la sanción por no declarar (art. 643) y la liquidación de aforo (art. 717).
+- **Para corregir** (art. 685 ET): ya presentó y hay indicios de inexactitud. Tiene 1 mes para responder, pero el 20 % aplica a toda corrección hecha entre la notificación y el requerimiento especial (art. 644, numeral 2), aunque se presente pasado el mes. Antes del emplazamiento es 10 %. No responder no genera sanción. Es facultativo: la alcaldía puede ir directo al requerimiento.
 
-La clausura no tiene reglas propias: si no se ha presentado, le aplica el de declarar; si ya se presentó, el de corregir (es una deducción: no se encontró norma expresa). Corregir a la baja no lleva esta sanción.
+La clausura no tiene reglas propias: si no se ha presentado, le aplica el de declarar; si ya se presentó, el de corregir (es una deducción: no se encontró norma expresa). Corregir a la baja no lleva esta sanción (art. 644, parágrafo 4).
 
-Para el mock, el de declarar se liga al inscrito y al periodo, porque todavía no hay declaración; el de corregir, a una declaración. Lo que define la tasa es comparar la fecha de notificación con la de presentación.
+**Verificado el 2026-11-10**: los arts. 642, 644 y 685 en su texto vigente. El art. 642 lo modificó la Ley 49 de 1990 y sus cifras en UVT, la Ley 1111 de 2006; el numeral 1 del art. 644, la Ley 1819 de 2016. Los municipios aplican el procedimiento del Estatuto Tributario (art. 59 de la Ley 788 de 2002) y pueden bajar las tasas, no subirlas.
+
+**Cómo quedó en el mock** (2026-11-10):
+- **El dashboard no expide el emplazamiento**: lo registra. El acto lo hace el municipio en su sistema; el dashboard guarda el número del acto, la fecha de notificación y, si se quiere, la copia, para que el aplicativo del formulario liquide la tasa más alta y el funcionario vea en qué va.
+- **Para declarar**: en Declaraciones › Omisos, el administrador o el funcionario marca los omisos emplazados y registra el lote, con una fecha de notificación común y el número de acto de cada uno. Va al inscrito, al formulario y al periodo omiso. Mientras siga siendo omiso, está "en plazo" o con el "plazo vencido"; la tabla tiene la columna y el filtro del emplazamiento, y el Excel sus tres columnas. Cuando llega una declaración del periodo presentada desde la notificación, queda "declarado".
+- **Para corregir**: en el detalle de una declaración vigente, la tarjeta Emplazamientos registra el que el municipio notificó. Queda "en plazo", "sin respuesta" (venció el mes; no genera sanción) o "corregido", cuando llega una corrección de esa declaración, o de una corrección suya, presentada desde la notificación.
+- **El plazo** es 1 mes desde la notificación, corrido al día hábil siguiente si cae en fin de semana (`plazoEnMeses`, sin festivos). La notificación no puede ser futura ni anterior al vencimiento del periodo o a la presentación de la declaración. El número del acto no se repite en el municipio.
+- **La sanción**: la extemporaneidad tras emplazamiento y la corrección tras emplazamiento de Configuración. La validación de la declaración revisa que la inicial presentada después del emplazamiento para declarar liquide al menos lo del art. 642, y que la corrección presentada después del de corregir agregue sanción por corrección. El dashboard no rehace el mayor valor.
+- **Quitar**: el administrador o el funcionario quita un emplazamiento registrado por error, solo si nadie lo ha respondido. Queda en la bitácora, igual que cada lote registrado (una petición por lote).
+- **No va en Inicio**: se ve en Omisos, en el detalle de la declaración y en "Declaraciones que faltan" del inscrito.
+- **En la demo**: San José del Valle emplazó a sus dos omisos del ICA 2025 el 18 de agosto de 2026 (uno declaró dentro del mes y el otro dejó vencer el plazo) y para corregir un ICA 2025, que se corrigió con el 20 %. Puerto Esperanza emplazó a dos agentes de ReteICA hace unos días hábiles (en plazo) y para corregir a uno que no respondió. Santa Rosa, sin RIT, emplazó para corregir hace unos días.
+
+**Límites**:
+- No se modelan la sanción por no declarar, el aforo, el requerimiento especial, la inspección tributaria ni la suspensión del término para el requerimiento (art. 706).
+- La extemporaneidad sin impuesto a cargo (1 % de los ingresos brutos) no se modela, igual que la del art. 641: queda la mínima.
+- Tampoco la gradualidad del art. 640 ni el recargo del art. 644, parágrafo 1, sobre la corrección de una inicial extemporánea.
+- La validación usa las tasas de la configuración actual.
+- La corrección de la demo que responde al emplazamiento no liquida intereses, como las demás correcciones de mayor valor (arreglo aplazado por el usuario).
+- Si se abre la demo semanas después de generar los datos, los emplazamientos en plazo quedan vencidos o sin respuesta.
 
 Sin resolver: qué significa la condición del art. 355, parágrafo 1, del Acuerdo 093 de Medellín ("siempre y cuando no se haya expedido emplazamiento para declarar ni auto de inspección"), que la ley nacional no trae, y cómo se emplaza a una sociedad ya liquidada.
+
+**Fuentes**: [art. 642](https://actualicese.com/estatutotributario/642-2/), [art. 644](https://actualicese.com/estatutotributario/644-2/) y [art. 685](https://actualicese.com/estatutotributario/685-2/) del Estatuto Tributario; [Asuntos Legales, emplazamientos por no declarar (2026)](https://www.asuntoslegales.com.co/consultorio/emplazamientos-por-no-declarar-lo-que-debes-saber-4304714).
 
 Al aplicarlo, corregir la sección 5 de `Dominio-ICA.md`: dice que el 20 % aplica si se corrige "dentro del mes" y pasa de no responder al aforo sin mencionar la sanción por no declarar.
 
@@ -485,7 +509,6 @@ El cruce con el RIT queda como un extra:
 
 | Qué | Dónde |
 |---|---|
-| Campos de configuración sin efecto (las tasas con emplazamiento de `sanciones`) | El tipo `ConfigMunicipio`, en `src/types/dominio.ts`. Se editan en `SeccionSanciones` (`src/components/organisms/configuracion/`) |
 | Corrección a la baja: reglas (§3.2) | `esCorreccionABaja`, `valorLiquidado`, `menorValor`, `pagoEnExceso`, `limiteCorreccionABaja`, `situacionCorreccion`, `correccionVigente`, `reemplazadas` y `plazoEnMeses`, en `src/lib/reglas.ts`; `useSolicitudCorreccion`, en `src/lib/sesion.ts`; el campo `solicitudCorreccion` de `Declaracion` y la opción `correccionABaja` de `ConfigMunicipio` (`src/types/dominio.ts`) |
 | Corrección a la baja: pantallas | `SolicitudCorreccion` (`organisms/declaraciones/`) y los avisos de `src/pages/DeclaracionDetalle.tsx`; el filtro de `src/pages/Declaraciones/Declaraciones.tsx`; la tarjeta de `src/pages/Inicio/Inicio.tsx`; `resolverCorreccion`, en `src/store.ts`; las opciones de `SeccionProcedimiento` |
 | Correcciones a la baja de la demo | `agregarCorreccionesABaja` y `CORRECCIONES_A_LA_BAJA`, en `src/data/generar.ts`; sus registros de la bitácora, al final de `generarBitacora` (`src/data/bitacora.ts`) |
@@ -504,7 +527,9 @@ El cruce con el RIT queda como un extra:
 | Rechazo en la aprobación previa por una causal del art. 580, con comentario y documentos (§3.11) | `Aprobacion`, `CausalNoPresentada` y `ResolucionAprobacion` en `src/types/dominio.ts`; `resolverAprobacion` en `src/store.ts`; `CAUSALES` y `textoQueHacer` en `organisms/declaraciones/AprobacionPrevia/`; las moléculas `AdjuntarDocumentos` y `DocumentosEnviados`, que también usa la respuesta a las solicitudes del RIT |
 | Calendario: modelo y reglas (periodicidad, fechas por dígito, año nuevo copiado del más cercano) | `CalendarioVigencia` en `src/types/dominio.ts`; `src/lib/calendario.ts`; la página en `src/pages/Calendario.tsx` y sus secciones en `src/components/organisms/calendario/` |
 | Año nuevo con las fechas del año más cercano corridas, sin marcarlas como no oficiales (§3.14) | `calendarioNuevo`, en `src/lib/calendario.ts` |
-| Tasas con emplazamiento que se configuran pero no se usan (`extemporaneidadEmplazamiento`, `correccionEmplazamiento`) | Se editan en `SeccionSanciones`; la liquidación de `src/data/generar.ts` solo usa `extemporaneidad` y `correccion` |
+| Emplazamientos: modelo y reglas (§3.13) | `Emplazamiento`, `NuevoEmplazamiento`, `DestinoEmplazamiento` y `EstadoEmplazamiento` en `src/types/dominio.ts`; `src/lib/emplazamientos.ts` (situación, plazo, a qué responde una declaración, si se puede quitar y cómo queda en la bitácora); `registrarEmplazamientos` y `quitarEmplazamiento` en `src/store.ts` |
+| Emplazamientos: la sanción | `sancionExtemporaneidad`, `impuestoACargo` y `sancionLiquidada` en `src/lib/reglas.ts`, que usan `liquidarIca` y `cerrarRetencion` (`src/data/generar.ts`) y `ValidacionesDeclaracion`; las tasas se editan en `SeccionSanciones` |
+| Emplazamientos: pantallas | `ModalEmplazamiento`, `EmplazamientoResumen`, `EmplazamientosDeclaracion`, `ListaOmisos` y `TablaOmisos` (`organisms/declaraciones/`); `DeclaracionesFaltantes` (`organisms/inscripciones/`); en la demo, `agregarEmplazamientos` en `src/data/generar.ts` y los lotes en `src/data/bitacora.ts` |
 | Calendario cargado, aviso de inicio de año y declaraciones marcadas | El campo `cargado` de `CalendarioVigencia` (`src/types/dominio.ts`), que se pone al guardar en `FormularioCalendario`; `cargaCalendario`, `presentadaSinCalendario`, `municipiosSinCalendario` y `conCargas` en `src/lib/calendario.ts`; `useSinCalendario` en `src/lib/sesion.ts`; `AlertaCalendario` (`organisms/inicio/`) y `AvisoSinCalendario` (`organisms/declaraciones/`) |
 | Retenciones sin consignar: límite, plazo de 2 meses y lista | `limiteConsignacion` y `estadoPago` en `src/lib/reglas.ts`; `calcularSinConsignar` en `src/lib/consignacion.ts`; `useSinConsignar` y `useEstadoPago` en `src/lib/sesion.ts`; el campo `pagoRetencionEnDosMeses` de `ConfigMunicipio` |
 | Retenciones sin consignar: pantallas | `RetencionesSinConsignar` (`organisms/pagos/`), `AlertaSinConsignar` (`organisms/inicio/`), `AvisoSinConsignar` (`organisms/declaraciones/`) y el interruptor en `SeccionRetencion` |
