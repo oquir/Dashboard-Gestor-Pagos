@@ -8,6 +8,7 @@ import {
   limiteCorreccionABaja,
   porcentajeProntoPago,
   redondearMil,
+  sancionExtemporaneidad,
   sumarDiasHabiles,
   UVT,
   valorLiquidado,
@@ -425,7 +426,8 @@ interface PerfilIca {
   autorretencionesPct: number
 }
 
-function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, tarifas: Tarifa[], diasMora: number, descuentoPct: number, sancionCorreccion = 0) {
+/** Liquida el ICA anual. Con `emplazado`, la declaración llega después del emplazamiento para declarar (art. 642). */
+function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, tarifas: Tarifa[], diasMora: number, descuentoPct: number, sancionCorreccion = 0, emplazado = false) {
   const tarifa = tarifas.find((t) => t.ciiu === ins.actividades[0].ciiu)?.porMil ?? 7
   const autorretenedor = ins.calidades.some((c) => c.calidad === 'autorretenedor')
   const r8 = redondearMil(p.ingresos)
@@ -442,10 +444,7 @@ function liquidarIca(p: PerfilIca, ins: Inscripcion, cfg: ConfigMunicipio, tarif
   const r28 = autorretenedor ? redondearMil(r20 * p.autorretencionesPct) : 0
   const r29 = redondearMil((r20 * cfg.anticipoPorcentaje * 0.9) / 100)
   const r30 = redondearMil((r20 * cfg.anticipoPorcentaje) / 100)
-  const meses = Math.ceil(diasMora / 30)
-  const minima = cfg.sanciones.minimaUvt * UVT
-  const extemporaneidad = diasMora > 0 ? Math.max(redondearMil((r25 * Math.min(meses * cfg.sanciones.extemporaneidad, 100)) / 100), redondearMil(minima)) : 0
-  const r31 = extemporaneidad + sancionCorreccion
+  const r31 = sancionExtemporaneidad(r25, diasMora, cfg.sanciones, emplazado) + sancionCorreccion
   const saldo = r25 - r27 - r28 - r29 + r30 + r31
   const r33 = Math.max(saldo, 0)
   const r34 = Math.max(-saldo, 0)
@@ -674,11 +673,12 @@ function agregarCorreccionesABaja({ az, declaraciones, pagos, excluidas, paraCor
   }
 }
 
-/** Agrega a los renglones de una retención o autorretención la sanción, los intereses y el total, que devuelve. */
-function cerrarRetencion(renglones: Renglon[], impuesto: number, diasMora: number, cfg: ConfigMunicipio) {
-  const meses = Math.ceil(diasMora / 30)
-  const minima = redondearMil(cfg.sanciones.minimaUvt * UVT)
-  const sancion = diasMora > 0 ? Math.max(redondearMil((impuesto * Math.min(meses * cfg.sanciones.extemporaneidad, 100)) / 100), minima) : 0
+/**
+ * Agrega a los renglones de una retención o autorretención la sanción, los intereses y el total, que devuelve. Con
+ * `emplazado`, la declaración llega después del emplazamiento para declarar (art. 642).
+ */
+function cerrarRetencion(renglones: Renglon[], impuesto: number, diasMora: number, cfg: ConfigMunicipio, emplazado = false) {
+  const sancion = sancionExtemporaneidad(impuesto, diasMora, cfg.sanciones, emplazado)
   const intereses = diasMora > 0 ? redondearMil(impuesto * 0.00067 * diasMora) : 0
   const total = impuesto + sancion + intereses
   renglones.push(
