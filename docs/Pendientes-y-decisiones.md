@@ -7,7 +7,7 @@
 >
 > El dashboard es un **mock**: corre en localhost, sin API ni base de datos, y sirve para mostrarles a los municipios cómo se verá el aplicativo. Complementa a [`Dominio-ICA.md`](Dominio-ICA.md) y a [`Contexto-RIT.md`](Contexto-RIT.md).
 >
-> **Revisado el 2026-10-27; actualizado el 2026-11-09.** Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
+> **Revisado el 2026-10-27; actualizado el 2026-11-10.** Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
 
 ## 1. Decisiones del 2026-10-27
 
@@ -23,7 +23,7 @@
 | Bitácora de cambios | **Sí**; hecha el 2026-11-04 con datos de prueba | Solo la ve 1cero1, con la fecha y la hora de cada cambio, también los de 1cero1 (§3.9) |
 | Buscador global | **Por ahora no** | La respuesta quedó a medias: confirmarla |
 | Cuadre de caja | **Descartado** (2026-11-09) | No le toca a 1cero1: lo hace el sistema de rentas del municipio (§3.8) |
-| Plazo de inscripción en el RIT, declaración en ceros, omisos, calendario de vencimientos, causales del art. 580 y soportes por calidad | **En revisión** | El usuario los está estudiando con las explicaciones de §3 |
+| Plazo de inscripción en el RIT, declaración en ceros, omisos, calendario de vencimientos y soportes por calidad | **En revisión** | El usuario los está estudiando con las explicaciones de §3 |
 | Calendario como página aparte (2026-11-03) | **Sí**: vencimientos, periodicidad y pronto pago (también su interruptor) van en la página Calendario, no en Configuración | Hacerlo más sencillo |
 | Carga y exportación del calendario en JSON (2026-11-03) | **Descartado** | No le sirve a nadie |
 | Calendario combinado de ReteICA y AutoReteICA (2026-11-03) | **Descartado**: cada una tiene siempre sus propios vencimientos | En la práctica los municipios las separan |
@@ -53,6 +53,8 @@
 | Corrección a la baja (2026-11-09) | **Las dos formas**, según el estatuto de cada municipio: la corrección directa del art. 589 vigente o la solicitud con proyecto de corrección del art. 589 anterior, con 6 meses para responder y silencio positivo. El municipio la elige en Configuración y aplica a lo que se radique desde el cambio (§3.2) | La DIAN y Bogotá reciben la corrección directa desde 2018, pero hay estatutos municipales que conservan el trámite anterior |
 | Sanción por rechazar la solicitud de corrección (2026-11-09) | **Solo se informa**: el 20 % del menor valor que se pidió. La impone la administración en el mismo acto, después de un proceso previo; el dashboard no la liquida | Es un acto de la administración, no algo que el dashboard liquide |
 | Dónde se ven las solicitudes de corrección por resolver (2026-11-09) | **En Inicio y en Declaraciones**: una tarjeta en Inicio con cuántas hay y cuándo vence la primera, que lleva a Declaraciones con el filtro puesto | Si el municipio no responde en 6 meses, se aceptan solas y el municipio pierde la diferencia |
+| Causales del art. 580 (2026-11-10) | **Solo en la aprobación previa**: se rechaza escogiendo una de las 4 causales de la ley, sin opción "Otra" (§3.11) | Es el único momento en que el municipio actúa antes del pago. Después, declarar una declaración no presentada es un acto de fiscalización, que queda fuera del dashboard |
+| Comentario y documentos al resolver la aprobación previa (2026-11-10) | **Opcionales**, al aprobar y al rechazar, como en la respuesta a una solicitud del RIT. Le llegan al contribuyente en el correo | El usuario espera que a los funcionarios les haga falta explicar más que la causal |
 
 ## 2. Lo que falta, con su estado
 
@@ -93,7 +95,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 | Bitácora de cambios | Página Bitácora, solo para 1cero1, con datos de prueba y lo que se hace en la demo, como lo guardará el back (§3.9) | **Implementada** (2026-11-04; rehecha el 2026-11-06) |
 | Usuarios | Botón en cada fila que abre el detalle del usuario: editar sus datos (también el correo, cuando el municipio pierde el acceso al que tenía), desactivar o reactivar, eliminar y reenviar las credenciales (el correo es simulado) | **Implementado** (2026-11-04). Separar permisos: descartado |
 | Recibos de caja y de pago | Poder descargarlos (§3.10) | Descartado |
-| Causales del art. 580 | Escoger la causal al rechazar en la aprobación previa; hoy es texto libre (§3.11) | En revisión |
+| Causales del art. 580 | Escoger la causal al rechazar en la aprobación previa, con comentario y documentos opcionales (§3.11) | **Implementado** (2026-11-10) |
 | Soportes del RIT por calidad | Que cada municipio configure qué documentos exige (§3.12) | En revisión |
 | Festivos | Descontarlos de los días hábiles | Fuera del mock |
 | Vista previa de los correos | Ver el correo que la app dice que "se envía" | Descartado |
@@ -309,13 +311,34 @@ Se descartaron por dos razones: el de caja ya lo expide el sistema del municipio
 
 ### 3.11 Causales del art. 580 del Estatuto Tributario
 
-Hoy, cuando el funcionario rechaza una declaración en la aprobación previa, escribe el motivo que quiera. Pero la ley solo considera que una declaración "se tiene por no presentada" en estos casos:
-- se presentó en un lugar no autorizado;
-- no identifica bien al declarante;
-- no trae los datos para saber la base gravable;
-- no la firmó quien debía, o falta la firma del contador o del revisor fiscal cuando es obligatoria.
+La ley solo considera que una declaración "se tiene por no presentada" en estos casos, uno por literal:
+- a) se presentó en un lugar no autorizado;
+- b) no identifica al declarante, o lo identifica mal;
+- c) no trae los datos para identificar las bases gravables;
+- d) no la firmó quien debía, o falta la firma del contador o del revisor fiscal cuando es obligatoria.
 
-Rechazar por otra cosa, como una tarifa mal puesta, es discutible: eso se arregla con una corrección (arts. 588 y 589), no con un rechazo. La idea era que el funcionario escogiera la causal de esa lista, para que el municipio no bloquee un pago sin base legal.
+Rechazar por otra cosa, como una tarifa mal puesta, no tiene base: eso se arregla con una corrección (arts. 588 y 589). No pagar tampoco es causal: la lista es taxativa (DIAN, Concepto 10465 de 2025), y la retención sin pago es otra figura, la ineficacia del art. 580-1.
+
+**Qué dice la norma** (verificado el 2026-11-10):
+- **Aplica a todas las declaraciones**, pagadas o no, con o sin aprobación previa. Pero no es automático: el municipio expide un acto motivado, lo notifica y el contribuyente puede interponer el recurso de reconsideración. Mientras no se notifique dentro del término de firmeza, la declaración se considera válidamente presentada (DIAN, Oficio 13128 y Concepto 225 de 2025).
+- **Los literales a), b) y d) se corrigen** (art. 588, parágrafo 2, adicionado por el art. 173 de la Ley 223 de 1995): con una corrección y una sanción del 2 % de la sanción por extemporaneidad del art. 641, hasta 1.300 UVT del año en que se corrige (DUR 1625 de 2016, art. 1.6.1.13.2.3). Solo mientras no se haya notificado la sanción por no declarar, que prescribe en 5 años (art. 638). El Oficio 13128 de 2025 solo menciona el lugar y las firmas, pero el texto del parágrafo incluye el literal b).
+- **El literal c) no se corrige**: la declaración se presenta de nuevo, y si ya venció el plazo, con sanción por extemporaneidad.
+
+**Cómo quedó en el mock** (2026-11-10):
+- Solo en la **aprobación previa**, el único momento en que el municipio actúa antes del pago. Declarar no presentada una declaración sin aprobación previa, o ya pagada, es un acto de fiscalización que queda fuera del dashboard, como los emplazamientos.
+- Para rechazar, el funcionario **escoge una de las 4 causales**; no hay opción "Otra". Al escogerla, la ayuda del campo dice qué le falta a la declaración y qué puede hacer el contribuyente.
+- Con la aprobación o el rechazo puede escribir un **comentario** y **adjuntar documentos**, los dos opcionales, como en la respuesta a una solicitud del RIT. Al contribuyente le llegan en el correo, y en el detalle de la declaración se pueden descargar.
+- El aviso del rechazo dice la causal, que la declaración se tiene por no presentada y qué puede hacer el contribuyente: corregirla con la sanción reducida (a, b y d) o presentarla de nuevo (c).
+- La bitácora guarda la causal, el comentario y el nombre de los documentos.
+- La rechazada sigue sin contar como presentada para los omisos.
+
+**Límites**:
+- El dashboard no sabe qué causal tiene la declaración: la escoge el funcionario. Un aplicativo del formulario bien hecho evita casi todas antes de presentar: el lugar es el portal del municipio, la identificación se valida contra el RIT y las firmas y los renglones de la base son obligatorios.
+- El aplicativo del formulario tiene que dejar corregir una declaración rechazada por los literales a), b) o d), y liquidar ahí la sanción reducida. Hoy las correcciones parten de una inicial aprobada.
+- No se encontró qué pasa con lo ya pagado de una declaración que después se declara no presentada; en el mock no pasa, porque la rechazada no se puede pagar.
+- La demo no trae rechazos de ejemplo: se ven al rechazar una de las que están por aprobar.
+
+**Fuentes**: [DIAN, Oficio 13128 de 2025](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_13128_2025.htm); [DIAN, Concepto 225 de 2025](https://estatuto.co/doctrina/concepto-225-2025); [DIAN, Concepto 10465 de 2025](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_10465_2025.htm); [DIAN, Concepto 470 de 2024](https://legalytributarioenlinea.co.pwc.com/Repositorio%20PwC/PDF/Doctrina/DIAN/Conceptos/2024/CON-000470-24.pdf); [art. 588 del Estatuto Tributario](https://actualicese.com/estatutotributario/588-2/).
 
 ### 3.12 Soportes del RIT por calidad
 
@@ -478,7 +501,7 @@ El cruce con el RIT queda como un extra:
 | Días hábiles sin festivos | `sumarDiasHabiles`, en `src/lib/reglas.ts` |
 | UVT constante (la real la actualizará la sonda, §3.14) | `UVT`, en `src/lib/reglas.ts` |
 | Tasa de interés de mora fija | `liquidarIca` y `cerrarRetencion`, en `src/data/generar.ts` |
-| Rechazo en la aprobación previa (texto libre) | `src/components/organisms/declaraciones/AprobacionPrevia/AprobacionPrevia.tsx` |
+| Rechazo en la aprobación previa por una causal del art. 580, con comentario y documentos (§3.11) | `Aprobacion`, `CausalNoPresentada` y `ResolucionAprobacion` en `src/types/dominio.ts`; `resolverAprobacion` en `src/store.ts`; `CAUSALES` y `textoQueHacer` en `organisms/declaraciones/AprobacionPrevia/`; las moléculas `AdjuntarDocumentos` y `DocumentosEnviados`, que también usa la respuesta a las solicitudes del RIT |
 | Calendario: modelo y reglas (periodicidad, fechas por dígito, año nuevo copiado del más cercano) | `CalendarioVigencia` en `src/types/dominio.ts`; `src/lib/calendario.ts`; la página en `src/pages/Calendario.tsx` y sus secciones en `src/components/organisms/calendario/` |
 | Año nuevo con las fechas del año más cercano corridas, sin marcarlas como no oficiales (§3.14) | `calendarioNuevo`, en `src/lib/calendario.ts` |
 | Tasas con emplazamiento que se configuran pero no se usan (`extemporaneidadEmplazamiento`, `correccionEmplazamiento`) | Se editan en `SeccionSanciones`; la liquidación de `src/data/generar.ts` solo usa `extemporaneidad` y `correccion` |
@@ -494,10 +517,6 @@ El cruce con el RIT queda como un extra:
 
 ## 5. Para retomar
 
-- **En revisión por el usuario**:
-  - las causales del art. 580;
-  - los soportes por calidad.
-
-  Las explicaciones están en §3.
+- **En revisión por el usuario**: los soportes por calidad. La explicación está en §3.12.
 - **Por confirmar**: el buscador global, porque la respuesta quedó a medias.
 - **Siguiente paso**: el usuario decide qué hacer. Cada punto se hace en su versión mínima. La sugerencia del 2026-11-04, que las declaraciones de la demo sigan la periodicidad del calendario (§2.1), quedó hecha el 2026-11-06.

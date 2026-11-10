@@ -11,6 +11,8 @@
 > **Ampliado el 2026-11-04** en la sección 3 con el plazo de 2 meses del art. 580-1 y el alcance del art. 402 del Código Penal.
 >
 > **Actualizado el 2026-11-09** en la sección 5 con el art. 589 vigente (la corrección a la baja directa) y el anterior.
+>
+> **Actualizado el 2026-11-10** en la sección 6.2 con las causales del art. 580 al rechazar en la aprobación previa y cómo se corrigen (art. 588, parágrafo 2).
 
 ## 1. Panorama: tres declaraciones, un solo impuesto
 
@@ -344,7 +346,8 @@ Lo que el dominio les exige a los cuatro frentes del dashboard: las inscripcione
   - El plazo para aprobar se cuenta en días hábiles desde la radicación y, si se radicó a tiempo, no pasa del vencimiento. En ReteICA y autorretención esto importa más: sin pago total la declaración es ineficaz (art. 580-1).
   - Si se vence el plazo sin revisión, el municipio elige si se aprueba automáticamente o solo se alerta.
   - Al aprobar se envía un correo con las formas de pago (en línea, código de barras en banco o taquilla). El recibo conserva las condiciones de la radicación durante su vigencia.
-  - Rechazar solo tiene base clara en las causales del art. 580 ET (declaración que se tiene por no presentada). Un error de tarifa o de base se arregla con corrección (arts. 588 y 589).
+  - Rechazar solo tiene base clara en las causales del art. 580 ET (declaración que se tiene por no presentada). Un error de tarifa o de base se arregla con corrección (arts. 588 y 589). Por eso el funcionario rechaza escogiendo una de las 4 causales, con un comentario y documentos opcionales.
+  - La declaración rechazada por los literales a) (lugar), b) (identificación) o d) (firmas) se puede corregir, con una sanción del 2 % de la de extemporaneidad y hasta 1.300 UVT, mientras no se haya notificado la sanción por no declarar (art. 588, parágrafo 2). La del literal c) (datos de las bases gravables) se presenta de nuevo. Detalle y fuentes en `Pendientes-y-decisiones.md`, §3.11.
 
 ### 6.3 Pagos
 
