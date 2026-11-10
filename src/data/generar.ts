@@ -699,12 +699,12 @@ interface FuenteEmplazamientos {
 
 /**
  * Los emplazamientos de la demo, en cada estado:
- * - San José del Valle emplaza en un lote del 18 de agosto de 2026 a sus dos omisos del ICA 2025: uno declara dentro del
+ * - Villeta emplaza en un lote del 18 de agosto de 2026 a sus dos omisos del ICA 2025: uno declara dentro del
  *   mes, con la extemporaneidad del art. 642, y el otro deja vencer el plazo. Además emplaza para corregir un ICA 2025
  *   pagado, que se corrige con la sanción de corrección tras emplazamiento.
- * - Puerto Esperanza emplaza a dos agentes de ReteICA omisos hace unos días hábiles (siguen en plazo) y para corregir a
+ * - Ricaurte emplaza a dos agentes de ReteICA omisos hace unos días hábiles (siguen en plazo) y para corregir a
  *   un contribuyente que no responde.
- * - Santa Rosa, sin RIT ni omisos, emplaza para corregir hace unos días.
+ * - Garzón, sin RIT ni omisos, emplaza para corregir hace unos días.
  * Los de fecha fija caen en el rango de la bitácora; los demás se cuentan desde hoy, como la aprobación previa.
  */
 function agregarEmplazamientos(f: FuenteEmplazamientos): Emplazamiento[] {
@@ -747,7 +747,7 @@ function agregarEmplazamientos(f: FuenteEmplazamientos): Emplazamiento[] {
     hoy,
   )
 
-  // San José del Valle: el lote de los omisos del ICA 2025. Declara el que tiene con qué liquidar su ICA.
+  // Villeta: el lote de los omisos del ICA 2025. Declara el que tiene con qué liquidar su ICA.
   const LOTE = '2026-08-18'
   const icaM1 = omisos.filter((o) => o.inscripcion.municipioId === 'm1' && o.impuesto === 'ica' && o.vigencia === 2025 && o.vencimiento < LOTE)
   const declara = icaM1.find((o) => f.omisosIca.some((x) => x.ins.id === o.inscripcion.id))
@@ -769,7 +769,7 @@ function agregarEmplazamientos(f: FuenteEmplazamientos): Emplazamiento[] {
     f.agregarPago(id, presentacion, liq.r38, az)
   }
 
-  // San José del Valle: para corregir, y la corrección con la sanción de corrección tras emplazamiento.
+  // Villeta: para corregir, y la corrección con la sanción de corrección tras emplazamiento.
   const original = aEmplazar('m1', '2026-09-01')
   if (original) {
     emplazar({ tipo: 'corregir', municipioId: 'm1', declaracionId: original.id }, 'EPC-2026-007', '2026-09-01', quien('u3'), '2026-09-02', true)
@@ -794,7 +794,7 @@ function agregarEmplazamientos(f: FuenteEmplazamientos): Emplazamiento[] {
     f.agregarPago(id, fecha, Math.max(nueva.r38 - yaPagado, 0), az)
   }
 
-  // Puerto Esperanza: para corregir sin respuesta, y dos agentes de ReteICA omisos, distintos, emplazados hace unos días.
+  // Ricaurte: para corregir sin respuesta, y dos agentes de ReteICA omisos, distintos, emplazados hace unos días.
   const sinRespuesta = aEmplazar('m2', '2026-09-10')
   if (sinRespuesta) emplazar({ tipo: 'corregir', municipioId: 'm2', declaracionId: sinRespuesta.id }, 'EPC-2026-031', '2026-09-10', quien('u6'), '2026-09-11')
   const reciente = sumarDiasHabiles(hoy, -3)
@@ -804,7 +804,7 @@ function agregarEmplazamientos(f: FuenteEmplazamientos): Emplazamiento[] {
     .slice(0, 2)
   agentes.forEach((o, i) => emplazar(paraDeclarar(o), `EPD-2026-${102 + i}`, reciente, quien('u6'), reciente, i === 0))
 
-  // Santa Rosa: para corregir, en plazo.
+  // Garzón: para corregir, en plazo.
   const enPlazo = aEmplazar('m3', sumarDiasHabiles(hoy, -4))
   if (enPlazo) emplazar({ tipo: 'corregir', municipioId: 'm3', declaracionId: enPlazo.id }, 'EPC-2026-005', sumarDiasHabiles(hoy, -4), quien('u8'), sumarDiasHabiles(hoy, -4), true)
 

@@ -32,7 +32,7 @@ const llamada = (
 
 /**
  * Peticiones escritas a mano, de 1cero1 y de los administradores. Incluye una de madrugada (Carlos Restrepo guarda la
- * configuración de San José del Valle el 9 de septiembre a la 1 a. m.), que es el caso para el que el municipio le
+ * configuración de Villeta el 9 de septiembre a la 1 a. m.), que es el caso para el que el municipio le
  * pregunta a 1cero1 quién cambió qué, y una que falló y se repitió a los pocos minutos.
  */
 function escritas(datos: Omit<Datos, 'bitacora'>): Llamada[] {
@@ -53,7 +53,7 @@ function escritas(datos: Omit<Datos, 'bitacora'>): Llamada[] {
     llamada('2026-10-20T19:41', 'u1', 'm2', PETICIONES.guardarConfiguracion, config('m2'), false),
     llamada('2026-10-20T19:45', 'u1', 'm2', PETICIONES.guardarConfiguracion, config('m2')),
 
-    // San José del Valle: Carlos Restrepo, administrador.
+    // Villeta: Carlos Restrepo, administrador.
     llamada('2026-09-09T01:05', 'u2', 'm1', PETICIONES.iniciarSesion, correo('u2')),
     llamada('2026-09-09T01:14', 'u2', 'm1', PETICIONES.guardarConfiguracion, config('m1')),
     llamada('2026-09-22T14:30', 'u2', 'm1', PETICIONES.guardarConfiguracion, config('m1')),
@@ -61,12 +61,12 @@ function escritas(datos: Omit<Datos, 'bitacora'>): Llamada[] {
     llamada('2026-10-08T08:05', 'u2', 'm1', PETICIONES.cambiarEstadoUsuario, { id: 'u4', activo: true }),
     llamada('2026-10-15T11:48', 'u2', 'm1', PETICIONES.editarUsuario, usuario('u3')),
 
-    // Puerto Esperanza: Marcela Díaz, administradora.
+    // Ricaurte: Marcela Díaz, administradora.
     llamada('2026-08-27T15:40', 'u5', 'm2', PETICIONES.guardarConfiguracion, config('m2')),
     llamada('2026-09-30T10:25', 'u5', 'm2', PETICIONES.guardarConfiguracion, config('m2')),
     llamada('2026-10-13T17:05', 'u5', 'm2', PETICIONES.editarUsuario, usuario('u6')),
 
-    // Santa Rosa de los Andes: Jorge Pardo, administrador.
+    // Garzón: Jorge Pardo, administrador.
     llamada('2026-08-18T09:00', 'u7', 'm3', PETICIONES.guardarConfiguracion, config('m3')),
     llamada('2026-09-24T16:20', 'u7', 'm3', PETICIONES.guardarConfiguracion, config('m3')),
     llamada('2026-10-02T07:50', 'u7', 'm3', PETICIONES.guardarConfiguracion, config('m3')),

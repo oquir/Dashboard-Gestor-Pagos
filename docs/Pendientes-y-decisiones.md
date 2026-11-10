@@ -36,15 +36,15 @@
 | Alerta de retenciones sin consignar (2026-11-04) | **Sí**, para la ReteICA y también para la AutoReteICA (§3.15) | El art. 402 del Código Penal habla del agente retenedor y del autorretenedor |
 | Aviso de datos anuales (2026-11-04) | **Solo del calendario**: sale en Inicio de cada municipio activo desde el 1 de enero, hasta que cargue el año (§3.14). La UVT no va en el aviso | La UVT se actualiza sola, sin pedirle nada al municipio |
 | Declaraciones sin el calendario cargado (2026-11-04) | **Se reciben y se marcan** | Por ahora puede haber municipios que reciban declaraciones sin el calendario. El usuario piensa en que el aplicativo del formulario no deje declarar un año gravable sin calendario, para que todo sea legal: lo decidirá después |
-| Plazo de 2 meses para pagar la retención (2026-11-04) | Interruptor por municipio, **encendido por defecto** | No es solo de Ricaurte: es el art. 580-1 del Estatuto Tributario, que los municipios aplican por el art. 59 de la Ley 788 de 2002 |
+| Plazo de 2 meses para pagar la retención (2026-11-04) | Interruptor por municipio, **encendido por defecto** | No es solo de Ricaurte (Nariño): es el art. 580-1 del Estatuto Tributario, que los municipios aplican por el art. 59 de la Ley 788 de 2002 |
 | Pagos de 1cero1 sin un municipio elegido (2026-11-05) | **Gráficas por municipio** (pagos recibidos, cartera pendiente, retenciones sin consignar y cheques en canje) en lugar de las tablas. La carga y la descarga del Asobancaria piden elegir un municipio | Sin el municipio, las tablas no dicen de cuál es cada fila |
 | "Todos los municipios" en Actividades (2026-11-05) | **No**: como en Calendario y Configuración, hay que elegir un municipio | Cada municipio tiene sus propias tarifas, y la plantilla se carga para un municipio y un año |
 | Establecimientos y contador o revisor fiscal en el RIT (2026-11-05) | **Sí**: la inscripción registra el número de establecimientos en el municipio y el contador o revisor fiscal, con tipo y número de documento, nombre y tarjeta profesional | Faltaban en la ficha del RIT |
 | Datos del declarante en la declaración (2026-11-05) | **En todas las declaraciones**: cada una guarda lo que escribió el declarante y quiénes la firman (§3.16). El detalle, el PDF, las tablas y los reportes los toman de ahí, no del RIT | Lo que vale es lo que se firmó ese día, aunque después cambie el RIT. Y hay municipios sin RIT, o que no validan un formulario contra el RIT |
-| Municipios sin RIT (2026-11-05) | Sus declaraciones se ven con lo que trae cada una, sin cruces con el RIT ni omisos. Lo configura 1cero1. En la demo, Santa Rosa de los Andes no tiene RIT | Hay municipios que llevan el RIT en papel, o que no lo llevan en ningún sistema, y quieren seguir así |
-| Declarante que no está inscrito en el RIT (2026-11-05) | Donde un formulario no se valida contra el RIT, su declaración dice **"No inscrito en el RIT"**, y Declaraciones tiene un filtro para verlas. En la demo, Puerto Esperanza no valida la ReteICA y tres sociedades la declaran sin estar inscritas | Es una pista de fiscalización: declara, pero nunca se inscribió |
+| Municipios sin RIT (2026-11-05) | Sus declaraciones se ven con lo que trae cada una, sin cruces con el RIT ni omisos. Lo configura 1cero1. En la demo, Garzón no tiene RIT | Hay municipios que llevan el RIT en papel, o que no lo llevan en ningún sistema, y quieren seguir así |
+| Declarante que no está inscrito en el RIT (2026-11-05) | Donde un formulario no se valida contra el RIT, su declaración dice **"No inscrito en el RIT"**, y Declaraciones tiene un filtro para verlas. En la demo, Ricaurte no valida la ReteICA y tres sociedades la declaran sin estar inscritas | Es una pista de fiscalización: declara, pero nunca se inscribió |
 | Contribuyente y declarante (2026-11-06) | **Son dos cosas distintas** (§3.16). El contribuyente es la empresa o la persona. El declarante es quien diligencia el formulario, y de él solo se piden el tipo y el número de documento y el nombre. Si la declaración no tiene ficha del RIT, la tarjeta del contribuyente va en la columna ancha, encima de la liquidación. El declarante y el contador o revisor fiscal van juntos en la tarjeta "Firmas" de la lateral. Las tablas, los reportes y el buscador de Declaraciones dicen "Contribuyente" | Sin RIT, lo que dice la declaración es todo lo que se sabe del contribuyente. Las firmas son pocos datos para una tarjeta cada una |
-| Periodicidad de las declaraciones (2026-11-06) | **Cada declaración guarda la periodicidad con que se presentó**, y su periodo se nombra igual en todo el aplicativo: "Marzo de 2026", "Bimestre 3 (may – jun) de 2026", "Trimestre 1 (ene – mar) de 2026". En la demo, Puerto Esperanza declara la ReteICA de 2026 por mes y Santa Rosa por trimestre. Si en Calendario se cambia la periodicidad de un año que ya tiene declaraciones, sale un aviso, y lo presentado conserva su periodo (§3.5) | La etiqueta larga no deja lugar a interpretaciones. Y el aviso es para que el municipio se dé cuenta del error antes de cometerlo |
+| Periodicidad de las declaraciones (2026-11-06) | **Cada declaración guarda la periodicidad con que se presentó**, y su periodo se nombra igual en todo el aplicativo: "Marzo de 2026", "Bimestre 3 (may – jun) de 2026", "Trimestre 1 (ene – mar) de 2026". En la demo, Ricaurte declara la ReteICA de 2026 por mes y Garzón por trimestre. Si en Calendario se cambia la periodicidad de un año que ya tiene declaraciones, sale un aviso, y lo presentado conserva su periodo (§3.5) | La etiqueta larga no deja lugar a interpretaciones. Y el aviso es para que el municipio se dé cuenta del error antes de cometerlo |
 | Alerta de retenciones sin consignar para 1cero1 (2026-11-06) | **No le sale en Inicio** (permiso `verAlertaSinConsignar`). La ven el administrador y los funcionarios del municipio | 1cero1 no se encarga de lo jurídico del municipio |
 | Bitácora como la guarda el back (2026-11-06) | **Cada registro trae lo que el back guarda al terminar cada endpoint**: quién y cuándo, el controlador, la acción y el endpoint con los nombres del back, los datos enviados y si salió bien. Ya no trae frases ni el valor de antes y después. Lo que se hace en la demo también queda registrado. Cada registro tiene un número consecutivo que abre su página, con "Anterior" y "Siguiente" dentro del municipio elegido (§3.9) | El back solo tiene a mano lo que le envían: guardar el valor anterior lo obligaría a consultarlo en cada petición |
 | Motivo al desactivar un formulario en Configuración (2026-11-06) | **En una ventana** (`ModalMotivo`, genérica para todo el aplicativo), no en un cuadro de texto debajo del interruptor. Si se cancela, el formulario sigue activo. El motivo queda escrito debajo del interruptor, con un botón para cambiarlo | Más limpio, y la misma ventana sirve donde haga falta pedir un motivo |
@@ -58,6 +58,7 @@
 | Emplazamientos para declarar (2026-11-10) | **Varios a la vez**: en Omisos se marcan los emplazados y se registran con la misma fecha de notificación, cada uno con su número de acto (§3.13) | Los municipios emplazan en lote a sus omisos |
 | Quitar un emplazamiento (2026-11-10) | **Sí**, si se registró por error, y queda en la bitácora. Solo mientras nadie lo haya respondido | Un error de fecha o de contribuyente le cobraría al contribuyente una sanción que no debe |
 | Copia del acto del emplazamiento (2026-11-10) | **Opcional**, una por emplazamiento, y se descarga desde el dashboard | El acto lo expide el municipio en su sistema; la copia ayuda a quien revisa |
+| Municipios de la demo (2026-11-10) | **Villeta y Ricaurte (Cundinamarca) y Garzón (Huila)**, con su código DANE, en lugar de San José del Valle, Puerto Esperanza y Santa Rosa de los Andes. Cada uno conserva la configuración y los datos del que reemplaza, en ese orden: Villeta solo tiene ICA, Ricaurte tiene aprobación previa en el ICA y no valida la ReteICA contra el RIT, y Garzón no tiene RIT. El Ricaurte de la demo es el de Cundinamarca; el estatuto de §7 de `Contexto-RIT.md` es el de Ricaurte (Nariño) | Lo pidió el usuario: municipios reales para las pruebas |
 | Emplazamientos en Inicio (2026-11-10) | **No**: se ven en Omisos, en el detalle de la declaración y en el inscrito del RIT | Lo que sigue al vencer el plazo, la sanción por no declarar y el aforo, lo hace el municipio en su sistema |
 
 ## 2. Lo que falta, con su estado
@@ -85,7 +86,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 | Omisos | Quién debía declarar y no lo hizo, por impuesto y periodo (§3.5): en Declaraciones › Omisos, con Excel, en una tarjeta de Inicio y en el detalle del inscrito | **Implementado** (2026-11-03) |
 | Calendario tributario | Página Calendario (antes era una sección de Configuración) con, por año gravable, pasado o futuro: los vencimientos de cada formulario activo por separado, su periodicidad, fechas por último dígito del NIT o la cédula si el municipio las separa, y el pronto pago con su interruptor. Tarjeta de próximos vencimientos en Inicio | **Implementado** (2026-10-30; rehecho el 2026-11-03) |
 | Datos anuales sin actualizar | Avisar desde el inicio del año cuando falta el calendario, y marcar lo que se liquidó sin él, para que el municipio no se entere meses después por declaraciones mal calculadas (§3.14). La UVT se actualiza sola | **Implementado** para el calendario (2026-11-04) |
-| Alerta de ReteICA sin consignar | Una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§3.15): en Pagos, en Inicio y en el detalle de la declaración, también para la AutoReteICA. El plazo de 2 meses del art. 580-1 ET, que también trae Ricaurte, es un interruptor por municipio | **Implementado** (2026-11-04) |
+| Alerta de ReteICA sin consignar | Una alerta propia, aparte del estado "ineficaz", por el art. 402 del Código Penal (§3.15): en Pagos, en Inicio y en el detalle de la declaración, también para la AutoReteICA. El plazo de 2 meses del art. 580-1 ET, que también trae Ricaurte (Nariño), es un interruptor por municipio | **Implementado** (2026-11-04) |
 | Estado de cuenta del contribuyente | Ninguna vista junta lo que debe un contribuyente: sus vigencias, saldos y pagos. Donde no hay RIT, al contribuyente se le reconoce por su documento (§3.16) | Pendiente, **sin paz y salvo** |
 | Carga del Asobancaria | El resultado es aleatorio y no cambia la cartera; las referencias que no cruzan no quedan en ninguna parte | Se queda simulada |
 | Cuadre de caja de la ventanilla | El cierre del día por funcionario (§3.8) | Descartado |
@@ -178,9 +179,9 @@ Mientras sea proyecto, no sirve para pagar.
 - **Arreglo de paso**: una corrección ya no sale como extemporánea por presentarse después del vencimiento, porque la extemporaneidad es de la inicial (art. 644, parágrafo 1).
 
 **En la demo** (ICA anual de 2025):
-- **San José del Valle** (solicitud): dos por resolver, una con el plazo a punto de vencer; una aceptada por Diana Gómez en septiembre de 2026, y una aceptada por silencio, radicada en abril de 2026.
-- **Santa Rosa de los Andes** (solicitud, sin RIT): una por resolver y una rechazada por Sandra Vega en octubre de 2026, que no traía soporte.
-- **Puerto Esperanza** (directa): una de una declaración pagada, que deja un pago en exceso, y otra de una con pago parcial, que baja lo que falta por pagar.
+- **Villeta** (solicitud): dos por resolver, una con el plazo a punto de vencer; una aceptada por Diana Gómez en septiembre de 2026, y una aceptada por silencio, radicada en abril de 2026.
+- **Garzón** (solicitud, sin RIT): una por resolver y una rechazada por Sandra Vega en octubre de 2026, que no traía soporte.
+- **Ricaurte** (directa): una de una declaración pagada, que deja un pago en exceso, y otra de una con pago parcial, que baja lo que falta por pagar.
 - Las por resolver se radican según la fecha en que se generan los datos, como las de la aprobación previa.
 
 **Límites conocidos**:
@@ -196,7 +197,7 @@ Mientras sea proyecto, no sirve para pagar.
 
 ### 3.3 Plazo para inscribirse en el RIT
 
-Cada estatuto fija cuánto tiempo tiene un negocio para inscribirse desde que empieza actividades. En Bogotá son 2 meses; en Ricaurte, el mes siguiente a su inscripción en la Cámara de Comercio o en el RUT. Si se inscribe después, la inscripción es tardía y el municipio puede sancionarla según su estatuto. El monto de esa sanción no está documentado.
+Cada estatuto fija cuánto tiempo tiene un negocio para inscribirse desde que empieza actividades. En Bogotá son 2 meses; en Ricaurte (Nariño), el mes siguiente a su inscripción en la Cámara de Comercio o en el RUT. Si se inscribe después, la inscripción es tardía y el municipio puede sancionarla según su estatuto. El monto de esa sanción no está documentado.
 
 El dashboard no puede **evitar** que alguien se inscriba tarde, pero sí **detectarlo**, porque el formulario del RIT trae la fecha de inicio de actividades. Por ejemplo, si empezó el 10 de enero y el plazo es de 2 meses, el límite era el 10 de marzo. Si radicó el 2 de mayo, se inscribió 53 días tarde, y el funcionario lo vería al revisar la solicitud.
 
@@ -207,7 +208,7 @@ El dashboard no puede **evitar** que alguien se inscriba tarde, pero sí **detec
 **No pagar no es lo mismo que no declarar.** Si no hubo nada, no hay nada que pagar. La pregunta es si de todas formas hay que **presentar** la declaración diciendo "este periodo fue cero".
 
 El interruptor es de la retención. Piensa en un agente retenedor que en un bimestre no le pagó a ningún proveedor, así que no retuvo nada:
-- en Medellín o Ricaurte, ese bimestre no declara;
+- en Medellín o Ricaurte (Nariño), ese bimestre no declara;
 - en otros municipios, tiene que presentar la declaración en ceros. Si no lo hace, queda como omiso y le pueden cobrar la sanción mínima de 10 UVT ($523.740 en 2026), aunque el impuesto sea de $0.
 
 La exigen porque, si el agente no declara, el municipio no sabe si no retuvo nada o si retuvo y se quedó con la plata. Lo segundo puede ser delito (art. 402 del Código Penal), y la declaración en ceros despeja esa duda.
@@ -295,8 +296,8 @@ No guarda el valor anterior, porque para eso tendría que consultarlo en cada pe
   - Los interruptores guardan el valor nuevo (`"rit": false`), no un "alternar".
   - Fallan, y quedan como fallidas, confirmar o devolver un cheque que ya no está en canje.
 - **Datos de prueba** (`src/data/bitacora.ts`): 52 registros de los tres roles entre agosto y octubre de 2026. Los datos enviados terminan en los valores que hoy tiene la demo. Los registros del RIT, los cheques, los formularios desactivados, las solicitudes de corrección a la baja resueltas y los lotes de emplazamientos con fecha fija salen de los datos de la demo.
-  - El caso de madrugada: Carlos Restrepo inició sesión y guardó la configuración de San José del Valle el 9 de septiembre a la 1 a. m.
-  - Uno que falló: Laura Méndez guardó la configuración de Puerto Esperanza el 20 de octubre a las 7:41 p. m. La petición falló y la volvió a guardar a las 7:45 p. m.
+  - El caso de madrugada: Carlos Restrepo inició sesión y guardó la configuración de Villeta el 9 de septiembre a la 1 a. m.
+  - Uno que falló: Laura Méndez guardó la configuración de Ricaurte el 20 de octubre a las 7:41 p. m. La petición falló y la volvió a guardar a las 7:45 p. m.
 - **Nombres de ejemplo**: los controladores, las acciones y los endpoints de la demo están en `PETICIONES` (`src/constants/bitacora.ts`). Los de verdad vienen del back.
 
 **Límites**:
@@ -349,7 +350,7 @@ Rechazar por otra cosa, como una tarifa mal puesta, no tiene base: eso se arregl
 - **Soportes**: los documentos que el contribuyente adjunta al inscribirse, como el RUT, la cédula, el certificado de existencia y representación legal, o la resolución que lo nombra agente o autorretenedor.
 - **Calidad**: si se inscribe como contribuyente, agente retenedor o autorretenedor.
 
-En el mock, la lista de documentos está fija y es igual para todos los municipios, aunque cada uno pide algo distinto. Medellín le pide a un agente el formulario RIT y cuatro documentos; Ricaurte, solo una copia del RUT. Hacerla configurable sería que cada administrador marque qué exige según el tipo de persona y la calidad. Para una demo, es de lo menos importante.
+En el mock, la lista de documentos está fija y es igual para todos los municipios, aunque cada uno pide algo distinto. Medellín le pide a un agente el formulario RIT y cuatro documentos; Ricaurte (Nariño), solo una copia del RUT. Hacerla configurable sería que cada administrador marque qué exige según el tipo de persona y la calidad. Para una demo, es de lo menos importante.
 
 ### 3.13 Emplazamientos
 
@@ -370,7 +371,7 @@ La clausura no tiene reglas propias: si no se ha presentado, le aplica el de dec
 - **La sanción**: la extemporaneidad tras emplazamiento y la corrección tras emplazamiento de Configuración. La validación de la declaración revisa que la inicial presentada después del emplazamiento para declarar liquide al menos lo del art. 642, y que la corrección presentada después del de corregir agregue sanción por corrección. El dashboard no rehace el mayor valor.
 - **Quitar**: el administrador o el funcionario quita un emplazamiento registrado por error, solo si nadie lo ha respondido. Queda en la bitácora, igual que cada lote registrado (una petición por lote).
 - **No va en Inicio**: se ve en Omisos, en el detalle de la declaración y en "Declaraciones que faltan" del inscrito.
-- **En la demo**: San José del Valle emplazó a sus dos omisos del ICA 2025 el 18 de agosto de 2026 (uno declaró dentro del mes y el otro dejó vencer el plazo) y para corregir un ICA 2025, que se corrigió con el 20 %. Puerto Esperanza emplazó a dos agentes de ReteICA hace unos días hábiles (en plazo) y para corregir a uno que no respondió. Santa Rosa, sin RIT, emplazó para corregir hace unos días.
+- **En la demo**: Villeta emplazó a sus dos omisos del ICA 2025 el 18 de agosto de 2026 (uno declaró dentro del mes y el otro dejó vencer el plazo) y para corregir un ICA 2025, que se corrigió con el 20 %. Ricaurte emplazó a dos agentes de ReteICA hace unos días hábiles (en plazo) y para corregir a uno que no respondió. Garzón, sin RIT, emplazó para corregir hace unos días.
 
 **Límites**:
 - No se modelan la sanción por no declarar, el aforo, el requerimiento especial, la inspección tributaria ni la suspensión del término para el requerimiento (art. 706).
@@ -425,7 +426,7 @@ El acto que un municipio expide para "su calendario de 2027" suele traer la Rete
 - **Declaraciones**: las que se presentaron antes de que el municipio cargara el calendario de su año gravable dicen "Sin calendario cargado" junto a la fecha de presentación. Hay un filtro para verlas. En el detalle, un aviso dice cuándo se cargó el calendario y pide revisar el vencimiento, la sanción y los intereses.
 - **Calendario**: cada año dice cuándo y quién lo cargó.
 - **En la demo**:
-  - Puerto Esperanza cargó el calendario de 2026 el 8 de abril de 2026, así que sus declaraciones de 2026 presentadas antes están marcadas: las ReteICA de enero y febrero y una de marzo.
+  - Ricaurte cargó el calendario de 2026 el 8 de abril de 2026, así que sus declaraciones de 2026 presentadas antes están marcadas: las ReteICA de enero y febrero y una de marzo.
   - El aviso de Inicio sale en los tres municipios desde el 1 de enero de 2027.
 
 **Lo que falta de la versión mínima**:
@@ -442,7 +443,7 @@ Por ejemplo, la Constructora le paga a un proveedor y le retiene $100.000. Decla
 
 **Dos reglas con el mismo plazo**: 2 meses contados desde el **vencimiento**, no desde el día en que presentó la declaración.
 - **El delito** (art. 402 del Código Penal): el agente retenedor o el autorretenedor que no consigna dentro de esos 2 meses puede ir a la cárcel (de 48 a 108 meses) y pagar una multa del doble de lo que no consignó. Si paga todo con intereses, se puede cerrar el proceso penal (parágrafo del mismo artículo).
-- **La declaración** (art. 580-1 del Estatuto Tributario): sin el pago total no vale (es ineficaz). Pero si se presentó a tiempo y se paga completa dentro de esos 2 meses, con intereses, sí vale (DIAN, Concepto 8678 de 2024). Ricaurte copia esta regla en su estatuto (§7.5 de `Contexto-RIT.md`).
+- **La declaración** (art. 580-1 del Estatuto Tributario): sin el pago total no vale (es ineficaz). Pero si se presentó a tiempo y se paga completa dentro de esos 2 meses, con intereses, sí vale (DIAN, Concepto 8678 de 2024). Ricaurte (Nariño) copia esta regla en su estatuto (§7.5 de `Contexto-RIT.md`).
 
 Si el plazo termina en sábado o domingo, se corre al día hábil siguiente (art. 62 de la Ley 4 de 1913). Si el mes del límite es más corto, se toma su último día: el 31 de diciembre más 2 meses da el 28 de febrero.
 
@@ -461,9 +462,9 @@ Si el plazo termina en sábado o domingo, se corre al día hábil siguiente (art
 - Una retención que se paga completa después del límite sale "Pagada". En la ley sigue siendo ineficaz y el agente tiene que presentarla de nuevo, con sanción e intereses (DIAN, Concepto 8678 de 2024). El mock no tiene ese flujo.
 - No se descuentan los festivos (§1).
 - A los omisos no los cubre: si el agente no declaró, el municipio no sabe cuánto retuvo.
-- En la demo, las declaraciones se pagan el mismo día en que se presentan o nunca. El plazo se mide contra la fecha real. Por eso siguen en plazo las ReteICA de agosto y septiembre de Puerto Esperanza (vencen el 18 de noviembre y el 21 de diciembre de 2026) y la del trimestre 3 de Santa Rosa (el 21 de diciembre), y las anteriores ya pasaron los 2 meses. De las que siguen en plazo, la demo deja algunas sin pagar a propósito.
+- En la demo, las declaraciones se pagan el mismo día en que se presentan o nunca. El plazo se mide contra la fecha real. Por eso siguen en plazo las ReteICA de agosto y septiembre de Ricaurte (vencen el 18 de noviembre y el 21 de diciembre de 2026) y la del trimestre 3 de Garzón (el 21 de diciembre), y las anteriores ya pasaron los 2 meses. De las que siguen en plazo, la demo deja algunas sin pagar a propósito.
 
-**Fuentes**: [art. 402 del Código Penal](https://leyes.co/codigo_penal/402.htm); [DIAN, Concepto 8678 de 2024](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_8678_2024.htm), que cita el art. 580-1 del Estatuto Tributario; [Acuerdo 093 de 2023 de Medellín](https://www.medellin.gov.co/es/wp-content/uploads/2024/01/ACUERDO-093-2023-GACETA.pdf), art. 76; el estatuto de Ricaurte (§10 de `Contexto-RIT.md`).
+**Fuentes**: [art. 402 del Código Penal](https://leyes.co/codigo_penal/402.htm); [DIAN, Concepto 8678 de 2024](https://normograma.dian.gov.co/dian/compilacion/docs/oficio_dian_8678_2024.htm), que cita el art. 580-1 del Estatuto Tributario; [Acuerdo 093 de 2023 de Medellín](https://www.medellin.gov.co/es/wp-content/uploads/2024/01/ACUERDO-093-2023-GACETA.pdf), art. 76; el estatuto de Ricaurte, Nariño (§10 de `Contexto-RIT.md`).
 
 ### 3.16 Datos del declarante y municipios sin RIT
 
@@ -495,10 +496,10 @@ El cruce con el RIT queda como un extra:
 - **Pagos, Inicio y Reportes**: el nombre y el documento salen de la declaración.
 
 **En la demo**:
-- Los datos de cada declaración son los que el contribuyente tenía en el RIT el día que la presentó. Una declaración de San José del Valle ya muestra datos distintos de los del RIT de hoy, porque el contribuyente lo actualizó después.
+- Los datos de cada declaración son los que el contribuyente tenía en el RIT el día que la presentó. Una declaración de Villeta ya muestra datos distintos de los del RIT de hoy, porque el contribuyente lo actualizó después.
 - El declarante es la persona natural misma o el representante legal que dice el RIT. El RIT solo guarda el nombre del representante, así que la demo le inventa una cédula, siempre la misma para la misma persona.
-- **Santa Rosa de los Andes no tiene RIT**: sus contribuyentes solo aparecen en sus declaraciones.
-- **Puerto Esperanza** valida el ICA contra el RIT, pero no la ReteICA. Tres sociedades declaran ReteICA sin estar inscritas: 24 declaraciones de enero a septiembre de 2026.
+- **Garzón no tiene RIT**: sus contribuyentes solo aparecen en sus declaraciones.
+- **Ricaurte** valida el ICA contra el RIT, pero no la ReteICA. Tres sociedades declaran ReteICA sin estar inscritas: 24 declaraciones de enero a septiembre de 2026.
 
 **Límites conocidos**:
 - En la demo, el cruce con el RIT queda guardado al generar los datos. En el aplicativo real se haría por el tipo y el número de documento, así que si alguien se inscribe después, sus declaraciones anteriores también se enlazarían.
@@ -538,7 +539,7 @@ El cruce con el RIT queda como un extra:
 | Contribuyente, declarante y contador en la declaración (§3.16) | `DatosContribuyente`, `Firmante` y los campos `contribuyente`, `declarante` y `contador` de `Declaracion` (`src/types/dominio.ts`); `diligenciadoPor` en `src/data/generar.ts`; `ContribuyenteDeclaracion` y `FirmasDeclaracion` (`organisms/declaraciones/`), y dónde va cada una en `src/pages/DeclaracionDetalle.tsx`; las secciones B y E de `src/lib/pdfDeclaracion.ts` |
 | Declarante no inscrito en el RIT (§3.16) | `inscripcionId`, opcional en `Declaracion`; `noInscrito` de `FilaDeclaracion` (`src/types/declaraciones.ts`) y su filtro en `src/pages/Declaraciones/Declaraciones.tsx`; en la demo, `noInscritoPor` y `AGENTES_NO_INSCRITOS` en `src/data/generar.ts` |
 | Bitácora (§3.9) | `RegistroBitacora` en `src/types/dominio.ts`; los nombres de ejemplo en `PETICIONES` (`src/constants/bitacora.ts`); `registrar` en `src/store.ts`, que llama cada acción al terminar y le da el siguiente número; los datos de prueba en `src/data/bitacora.ts`; los filtros y `vecinos` (Anterior y Siguiente) en `src/lib/bitacora.ts`; la tabla en `src/pages/Bitacora.tsx` y `TablaBitacora`; la página del registro en `src/pages/BitacoraDetalle.tsx`, con `DatosEnviados`, `PeticionBitacora` y `RecorridoBitacora` (`organisms/bitacora/`) |
-| Municipio sin RIT en la demo (§3.16) | `rit: false` de Santa Rosa en `src/data/catalogos.ts`; al final de `generarDatos` se quitan sus inscripciones |
+| Municipio sin RIT en la demo (§3.16) | `rit: false` de Garzón en `src/data/catalogos.ts`; al final de `generarDatos` se quitan sus inscripciones |
 
 ## 5. Para retomar
 

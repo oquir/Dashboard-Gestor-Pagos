@@ -9,7 +9,7 @@ const PRODUCCION = '2026-02-01'
 
 export const MUNICIPIOS: Municipio[] = [
   {
-    id: 'm1', nombre: 'San José del Valle', departamento: 'Antioquia', codigoDane: '05901', activo: true,
+    id: 'm1', nombre: 'Villeta', departamento: 'Cundinamarca', codigoDane: '25875', activo: true,
     enProduccionDesde: { rit: PRODUCCION, ica: PRODUCCION },
     impuestos: { ica: true, reteica: false, autorretencion: false },
     rit: true,
@@ -20,7 +20,7 @@ export const MUNICIPIOS: Municipio[] = [
     pagoCheque: { ica: true, reteica: false, autorretencion: false },
   },
   {
-    id: 'm2', nombre: 'Puerto Esperanza', departamento: 'Bolívar', codigoDane: '13901', activo: true,
+    id: 'm2', nombre: 'Ricaurte', departamento: 'Cundinamarca', codigoDane: '25612', activo: true,
     enProduccionDesde: { rit: PRODUCCION, ica: PRODUCCION, reteica: PRODUCCION },
     impuestos: { ica: true, reteica: true, autorretencion: false },
     rit: true,
@@ -32,7 +32,7 @@ export const MUNICIPIOS: Municipio[] = [
     pagoCheque: { ica: false, reteica: false, autorretencion: false },
   },
   {
-    id: 'm3', nombre: 'Santa Rosa de los Andes', departamento: 'Santander', codigoDane: '68901', activo: true,
+    id: 'm3', nombre: 'Garzón', departamento: 'Huila', codigoDane: '41298', activo: true,
     enProduccionDesde: { ica: PRODUCCION, reteica: PRODUCCION, autorretencion: PRODUCCION },
     impuestos: { ica: true, reteica: true, autorretencion: true },
     // No lleva el RIT en ningún sistema: de sus contribuyentes solo se sabe lo que escriben en las declaraciones.
@@ -47,13 +47,13 @@ export const MUNICIPIOS: Municipio[] = [
 
 export const USUARIOS: Usuario[] = [
   { id: 'u1', nombres: 'Laura', apellidos: 'Méndez', cargo: 'Líder de implementación', correo: 'laura.mendez@1cero1.demo', rol: '1cero1', municipioId: null, activo: true },
-  { id: 'u2', nombres: 'Carlos', apellidos: 'Restrepo', cargo: 'Secretario de Hacienda', correo: 'c.restrepo@sanjosedelvalle.demo', rol: 'admin_municipio', municipioId: 'm1', activo: true },
-  { id: 'u3', nombres: 'Diana', apellidos: 'Gómez', cargo: 'Profesional de Rentas', correo: 'd.gomez@sanjosedelvalle.demo', rol: 'funcionario', municipioId: 'm1', activo: true },
-  { id: 'u4', nombres: 'Julián', apellidos: 'Ortiz', cargo: 'Auxiliar de Impuestos', correo: 'j.ortiz@sanjosedelvalle.demo', rol: 'funcionario', municipioId: 'm1', activo: true },
-  { id: 'u5', nombres: 'Marcela', apellidos: 'Díaz', cargo: 'Secretaria de Tesorería', correo: 'm.diaz@puertoesperanza.demo', rol: 'admin_municipio', municipioId: 'm2', activo: true },
-  { id: 'u6', nombres: 'Andrés', apellidos: 'Barrios', cargo: 'Profesional de Fiscalización', correo: 'a.barrios@puertoesperanza.demo', rol: 'funcionario', municipioId: 'm2', activo: true },
-  { id: 'u7', nombres: 'Jorge', apellidos: 'Pardo', cargo: 'Secretario de Hacienda', correo: 'j.pardo@santarosa.demo', rol: 'admin_municipio', municipioId: 'm3', activo: true },
-  { id: 'u8', nombres: 'Sandra', apellidos: 'Vega', cargo: 'Técnica de Rentas', correo: 's.vega@santarosa.demo', rol: 'funcionario', municipioId: 'm3', activo: true },
+  { id: 'u2', nombres: 'Carlos', apellidos: 'Restrepo', cargo: 'Secretario de Hacienda', correo: 'c.restrepo@villeta.demo', rol: 'admin_municipio', municipioId: 'm1', activo: true },
+  { id: 'u3', nombres: 'Diana', apellidos: 'Gómez', cargo: 'Profesional de Rentas', correo: 'd.gomez@villeta.demo', rol: 'funcionario', municipioId: 'm1', activo: true },
+  { id: 'u4', nombres: 'Julián', apellidos: 'Ortiz', cargo: 'Auxiliar de Impuestos', correo: 'j.ortiz@villeta.demo', rol: 'funcionario', municipioId: 'm1', activo: true },
+  { id: 'u5', nombres: 'Marcela', apellidos: 'Díaz', cargo: 'Secretaria de Tesorería', correo: 'm.diaz@ricaurte.demo', rol: 'admin_municipio', municipioId: 'm2', activo: true },
+  { id: 'u6', nombres: 'Andrés', apellidos: 'Barrios', cargo: 'Profesional de Fiscalización', correo: 'a.barrios@ricaurte.demo', rol: 'funcionario', municipioId: 'm2', activo: true },
+  { id: 'u7', nombres: 'Jorge', apellidos: 'Pardo', cargo: 'Secretario de Hacienda', correo: 'j.pardo@garzon.demo', rol: 'admin_municipio', municipioId: 'm3', activo: true },
+  { id: 'u8', nombres: 'Sandra', apellidos: 'Vega', cargo: 'Técnica de Rentas', correo: 's.vega@garzon.demo', rol: 'funcionario', municipioId: 'm3', activo: true },
 ]
 
 export const ACTIVIDADES: { ciiu: string; descripcion: string; sector: Sector }[] = [
