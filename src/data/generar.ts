@@ -927,6 +927,7 @@ export function generarDatos(): Datos {
     recaudoHistorico,
     configuraciones: structuredClone(CONFIGURACIONES),
     actividades: structuredClone(ACTIVIDADES_POR_VIGENCIA),
+    emplazamientos: [],
   }
   return { ...datos, bitacora: generarBitacora(datos) }
 }

@@ -280,6 +280,41 @@ export type SolicitudCorreccion =
 /** Estado de la solicitud de corrección al día de hoy: si pasan los 6 meses sin respuesta, se acepta por silencio (lib/reglas). */
 export type EstadoCorreccion = 'por_resolver' | 'aceptada' | 'aceptada_por_silencio' | 'rechazada'
 
+/**
+ * Emplazamiento que el municipio le notificó a un contribuyente. El acto lo expide el municipio en su sistema; el
+ * dashboard registra el número y la fecha de notificación, para que el aplicativo liquide la sanción más alta a quien
+ * declara o corrige después (arts. 642 y 644 del Estatuto Tributario). Da 1 mes desde la notificación.
+ */
+export type Emplazamiento = {
+  id: string
+  municipioId: string
+  /** Número del acto. */
+  numero: string
+  fechaNotificacion: string
+  /** Copia del acto, opcional. */
+  copia?: Archivo
+  /** Nombre de quien lo registró. */
+  registradoPor: string
+  fechaRegistro: string
+} & (
+  /** Para declarar (art. 715): va al inscrito y al periodo omiso, porque aún no hay declaración. */
+  | { tipo: 'declarar'; inscripcionId: string; impuesto: Impuesto; vigencia: number; periodicidad: Periodicidad; periodo: number }
+  /** Para corregir (art. 685): va a la declaración vigente en la que el municipio tiene indicios de inexactitud. */
+  | { tipo: 'corregir'; declaracionId: string }
+)
+
+/** Omit que respeta cada variante de una unión. */
+type SinCampos<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never
+
+/** Lo que se registra desde la pantalla; el id, quién y cuándo los pone el store. */
+export type NuevoEmplazamiento = SinCampos<Emplazamiento, 'id' | 'registradoPor' | 'fechaRegistro'>
+
+/**
+ * Estado del emplazamiento al día de hoy (lib/emplazamientos). El de declarar está en plazo, vencido o declarado; el de
+ * corregir, en plazo, sin respuesta o corregido.
+ */
+export type EstadoEmplazamiento = 'en_plazo' | 'vencido' | 'declarado' | 'sin_respuesta' | 'corregido'
+
 export interface Pago {
   id: string
   declaracionId: string
@@ -493,6 +528,7 @@ export interface Datos {
   recaudoHistorico: RecaudoMensual[]
   configuraciones: ConfigMunicipio[]
   actividades: ActividadesVigencia[]
+  emplazamientos: Emplazamiento[]
   /** Datos de prueba, más lo que se hace en el navegador. */
   bitacora: RegistroBitacora[]
 }
