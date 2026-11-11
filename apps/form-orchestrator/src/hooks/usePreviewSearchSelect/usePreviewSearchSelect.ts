@@ -28,7 +28,7 @@ export function usePreviewSearchSelect({
   useEffect(() => {
     if (!isOpen) return
 
-    // Por ref y no con autoFocus, que Biome prohibe sin distinguir este caso del que le preocupa.
+    // Por ref y no con autoFocus, que las reglas de accesibilidad prohiben sin distinguir este caso del que le preocupa.
     searchRef.current?.focus()
 
     function onKeyDown(event: KeyboardEvent): void {

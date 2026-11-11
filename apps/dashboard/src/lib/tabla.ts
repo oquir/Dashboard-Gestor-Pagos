@@ -15,12 +15,13 @@ import type { CellData, RowData, TableFeatures, useTable } from '@tanstack/react
 
 declare module '@tanstack/react-table' {
   // La extensión debe repetir los parámetros de tipo de TanStack aunque no se usen.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   interface ColumnMeta<
     in out TFeatures extends TableFeatures,
     in out TData extends RowData,
     TValue extends CellData = CellData,
   > {
+    /* eslint-enable @typescript-eslint/no-unused-vars */
     /** Alinea encabezado y celdas a la derecha (columnas de valores). */
     alinear?: 'derecha'
     /** Clases extra para las celdas de la columna. */
