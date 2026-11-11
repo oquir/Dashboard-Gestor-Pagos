@@ -37,3 +37,12 @@ export const PROCEDURE_OPTIONS: Record<FilterValue<RitChangeKind>, string> = {
   '': 'Todo trámite',
   ...ritChangeKindLabel,
 }
+
+/** Con qué fecha se filtra la consulta. */
+export const CRITERION = 'Por la fecha en que se radicó la solicitud de inscripción.'
+
+/** Lo que se muestra mientras no se ha consultado un rango de fechas. */
+export const NO_QUERY = {
+  title: 'Elige el rango de fechas',
+  description: 'Escoge desde y hasta y presiona Consultar para ver las inscripciones.',
+}

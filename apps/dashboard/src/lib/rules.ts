@@ -336,6 +336,13 @@ export const TOTAL_LINES = new Set(['16', '25', '33', '34', '38', '18', 'T'])
 export const lastProcedure = (i: Registration) =>
   i.ritChanges.reduce((last, n) => (n.date >= last.date ? n : last))
 
+/** Fecha en que se radicó la solicitud de inscripción en el RIT; si no la tiene, la del primer trámite. */
+export const lodgingDate = (i: Registration) =>
+  (
+    i.ritChanges.find((n) => n.kind === 'registration') ??
+    i.ritChanges.reduce((first, n) => (n.date < first.date ? n : first))
+  ).date
+
 /**
  * Días de retraso de una inscripción en el RIT: el plazo corre desde el inicio de actividades (docs/Pendientes-y-decisiones.md §3.3).
  * Es null si se inscribió a tiempo o si el plazo vencía antes de que el RIT saliera a producción: entonces le tocaba
