@@ -20,11 +20,20 @@ export default function BitacoraDetalle() {
   const r = bitacora.find((x) => x.id === numero)
 
   // Anterior y Siguiente recorren lo mismo que la tabla con el municipio elegido; sin municipio, todos los registros.
-  const { anterior, siguiente } = useMemo(() => vecinos(delMunicipio(bitacora, municipioId), numero), [bitacora, municipioId, numero])
+  const { anterior, siguiente } = useMemo(
+    () => vecinos(delMunicipio(bitacora, municipioId), numero),
+    [bitacora, municipioId, numero],
+  )
   const ambito = municipios.find((m) => m.id === municipioId)?.nombre ?? 'todos los municipios'
 
   if (!puede(usuario?.rol, 'verBitacora')) return <Navigate to="/" replace />
-  if (!r) return <Vacio titulo="No se encontró el registro" descripcion={`La bitácora no tiene un registro con el número ${id}.`} />
+  if (!r)
+    return (
+      <Vacio
+        titulo="No se encontró el registro"
+        descripcion={`La bitácora no tiene un registro con el número ${id}.`}
+      />
+    )
 
   return (
     <PlantillaDetalle

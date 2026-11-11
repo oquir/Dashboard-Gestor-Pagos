@@ -25,19 +25,36 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
     pagoCheque: useDatos((s) => s.alternarPagoCheque),
   }
   // Sin el RIT en el aplicativo no hay contra qué validar.
-  const marcada = (clave: OpcionFormulario, i: Impuesto) => (clave === 'validarContraRit' ? m.rit && m.validarContraRit[i] : m[clave][i])
+  const marcada = (clave: OpcionFormulario, i: Impuesto) =>
+    clave === 'validarContraRit' ? m.rit && m.validarContraRit[i] : m[clave][i]
 
   return (
     <Card>
-      <CardHeader titulo="Formularios" descripcion="Qué formularios gestiona el municipio y, para cada uno, cómo se revisa y qué recibe en la ventanilla." />
+      <CardHeader
+        titulo="Formularios"
+        descripcion="Qué formularios gestiona el municipio y, para cada uno, cómo se revisa y qué recibe en la ventanilla."
+      />
       <div className="overflow-x-auto">
         <table className="w-full min-w-[36rem] text-sm">
           <thead className="text-xs text-slate-500">
             <tr className="uppercase tracking-wide">
-              <th rowSpan={2} scope="col" className="px-5 py-2 text-left align-bottom font-medium">Formulario</th>
-              <th rowSpan={2} scope="col" className="px-3 py-2 text-center align-bottom font-medium">Gestiona</th>
+              <th rowSpan={2} scope="col" className="px-5 py-2 text-left align-bottom font-medium">
+                Formulario
+              </th>
+              <th
+                rowSpan={2}
+                scope="col"
+                className="px-3 py-2 text-center align-bottom font-medium"
+              >
+                Gestiona
+              </th>
               {GRUPOS.map((g) => (
-                <th key={g.titulo} colSpan={g.opciones.length} scope="colgroup" className="border-l border-slate-200 px-3 pt-2 text-center font-medium">
+                <th
+                  key={g.titulo}
+                  colSpan={g.opciones.length}
+                  scope="colgroup"
+                  className="border-l border-slate-200 px-3 pt-2 text-center font-medium"
+                >
                   {g.titulo}
                 </th>
               ))}
@@ -45,7 +62,11 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
             <tr className="border-b border-slate-200">
               {GRUPOS.map((g) =>
                 g.opciones.map((o, j) => (
-                  <th key={o.clave} scope="col" className={`px-3 pt-1 pb-2 text-center font-normal ${j === 0 ? 'border-l border-slate-200' : ''}`}>
+                  <th
+                    key={o.clave}
+                    scope="col"
+                    className={`px-3 pt-1 pb-2 text-center font-normal ${j === 0 ? 'border-l border-slate-200' : ''}`}
+                  >
                     {o.texto}
                   </th>
                 )),
@@ -59,8 +80,12 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
               return (
                 <tr key={i} className={gestiona ? '' : 'bg-slate-50/70'}>
                   <th scope="row" className="px-5 py-3 text-left align-top font-medium">
-                    <span className={gestiona ? 'text-slate-900' : 'text-slate-500'}>{etiquetaImpuesto[i]}</span>
-                    <span className="mt-0.5 block text-xs font-normal text-slate-500">{textoSalidaProduccion(m.enProduccionDesde[i])}</span>
+                    <span className={gestiona ? 'text-slate-900' : 'text-slate-500'}>
+                      {etiquetaImpuesto[i]}
+                    </span>
+                    <span className="mt-0.5 block text-xs font-normal text-slate-500">
+                      {textoSalidaProduccion(m.enProduccionDesde[i])}
+                    </span>
                     {pausa && (
                       <span className="mt-1 block max-w-xs text-xs font-normal">
                         <Badge tono="alerta">Desactivado por el municipio</Badge>
@@ -72,24 +97,37 @@ export default function FormulariosMunicipio({ municipio: m, pausas }: Formulari
                     <Conmutador
                       checked={gestiona}
                       aria-label={`Gestiona ${etiquetaImpuesto[i]}`}
-                      onChange={() => (!gestiona && !m.enProduccionDesde[i] ? setPidiendo(i) : alternarImpuesto(m.id, i))}
+                      onChange={() =>
+                        !gestiona && !m.enProduccionDesde[i]
+                          ? setPidiendo(i)
+                          : alternarImpuesto(m.id, i)
+                      }
                     />
                   </td>
                   {GRUPOS.map((g) =>
                     g.opciones.map((o, j) => (
-                      <td key={o.clave} className={`px-3 py-3 text-center align-top ${j === 0 ? 'border-l border-slate-100' : ''}`}>
+                      <td
+                        key={o.clave}
+                        className={`px-3 py-3 text-center align-top ${j === 0 ? 'border-l border-slate-100' : ''}`}
+                      >
                         {gestiona ? (
                           <Conmutador
                             checked={marcada(o.clave, i)}
                             disabled={o.clave === 'validarContraRit' && !m.rit}
-                            title={o.clave === 'validarContraRit' && !m.rit ? 'Requiere el RIT en el aplicativo' : undefined}
+                            title={
+                              o.clave === 'validarContraRit' && !m.rit
+                                ? 'Requiere el RIT en el aplicativo'
+                                : undefined
+                            }
                             aria-label={`${o.texto} en ${etiquetaImpuesto[i]}`}
                             onChange={() => alternar[o.clave](m.id, i)}
                           />
                         ) : (
                           <span className="text-slate-300">
                             <span aria-hidden>—</span>
-                            <span className="sr-only">No aplica: el municipio no gestiona este formulario</span>
+                            <span className="sr-only">
+                              No aplica: el municipio no gestiona este formulario
+                            </span>
                           </span>
                         )}
                       </td>

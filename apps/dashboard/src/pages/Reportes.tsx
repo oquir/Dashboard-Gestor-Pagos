@@ -6,7 +6,14 @@ import { OPCIONES_APROBACION } from '../constants'
 import { puede } from '../lib/permisos'
 import { armarReportes, REPORTES } from '../lib/reportes'
 import type { IdReporte } from '../lib/reportes'
-import { ritVisible, useAprobacion, useDeclaraciones, useEstadoPago, useSesion, useSolicitudCorreccion } from '../lib/sesion'
+import {
+  ritVisible,
+  useAprobacion,
+  useDeclaraciones,
+  useEstadoPago,
+  useSesion,
+  useSolicitudCorreccion,
+} from '../lib/sesion'
 import { useDatos } from '../store'
 import type { FiltroAprobacion } from '../types'
 import { hoy } from '../utils'
@@ -35,8 +42,35 @@ export default function Reportes() {
   const reporte = reportes.find((r) => r.id === pestana) ?? reportes[0]
 
   const datos = useMemo(
-    () => armarReportes({ declaraciones, inscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, correccion, estadoDe, estadoAprobacion }),
-    [declaraciones, inscripciones, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, correccion, estadoDe, estadoAprobacion],
+    () =>
+      armarReportes({
+        declaraciones,
+        inscripciones,
+        pagos,
+        municipios,
+        municipioId,
+        desde,
+        hasta,
+        rangoInvalido,
+        aprobacion,
+        correccion,
+        estadoDe,
+        estadoAprobacion,
+      }),
+    [
+      declaraciones,
+      inscripciones,
+      pagos,
+      municipios,
+      municipioId,
+      desde,
+      hasta,
+      rangoInvalido,
+      aprobacion,
+      correccion,
+      estadoDe,
+      estadoAprobacion,
+    ],
   )
 
   if (!puede(usuario?.rol, 'verReportes')) return <Navigate to="/" replace />
@@ -45,21 +79,33 @@ export default function Reportes() {
 
   return (
     <>
-      <PageHeader titulo="Reportes" descripcion="Gráficas e informes del municipio. Consulta los datos en la tabla y descárgalos en Excel." />
+      <PageHeader
+        titulo="Reportes"
+        descripcion="Gráficas e informes del municipio. Consulta los datos en la tabla y descárgalos en Excel."
+      />
       <BuscadorMunicipios />
 
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <Segmentado
           etiqueta="Reporte"
           className="sm:inline-flex"
-          opciones={reportes.map((r) => ({ valor: r.id, texto: r.pestana, conteo: datos[r.id].filas.length }))}
+          opciones={reportes.map((r) => ({
+            valor: r.id,
+            texto: r.pestana,
+            conteo: datos[r.id].filas.length,
+          }))}
           valor={reporte.id}
           cambiar={setPestana}
         />
 
         {reporte.porFechas ? (
           <div className="flex flex-wrap items-start gap-3">
-            <RangoFechas desde={desde} hasta={hasta} cambiarDesde={setDesde} cambiarHasta={setHasta} />
+            <RangoFechas
+              desde={desde}
+              hasta={hasta}
+              cambiarDesde={setDesde}
+              cambiarHasta={setHasta}
+            />
             {reporte.id === 'declaraciones' && conAprobacion && (
               <Campo etiqueta="Aprobación">
                 <Filtro
@@ -78,7 +124,13 @@ export default function Reportes() {
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {graficas.map((g) => (
-          <GraficoBarras key={g.titulo} titulo={g.titulo} descripcion={g.descripcion} formato={g.formato} barras={g.barras} />
+          <GraficoBarras
+            key={g.titulo}
+            titulo={g.titulo}
+            descripcion={g.descripcion}
+            formato={g.formato}
+            barras={g.barras}
+          />
         ))}
       </div>
 

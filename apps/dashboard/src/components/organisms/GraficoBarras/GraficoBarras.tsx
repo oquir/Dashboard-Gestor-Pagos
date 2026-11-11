@@ -6,11 +6,17 @@ import { porcentaje } from './constants'
 import type { GraficoBarrasProps } from './types'
 
 /** Barras horizontales: cuánto aporta cada categoría al total. */
-export default function GraficoBarras({ titulo, descripcion, barras, formato }: GraficoBarrasProps) {
+export default function GraficoBarras({
+  titulo,
+  descripcion,
+  barras,
+  formato,
+}: GraficoBarrasProps) {
   const [activa, setActiva] = useState<number | null>(null)
   const total = barras.reduce((s, b) => s + b.valor, 0)
   const maximo = Math.max(...barras.map((b) => b.valor), 0)
-  const texto = (valor: number) => (formato === 'pesos' ? `$${formatoCompacto(valor)}` : String(valor))
+  const texto = (valor: number) =>
+    formato === 'pesos' ? `$${formatoCompacto(valor)}` : String(valor)
 
   return (
     <Card>
@@ -32,14 +38,22 @@ export default function GraficoBarras({ titulo, descripcion, barras, formato }: 
             >
               <div className="flex items-baseline justify-between gap-3 text-sm">
                 <span className="truncate text-slate-700">{b.etiqueta}</span>
-                <span className="shrink-0 tabular-nums text-slate-900" title={formato === 'pesos' ? formatoPesos(b.valor) : undefined}>
+                <span
+                  className="shrink-0 tabular-nums text-slate-900"
+                  title={formato === 'pesos' ? formatoPesos(b.valor) : undefined}
+                >
                   {texto(b.valor)}
-                  <span className="ml-1.5 text-xs text-slate-500">{porcentaje.format(b.valor / total)}</span>
+                  <span className="ml-1.5 text-xs text-slate-500">
+                    {porcentaje.format(b.valor / total)}
+                  </span>
                 </span>
               </div>
               <div className="mt-1 h-2 rounded-full bg-slate-100">
                 {b.valor > 0 && (
-                  <div className={`h-2 min-w-1 rounded-full ${b.clase ?? 'bg-brand-500'}`} style={{ width: `${(b.valor / maximo) * 100}%` }} />
+                  <div
+                    className={`h-2 min-w-1 rounded-full ${b.clase ?? 'bg-brand-500'}`}
+                    style={{ width: `${(b.valor / maximo) * 100}%` }}
+                  />
                 )}
               </div>
             </li>

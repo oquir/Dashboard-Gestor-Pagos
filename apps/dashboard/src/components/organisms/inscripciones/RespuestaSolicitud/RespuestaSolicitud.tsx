@@ -8,7 +8,11 @@ import { AdjuntarDocumentos, Campo, CardHeader } from '../../../molecules'
 import type { Respuesta, RespuestaSolicitudProps } from './types'
 
 /** Tarjeta con la que la administración resuelve una solicitud del RIT y le responde al contribuyente. */
-export default function RespuestaSolicitud({ inscripcionId, novedad, correo }: RespuestaSolicitudProps) {
+export default function RespuestaSolicitud({
+  inscripcionId,
+  novedad,
+  correo,
+}: RespuestaSolicitudProps) {
   const resolverNovedad = useDatos((s) => s.resolverNovedad)
   const [mensaje, setMensaje] = useState('')
   const [archivos, setArchivos] = useState<File[]>([])
@@ -29,12 +33,19 @@ export default function RespuestaSolicitud({ inscripcionId, novedad, correo }: R
         descripcion={`${etiquetaTipoNovedad[novedad.tipo]} radicada el ${formatoFecha(novedad.fecha)}. Se envía a ${correo}.`}
       />
       <div className="space-y-4 p-5">
-        <Campo etiqueta="Mensaje" ayuda="Obligatorio para rechazar." error={faltaMotivo ? 'Indica el motivo del rechazo.' : undefined}>
+        <Campo
+          etiqueta="Mensaje"
+          ayuda="Obligatorio para rechazar."
+          error={faltaMotivo ? 'Indica el motivo del rechazo.' : undefined}
+        >
           <Textarea
             rows={4}
             placeholder="Ej.: el certificado de existencia se cargó vacío. Adjunte el documento completo en su próxima solicitud."
             value={mensaje}
-            onChange={(e) => { setMensaje(e.target.value); setFaltaMotivo(false) }}
+            onChange={(e) => {
+              setMensaje(e.target.value)
+              setFaltaMotivo(false)
+            }}
           />
         </Campo>
         <AdjuntarDocumentos archivos={archivos} onChange={setArchivos} />

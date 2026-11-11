@@ -1,6 +1,16 @@
 // Reportes del municipio: sus columnas (para la tabla y el Excel), sus filas y sus gráficas por categoría.
 import { CLASE_SERIE } from '../constants'
-import type { Barra, Declaracion, EstadoPago, FiltroAprobacion, FormatoGrafica, Impuesto, Inscripcion, Municipio, Pago } from '../types'
+import type {
+  Barra,
+  Declaracion,
+  EstadoPago,
+  FiltroAprobacion,
+  FormatoGrafica,
+  Impuesto,
+  Inscripcion,
+  Municipio,
+  Pago,
+} from '../types'
 import { hoy } from '../utils'
 import {
   etiquetaCalidad,
@@ -16,7 +26,13 @@ import {
   MESES,
   textoTipoDeclaracion,
 } from './formato'
-import { correccionVigente, esCorreccionABaja, reemplazadas as calcularReemplazadas, sePuedePagar, totalPagado } from './reglas'
+import {
+  correccionVigente,
+  esCorreccionABaja,
+  reemplazadas as calcularReemplazadas,
+  sePuedePagar,
+  totalPagado,
+} from './reglas'
 import type { SituacionAprobacion, SituacionCorreccion } from './reglas'
 import { conRit, delMunicipio, impuestosVisibles } from './sesion'
 
@@ -46,10 +62,35 @@ export interface Reporte {
 }
 
 export const REPORTES: Reporte[] = [
-  { id: 'declaraciones', pestana: 'Declaraciones', titulo: 'Declaraciones presentadas', descripcion: 'Declaraciones presentadas en el rango, con su liquidación y su pago.', porFechas: true },
-  { id: 'recaudo', pestana: 'Recaudo', titulo: 'Recaudo', descripcion: 'Pagos recibidos en el rango, uno por fila, con la declaración que pagan.', porFechas: true },
-  { id: 'cartera', pestana: 'Cartera', titulo: 'Cartera pendiente', descripcion: 'Declaraciones vigentes con saldo por pagar, al día de hoy.', porFechas: false },
-  { id: 'rit', pestana: 'RIT', titulo: 'Inscritos en el RIT', descripcion: 'Inscripciones con sus datos de contacto, calidades y actividad principal, al día de hoy.', porFechas: false },
+  {
+    id: 'declaraciones',
+    pestana: 'Declaraciones',
+    titulo: 'Declaraciones presentadas',
+    descripcion: 'Declaraciones presentadas en el rango, con su liquidación y su pago.',
+    porFechas: true,
+  },
+  {
+    id: 'recaudo',
+    pestana: 'Recaudo',
+    titulo: 'Recaudo',
+    descripcion: 'Pagos recibidos en el rango, uno por fila, con la declaración que pagan.',
+    porFechas: true,
+  },
+  {
+    id: 'cartera',
+    pestana: 'Cartera',
+    titulo: 'Cartera pendiente',
+    descripcion: 'Declaraciones vigentes con saldo por pagar, al día de hoy.',
+    porFechas: false,
+  },
+  {
+    id: 'rit',
+    pestana: 'RIT',
+    titulo: 'Inscritos en el RIT',
+    descripcion:
+      'Inscripciones con sus datos de contacto, calidades y actividad principal, al día de hoy.',
+    porFechas: false,
+  },
 ]
 
 const MUNICIPIO: Columna = { titulo: 'Municipio', ancho: 16 }
@@ -67,21 +108,59 @@ const APROBACION: Columna = { titulo: 'Aprobación', ancho: 26 }
 
 export const COLUMNAS: Record<IdReporte, Columna[]> = {
   declaraciones: [
-    MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, { titulo: 'Tipo', ancho: 30 }, CONTRIBUYENTE, DOCUMENTO,
-    { titulo: 'Presentación', ancho: 13, formato: 'fecha' }, VENCIMIENTO, TOTAL, PAGADO, ESTADO_PAGO, APROBACION,
+    MUNICIPIO,
+    RADICADO,
+    FACTURA,
+    IMPUESTO,
+    PERIODO,
+    { titulo: 'Tipo', ancho: 30 },
+    CONTRIBUYENTE,
+    DOCUMENTO,
+    { titulo: 'Presentación', ancho: 13, formato: 'fecha' },
+    VENCIMIENTO,
+    TOTAL,
+    PAGADO,
+    ESTADO_PAGO,
+    APROBACION,
   ],
   recaudo: [
-    MUNICIPIO, { titulo: 'Fecha de pago', ancho: 13, formato: 'fecha' }, RADICADO, FACTURA, IMPUESTO, PERIODO, CONTRIBUYENTE, DOCUMENTO,
-    { titulo: 'Medio de pago', ancho: 18 }, { titulo: 'Valor', ancho: 16, formato: 'pesos' },
+    MUNICIPIO,
+    { titulo: 'Fecha de pago', ancho: 13, formato: 'fecha' },
+    RADICADO,
+    FACTURA,
+    IMPUESTO,
+    PERIODO,
+    CONTRIBUYENTE,
+    DOCUMENTO,
+    { titulo: 'Medio de pago', ancho: 18 },
+    { titulo: 'Valor', ancho: 16, formato: 'pesos' },
   ],
   cartera: [
-    MUNICIPIO, RADICADO, FACTURA, IMPUESTO, PERIODO, CONTRIBUYENTE, DOCUMENTO, VENCIMIENTO, TOTAL, PAGADO,
-    { titulo: 'Saldo', ancho: 16, formato: 'pesos' }, ESTADO_PAGO,
+    MUNICIPIO,
+    RADICADO,
+    FACTURA,
+    IMPUESTO,
+    PERIODO,
+    CONTRIBUYENTE,
+    DOCUMENTO,
+    VENCIMIENTO,
+    TOTAL,
+    PAGADO,
+    { titulo: 'Saldo', ancho: 16, formato: 'pesos' },
+    ESTADO_PAGO,
   ],
   rit: [
-    MUNICIPIO, { titulo: 'N.º de RIT', ancho: 12 }, { titulo: 'Nombre o razón social', ancho: 36 }, DOCUMENTO, { titulo: 'Tipo de persona', ancho: 18 },
-    { titulo: 'Estado', ancho: 13 }, { titulo: 'Calidades', ancho: 30 }, { titulo: 'Actividad principal', ancho: 50 }, { titulo: 'Dirección', ancho: 30 },
-    { titulo: 'Teléfono', ancho: 14 }, { titulo: 'Correo', ancho: 30 },
+    MUNICIPIO,
+    { titulo: 'N.º de RIT', ancho: 12 },
+    { titulo: 'Nombre o razón social', ancho: 36 },
+    DOCUMENTO,
+    { titulo: 'Tipo de persona', ancho: 18 },
+    { titulo: 'Estado', ancho: 13 },
+    { titulo: 'Calidades', ancho: 30 },
+    { titulo: 'Actividad principal', ancho: 50 },
+    { titulo: 'Dirección', ancho: 30 },
+    { titulo: 'Teléfono', ancho: 14 },
+    { titulo: 'Correo', ancho: 30 },
   ],
 }
 
@@ -91,7 +170,12 @@ export const SIN_APROBACION = COLUMNAS.declaraciones.slice(0, -1)
 const DIA = 24 * 60 * 60 * 1000
 
 /** Cuenta o suma por categoría, en el orden de las etiquetas. */
-function agrupar<T, K extends string>(items: T[], etiquetas: Record<K, string>, clave: (item: T) => K, valor: (item: T) => number = () => 1): Barra[] {
+function agrupar<T, K extends string>(
+  items: T[],
+  etiquetas: Record<K, string>,
+  clave: (item: T) => K,
+  valor: (item: T) => number = () => 1,
+): Barra[] {
   return (Object.keys(etiquetas) as K[]).map((k) => ({
     etiqueta: etiquetas[k],
     valor: items.filter((x) => clave(x) === k).reduce((s, x) => s + valor(x), 0),
@@ -117,7 +201,11 @@ const etiquetaAntiguedad: Record<ReturnType<typeof antiguedad>, string> = {
 }
 
 /** Los estados de pago en que una declaración puede quedar con saldo. */
-const ESTADOS_CON_SALDO = { sin_pago: etiquetaEstadoPago.sin_pago, parcial: etiquetaEstadoPago.parcial, ineficaz: etiquetaEstadoPago.ineficaz }
+const ESTADOS_CON_SALDO = {
+  sin_pago: etiquetaEstadoPago.sin_pago,
+  parcial: etiquetaEstadoPago.parcial,
+  ineficaz: etiquetaEstadoPago.ineficaz,
+}
 
 interface Fuente {
   /** Las del municipio que se está viendo, solo de los impuestos activos. */
@@ -138,15 +226,34 @@ interface Fuente {
 }
 
 /** Filas y gráficas de cada reporte. Declaraciones y recaudo van por rango de fechas; cartera y RIT, al día de hoy. */
-export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]; graficas: Grafica[] }> {
-  const { declaraciones, inscripciones: todas, pagos, municipios, municipioId, desde, hasta, rangoInvalido, aprobacion, correccion, estadoDe, estadoAprobacion } = fuente
+export function armarReportes(
+  fuente: Fuente,
+): Record<IdReporte, { filas: Fila[]; graficas: Grafica[] }> {
+  const {
+    declaraciones,
+    inscripciones: todas,
+    pagos,
+    municipios,
+    municipioId,
+    desde,
+    hasta,
+    rangoInvalido,
+    aprobacion,
+    correccion,
+    estadoDe,
+    estadoAprobacion,
+  } = fuente
   const enRango = (fecha: string) => !rangoInvalido && fecha >= desde && fecha <= hasta
   const inscripciones = delMunicipio(todas, municipioId)
   const nombreMunicipio = new Map(municipios.map((m) => [m.id, m.nombre]))
   const reemplazadas = calcularReemplazadas(declaraciones, correccion)
   const declaracionPorId = new Map(declaraciones.map((d) => [d.id, d]))
   const visibles = impuestosVisibles(municipios, municipioId)
-  const porImpuesto = <T,>(items: T[], impuesto: (item: T) => Impuesto, valor: (item: T) => number = () => 1): Barra[] =>
+  const porImpuesto = <T>(
+    items: T[],
+    impuesto: (item: T) => Impuesto,
+    valor: (item: T) => number = () => 1,
+  ): Barra[] =>
     visibles.map((i) => ({
       etiqueta: etiquetaImpuesto[i],
       valor: items.filter((x) => impuesto(x) === i).reduce((s, x) => s + valor(x), 0),
@@ -155,11 +262,20 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
 
   const presentadas = declaraciones
     .filter((d) => enRango(d.fechaPresentacion))
-    .map((d) => ({ d, pagado: totalPagado(d.id, pagos), estado: estadoDe(d), a: aprobacion(d), c: correccion(d) }))
+    .map((d) => ({
+      d,
+      pagado: totalPagado(d.id, pagos),
+      estado: estadoDe(d),
+      a: aprobacion(d),
+      c: correccion(d),
+    }))
     .filter((f) => !estadoAprobacion || (f.a?.estado ?? 'no_aplica') === estadoAprobacion)
   // La corrección a la baja se nombra así y, si se radicó como solicitud, lleva su estado.
   const tipoDe = (d: Declaracion, c: SituacionCorreccion | undefined) => {
-    const texto = textoTipoDeclaracion(d.tipo, esCorreccionABaja(d, d.corrigeA ? declaracionPorId.get(d.corrigeA) : undefined))
+    const texto = textoTipoDeclaracion(
+      d.tipo,
+      esCorreccionABaja(d, d.corrigeA ? declaracionPorId.get(d.corrigeA) : undefined),
+    )
     return c ? `${texto} (solicitud ${etiquetaEstadoCorreccion[c.estado].toLowerCase()})` : texto
   }
 
@@ -173,7 +289,14 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
   const cartera = declaraciones.flatMap((d) => {
     const pagado = totalPagado(d.id, pagos)
     // Lo que aún espera la aprobación previa no se puede pagar, y la solicitud de corrección sin aceptar no se paga: no son cartera.
-    if (reemplazadas.has(d.id) || d.totalAPagar <= 0 || pagado >= d.totalAPagar || !sePuedePagar(aprobacion(d)) || !correccionVigente(correccion(d))) return []
+    if (
+      reemplazadas.has(d.id) ||
+      d.totalAPagar <= 0 ||
+      pagado >= d.totalAPagar ||
+      !sePuedePagar(aprobacion(d)) ||
+      !correccionVigente(correccion(d))
+    )
+      return []
     return [{ d, pagado, saldo: d.totalAPagar - pagado, estado: estadoDe(d) }]
   })
 
@@ -182,34 +305,80 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
   return {
     declaraciones: {
       filas: presentadas.map(({ d, pagado, estado, a, c }) => [
-        nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d),
-        tipoDe(d, c), d.contribuyente.nombre, formatoDocumento(d.contribuyente), d.fechaPresentacion, d.fechaVencimiento, d.totalAPagar,
+        nombreMunicipio.get(d.municipioId) ?? '',
+        d.numero,
+        d.numeroFactura,
+        etiquetaImpuesto[d.impuesto],
+        etiquetaPeriodo(d),
+        tipoDe(d, c),
+        d.contribuyente.nombre,
+        formatoDocumento(d.contribuyente),
+        d.fechaPresentacion,
+        d.fechaVencimiento,
+        d.totalAPagar,
         // La solicitud de corrección que no se ha aceptado no se paga.
-        pagado, correccionVigente(c) ? etiquetaEstadoPago[estado] : 'No aplica', a ? etiquetaEstadoAprobacion[a.estado] : 'No aplica',
+        pagado,
+        correccionVigente(c) ? etiquetaEstadoPago[estado] : 'No aplica',
+        a ? etiquetaEstadoAprobacion[a.estado] : 'No aplica',
       ]),
       graficas: [
-        { titulo: 'Por impuesto', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: porImpuesto(presentadas, (f) => f.d.impuesto) },
+        {
+          titulo: 'Por impuesto',
+          descripcion: 'Cantidad de declaraciones.',
+          formato: 'cantidad',
+          barras: porImpuesto(presentadas, (f) => f.d.impuesto),
+        },
         {
           titulo: 'Por estado de pago',
-          descripcion: 'Cantidad de declaraciones, sin las solicitudes de corrección que no se han aceptado.',
+          descripcion:
+            'Cantidad de declaraciones, sin las solicitudes de corrección que no se han aceptado.',
           formato: 'cantidad',
-          barras: agrupar(presentadas.filter((f) => correccionVigente(f.c)), etiquetaEstadoPago, (f) => f.estado),
+          barras: agrupar(
+            presentadas.filter((f) => correccionVigente(f.c)),
+            etiquetaEstadoPago,
+            (f) => f.estado,
+          ),
         },
-        { titulo: 'Por tipo de declaración', descripcion: 'Cantidad de declaraciones.', formato: 'cantidad', barras: agrupar(presentadas, etiquetaTipoDeclaracion, (f) => f.d.tipo) },
+        {
+          titulo: 'Por tipo de declaración',
+          descripcion: 'Cantidad de declaraciones.',
+          formato: 'cantidad',
+          barras: agrupar(presentadas, etiquetaTipoDeclaracion, (f) => f.d.tipo),
+        },
       ],
     },
     recaudo: {
       filas: recibidos.map(({ p, d }) => [
-        nombreMunicipio.get(d.municipioId) ?? '', p.fecha, d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto],
-        etiquetaPeriodo(d), d.contribuyente.nombre, formatoDocumento(d.contribuyente), p.medio, p.valor,
+        nombreMunicipio.get(d.municipioId) ?? '',
+        p.fecha,
+        d.numero,
+        d.numeroFactura,
+        etiquetaImpuesto[d.impuesto],
+        etiquetaPeriodo(d),
+        d.contribuyente.nombre,
+        formatoDocumento(d.contribuyente),
+        p.medio,
+        p.valor,
       ]),
       graficas: [
-        { titulo: 'Por impuesto', descripcion: 'Valor recaudado.', formato: 'pesos', barras: porImpuesto(recibidos, (f) => f.d.impuesto, (f) => f.p.valor) },
+        {
+          titulo: 'Por impuesto',
+          descripcion: 'Valor recaudado.',
+          formato: 'pesos',
+          barras: porImpuesto(
+            recibidos,
+            (f) => f.d.impuesto,
+            (f) => f.p.valor,
+          ),
+        },
         {
           titulo: 'Por medio de pago',
           descripcion: 'Valor recaudado.',
           formato: 'pesos',
-          barras: medios.map((m) => ({ etiqueta: m, valor: recibidos.filter((f) => f.p.medio === m).reduce((s, f) => s + f.p.valor, 0) })),
+          barras: medios.map((m) => ({
+            etiqueta: m,
+            valor: recibidos.filter((f) => f.p.medio === m).reduce((s, f) => s + f.p.valor, 0),
+          })),
         },
         {
           titulo: 'Por mes',
@@ -217,33 +386,78 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
           formato: 'pesos',
           barras: meses.map((m) => ({
             etiqueta: `${MESES[Number(m.slice(5)) - 1]} ${m.slice(0, 4)}`,
-            valor: recibidos.filter((f) => f.p.fecha.startsWith(m)).reduce((s, f) => s + f.p.valor, 0),
+            valor: recibidos
+              .filter((f) => f.p.fecha.startsWith(m))
+              .reduce((s, f) => s + f.p.valor, 0),
           })),
         },
       ],
     },
     cartera: {
       filas: cartera.map(({ d, pagado, saldo, estado }) => [
-        nombreMunicipio.get(d.municipioId) ?? '', d.numero, d.numeroFactura, etiquetaImpuesto[d.impuesto], etiquetaPeriodo(d),
-        d.contribuyente.nombre, formatoDocumento(d.contribuyente), d.fechaVencimiento, d.totalAPagar, pagado, saldo, etiquetaEstadoPago[estado],
+        nombreMunicipio.get(d.municipioId) ?? '',
+        d.numero,
+        d.numeroFactura,
+        etiquetaImpuesto[d.impuesto],
+        etiquetaPeriodo(d),
+        d.contribuyente.nombre,
+        formatoDocumento(d.contribuyente),
+        d.fechaVencimiento,
+        d.totalAPagar,
+        pagado,
+        saldo,
+        etiquetaEstadoPago[estado],
       ]),
       graficas: [
-        { titulo: 'Por impuesto', descripcion: 'Saldo por pagar.', formato: 'pesos', barras: porImpuesto(cartera, (f) => f.d.impuesto, (f) => f.saldo) },
+        {
+          titulo: 'Por impuesto',
+          descripcion: 'Saldo por pagar.',
+          formato: 'pesos',
+          barras: porImpuesto(
+            cartera,
+            (f) => f.d.impuesto,
+            (f) => f.saldo,
+          ),
+        },
         {
           titulo: 'Por estado de pago',
           descripcion: 'Saldo por pagar.',
           formato: 'pesos',
-          barras: agrupar(cartera, ESTADOS_CON_SALDO, (f) => f.estado as keyof typeof ESTADOS_CON_SALDO, (f) => f.saldo),
+          barras: agrupar(
+            cartera,
+            ESTADOS_CON_SALDO,
+            (f) => f.estado as keyof typeof ESTADOS_CON_SALDO,
+            (f) => f.saldo,
+          ),
         },
-        { titulo: 'Por antigüedad', descripcion: 'Saldo según los días desde el vencimiento.', formato: 'pesos', barras: agrupar(cartera, etiquetaAntiguedad, (f) => antiguedad(f.d.fechaVencimiento), (f) => f.saldo) },
+        {
+          titulo: 'Por antigüedad',
+          descripcion: 'Saldo según los días desde el vencimiento.',
+          formato: 'pesos',
+          barras: agrupar(
+            cartera,
+            etiquetaAntiguedad,
+            (f) => antiguedad(f.d.fechaVencimiento),
+            (f) => f.saldo,
+          ),
+        },
       ],
     },
     rit: {
       filas: inscritos.map((i) => {
         const principal = i.actividades.find((a) => a.principal)
         return [
-          nombreMunicipio.get(i.municipioId) ?? '', i.numeroRit, i.nombre, formatoDocumento(i), etiquetaTipoPersona[i.tipoPersona], etiquetaEstadoInscripcion[i.estado],
-          i.calidades.map((c) => etiquetaCalidad[c.calidad]).join(', '), principal ? `${principal.ciiu} ${principal.descripcion}` : '', i.direccion, i.telefono, i.correo,
+          nombreMunicipio.get(i.municipioId) ?? '',
+          i.numeroRit,
+          i.nombre,
+          formatoDocumento(i),
+          etiquetaTipoPersona[i.tipoPersona],
+          etiquetaEstadoInscripcion[i.estado],
+          i.calidades.map((c) => etiquetaCalidad[c.calidad]).join(', '),
+          principal ? `${principal.ciiu} ${principal.descripcion}` : '',
+          i.direccion,
+          i.telefono,
+          i.correo,
         ]
       }),
       graficas: [
@@ -256,8 +470,18 @@ export function armarReportes(fuente: Fuente): Record<IdReporte, { filas: Fila[]
             valor: inscritos.filter((i) => i.calidades.some((q) => q.calidad === c)).length,
           })),
         },
-        { titulo: 'Por estado', descripcion: 'Cantidad de inscripciones.', formato: 'cantidad', barras: agrupar(inscritos, etiquetaEstadoInscripcion, (i) => i.estado) },
-        { titulo: 'Por tipo de persona', descripcion: 'Cantidad de inscripciones.', formato: 'cantidad', barras: agrupar(inscritos, etiquetaTipoPersona, (i) => i.tipoPersona) },
+        {
+          titulo: 'Por estado',
+          descripcion: 'Cantidad de inscripciones.',
+          formato: 'cantidad',
+          barras: agrupar(inscritos, etiquetaEstadoInscripcion, (i) => i.estado),
+        },
+        {
+          titulo: 'Por tipo de persona',
+          descripcion: 'Cantidad de inscripciones.',
+          formato: 'cantidad',
+          barras: agrupar(inscritos, etiquetaTipoPersona, (i) => i.tipoPersona),
+        },
       ],
     },
   }

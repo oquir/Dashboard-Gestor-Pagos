@@ -21,7 +21,11 @@ export default function Usuarios() {
     <>
       <PageHeader
         titulo="Usuarios"
-        descripcion={usuario?.rol === '1cero1' ? 'Usuarios de todos los municipios y del equipo de 1cero1.' : 'Funcionarios y administradores de tu municipio.'}
+        descripcion={
+          usuario?.rol === '1cero1'
+            ? 'Usuarios de todos los municipios y del equipo de 1cero1.'
+            : 'Funcionarios y administradores de tu municipio.'
+        }
         acciones={
           !creando && (
             <Boton variante="primario" onClick={() => setCreando(true)}>

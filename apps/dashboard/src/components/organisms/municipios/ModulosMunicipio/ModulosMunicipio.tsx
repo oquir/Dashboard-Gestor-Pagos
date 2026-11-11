@@ -16,15 +16,22 @@ export default function ModulosMunicipio({ municipio: m, pausas }: ModulosMunici
   const [pidiendo, setPidiendo] = useState(false)
 
   return (
-    <Seccion titulo="Módulos" descripcion="Lo que el municipio tiene en el aplicativo además de sus formularios.">
+    <Seccion
+      titulo="Módulos"
+      descripcion="Lo que el municipio tiene en el aplicativo además de sus formularios."
+    >
       <div>
         <Interruptor
           etiqueta="RIT en el aplicativo"
           ayuda={`Inscripciones, actualizaciones y cancelaciones. ${textoSalidaProduccion(m.enProduccionDesde.rit)}.`}
           valor={m.rit}
-          onChange={() => (!m.rit && !m.enProduccionDesde.rit ? setPidiendo(true) : alternarRit(m.id))}
+          onChange={() =>
+            !m.rit && !m.enProduccionDesde.rit ? setPidiendo(true) : alternarRit(m.id)
+          }
         />
-        {m.rit && pausas.rit && <p className="mt-2 ml-12 text-xs text-amber-800">{textoDesactivado(pausas.rit)}</p>}
+        {m.rit && pausas.rit && (
+          <p className="mt-2 ml-12 text-xs text-amber-800">{textoDesactivado(pausas.rit)}</p>
+        )}
       </div>
       <Interruptor
         etiqueta="Carga de Asobancaria 2001"

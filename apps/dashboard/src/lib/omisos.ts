@@ -1,15 +1,30 @@
 // Omisos: inscritos en el RIT que debían declarar un periodo ya vencido y no lo hicieron (docs/Pendientes-y-decisiones.md, §3.5).
-import type { Calidad, ConfigMunicipio, Declaracion, Impuesto, Inscripcion, Municipio, Omiso, ResultadoOmisos } from '../types'
+import type {
+  Calidad,
+  ConfigMunicipio,
+  Declaracion,
+  Impuesto,
+  Inscripcion,
+  Municipio,
+  Omiso,
+  ResultadoOmisos,
+} from '../types'
 import { rangoPeriodo, vencimientoPara } from './calendario'
 
 /** La calidad del RIT que obliga a presentar cada formulario. */
-const CALIDAD_DEL_IMPUESTO: Record<Impuesto, Calidad> = { ica: 'contribuyente', reteica: 'agente_retenedor', autorretencion: 'autorretenedor' }
+const CALIDAD_DEL_IMPUESTO: Record<Impuesto, Calidad> = {
+  ica: 'contribuyente',
+  reteica: 'agente_retenedor',
+  autorretencion: 'autorretenedor',
+}
 const IMPUESTOS = Object.keys(CALIDAD_DEL_IMPUESTO) as Impuesto[]
 
 /** Fecha de cese de una inscripción cancelada; undefined si no está cancelada. */
 function fechaCese(ins: Inscripcion) {
   if (ins.estado !== 'cancelada') return undefined
-  const cancelacion = ins.novedades.findLast((n) => n.tipo === 'cancelacion' && n.estado === 'aprobada')
+  const cancelacion = ins.novedades.findLast(
+    (n) => n.tipo === 'cancelacion' && n.estado === 'aprobada',
+  )
   return cancelacion?.cancelacion?.fechaCese ?? cancelacion?.fecha
 }
 
@@ -37,7 +52,11 @@ interface Fuente {
  *   ET); la ineficaz cuenta como presentada.
  * La ReteICA de un municipio que no exige la declaración en ceros no se marca: el agente pudo no retener nada.
  */
-export function calcularOmisos({ municipios, configuraciones, inscripciones, declaraciones }: Fuente, municipioId: string | null, hoy: string): ResultadoOmisos {
+export function calcularOmisos(
+  { municipios, configuraciones, inscripciones, declaraciones }: Fuente,
+  municipioId: string | null,
+  hoy: string,
+): ResultadoOmisos {
   const omisos: Omiso[] = []
   const agentesSinCeros = new Set<string>()
   const sinCalendario: ResultadoOmisos['sinCalendario'] = []
@@ -47,16 +66,22 @@ export function calcularOmisos({ municipios, configuraciones, inscripciones, dec
   for (const d of declaraciones) {
     if (!d.inscripcionId || d.aprobacion?.estado === 'rechazada') continue
     const clave = `${d.inscripcionId}|${d.impuesto}|${d.vigencia}`
-    presentadas.set(clave, [...(presentadas.get(clave) ?? []), rangoPeriodo(d.periodicidad, d.vigencia, d.periodo)])
+    presentadas.set(clave, [
+      ...(presentadas.get(clave) ?? []),
+      rangoPeriodo(d.periodicidad, d.vigencia, d.periodo),
+    ])
   }
-  const cubierto = (clave: string, inicio: string, fin: string) => presentadas.get(clave)?.some((r) => r.inicio <= fin && inicio <= r.fin) ?? false
+  const cubierto = (clave: string, inicio: string, fin: string) =>
+    presentadas.get(clave)?.some((r) => r.inicio <= fin && inicio <= r.fin) ?? false
 
   for (const m of municipios) {
     if (!m.rit || (municipioId !== null && m.id !== municipioId)) continue
     const cfg = configuraciones.find((c) => c.municipioId === m.id)
     if (!cfg) continue
     const calendarios = cfg.calendarioTributario.porVigencia
-    const inscritos = inscripciones.filter((i) => i.municipioId === m.id && (i.estado === 'activa' || i.estado === 'cancelada'))
+    const inscritos = inscripciones.filter(
+      (i) => i.municipioId === m.id && (i.estado === 'activa' || i.estado === 'cancelada'),
+    )
 
     // Los impuestos activos con su salida a producción; sin ella, el impuesto no se revisa.
     const enProduccion = IMPUESTOS.flatMap((i) => {
@@ -66,8 +91,13 @@ export function calcularOmisos({ municipios, configuraciones, inscripciones, dec
     // Desde el año anterior al de la primera salida a producción, porque su ICA anual vence en el año siguiente, hasta el año en curso.
     const desde = enProduccion.map((x) => x.desde).sort()[0]
     if (!desde) continue
-    for (let vigencia = Number(desde.slice(0, 4)) - 1; vigencia <= Number(hoy.slice(0, 4)); vigencia++) {
-      if (!calendarios.some((c) => c.vigencia === vigencia)) sinCalendario.push({ municipioId: m.id, vigencia })
+    for (
+      let vigencia = Number(desde.slice(0, 4)) - 1;
+      vigencia <= Number(hoy.slice(0, 4));
+      vigencia++
+    ) {
+      if (!calendarios.some((c) => c.vigencia === vigencia))
+        sinCalendario.push({ municipioId: m.id, vigencia })
     }
 
     for (const cal of calendarios) {
@@ -83,19 +113,36 @@ export function calcularOmisos({ municipios, configuraciones, inscripciones, dec
             const cese = fechaCese(ins)
             if (cese && cese < inicio) continue
             const vencimiento = vencimientoPara(f, p, ins.documento)
-            if (!vencimiento || vencimiento < desdeImpuesto || vencimiento >= hoy || (pausa && vencimiento >= pausa)) continue
+            if (
+              !vencimiento ||
+              vencimiento < desdeImpuesto ||
+              vencimiento >= hoy ||
+              (pausa && vencimiento >= pausa)
+            )
+              continue
             if (cubierto(`${ins.id}|${impuesto}|${cal.vigencia}`, inicio, fin)) continue
             if (impuesto === 'reteica' && !cfg.declaracionEnCeros) {
               agentesSinCeros.add(ins.id)
               continue
             }
-            omisos.push({ inscripcion: ins, impuesto, vigencia: cal.vigencia, periodo: p.periodo, periodicidad: f.periodicidad, vencimiento })
+            omisos.push({
+              inscripcion: ins,
+              impuesto,
+              vigencia: cal.vigencia,
+              periodo: p.periodo,
+              periodicidad: f.periodicidad,
+              vencimiento,
+            })
           }
         }
       }
     }
   }
 
-  omisos.sort((a, b) => a.vencimiento.localeCompare(b.vencimiento) || a.inscripcion.nombre.localeCompare(b.inscripcion.nombre))
+  omisos.sort(
+    (a, b) =>
+      a.vencimiento.localeCompare(b.vencimiento) ||
+      a.inscripcion.nombre.localeCompare(b.inscripcion.nombre),
+  )
   return { omisos, sinCeros: agentesSinCeros.size, sinCalendario }
 }

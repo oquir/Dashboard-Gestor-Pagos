@@ -45,7 +45,8 @@ export interface Usuario {
 
 // --- RIT ---
 
-export type TipoPersona = 'natural' | 'juridica' | 'consorcio' | 'union_temporal' | 'patrimonio_autonomo'
+export type TipoPersona =
+  'natural' | 'juridica' | 'consorcio' | 'union_temporal' | 'patrimonio_autonomo'
 export type Calidad = 'contribuyente' | 'agente_retenedor' | 'autorretenedor'
 export type EstadoInscripcion = 'en_revision' | 'activa' | 'rechazada' | 'cancelada'
 export type TipoNovedad = 'inscripcion' | 'actualizacion' | 'cancelacion'
@@ -182,7 +183,17 @@ export type DatosRit = Pick<
  * cambian si después actualiza el RIT, y son lo único que se sabe de ella cuando el municipio no tiene el RIT o ella no
  * está inscrita.
  */
-export type DatosContribuyente = Pick<Inscripcion, 'tipoPersona' | 'tipoDocumento' | 'documento' | 'dv' | 'nombre' | 'direccion' | 'telefono' | 'correo'> & {
+export type DatosContribuyente = Pick<
+  Inscripcion,
+  | 'tipoPersona'
+  | 'tipoDocumento'
+  | 'documento'
+  | 'dv'
+  | 'nombre'
+  | 'direccion'
+  | 'telefono'
+  | 'correo'
+> & {
   /** Solo lo pide el formulario del ICA anual (renglón 6). */
   establecimientos?: number
 }
@@ -251,7 +262,14 @@ export type Aprobacion =
   /** La observación y los documentos le llegan al contribuyente en el correo. */
   | { estado: 'aprobada'; fecha: string; por: string; observacion?: string; documentos?: Archivo[] }
   /** Solo se rechaza por una causal del art. 580: la declaración se tiene por no presentada. */
-  | { estado: 'rechazada'; fecha: string; por: string; causal: CausalNoPresentada; observacion?: string; documentos?: Archivo[] }
+  | {
+      estado: 'rechazada'
+      fecha: string
+      por: string
+      causal: CausalNoPresentada
+      observacion?: string
+      documentos?: Archivo[]
+    }
 
 /**
  * Causales del art. 580 del Estatuto Tributario por las que la declaración se tiene por no presentada, una por literal:
@@ -261,10 +279,12 @@ export type Aprobacion =
 export type CausalNoPresentada = 'lugar' | 'identificacion' | 'bases_gravables' | 'firmas'
 
 /** Lo que decide quien resuelve la aprobación previa; la fecha y quién la resolvió se ponen al guardarla. */
-export type ResolucionAprobacion = { estado: 'aprobada' } | { estado: 'rechazada'; causal: CausalNoPresentada }
+export type ResolucionAprobacion =
+  { estado: 'aprobada' } | { estado: 'rechazada'; causal: CausalNoPresentada }
 
 /** Estado de la aprobación previa al día de hoy: vencido el plazo, queda vencida o se aprueba sola (lib/reglas). */
-export type EstadoAprobacion = 'por_aprobar' | 'vencida' | 'aprobada' | 'aprobada_automatica' | 'rechazada'
+export type EstadoAprobacion =
+  'por_aprobar' | 'vencida' | 'aprobada' | 'aprobada_automatica' | 'rechazada'
 
 /**
  * Solicitud de corrección a la baja con el trámite del art. 589 del Estatuto Tributario anterior a la Ley 1819 de 2016,
@@ -275,7 +295,13 @@ export type SolicitudCorreccion =
   /** El motivo es lo que explica el contribuyente al radicarla. */
   | { estado: 'pendiente'; motivo: string }
   /** La observación le llega al contribuyente en el correo; al rechazar es obligatoria. */
-  | { estado: 'aceptada' | 'rechazada'; motivo: string; fecha: string; por: string; observacion?: string }
+  | {
+      estado: 'aceptada' | 'rechazada'
+      motivo: string
+      fecha: string
+      por: string
+      observacion?: string
+    }
 
 /** Estado de la solicitud de corrección al día de hoy: si pasan los 6 meses sin respuesta, se acepta por silencio (lib/reglas). */
 export type EstadoCorreccion = 'por_resolver' | 'aceptada' | 'aceptada_por_silencio' | 'rechazada'
@@ -296,12 +322,20 @@ export type Emplazamiento = {
   /** Nombre de quien lo registró. */
   registradoPor: string
   fechaRegistro: string
-} & (
+} &
   /** Para declarar (art. 715): va al inscrito y al periodo omiso, porque aún no hay declaración. */
-  | { tipo: 'declarar'; inscripcionId: string; impuesto: Impuesto; vigencia: number; periodicidad: Periodicidad; periodo: number }
-  /** Para corregir (art. 685): va a la declaración vigente en la que el municipio tiene indicios de inexactitud. */
-  | { tipo: 'corregir'; declaracionId: string }
-)
+  (
+    | {
+        tipo: 'declarar'
+        inscripcionId: string
+        impuesto: Impuesto
+        vigencia: number
+        periodicidad: Periodicidad
+        periodo: number
+      }
+    /** Para corregir (art. 685): va a la declaración vigente en la que el municipio tiene indicios de inexactitud. */
+    | { tipo: 'corregir'; declaracionId: string }
+  )
 
 /** Omit que respeta cada variante de una unión. */
 type SinCampos<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : never
@@ -310,13 +344,17 @@ type SinCampos<T, K extends PropertyKey> = T extends unknown ? Omit<T, K> : neve
 export type NuevoEmplazamiento = SinCampos<Emplazamiento, 'id' | 'registradoPor' | 'fechaRegistro'>
 
 /** A quién va el emplazamiento, antes de ponerle el número del acto, la fecha de notificación y la copia. */
-export type DestinoEmplazamiento = SinCampos<NuevoEmplazamiento, 'numero' | 'fechaNotificacion' | 'copia'>
+export type DestinoEmplazamiento = SinCampos<
+  NuevoEmplazamiento,
+  'numero' | 'fechaNotificacion' | 'copia'
+>
 
 /**
  * Estado del emplazamiento al día de hoy (lib/emplazamientos). El de declarar está en plazo, vencido o declarado; el de
  * corregir, en plazo, sin respuesta o corregido.
  */
-export type EstadoEmplazamiento = 'en_plazo' | 'vencido' | 'declarado' | 'sin_respuesta' | 'corregido'
+export type EstadoEmplazamiento =
+  'en_plazo' | 'vencido' | 'declarado' | 'sin_respuesta' | 'corregido'
 
 export interface Pago {
   id: string

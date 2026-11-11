@@ -1,4 +1,9 @@
-import { etiquetaCargoContable, etiquetaTipoPersona, formatoDocumento, formatoFecha } from '../../../../lib/formato'
+import {
+  etiquetaCargoContable,
+  etiquetaTipoPersona,
+  formatoDocumento,
+  formatoFecha,
+} from '../../../../lib/formato'
 import type { DatosRit, FirmanteContable } from '../../../../types'
 import type { CampoFicha } from './types'
 
@@ -12,7 +17,12 @@ export const campos = (d: DatosRit): CampoFicha[] => [
   ['Teléfono', d.telefono],
   ['Correo', d.correo],
   ['Establecimientos en el municipio', String(d.establecimientos)],
-  ['Régimen SIMPLE', d.regimenSimple ? 'Sí: declara su ICA consolidado ante la DIAN y no se le practica ReteICA' : 'No'],
+  [
+    'Régimen SIMPLE',
+    d.regimenSimple
+      ? 'Sí: declara su ICA consolidado ante la DIAN y no se le practica ReteICA'
+      : 'No',
+  ],
 ]
 
 export const camposContador = (c: FirmanteContable | undefined): CampoFicha[] => [

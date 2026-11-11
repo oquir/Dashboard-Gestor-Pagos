@@ -41,8 +41,17 @@ export default function ModalMotivo({
         </>
       }
     >
-      <Campo etiqueta={etiqueta} error={intentado && vacio ? 'Escribe el motivo para continuar.' : undefined}>
-        <Textarea rows={3} data-autofocus placeholder={placeholder} value={motivo} onChange={(e) => setMotivo(e.target.value)} />
+      <Campo
+        etiqueta={etiqueta}
+        error={intentado && vacio ? 'Escribe el motivo para continuar.' : undefined}
+      >
+        <Textarea
+          rows={3}
+          data-autofocus
+          placeholder={placeholder}
+          value={motivo}
+          onChange={(e) => setMotivo(e.target.value)}
+        />
       </Campo>
     </Modal>
   )

@@ -32,9 +32,15 @@ export default function EncabezadoMunicipio({ municipio: m, cifras: c }: Encabez
           </Boton>
         </div>
       </div>
-      {!m.activo && <p className="mt-3 text-sm text-slate-500">Mientras esté inactivo, sus usuarios no pueden entrar al aplicativo.</p>}
+      {!m.activo && (
+        <p className="mt-3 text-sm text-slate-500">
+          Mientras esté inactivo, sus usuarios no pueden entrar al aplicativo.
+        </p>
+      )}
       <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4 sm:grid-cols-4">
-        <Cifra etiqueta="Inscripciones activas">{m.rit ? c.activas : <span className="text-sm font-normal text-slate-500">Sin RIT</span>}</Cifra>
+        <Cifra etiqueta="Inscripciones activas">
+          {m.rit ? c.activas : <span className="text-sm font-normal text-slate-500">Sin RIT</span>}
+        </Cifra>
         <Cifra etiqueta="Declaraciones">{c.declaraciones}</Cifra>
         <Cifra etiqueta="Recaudo 2026">${formatoCompacto(c.recaudo)}</Cifra>
         <Cifra etiqueta="Usuarios activos">{c.usuarios}</Cifra>

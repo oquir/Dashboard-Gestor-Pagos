@@ -27,7 +27,15 @@ import {
   useVerRecaudo,
 } from '../lib/sesion'
 import { useDatos } from '../store'
-import type { Barra, Declaracion, FilaCartera, FilaCheque, FilaPago, FilaSinConsignar, Municipio } from '../types'
+import type {
+  Barra,
+  Declaracion,
+  FilaCartera,
+  FilaCheque,
+  FilaPago,
+  FilaSinConsignar,
+  Municipio,
+} from '../types'
 
 export default function Pagos() {
   const declaraciones = useDeclaraciones()
@@ -51,7 +59,12 @@ export default function Pagos() {
 
     const cartera: FilaCartera[] = declaraciones
       .filter((d) => !fuera.has(d.id) && correccionVigente(correccion(d)))
-      .map((d) => ({ d, estado: estadoDe(d), pagado: totalPagado(d.id, pagos), nombre: d.contribuyente.nombre }))
+      .map((d) => ({
+        d,
+        estado: estadoDe(d),
+        pagado: totalPagado(d.id, pagos),
+        nombre: d.contribuyente.nombre,
+      }))
       .filter((f) => f.estado === 'parcial' || f.estado === 'sin_pago' || f.estado === 'ineficaz')
 
     const recibidos: FilaPago[] = pagos.flatMap((p) => {
@@ -64,15 +77,22 @@ export default function Pagos() {
       return d && c.estado === 'en_canje' ? [{ c, d, nombre: d.contribuyente.nombre }] : []
     })
 
-    const sinConsignar: FilaSinConsignar[] = retenciones.map((r) => ({ ...r, nombre: r.d.contribuyente.nombre }))
+    const sinConsignar: FilaSinConsignar[] = retenciones.map((r) => ({
+      ...r,
+      nombre: r.d.contribuyente.nombre,
+    }))
     return {
       cartera,
       recibidos,
       enCanje,
       sinConsignar,
       vencidas: retenciones.filter((r) => r.dias < 0).length,
-      recaudo2026: recibidos.filter((r) => r.p.fecha.startsWith('2026')).reduce((s, r) => s + r.p.valor, 0),
-      saldoIca: cartera.filter((f) => f.d.impuesto === 'ica').reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0),
+      recaudo2026: recibidos
+        .filter((r) => r.p.fecha.startsWith('2026'))
+        .reduce((s, r) => s + r.p.valor, 0),
+      saldoIca: cartera
+        .filter((f) => f.d.impuesto === 'ica')
+        .reduce((s, f) => s + f.d.totalAPagar - f.pagado, 0),
       saldoSinConsignar: retenciones.reduce((s, r) => s + r.saldo, 0),
     }
   }, [declaraciones, pagos, cheques, estadoDe, correccion, retenciones])
@@ -87,9 +107,17 @@ export default function Pagos() {
 
       <div className={`grid gap-4 ${verRecaudo ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
         {verRecaudo && (
-          <StatTile etiqueta="Recaudado en 2026" valor={`$${formatoCompacto(datos.recaudo2026)}`} detalle={`${datos.recibidos.length} pagos registrados`} />
+          <StatTile
+            etiqueta="Recaudado en 2026"
+            valor={`$${formatoCompacto(datos.recaudo2026)}`}
+            detalle={`${datos.recibidos.length} pagos registrados`}
+          />
         )}
-        <StatTile etiqueta="Saldo pendiente de ICA anual" valor={`$${formatoCompacto(datos.saldoIca)}`} detalle="Pagos parciales y declaraciones sin pago" />
+        <StatTile
+          etiqueta="Saldo pendiente de ICA anual"
+          valor={`$${formatoCompacto(datos.saldoIca)}`}
+          detalle="Pagos parciales y declaraciones sin pago"
+        />
         <StatTile
           etiqueta="Retenciones sin consignar"
           valor={String(datos.sinConsignar.length)}
@@ -100,7 +128,9 @@ export default function Pagos() {
               <>
                 ${formatoCompacto(datos.saldoSinConsignar)} ·{' '}
                 {datos.vencidas > 0 ? (
-                  <span className="text-red-700">{datos.vencidas === 1 ? '1 pasó' : `${datos.vencidas} pasaron`} los 2 meses</span>
+                  <span className="text-red-700">
+                    {datos.vencidas === 1 ? '1 pasó' : `${datos.vencidas} pasaron`} los 2 meses
+                  </span>
                 ) : (
                   'dentro del plazo'
                 )}
@@ -113,7 +143,10 @@ export default function Pagos() {
       {todos ? (
         <>
           <div className="mt-6">
-            <Aviso tono="info">Elige un municipio arriba para ver el detalle de sus pagos, su cartera, sus retenciones y sus cheques, y para cargar o descargar el Asobancaria.</Aviso>
+            <Aviso tono="info">
+              Elige un municipio arriba para ver el detalle de sus pagos, su cartera, sus
+              retenciones y sus cheques, y para cargar o descargar el Asobancaria.
+            </Aviso>
           </div>
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             <GraficoBarras
@@ -154,7 +187,9 @@ export default function Pagos() {
                 descripcion="Valor de los cheques de gerencia que esperan la respuesta del banco."
                 formato="pesos"
                 barras={barrasPorMunicipio(
-                  municipios.filter((m) => recibeCheques(m) || datos.enCanje.some((f) => f.d.municipioId === m.id)),
+                  municipios.filter(
+                    (m) => recibeCheques(m) || datos.enCanje.some((f) => f.d.municipioId === m.id),
+                  ),
                   datos.enCanje,
                   (f) => f.c.valor,
                 )}
@@ -178,7 +213,10 @@ export default function Pagos() {
           <div className="mt-6 space-y-6">
             {/* Si 1cero1 quita los cheques, los que quedaron en canje se siguen resolviendo. */}
             {(chequesVisibles(municipios, municipioId) || datos.enCanje.length > 0) && (
-              <ChequesEnCanje cheques={datos.enCanje} puedeResolver={puede(usuario?.rol, 'registrarPagoVentanilla')} />
+              <ChequesEnCanje
+                cheques={datos.enCanje}
+                puedeResolver={puede(usuario?.rol, 'registrarPagoVentanilla')}
+              />
             )}
             <TablaCartera cartera={datos.cartera} />
             <TablaPagosRecibidos pagos={datos.recibidos} />
@@ -190,8 +228,15 @@ export default function Pagos() {
 }
 
 /** Una barra por municipio con la suma de sus filas, de mayor a menor. */
-function barrasPorMunicipio<T extends { d: Declaracion }>(municipios: Municipio[], filas: T[], valor: (f: T) => number): Barra[] {
+function barrasPorMunicipio<T extends { d: Declaracion }>(
+  municipios: Municipio[],
+  filas: T[],
+  valor: (f: T) => number,
+): Barra[] {
   return municipios
-    .map((m) => ({ etiqueta: m.nombre, valor: filas.filter((f) => f.d.municipioId === m.id).reduce((s, f) => s + valor(f), 0) }))
+    .map((m) => ({
+      etiqueta: m.nombre,
+      valor: filas.filter((f) => f.d.municipioId === m.id).reduce((s, f) => s + valor(f), 0),
+    }))
     .sort((a, b) => b.valor - a.valor)
 }

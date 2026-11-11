@@ -1,5 +1,11 @@
 // Emplazamientos para declarar y para corregir (docs/Pendientes-y-decisiones.md, §3.13).
-import type { Declaracion, Emplazamiento, EstadoEmplazamiento, NuevoEmplazamiento, Omiso } from '../types'
+import type {
+  Declaracion,
+  Emplazamiento,
+  EstadoEmplazamiento,
+  NuevoEmplazamiento,
+  Omiso,
+} from '../types'
 import { rangoPeriodo } from './calendario'
 import { formatoFecha } from './formato'
 import { plazoEnMeses } from './reglas'
@@ -10,7 +16,8 @@ type ParaDeclarar = Extract<Emplazamiento, { tipo: 'declarar' }>
 export const MESES_EMPLAZAMIENTO = 1
 
 /** Último día para declarar o corregir: si cae en fin de semana, el día hábil siguiente (sin festivos). */
-export const limiteEmplazamiento = (e: Emplazamiento) => plazoEnMeses(e.fechaNotificacion, MESES_EMPLAZAMIENTO)
+export const limiteEmplazamiento = (e: Emplazamiento) =>
+  plazoEnMeses(e.fechaNotificacion, MESES_EMPLAZAMIENTO)
 
 export interface SituacionEmplazamiento {
   estado: EstadoEmplazamiento
@@ -21,7 +28,13 @@ export interface SituacionEmplazamiento {
 
 /** Si la declaración es del inscrito, del formulario y del periodo emplazados: se cruza por fechas, como los omisos. */
 function esDelPeriodo(d: Declaracion, e: ParaDeclarar) {
-  if (d.tipo === 'correccion' || d.inscripcionId !== e.inscripcionId || d.impuesto !== e.impuesto || d.vigencia !== e.vigencia) return false
+  if (
+    d.tipo === 'correccion' ||
+    d.inscripcionId !== e.inscripcionId ||
+    d.impuesto !== e.impuesto ||
+    d.vigencia !== e.vigencia
+  )
+    return false
   // La rechazada en la aprobación previa se tiene por no presentada (art. 580).
   if (d.aprobacion?.estado === 'rechazada') return false
   const de = rangoPeriodo(d.periodicidad, d.vigencia, d.periodo)
@@ -32,7 +45,12 @@ function esDelPeriodo(d: Declaracion, e: ParaDeclarar) {
 /** La declaración y las que la corrigieron después, una sobre otra. */
 function cadena(d: Declaracion, declaraciones: Declaracion[]) {
   const ids = new Set<string>()
-  for (let x: Declaracion | undefined = d; x && !ids.has(x.id); x = declaraciones.find((y) => y.id === x!.corrigeA)) ids.add(x.id)
+  for (
+    let x: Declaracion | undefined = d;
+    x && !ids.has(x.id);
+    x = declaraciones.find((y) => y.id === x!.corrigeA)
+  )
+    ids.add(x.id)
   return ids
 }
 
@@ -44,7 +62,12 @@ function respuestaA(e: Emplazamiento, declaraciones: Declaracion[]) {
   const candidatas =
     e.tipo === 'declarar'
       ? declaraciones.filter((d) => esDelPeriodo(d, e))
-      : declaraciones.filter((d) => d.tipo === 'correccion' && cadena(d, declaraciones).has(e.declaracionId) && d.id !== e.declaracionId)
+      : declaraciones.filter(
+          (d) =>
+            d.tipo === 'correccion' &&
+            cadena(d, declaraciones).has(e.declaracionId) &&
+            d.id !== e.declaracionId,
+        )
   return candidatas
     .filter((d) => d.fechaPresentacion >= e.fechaNotificacion)
     .sort((a, b) => a.fechaPresentacion.localeCompare(b.fechaPresentacion))[0]
@@ -55,16 +78,22 @@ function respuestaA(e: Emplazamiento, declaraciones: Declaracion[]) {
  * Si no, sigue en plazo hasta el límite; después, el de declarar queda vencido (siguen la sanción por no declarar y el
  * aforo) y el de corregir, sin respuesta (no genera sanción, art. 685).
  */
-export function situacionEmplazamiento(e: Emplazamiento, declaraciones: Declaracion[], hoy: string): SituacionEmplazamiento {
+export function situacionEmplazamiento(
+  e: Emplazamiento,
+  declaraciones: Declaracion[],
+  hoy: string,
+): SituacionEmplazamiento {
   const limite = limiteEmplazamiento(e)
   const respuesta = respuestaA(e, declaraciones)
-  if (respuesta) return { estado: e.tipo === 'declarar' ? 'declarado' : 'corregido', limite, respuesta }
+  if (respuesta)
+    return { estado: e.tipo === 'declarar' ? 'declarado' : 'corregido', limite, respuesta }
   if (hoy <= limite) return { estado: 'en_plazo', limite }
   return { estado: e.tipo === 'declarar' ? 'vencido' : 'sin_respuesta', limite }
 }
 
 /** Solo se quita mientras nadie lo ha respondido: si no, la sanción de la respuesta quedaría sin explicación. */
-export const sePuedeQuitar = (e: Emplazamiento, declaraciones: Declaracion[]) => !respuestaA(e, declaraciones)
+export const sePuedeQuitar = (e: Emplazamiento, declaraciones: Declaracion[]) =>
+  !respuestaA(e, declaraciones)
 
 /** El emplazamiento para declarar de un omiso. */
 export const emplazamientoDelOmiso = (o: Omiso, emplazamientos: Emplazamiento[]) =>
@@ -87,16 +116,27 @@ export const emplazamientosParaCorregir = (d: Declaracion, emplazamientos: Empla
  * declarar de su periodo, si es inicial (art. 642), o el de corregir de la declaración que corrige o de una anterior, si
  * es una corrección (art. 644, numeral 2).
  */
-export function emplazamientoPrevio(d: Declaracion, declaraciones: Declaracion[], emplazamientos: Emplazamiento[]) {
+export function emplazamientoPrevio(
+  d: Declaracion,
+  declaraciones: Declaracion[],
+  emplazamientos: Emplazamiento[],
+) {
   const anteriores = d.tipo === 'correccion' ? cadena(d, declaraciones) : undefined
   return emplazamientos
     .filter((e) => e.fechaNotificacion <= d.fechaPresentacion)
-    .filter((e) => (e.tipo === 'declarar' ? esDelPeriodo(d, e) : anteriores !== undefined && e.declaracionId !== d.id && anteriores.has(e.declaracionId)))
+    .filter((e) =>
+      e.tipo === 'declarar'
+        ? esDelPeriodo(d, e)
+        : anteriores !== undefined && e.declaracionId !== d.id && anteriores.has(e.declaracionId),
+    )
     .sort((a, b) => a.fechaNotificacion.localeCompare(b.fechaNotificacion))[0]
 }
 
 /** Qué pasa con el emplazamiento y qué sigue, según su estado. */
-export function textoSituacion(e: Emplazamiento, { estado, limite, respuesta }: SituacionEmplazamiento) {
+export function textoSituacion(
+  e: Emplazamiento,
+  { estado, limite, respuesta }: SituacionEmplazamiento,
+) {
   const hasta = formatoFecha(limite)
   if (respuesta) {
     const cuando = respuesta.fechaPresentacion <= limite ? 'dentro del plazo' : 'después del plazo'
@@ -116,12 +156,33 @@ export function textoSituacion(e: Emplazamiento, { estado, limite, respuesta }: 
 
 /** Cómo queda un emplazamiento en la bitácora: lo que manda la pantalla; de la copia, el back guarda el nombre. */
 export function datosEnviados(e: NuevoEmplazamiento) {
-  const comunes = { tipo: e.tipo, municipioId: e.municipioId, numero: e.numero, fechaNotificacion: e.fechaNotificacion, copia: e.copia?.nombre ?? null }
+  const comunes = {
+    tipo: e.tipo,
+    municipioId: e.municipioId,
+    numero: e.numero,
+    fechaNotificacion: e.fechaNotificacion,
+    copia: e.copia?.nombre ?? null,
+  }
   return e.tipo === 'declarar'
-    ? { ...comunes, inscripcionId: e.inscripcionId, impuesto: e.impuesto, vigencia: e.vigencia, periodicidad: e.periodicidad, periodo: e.periodo }
+    ? {
+        ...comunes,
+        inscripcionId: e.inscripcionId,
+        impuesto: e.impuesto,
+        vigencia: e.vigencia,
+        periodicidad: e.periodicidad,
+        periodo: e.periodo,
+      }
     : { ...comunes, declaracionId: e.declaracionId }
 }
 
 /** Otro emplazamiento del municipio ya tiene ese número de acto. */
-export const numeroRepetido = (numero: string, municipioId: string, emplazamientos: Emplazamiento[]) =>
-  emplazamientos.some((e) => e.municipioId === municipioId && e.numero.trim().toLowerCase() === numero.trim().toLowerCase())
+export const numeroRepetido = (
+  numero: string,
+  municipioId: string,
+  emplazamientos: Emplazamiento[],
+) =>
+  emplazamientos.some(
+    (e) =>
+      e.municipioId === municipioId &&
+      e.numero.trim().toLowerCase() === numero.trim().toLowerCase(),
+  )

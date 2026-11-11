@@ -8,7 +8,14 @@ import { useDatos } from '../../../../store'
 import type { CausalNoPresentada, ResolucionAprobacion } from '../../../../types'
 import { hoy } from '../../../../utils'
 import { Badge, Boton, Card, Select, Textarea } from '../../../atoms'
-import { AdjuntarDocumentos, Aviso, Campo, CardHeader, Dato, DocumentosEnviados } from '../../../molecules'
+import {
+  AdjuntarDocumentos,
+  Aviso,
+  Campo,
+  CardHeader,
+  Dato,
+  DocumentosEnviados,
+} from '../../../molecules'
 import { CAUSALES } from './constants'
 import type { AprobacionPreviaProps } from './types'
 import { textoMedios, textoQueHacer } from './utils'
@@ -17,7 +24,13 @@ import { textoMedios, textoQueHacer } from './utils'
  * Visto bueno del municipio antes del pago. Solo se rechaza por una causal del art. 580 del Estatuto Tributario, con un
  * comentario y documentos opcionales. Al resolverla, al contribuyente le llega un correo.
  */
-export default function AprobacionPrevia({ d, situacion, correo, puedeResolver, ventanilla }: AprobacionPreviaProps) {
+export default function AprobacionPrevia({
+  d,
+  situacion,
+  correo,
+  puedeResolver,
+  ventanilla,
+}: AprobacionPreviaProps) {
   const resolverAprobacion = useDatos((s) => s.resolverAprobacion)
   const [causal, setCausal] = useState<CausalNoPresentada | ''>('')
   const [faltaCausal, setFaltaCausal] = useState(false)
@@ -50,7 +63,11 @@ export default function AprobacionPrevia({ d, situacion, correo, puedeResolver, 
       <CardHeader
         titulo="Aprobación previa"
         descripcion="El contribuyente paga cuando el municipio aprueba la declaración."
-        acciones={<Badge tono={tonoAprobacion[situacion.estado]}>{etiquetaEstadoAprobacion[situacion.estado]}</Badge>}
+        acciones={
+          <Badge tono={tonoAprobacion[situacion.estado]}>
+            {etiquetaEstadoAprobacion[situacion.estado]}
+          </Badge>
+        }
       />
       <div className="space-y-4 p-5">
         <dl className="grid grid-cols-2 gap-4">
@@ -58,15 +75,26 @@ export default function AprobacionPrevia({ d, situacion, correo, puedeResolver, 
           <Dato etiqueta="Plazo para aprobar">
             {formatoFecha(situacion.limite)}
             {pendiente && (
-              <span className={`block text-xs ${dias < 0 ? 'font-medium text-red-700' : 'text-slate-500'}`}>
-                {dias > 1 ? `Quedan ${dias} días hábiles` : dias === 1 ? 'Queda 1 día hábil' : dias === 0 ? 'Vence hoy' : 'Vencido'}
+              <span
+                className={`block text-xs ${dias < 0 ? 'font-medium text-red-700' : 'text-slate-500'}`}
+              >
+                {dias > 1
+                  ? `Quedan ${dias} días hábiles`
+                  : dias === 1
+                    ? 'Queda 1 día hábil'
+                    : dias === 0
+                      ? 'Vence hoy'
+                      : 'Vencido'}
               </span>
             )}
           </Dato>
         </dl>
         <p className="text-xs text-slate-500">
-          Descuento, sanciones e intereses se liquidan con la fecha de radicación, aunque la aprobación llegue después
-          {descuento > 0 ? `: conserva el descuento por pronto pago de ${formatoPesos(descuento)}.` : '.'}
+          Descuento, sanciones e intereses se liquidan con la fecha de radicación, aunque la
+          aprobación llegue después
+          {descuento > 0
+            ? `: conserva el descuento por pronto pago de ${formatoPesos(descuento)}.`
+            : '.'}
         </p>
 
         {pendiente && puedeResolver && (
@@ -80,7 +108,13 @@ export default function AprobacionPrevia({ d, situacion, correo, puedeResolver, 
               }
               error={faltaCausal ? 'Escoge la causal del rechazo.' : undefined}
             >
-              <Select value={causal} onChange={(e) => { setCausal(e.target.value as CausalNoPresentada | ''); setFaltaCausal(false) }}>
+              <Select
+                value={causal}
+                onChange={(e) => {
+                  setCausal(e.target.value as CausalNoPresentada | '')
+                  setFaltaCausal(false)
+                }}
+              >
                 <option value="">Ninguna</option>
                 {(Object.keys(CAUSALES) as CausalNoPresentada[]).map((valor) => (
                   <option key={valor} value={valor}>
@@ -89,7 +123,10 @@ export default function AprobacionPrevia({ d, situacion, correo, puedeResolver, 
                 ))}
               </Select>
             </Campo>
-            <Campo etiqueta="Comentario" ayuda="Opcional. Le llega al contribuyente en el correo, con los documentos.">
+            <Campo
+              etiqueta="Comentario"
+              ayuda="Opcional. Le llega al contribuyente en el correo, con los documentos."
+            >
               <Textarea
                 rows={3}
                 placeholder="Ej.: falta la firma del revisor fiscal; la sociedad está obligada a tenerlo."
@@ -99,7 +136,11 @@ export default function AprobacionPrevia({ d, situacion, correo, puedeResolver, 
             </Campo>
             <AdjuntarDocumentos archivos={archivos} onChange={setArchivos} />
             <div className="flex flex-wrap gap-2">
-              <Boton variante="primario" disabled={enviando} onClick={() => resolver({ estado: 'aprobada' })}>
+              <Boton
+                variante="primario"
+                disabled={enviando}
+                onClick={() => resolver({ estado: 'aprobada' })}
+              >
                 <TickCircle className="size-4" aria-hidden /> Aprobar
               </Boton>
               <Boton variante="peligro" disabled={enviando} onClick={rechazar}>
@@ -108,7 +149,9 @@ export default function AprobacionPrevia({ d, situacion, correo, puedeResolver, 
             </div>
           </div>
         )}
-        {pendiente && !puedeResolver && <p className="text-sm text-slate-600">La aprobación la da la administración municipal.</p>}
+        {pendiente && !puedeResolver && (
+          <p className="text-sm text-slate-600">La aprobación la da la administración municipal.</p>
+        )}
 
         {situacion.reciboHasta && (
           <Aviso tono="exito" icono={Envelope}>
@@ -128,8 +171,10 @@ export default function AprobacionPrevia({ d, situacion, correo, puedeResolver, 
           <Aviso tono="peligro" icono={Envelope}>
             <p className="font-medium">Se envió un correo a {correo}</p>
             <p className="mt-1">
-              Rechazada por {situacion.por} el {formatoFecha(situacion.fecha!)}. Causal: literal {CAUSALES[causalRechazo].literal}) del art. 580,{' '}
-              {CAUSALES[causalRechazo].etiqueta.toLowerCase()}. {CAUSALES[causalRechazo].descripcion} La declaración se tiene por no presentada.{' '}
+              Rechazada por {situacion.por} el {formatoFecha(situacion.fecha!)}. Causal: literal{' '}
+              {CAUSALES[causalRechazo].literal}) del art. 580,{' '}
+              {CAUSALES[causalRechazo].etiqueta.toLowerCase()}.{' '}
+              {CAUSALES[causalRechazo].descripcion} La declaración se tiene por no presentada.{' '}
               {textoQueHacer(causalRechazo)}
             </p>
             {situacion.observacion && <p className="mt-1">Comentario: {situacion.observacion}</p>}

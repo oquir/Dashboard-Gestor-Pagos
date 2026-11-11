@@ -18,7 +18,9 @@ export default function Layout() {
       <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
         <Marca />
         <Navegacion />
-        <p className="border-t border-slate-100 px-5 py-4 text-xs text-slate-400">Demo con datos simulados · sin API</p>
+        <p className="border-t border-slate-100 px-5 py-4 text-xs text-slate-400">
+          Demo con datos simulados · sin API
+        </p>
       </aside>
 
       {menuAbierto && (
@@ -27,7 +29,11 @@ export default function Layout() {
           <aside className="relative flex h-full w-72 flex-col bg-white shadow-xl">
             <div className="flex items-center justify-between pr-3">
               <Marca />
-              <Boton variante="fantasma" aria-label="Cerrar menú" onClick={() => setMenuAbierto(false)}>
+              <Boton
+                variante="fantasma"
+                aria-label="Cerrar menú"
+                onClick={() => setMenuAbierto(false)}
+              >
                 <Xmark className="size-5" />
               </Boton>
             </div>

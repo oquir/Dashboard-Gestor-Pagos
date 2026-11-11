@@ -9,7 +9,13 @@ import type { GraficoRecaudoProps, SegmentoActivo } from './types'
 import { columnasTabla, maximoRedondo } from './utils'
 
 /** Columnas apiladas: recaudo por periodo, una serie por impuesto. */
-export default function GraficoRecaudo({ titulo, descripcion, filas, impuestos = TODOS, controles }: GraficoRecaudoProps) {
+export default function GraficoRecaudo({
+  titulo,
+  descripcion,
+  filas,
+  impuestos = TODOS,
+  controles,
+}: GraficoRecaudoProps) {
   const series = useMemo(() => SERIES.filter((s) => impuestos.includes(s.impuesto)), [impuestos])
   const columnas = useMemo(() => columnasTabla(series), [series])
   const [verTabla, setVerTabla] = useState(false)
@@ -47,9 +53,16 @@ export default function GraficoRecaudo({ titulo, descripcion, filas, impuestos =
           </div>
         ) : (
           <div className="flex gap-3">
-            <div className="relative w-14 shrink-0 text-right text-xs tabular-nums text-slate-400" style={{ height: ALTO }}>
+            <div
+              className="relative w-14 shrink-0 text-right text-xs tabular-nums text-slate-400"
+              style={{ height: ALTO }}
+            >
               {marcas.map((m, i) => (
-                <span key={m} className="absolute right-0 -translate-y-1/2" style={{ top: (i * ALTO) / 2 }}>
+                <span
+                  key={m}
+                  className="absolute right-0 -translate-y-1/2"
+                  style={{ top: (i * ALTO) / 2 }}
+                >
                   {formatoCompacto(m)}
                 </span>
               ))}
@@ -57,15 +70,24 @@ export default function GraficoRecaudo({ titulo, descripcion, filas, impuestos =
             <div className="min-w-0 flex-1">
               <div className="relative" style={{ height: ALTO }}>
                 {marcas.map((m, i) => (
-                  <div key={m} className={`absolute inset-x-0 h-px ${i === 2 ? 'bg-slate-300' : 'bg-slate-100'}`} style={{ top: (i * ALTO) / 2 }} />
+                  <div
+                    key={m}
+                    className={`absolute inset-x-0 h-px ${i === 2 ? 'bg-slate-300' : 'bg-slate-100'}`}
+                    style={{ top: (i * ALTO) / 2 }}
+                  />
                 ))}
                 <div className="absolute inset-0 flex items-end justify-around">
                   {filas.map((f, i) => (
-                    <div key={f.etiqueta} className="relative flex h-full min-w-0 max-w-14 flex-1 flex-col-reverse items-center gap-[2px] px-0.5">
+                    <div
+                      key={f.etiqueta}
+                      className="relative flex h-full min-w-0 max-w-14 flex-1 flex-col-reverse items-center gap-[2px] px-0.5"
+                    >
                       {series.map(({ impuesto, clase }, s) => {
                         const valor = f.valores[impuesto]
                         if (valor <= 0) return null
-                        const esUltimo = series.slice(s + 1).every((o) => f.valores[o.impuesto] <= 0)
+                        const esUltimo = series
+                          .slice(s + 1)
+                          .every((o) => f.valores[o.impuesto] <= 0)
                         const esActivo = activo?.fila === i && activo.impuesto === impuesto
                         return (
                           <div
@@ -91,10 +113,14 @@ export default function GraficoRecaudo({ titulo, descripcion, filas, impuestos =
                           {series.map(({ impuesto, clase }) => (
                             <div key={impuesto} className="mt-1 flex items-center gap-2">
                               <span className={`h-0.5 w-3 ${clase}`} aria-hidden />
-                              <span className={`text-sm ${activo.impuesto === impuesto ? 'font-semibold text-slate-900' : 'text-slate-700'}`}>
+                              <span
+                                className={`text-sm ${activo.impuesto === impuesto ? 'font-semibold text-slate-900' : 'text-slate-700'}`}
+                              >
                                 {formatoPesos(f.valores[impuesto])}
                               </span>
-                              <span className="ml-auto text-xs text-slate-500">{etiquetaImpuesto[impuesto]}</span>
+                              <span className="ml-auto text-xs text-slate-500">
+                                {etiquetaImpuesto[impuesto]}
+                              </span>
                             </div>
                           ))}
                         </div>
@@ -105,7 +131,9 @@ export default function GraficoRecaudo({ titulo, descripcion, filas, impuestos =
               </div>
               <div className="mt-2 flex justify-around text-xs text-slate-500">
                 {filas.map((f) => (
-                  <span key={f.etiqueta} className="min-w-0 max-w-14 flex-1 text-center">{f.etiqueta}</span>
+                  <span key={f.etiqueta} className="min-w-0 max-w-14 flex-1 text-center">
+                    {f.etiqueta}
+                  </span>
                 ))}
               </div>
             </div>

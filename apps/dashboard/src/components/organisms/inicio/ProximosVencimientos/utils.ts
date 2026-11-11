@@ -10,7 +10,12 @@ import { CUANTOS, DIAS_VENCIDO } from './constants'
  * Vencimientos más cercanos de los formularios activos del municipio (o de todos, si no hay uno elegido):
  * los que vienen y los que vencieron hace poco, del más cercano al más lejano.
  */
-export function vencimientosProximos(configuraciones: ConfigMunicipio[], municipios: Municipio[], municipioId: string | null, hoy: string) {
+export function vencimientosProximos(
+  configuraciones: ConfigMunicipio[],
+  municipios: Municipio[],
+  municipioId: string | null,
+  hoy: string,
+) {
   const lista: VencimientoProximo[] = []
   for (const cfg of configuraciones) {
     if (municipioId && cfg.municipioId !== municipioId) continue
@@ -24,7 +29,12 @@ export function vencimientosProximos(configuraciones: ConfigMunicipio[], municip
           lista.push({
             id: `${cfg.municipioId}-${cal.vigencia}-${impuesto}-${p.periodo}`,
             impuesto: etiquetaImpuesto[impuesto],
-            periodoTexto: etiquetaPeriodo({ impuesto, periodicidad: f.periodicidad, vigencia: cal.vigencia, periodo: p.periodo }),
+            periodoTexto: etiquetaPeriodo({
+              impuesto,
+              periodicidad: f.periodicidad,
+              vigencia: cal.vigencia,
+              periodo: p.periodo,
+            }),
             fecha: rango.desde,
             hasta: rango.hasta !== rango.desde ? rango.hasta : undefined,
             decreto: cal.decreto,

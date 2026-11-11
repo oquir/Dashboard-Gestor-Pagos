@@ -1,7 +1,12 @@
 import type { IndicadorSeleccionableProps } from './types'
 
 /** Indicador que también filtra: al elegirlo, el listado muestra solo lo que cuenta. */
-export default function IndicadorSeleccionable({ etiqueta, valor, activo, onClick }: IndicadorSeleccionableProps) {
+export default function IndicadorSeleccionable({
+  etiqueta,
+  valor,
+  activo,
+  onClick,
+}: IndicadorSeleccionableProps) {
   return (
     <button
       type="button"

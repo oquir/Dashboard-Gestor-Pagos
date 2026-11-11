@@ -2,14 +2,27 @@
 import { DIGITOS } from '../constants'
 import { nombreCompleto } from '../lib/formato'
 import { SANCIONES_LEY } from '../lib/reglas'
-import type { ActividadesVigencia, ConfigMunicipio, Municipio, Periodicidad, Sector, Tarifa, Usuario, VencimientosFormulario } from '../types'
+import type {
+  ActividadesVigencia,
+  ConfigMunicipio,
+  Municipio,
+  Periodicidad,
+  Sector,
+  Tarifa,
+  Usuario,
+  VencimientosFormulario,
+} from '../types'
 
 /** Los formularios activos de la demo salieron a producción el mismo día; los que nunca se han activado no tienen fecha. */
 const PRODUCCION = '2026-02-01'
 
 export const MUNICIPIOS: Municipio[] = [
   {
-    id: 'm1', nombre: 'Villeta', departamento: 'Cundinamarca', codigoDane: '25875', activo: true,
+    id: 'm1',
+    nombre: 'Villeta',
+    departamento: 'Cundinamarca',
+    codigoDane: '25875',
+    activo: true,
     enProduccionDesde: { rit: PRODUCCION, ica: PRODUCCION },
     impuestos: { ica: true, reteica: false, autorretencion: false },
     rit: true,
@@ -20,7 +33,11 @@ export const MUNICIPIOS: Municipio[] = [
     pagoCheque: { ica: true, reteica: false, autorretencion: false },
   },
   {
-    id: 'm2', nombre: 'Ricaurte', departamento: 'Cundinamarca', codigoDane: '25612', activo: true,
+    id: 'm2',
+    nombre: 'Ricaurte',
+    departamento: 'Cundinamarca',
+    codigoDane: '25612',
+    activo: true,
     enProduccionDesde: { rit: PRODUCCION, ica: PRODUCCION, reteica: PRODUCCION },
     impuestos: { ica: true, reteica: true, autorretencion: false },
     rit: true,
@@ -32,7 +49,11 @@ export const MUNICIPIOS: Municipio[] = [
     pagoCheque: { ica: false, reteica: false, autorretencion: false },
   },
   {
-    id: 'm3', nombre: 'Garzón', departamento: 'Huila', codigoDane: '41298', activo: true,
+    id: 'm3',
+    nombre: 'Garzón',
+    departamento: 'Huila',
+    codigoDane: '41298',
+    activo: true,
     enProduccionDesde: { ica: PRODUCCION, reteica: PRODUCCION, autorretencion: PRODUCCION },
     impuestos: { ica: true, reteica: true, autorretencion: true },
     // No lleva el RIT en ningún sistema: de sus contribuyentes solo se sabe lo que escriben en las declaraciones.
@@ -46,21 +67,101 @@ export const MUNICIPIOS: Municipio[] = [
 ]
 
 export const USUARIOS: Usuario[] = [
-  { id: 'u1', nombres: 'Laura', apellidos: 'Méndez', cargo: 'Líder de implementación', correo: 'laura.mendez@1cero1.demo', rol: '1cero1', municipioId: null, activo: true },
-  { id: 'u2', nombres: 'Carlos', apellidos: 'Restrepo', cargo: 'Secretario de Hacienda', correo: 'c.restrepo@villeta.demo', rol: 'admin_municipio', municipioId: 'm1', activo: true },
-  { id: 'u3', nombres: 'Diana', apellidos: 'Gómez', cargo: 'Profesional de Rentas', correo: 'd.gomez@villeta.demo', rol: 'funcionario', municipioId: 'm1', activo: true },
-  { id: 'u4', nombres: 'Julián', apellidos: 'Ortiz', cargo: 'Auxiliar de Impuestos', correo: 'j.ortiz@villeta.demo', rol: 'funcionario', municipioId: 'm1', activo: true },
-  { id: 'u5', nombres: 'Marcela', apellidos: 'Díaz', cargo: 'Secretaria de Tesorería', correo: 'm.diaz@ricaurte.demo', rol: 'admin_municipio', municipioId: 'm2', activo: true },
-  { id: 'u6', nombres: 'Andrés', apellidos: 'Barrios', cargo: 'Profesional de Fiscalización', correo: 'a.barrios@ricaurte.demo', rol: 'funcionario', municipioId: 'm2', activo: true },
-  { id: 'u7', nombres: 'Jorge', apellidos: 'Pardo', cargo: 'Secretario de Hacienda', correo: 'j.pardo@garzon.demo', rol: 'admin_municipio', municipioId: 'm3', activo: true },
-  { id: 'u8', nombres: 'Sandra', apellidos: 'Vega', cargo: 'Técnica de Rentas', correo: 's.vega@garzon.demo', rol: 'funcionario', municipioId: 'm3', activo: true },
+  {
+    id: 'u1',
+    nombres: 'Laura',
+    apellidos: 'Méndez',
+    cargo: 'Líder de implementación',
+    correo: 'laura.mendez@1cero1.demo',
+    rol: '1cero1',
+    municipioId: null,
+    activo: true,
+  },
+  {
+    id: 'u2',
+    nombres: 'Carlos',
+    apellidos: 'Restrepo',
+    cargo: 'Secretario de Hacienda',
+    correo: 'c.restrepo@villeta.demo',
+    rol: 'admin_municipio',
+    municipioId: 'm1',
+    activo: true,
+  },
+  {
+    id: 'u3',
+    nombres: 'Diana',
+    apellidos: 'Gómez',
+    cargo: 'Profesional de Rentas',
+    correo: 'd.gomez@villeta.demo',
+    rol: 'funcionario',
+    municipioId: 'm1',
+    activo: true,
+  },
+  {
+    id: 'u4',
+    nombres: 'Julián',
+    apellidos: 'Ortiz',
+    cargo: 'Auxiliar de Impuestos',
+    correo: 'j.ortiz@villeta.demo',
+    rol: 'funcionario',
+    municipioId: 'm1',
+    activo: true,
+  },
+  {
+    id: 'u5',
+    nombres: 'Marcela',
+    apellidos: 'Díaz',
+    cargo: 'Secretaria de Tesorería',
+    correo: 'm.diaz@ricaurte.demo',
+    rol: 'admin_municipio',
+    municipioId: 'm2',
+    activo: true,
+  },
+  {
+    id: 'u6',
+    nombres: 'Andrés',
+    apellidos: 'Barrios',
+    cargo: 'Profesional de Fiscalización',
+    correo: 'a.barrios@ricaurte.demo',
+    rol: 'funcionario',
+    municipioId: 'm2',
+    activo: true,
+  },
+  {
+    id: 'u7',
+    nombres: 'Jorge',
+    apellidos: 'Pardo',
+    cargo: 'Secretario de Hacienda',
+    correo: 'j.pardo@garzon.demo',
+    rol: 'admin_municipio',
+    municipioId: 'm3',
+    activo: true,
+  },
+  {
+    id: 'u8',
+    nombres: 'Sandra',
+    apellidos: 'Vega',
+    cargo: 'Técnica de Rentas',
+    correo: 's.vega@garzon.demo',
+    rol: 'funcionario',
+    municipioId: 'm3',
+    activo: true,
+  },
 ]
 
 export const ACTIVIDADES: { ciiu: string; descripcion: string; sector: Sector }[] = [
   { ciiu: '1011', descripcion: 'Procesamiento y conservación de carne', sector: 'industrial' },
   { ciiu: '1081', descripcion: 'Elaboración de productos de panadería', sector: 'industrial' },
-  { ciiu: '2511', descripcion: 'Fabricación de productos metálicos estructurales', sector: 'industrial' },
-  { ciiu: '4530', descripcion: 'Comercio de partes y accesorios para vehículos', sector: 'comercial' },
+  {
+    ciiu: '2511',
+    descripcion: 'Fabricación de productos metálicos estructurales',
+    sector: 'industrial',
+  },
+  {
+    ciiu: '4530',
+    descripcion: 'Comercio de partes y accesorios para vehículos',
+    sector: 'comercial',
+  },
   { ciiu: '4711', descripcion: 'Comercio al por menor en supermercados', sector: 'comercial' },
   { ciiu: '4731', descripcion: 'Comercio al por menor de combustible', sector: 'comercial' },
   { ciiu: '4771', descripcion: 'Comercio al por menor de prendas de vestir', sector: 'comercial' },
@@ -81,12 +182,23 @@ const BASE_TARIFAS: Record<string, [number, number, number, number]> = {
 }
 
 /** Actividad que los municipios agregaron en 2026. */
-const NUEVAS_2026: typeof ACTIVIDADES = [{ ciiu: '4791', descripcion: 'Comercio al por menor realizado a través de internet', sector: 'comercial' }]
+const NUEVAS_2026: typeof ACTIVIDADES = [
+  {
+    ciiu: '4791',
+    descripcion: 'Comercio al por menor realizado a través de internet',
+    sector: 'comercial',
+  },
+]
 
 function tarifas(municipioId: string, vigencia: number): Tarifa[] {
   const [ind, com, ser, fin] = BASE_TARIFAS[municipioId]
   // En 2024 la tarifa comercial era un punto más baja.
-  const porSector: Record<Sector, number> = { industrial: ind, comercial: vigencia === 2024 ? com - 1 : com, servicios: ser, financiero: fin }
+  const porSector: Record<Sector, number> = {
+    industrial: ind,
+    comercial: vigencia === 2024 ? com - 1 : com,
+    servicios: ser,
+    financiero: fin,
+  }
   const actividades = vigencia >= 2026 ? [...ACTIVIDADES, ...NUEVAS_2026] : ACTIVIDADES
   return actividades.map((a) => ({ ...a, porMil: porSector[a.sector] }))
 }
@@ -107,7 +219,9 @@ export const ACTIVIDADES_POR_VIGENCIA: ActividadesVigencia[] = MUNICIPIOS.flatMa
 /** El administrador del municipio cargó el calendario del año gravable en esa fecha. */
 const cargadoPorAdministrador = (municipioId: string, fecha: string) => ({
   fecha,
-  por: nombreCompleto(USUARIOS.find((u) => u.municipioId === municipioId && u.rol === 'admin_municipio')!),
+  por: nombreCompleto(
+    USUARIOS.find((u) => u.municipioId === municipioId && u.rol === 'admin_municipio')!,
+  ),
 })
 
 /** Vencimientos con una fecha por periodo, la misma para todos los declarantes. */
@@ -118,10 +232,16 @@ const fechasUnicas = (periodicidad: Periodicidad, fechas: string[]): Vencimiento
 })
 
 /** Vencimientos por último dígito: cada periodo lista sus fechas del dígito 1 al 0, como los calendarios. */
-const fechasPorDigito = (periodicidad: Periodicidad, porPeriodo: string[][]): VencimientosFormulario => ({
+const fechasPorDigito = (
+  periodicidad: Periodicidad,
+  porPeriodo: string[][],
+): VencimientosFormulario => ({
   periodicidad,
   porDigito: true,
-  periodos: porPeriodo.map((lista, i) => ({ periodo: i + 1, fechas: Array.from({ length: 10 }, (_, d) => lista[DIGITOS.indexOf(d)]) })),
+  periodos: porPeriodo.map((lista, i) => ({
+    periodo: i + 1,
+    fechas: Array.from({ length: 10 }, (_, d) => lista[DIGITOS.indexOf(d)]),
+  })),
 })
 
 export const CONFIGURACIONES: ConfigMunicipio[] = [
@@ -161,22 +281,55 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
           decreto: 'Decreto 0920 de 2025',
           cargado: cargadoPorAdministrador('m1', '2025-01-14'),
           ica: fechasUnicas('anual', ['2026-04-17']),
-          reteica: fechasUnicas('bimestral', ['2025-03-21', '2025-05-20', '2025-07-18', '2025-09-19', '2025-11-21', '2026-01-20']),
-          autorretencion: fechasUnicas('bimestral', ['2025-03-21', '2025-05-20', '2025-07-18', '2025-09-19', '2025-11-21', '2026-01-20']),
+          reteica: fechasUnicas('bimestral', [
+            '2025-03-21',
+            '2025-05-20',
+            '2025-07-18',
+            '2025-09-19',
+            '2025-11-21',
+            '2026-01-20',
+          ]),
+          autorretencion: fechasUnicas('bimestral', [
+            '2025-03-21',
+            '2025-05-20',
+            '2025-07-18',
+            '2025-09-19',
+            '2025-11-21',
+            '2026-01-20',
+          ]),
         },
         {
           vigencia: 2026,
           decreto: 'Decreto 0045 de 2026',
           cargado: cargadoPorAdministrador('m1', '2026-01-23'),
           ica: fechasUnicas('anual', ['2027-04-16']),
-          reteica: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
-          autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
+          reteica: fechasUnicas('bimestral', [
+            '2026-03-18',
+            '2026-05-20',
+            '2026-07-17',
+            '2026-09-18',
+            '2026-11-20',
+            '2027-01-19',
+          ]),
+          autorretencion: fechasUnicas('bimestral', [
+            '2026-03-18',
+            '2026-05-20',
+            '2026-07-17',
+            '2026-09-18',
+            '2026-11-20',
+            '2027-01-19',
+          ]),
         },
       ],
     },
     anticipoPorcentaje: 40,
     sobretasaBomberil: { activa: true, porcentaje: 4 },
-    reteica: { modalidad: 'unica', tarifaUnicaPorMil: 2, baseMinimaServiciosUvt: 15, baseMinimaComprasUvt: 15 },
+    reteica: {
+      modalidad: 'unica',
+      tarifaUnicaPorMil: 2,
+      baseMinimaServiciosUvt: 15,
+      baseMinimaComprasUvt: 15,
+    },
     autorretencion: { modalidad: 'porcentaje', porcentaje: 50 },
     sanciones: { ...SANCIONES_LEY },
     plazoInscripcionMeses: 2,
@@ -211,16 +364,44 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
           decreto: 'Resolución 011 de 2024',
           cargado: cargadoPorAdministrador('m2', '2024-01-17'),
           ica: fechasUnicas('anual', ['2025-03-31']),
-          reteica: fechasUnicas('bimestral', ['2024-03-19', '2024-05-21', '2024-07-18', '2024-09-19', '2024-11-21', '2025-01-20']),
-          autorretencion: fechasUnicas('bimestral', ['2024-03-19', '2024-05-21', '2024-07-18', '2024-09-19', '2024-11-21', '2025-01-20']),
+          reteica: fechasUnicas('bimestral', [
+            '2024-03-19',
+            '2024-05-21',
+            '2024-07-18',
+            '2024-09-19',
+            '2024-11-21',
+            '2025-01-20',
+          ]),
+          autorretencion: fechasUnicas('bimestral', [
+            '2024-03-19',
+            '2024-05-21',
+            '2024-07-18',
+            '2024-09-19',
+            '2024-11-21',
+            '2025-01-20',
+          ]),
         },
         {
           vigencia: 2025,
           decreto: 'Resolución 014 de 2025',
           cargado: cargadoPorAdministrador('m2', '2025-01-22'),
           ica: fechasUnicas('anual', ['2026-03-31']),
-          reteica: fechasUnicas('bimestral', ['2025-03-18', '2025-05-20', '2025-07-17', '2025-09-18', '2025-11-20', '2026-01-19']),
-          autorretencion: fechasUnicas('bimestral', ['2025-03-18', '2025-05-20', '2025-07-17', '2025-09-18', '2025-11-20', '2026-01-19']),
+          reteica: fechasUnicas('bimestral', [
+            '2025-03-18',
+            '2025-05-20',
+            '2025-07-17',
+            '2025-09-18',
+            '2025-11-20',
+            '2026-01-19',
+          ]),
+          autorretencion: fechasUnicas('bimestral', [
+            '2025-03-18',
+            '2025-05-20',
+            '2025-07-17',
+            '2025-09-18',
+            '2025-11-20',
+            '2026-01-19',
+          ]),
         },
         {
           vigencia: 2026,
@@ -229,20 +410,53 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
           cargado: cargadoPorAdministrador('m2', '2026-04-08'),
           // Desde este año el ICA anual vence según el último dígito del NIT o la cédula: un día hábil por dígito.
           ica: fechasPorDigito('anual', [
-            ['2027-04-05', '2027-04-06', '2027-04-07', '2027-04-08', '2027-04-09', '2027-04-12', '2027-04-13', '2027-04-14', '2027-04-15', '2027-04-16'],
+            [
+              '2027-04-05',
+              '2027-04-06',
+              '2027-04-07',
+              '2027-04-08',
+              '2027-04-09',
+              '2027-04-12',
+              '2027-04-13',
+              '2027-04-14',
+              '2027-04-15',
+              '2027-04-16',
+            ],
           ]),
           // Desde este año la ReteICA es mensual, como en Ricaurte (Nariño); hasta 2025 era bimestral.
           reteica: fechasUnicas('mensual', [
-            '2026-02-18', '2026-03-18', '2026-04-20', '2026-05-19', '2026-06-18', '2026-07-17',
-            '2026-08-19', '2026-09-18', '2026-10-20', '2026-11-19', '2026-12-18', '2027-01-19',
+            '2026-02-18',
+            '2026-03-18',
+            '2026-04-20',
+            '2026-05-19',
+            '2026-06-18',
+            '2026-07-17',
+            '2026-08-19',
+            '2026-09-18',
+            '2026-10-20',
+            '2026-11-19',
+            '2026-12-18',
+            '2027-01-19',
           ]),
-          autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2027-01-19']),
+          autorretencion: fechasUnicas('bimestral', [
+            '2026-03-18',
+            '2026-05-20',
+            '2026-07-17',
+            '2026-09-18',
+            '2026-11-20',
+            '2027-01-19',
+          ]),
         },
       ],
     },
     anticipoPorcentaje: 25,
     sobretasaBomberil: { activa: true, porcentaje: 5 },
-    reteica: { modalidad: 'actividad', tarifaUnicaPorMil: 0, baseMinimaServiciosUvt: 4, baseMinimaComprasUvt: 27 },
+    reteica: {
+      modalidad: 'actividad',
+      tarifaUnicaPorMil: 0,
+      baseMinimaServiciosUvt: 4,
+      baseMinimaComprasUvt: 27,
+    },
     autorretencion: { modalidad: 'plena', porcentaje: 100 },
     sanciones: { ...SANCIONES_LEY },
     plazoInscripcionMeses: 2,
@@ -266,8 +480,22 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
           decreto: 'Decreto 028 de 2025',
           cargado: cargadoPorAdministrador('m3', '2025-01-21'),
           ica: fechasUnicas('anual', ['2026-04-30']),
-          reteica: fechasUnicas('bimestral', ['2025-03-20', '2025-05-20', '2025-07-18', '2025-09-18', '2025-11-20', '2026-01-20']),
-          autorretencion: fechasUnicas('bimestral', ['2025-03-20', '2025-05-20', '2025-07-18', '2025-09-18', '2025-11-20', '2025-12-19']),
+          reteica: fechasUnicas('bimestral', [
+            '2025-03-20',
+            '2025-05-20',
+            '2025-07-18',
+            '2025-09-18',
+            '2025-11-20',
+            '2026-01-20',
+          ]),
+          autorretencion: fechasUnicas('bimestral', [
+            '2025-03-20',
+            '2025-05-20',
+            '2025-07-18',
+            '2025-09-18',
+            '2025-11-20',
+            '2025-12-19',
+          ]),
         },
         {
           vigencia: 2026,
@@ -275,28 +503,114 @@ export const CONFIGURACIONES: ConfigMunicipio[] = [
           cargado: cargadoPorAdministrador('m3', '2026-01-27'),
           ica: fechasUnicas('anual', ['2027-04-30']),
           // Desde este año la ReteICA es trimestral; la AutoReteICA sigue bimestral.
-          reteica: fechasUnicas('trimestral', ['2026-04-20', '2026-07-17', '2026-10-20', '2027-01-19']),
-          autorretencion: fechasUnicas('bimestral', ['2026-03-18', '2026-05-20', '2026-07-17', '2026-09-18', '2026-11-20', '2026-12-21']),
+          reteica: fechasUnicas('trimestral', [
+            '2026-04-20',
+            '2026-07-17',
+            '2026-10-20',
+            '2027-01-19',
+          ]),
+          autorretencion: fechasUnicas('bimestral', [
+            '2026-03-18',
+            '2026-05-20',
+            '2026-07-17',
+            '2026-09-18',
+            '2026-11-20',
+            '2026-12-21',
+          ]),
         },
       ],
     },
     anticipoPorcentaje: 0,
     sobretasaBomberil: { activa: false, porcentaje: 0 },
-    reteica: { modalidad: 'concepto', tarifaUnicaPorMil: 0, baseMinimaServiciosUvt: 25, baseMinimaComprasUvt: 50 },
+    reteica: {
+      modalidad: 'concepto',
+      tarifaUnicaPorMil: 0,
+      baseMinimaServiciosUvt: 25,
+      baseMinimaComprasUvt: 50,
+    },
     autorretencion: { modalidad: 'porcentaje', porcentaje: 60 },
     // Ejemplo de municipio que rebajó las sanciones de ley.
-    sanciones: { extemporaneidad: 4, extemporaneidadEmplazamiento: 8, correccion: 8, correccionEmplazamiento: 16, minimaUvt: 10 },
+    sanciones: {
+      extemporaneidad: 4,
+      extemporaneidadEmplazamiento: 8,
+      correccion: 8,
+      correccionEmplazamiento: 16,
+      minimaUvt: 10,
+    },
     plazoInscripcionMeses: 3,
     aprobacionPrevia: { plazoDiasHabiles: 5, alVencer: 'aprobar', vigenciaReciboDiasHabiles: 5 },
     formulariosDesactivados: {
-      autorretencion: { motivo: 'El concejo está tramitando el nuevo porcentaje de autorretención; se reactiva cuando se sancione el acuerdo.', fecha: '2026-10-14', por: 'Jorge Pardo' },
+      autorretencion: {
+        motivo:
+          'El concejo está tramitando el nuevo porcentaje de autorretención; se reactiva cuando se sancione el acuerdo.',
+        fecha: '2026-10-14',
+        por: 'Jorge Pardo',
+      },
     },
     chequeParcial: false,
   },
 ]
 
-export const NOMBRES = ['Ana', 'Luis', 'María', 'Jorge', 'Camila', 'Andrés', 'Paula', 'Felipe', 'Natalia', 'Santiago', 'Valentina', 'Mateo', 'Carolina', 'Sebastián', 'Daniela', 'Alejandro']
-export const APELLIDOS = ['García', 'Rodríguez', 'Martínez', 'López', 'Hernández', 'Gómez', 'Zapata', 'Ramírez', 'Torres', 'Castaño', 'Vargas', 'Rojas', 'Cárdenas', 'Mejía', 'Ospina', 'Arango']
-export const EMPRESAS = ['Inversiones', 'Comercializadora', 'Distribuidora', 'Constructora', 'Transportes', 'Industrias', 'Servicios Integrales', 'Soluciones', 'Agroindustrial', 'Logística']
-export const MARCAS = ['del Valle', 'Andina', 'El Progreso', 'Horizonte', 'La Esperanza', 'Prisma', 'Cóndor', 'Alianza', 'Santa Fe', 'Nogal', 'Monteverde', 'Atlas']
+export const NOMBRES = [
+  'Ana',
+  'Luis',
+  'María',
+  'Jorge',
+  'Camila',
+  'Andrés',
+  'Paula',
+  'Felipe',
+  'Natalia',
+  'Santiago',
+  'Valentina',
+  'Mateo',
+  'Carolina',
+  'Sebastián',
+  'Daniela',
+  'Alejandro',
+]
+export const APELLIDOS = [
+  'García',
+  'Rodríguez',
+  'Martínez',
+  'López',
+  'Hernández',
+  'Gómez',
+  'Zapata',
+  'Ramírez',
+  'Torres',
+  'Castaño',
+  'Vargas',
+  'Rojas',
+  'Cárdenas',
+  'Mejía',
+  'Ospina',
+  'Arango',
+]
+export const EMPRESAS = [
+  'Inversiones',
+  'Comercializadora',
+  'Distribuidora',
+  'Constructora',
+  'Transportes',
+  'Industrias',
+  'Servicios Integrales',
+  'Soluciones',
+  'Agroindustrial',
+  'Logística',
+]
+export const MARCAS = [
+  'del Valle',
+  'Andina',
+  'El Progreso',
+  'Horizonte',
+  'La Esperanza',
+  'Prisma',
+  'Cóndor',
+  'Alianza',
+  'Santa Fe',
+  'Nogal',
+  'Monteverde',
+  'Atlas',
+]
 export const CALLES = ['Calle', 'Carrera', 'Avenida', 'Diagonal', 'Transversal']

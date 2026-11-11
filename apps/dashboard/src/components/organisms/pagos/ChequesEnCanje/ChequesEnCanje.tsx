@@ -37,19 +37,24 @@ export default function ChequesEnCanje({ cheques, puedeResolver }: ChequesEnCanj
         <div className="px-5 pt-4">
           {resuelto.estado === 'pagado' ? (
             <Aviso tono="exito" icono={TickCircle} rol="status">
-              Se confirmó el cheque {resuelto.fila.c.numero}: {formatoPesos(resuelto.fila.c.valor)} quedan como pago de la declaración{' '}
-              {resuelto.fila.d.numero} con fecha del {formatoFecha(resuelto.fila.c.fechaRecibo)}.
+              Se confirmó el cheque {resuelto.fila.c.numero}: {formatoPesos(resuelto.fila.c.valor)}{' '}
+              quedan como pago de la declaración {resuelto.fila.d.numero} con fecha del{' '}
+              {formatoFecha(resuelto.fila.c.fechaRecibo)}.
             </Aviso>
           ) : (
             <Aviso tono="alerta" icono={Danger} rol="status">
               <p className="font-medium">
-                Se marcó como devuelto el cheque {resuelto.fila.c.numero}. La declaración {resuelto.fila.d.numero} vuelve a quedar con saldo
-                {resuelto.fila.d.impuesto === 'ica' ? '.' : ', y no tiene efecto mientras no se pague completa.'}
+                Se marcó como devuelto el cheque {resuelto.fila.c.numero}. La declaración{' '}
+                {resuelto.fila.d.numero} vuelve a quedar con saldo
+                {resuelto.fila.d.impuesto === 'ica'
+                  ? '.'
+                  : ', y no tiene efecto mientras no se pague completa.'}
               </p>
               <p className="mt-0.5">
-                El art. 731 del Código de Comercio fija una sanción del {SANCION_CHEQUE_DEVUELTO * 100} % del valor del cheque devuelto sin causa
-                justificada: {formatoPesos(resuelto.fila.c.valor * SANCION_CHEQUE_DEVUELTO)}. Revisa cómo la aplica el estatuto del municipio; el
-                aplicativo no la liquida.
+                El art. 731 del Código de Comercio fija una sanción del{' '}
+                {SANCION_CHEQUE_DEVUELTO * 100} % del valor del cheque devuelto sin causa
+                justificada: {formatoPesos(resuelto.fila.c.valor * SANCION_CHEQUE_DEVUELTO)}. Revisa
+                cómo la aplica el estatuto del municipio; el aplicativo no la liquida.
               </p>
             </Aviso>
           )}
@@ -68,10 +73,16 @@ export default function ChequesEnCanje({ cheques, puedeResolver }: ChequesEnCanj
                     <p className="font-medium text-slate-900">{nombre}</p>
                     <p className="text-slate-600">
                       Cheque {c.numero}, {c.banco} · declaración{' '}
-                      <Link to={`/declaraciones/${d.id}`} className="font-medium text-slate-900 hover:text-brand-700">{d.numero}</Link>
+                      <Link
+                        to={`/declaraciones/${d.id}`}
+                        className="font-medium text-slate-900 hover:text-brand-700"
+                      >
+                        {d.numero}
+                      </Link>
                     </p>
                     <p className="text-xs text-slate-500">
-                      Recibido el {formatoFecha(c.fechaRecibo)} por {c.recibidoPor} · recibo de caja {c.recibo}
+                      Recibido el {formatoFecha(c.fechaRecibo)} por {c.recibidoPor} · recibo de caja{' '}
+                      {c.recibo}
                     </p>
                   </div>
                   <p className="tabular-nums font-medium text-slate-900">{formatoPesos(c.valor)}</p>
@@ -81,7 +92,13 @@ export default function ChequesEnCanje({ cheques, puedeResolver }: ChequesEnCanj
                     <Boton variante="secundario" onClick={() => resolver(fila, 'pagado')}>
                       Confirmar pago
                     </Boton>
-                    <Boton variante="fantasma" onClick={() => { setDevolviendo(c.id); setMotivo('') }}>
+                    <Boton
+                      variante="fantasma"
+                      onClick={() => {
+                        setDevolviendo(c.id)
+                        setMotivo('')
+                      }}
+                    >
                       Marcar devuelto
                     </Boton>
                   </div>
@@ -89,10 +106,19 @@ export default function ChequesEnCanje({ cheques, puedeResolver }: ChequesEnCanj
                 {devolviendo === c.id && (
                   <div className="space-y-3">
                     <Campo etiqueta="Motivo de la devolución">
-                      <Textarea rows={2} value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="Ej.: el banco informa que el cheque presenta enmendaduras." />
+                      <Textarea
+                        rows={2}
+                        value={motivo}
+                        onChange={(e) => setMotivo(e.target.value)}
+                        placeholder="Ej.: el banco informa que el cheque presenta enmendaduras."
+                      />
                     </Campo>
                     <div className="flex flex-wrap gap-2">
-                      <Boton variante="primario" disabled={!motivo.trim()} onClick={() => resolver(fila, 'devuelto')}>
+                      <Boton
+                        variante="primario"
+                        disabled={!motivo.trim()}
+                        onClick={() => resolver(fila, 'devuelto')}
+                      >
                         Confirmar devolución
                       </Boton>
                       <Boton variante="fantasma" onClick={() => setDevolviendo(null)}>

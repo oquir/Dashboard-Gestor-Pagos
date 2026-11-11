@@ -11,24 +11,44 @@ import { Aviso, Campo, Seccion } from '../../../molecules'
 import TablaVencimientos from '../TablaVencimientos'
 import { DESCRIPCION_FORMULARIO } from './constants'
 import type { SeccionCalendarioProps } from './types'
-import { aniosParaAgregar, calendarioMasCercano, erroresDelFormulario, textoAgregado, textoOtraPeriodicidad } from './utils'
+import {
+  aniosParaAgregar,
+  calendarioMasCercano,
+  erroresDelFormulario,
+  textoAgregado,
+  textoOtraPeriodicidad,
+} from './utils'
 
 /** Vencimientos de cada año gravable, también de años pasados: un calendario por cada formulario activo del municipio. */
-export default function SeccionCalendario({ b, cambiar, editable, errores, impuestos }: SeccionCalendarioProps) {
+export default function SeccionCalendario({
+  b,
+  cambiar,
+  editable,
+  errores,
+  impuestos,
+}: SeccionCalendarioProps) {
   const declaraciones = useDatos((s) => s.declaraciones)
   const calendarios = b.calendarioTributario.porVigencia
   const vigencias = calendarios.map((c) => c.vigencia).sort((x, y) => y - x)
   const [elegida, setElegida] = useState<number>()
-  const vigencia = elegida !== undefined && vigencias.includes(elegida) ? elegida : vigencias.includes(ANIO_EN_CURSO) ? ANIO_EN_CURSO : vigencias[0]
+  const vigencia =
+    elegida !== undefined && vigencias.includes(elegida)
+      ? elegida
+      : vigencias.includes(ANIO_EN_CURSO)
+        ? ANIO_EN_CURSO
+        : vigencias[0]
   const cal = calendarios.find((c) => c.vigencia === vigencia)
 
   const disponibles = aniosParaAgregar(vigencias)
   const [nuevoElegido, setNuevoElegido] = useState<number>()
-  const nuevo = nuevoElegido !== undefined && disponibles.includes(nuevoElegido) ? nuevoElegido : disponibles[0]
+  const nuevo =
+    nuevoElegido !== undefined && disponibles.includes(nuevoElegido) ? nuevoElegido : disponibles[0]
   const [aviso, setAviso] = useState<string>()
 
-  const cambiarLista = (porVigencia: CalendarioVigencia[]) => cambiar({ calendarioTributario: { porVigencia } })
-  const cambiarCal = (parcial: Partial<CalendarioVigencia>) => cambiarLista(calendarios.map((c) => (c.vigencia === vigencia ? { ...c, ...parcial } : c)))
+  const cambiarLista = (porVigencia: CalendarioVigencia[]) =>
+    cambiar({ calendarioTributario: { porVigencia } })
+  const cambiarCal = (parcial: Partial<CalendarioVigencia>) =>
+    cambiarLista(calendarios.map((c) => (c.vigencia === vigencia ? { ...c, ...parcial } : c)))
 
   const agregar = () => {
     if (nuevo === undefined) return
@@ -42,7 +62,8 @@ export default function SeccionCalendario({ b, cambiar, editable, errores, impue
     setElegida(undefined)
     setAviso(undefined)
   }
-  const conErrores = (v: number) => Object.keys(errores).some((clave) => clave.startsWith(`calendario-${v}-`))
+  const conErrores = (v: number) =>
+    Object.keys(errores).some((clave) => clave.startsWith(`calendario-${v}-`))
 
   return (
     <Seccion
@@ -54,7 +75,13 @@ export default function SeccionCalendario({ b, cambiar, editable, errores, impue
           <div className="flex flex-wrap items-end gap-3">
             {vigencia !== undefined && (
               <Campo etiqueta="Año gravable">
-                <Select value={vigencia} onChange={(e) => { setElegida(Number(e.target.value)); setAviso(undefined) }}>
+                <Select
+                  value={vigencia}
+                  onChange={(e) => {
+                    setElegida(Number(e.target.value))
+                    setAviso(undefined)
+                  }}
+                >
                   {vigencias.map((v) => (
                     <option key={v} value={v}>
                       Año gravable {v}
@@ -98,8 +125,16 @@ export default function SeccionCalendario({ b, cambiar, editable, errores, impue
           <p className="text-sm text-slate-500">Aún no hay ningún año gravable en el calendario.</p>
         ) : (
           <div className="space-y-4">
-            <Campo etiqueta="Acto que fija el calendario" ayuda={`Decreto o resolución del municipio para el año gravable ${vigencia}.`}>
-              <Input value={cal.decreto ?? ''} disabled={!editable} onChange={(e) => cambiarCal({ decreto: e.target.value })} placeholder="Ej.: Decreto 089 de 2026" />
+            <Campo
+              etiqueta="Acto que fija el calendario"
+              ayuda={`Decreto o resolución del municipio para el año gravable ${vigencia}.`}
+            >
+              <Input
+                value={cal.decreto ?? ''}
+                disabled={!editable}
+                onChange={(e) => cambiarCal({ decreto: e.target.value })}
+                placeholder="Ej.: Decreto 089 de 2026"
+              />
             </Campo>
             <p className="text-xs text-slate-500">
               {cal.cargado
@@ -115,7 +150,13 @@ export default function SeccionCalendario({ b, cambiar, editable, errores, impue
                 onChange={(valor) => cambiarCal({ [impuesto]: valor })}
                 editable={editable}
                 errores={erroresDelFormulario(errores, vigencia, impuesto)}
-                avisoPeriodicidad={textoOtraPeriodicidad(declaraciones, b.municipioId, impuesto, vigencia, cal[impuesto].periodicidad)}
+                avisoPeriodicidad={textoOtraPeriodicidad(
+                  declaraciones,
+                  b.municipioId,
+                  impuesto,
+                  vigencia,
+                  cal[impuesto].periodicidad,
+                )}
               />
             ))}
           </div>

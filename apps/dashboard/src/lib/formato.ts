@@ -24,7 +24,11 @@ import type {
   Usuario,
 } from '../types'
 
-const pesos = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 })
+const pesos = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  maximumFractionDigits: 0,
+})
 const compacto = new Intl.NumberFormat('es-CO', { notation: 'compact', maximumFractionDigits: 1 })
 const fecha = new Intl.DateTimeFormat('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
 const horaMinutos = new Intl.DateTimeFormat('es-CO', { hour: 'numeric', minute: '2-digit' })
@@ -41,12 +45,36 @@ export const formatoLista = (textos: string[]) => lista.format(textos)
 export const formatoHaceDias = (dias: number) => (dias === 1 ? 'hace 1 día' : `hace ${dias} días`)
 /** Cuánto le queda al plazo para consignar la retención: "Faltan 14 días", "Vence hoy", "Venció hace 3 días". */
 export const plazoConsignacion = (dias: number) =>
-  dias < 0 ? `Venció ${formatoHaceDias(-dias)}` : dias === 0 ? 'Vence hoy' : dias === 1 ? 'Falta 1 día' : `Faltan ${dias} días`
+  dias < 0
+    ? `Venció ${formatoHaceDias(-dias)}`
+    : dias === 0
+      ? 'Vence hoy'
+      : dias === 1
+        ? 'Falta 1 día'
+        : `Faltan ${dias} días`
 /** Para comparar textos sin importar tildes, mayúsculas ni espacios de los extremos. */
-export const normalizar = (texto: string) => texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').trim().toLowerCase()
+export const normalizar = (texto: string) =>
+  texto
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .trim()
+    .toLowerCase()
 
 /** Meses abreviados, para las gráficas. */
-export const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
+export const MESES = [
+  'Ene',
+  'Feb',
+  'Mar',
+  'Abr',
+  'May',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dic',
+]
 
 export const etiquetaRol: Record<Rol, string> = {
   '1cero1': '1cero1',
@@ -54,16 +82,20 @@ export const etiquetaRol: Record<Rol, string> = {
   funcionario: 'Funcionario municipio',
 }
 
-export const nombreCompleto =(u: Pick<Usuario, 'nombres' | 'apellidos'>) => `${u.nombres} ${u.apellidos}`
+export const nombreCompleto = (u: Pick<Usuario, 'nombres' | 'apellidos'>) =>
+  `${u.nombres} ${u.apellidos}`
 
 /** Cuándo, quién y por qué el municipio desactivó un formulario. */
-export const textoDesactivado = (d: FormularioDesactivado) => `Desactivado por el municipio el ${formatoFecha(d.fecha)} (${d.por}): ${d.motivo}`
+export const textoDesactivado = (d: FormularioDesactivado) =>
+  `Desactivado por el municipio el ${formatoFecha(d.fecha)} (${d.por}): ${d.motivo}`
 
 /** Número de documento, con el dígito de verificación si lo tiene. */
-export const numeroDocumento = (d: Pick<Inscripcion, 'documento' | 'dv'>) => `${d.documento}${d.dv ? `-${d.dv}` : ''}`
+export const numeroDocumento = (d: Pick<Inscripcion, 'documento' | 'dv'>) =>
+  `${d.documento}${d.dv ? `-${d.dv}` : ''}`
 
 /** Tipo y número de documento, con el dígito de verificación si lo tiene. */
-export const formatoDocumento = (d: Pick<Inscripcion, 'tipoDocumento' | 'documento' | 'dv'>) => `${d.tipoDocumento} ${numeroDocumento(d)}`
+export const formatoDocumento = (d: Pick<Inscripcion, 'tipoDocumento' | 'documento' | 'dv'>) =>
+  `${d.tipoDocumento} ${numeroDocumento(d)}`
 
 export const etiquetaTipoDocumento: Record<Inscripcion['tipoDocumento'], string> = {
   CC: 'Cédula de ciudadanía',
@@ -79,7 +111,10 @@ export const etiquetaTipoPersona: Record<TipoPersona, string> = {
   patrimonio_autonomo: 'Patrimonio autónomo',
 }
 
-export const etiquetaCargoContable: Record<FirmanteContable['cargo'], string> = { contador: 'Contador', revisor_fiscal: 'Revisor fiscal' }
+export const etiquetaCargoContable: Record<FirmanteContable['cargo'], string> = {
+  contador: 'Contador',
+  revisor_fiscal: 'Revisor fiscal',
+}
 
 export const etiquetaCalidad: Record<Calidad, string> = {
   contribuyente: 'Contribuyente',
@@ -128,7 +163,8 @@ export const etiquetaTipoDeclaracion: Record<TipoDeclaracion, string> = {
 }
 
 /** El tipo de la declaración; la corrección que baja el valor a pagar se llama "Corrección a la baja". */
-export const textoTipoDeclaracion = (tipo: TipoDeclaracion, aLaBaja: boolean) => (aLaBaja ? 'Corrección a la baja' : etiquetaTipoDeclaracion[tipo])
+export const textoTipoDeclaracion = (tipo: TipoDeclaracion, aLaBaja: boolean) =>
+  aLaBaja ? 'Corrección a la baja' : etiquetaTipoDeclaracion[tipo]
 
 export const etiquetaEstadoAprobacion: Record<EstadoAprobacion, string> = {
   por_aprobar: 'Por aprobar',
@@ -183,11 +219,24 @@ export const etiquetaPeriodicidad: Record<Periodicidad, string> = {
  * Nombre del periodo, el mismo en declaraciones, omisos y vencimientos: el año gravable en el ICA anual; en ReteICA y
  * AutoReteICA, el mes, el bimestre o el trimestre con sus meses y su año, como "Bimestre 3 (may – jun) de 2026".
  */
-export const etiquetaPeriodo = ({ impuesto, periodicidad, vigencia, periodo }: { impuesto: Impuesto; periodicidad: Periodicidad; vigencia: number; periodo: number }) =>
-  impuesto === 'ica' ? `Año gravable ${vigencia}` : `${NOMBRES_PERIODOS[periodicidad][periodo - 1]} de ${vigencia}`
+export const etiquetaPeriodo = ({
+  impuesto,
+  periodicidad,
+  vigencia,
+  periodo,
+}: {
+  impuesto: Impuesto
+  periodicidad: Periodicidad
+  vigencia: number
+  periodo: number
+}) =>
+  impuesto === 'ica'
+    ? `Año gravable ${vigencia}`
+    : `${NOMBRES_PERIODOS[periodicidad][periodo - 1]} de ${vigencia}`
 
 /** La fecha de salida a producción de un formulario, de solo lectura; sin fecha, el formulario nunca se ha activado. */
-export const textoSalidaProduccion = (fecha: string | undefined) => (fecha ? `En producción desde el ${formatoFecha(fecha)}` : 'Nunca se ha activado')
+export const textoSalidaProduccion = (fecha: string | undefined) =>
+  fecha ? `En producción desde el ${formatoFecha(fecha)}` : 'Nunca se ha activado'
 
 /**
  * Desde cuándo recibe el aplicativo los impuestos activos del municipio: "el 1 feb 2026" si todos salieron el mismo día,
@@ -202,5 +251,7 @@ export function textoEnProduccion(m: Municipio) {
   const grupos = [...porFecha].sort(([a], [b]) => a.localeCompare(b))
   if (grupos.length === 0) return null
   if (grupos.length === 1) return `el ${formatoFecha(grupos[0][0])}`
-  return formatoLista(grupos.map(([f, nombres]) => `el ${formatoFecha(f)} (${formatoLista(nombres)})`))
+  return formatoLista(
+    grupos.map(([f, nombres]) => `el ${formatoFecha(f)} (${formatoLista(nombres)})`),
+  )
 }

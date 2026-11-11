@@ -20,7 +20,9 @@ export default function FormularioCalendario({ config, editable }: FormularioCal
   const guardarConfiguracion = useDatos((s) => s.guardarConfiguracion)
   const { usuario } = useSesion()
   // Solo se ponen fechas de los formularios que el municipio tiene activos (los define 1cero1).
-  const impuestos = useDatos((s) => s.municipios.find((m) => m.id === config.municipioId)?.impuestos) ?? TODOS_ACTIVOS
+  const impuestos =
+    useDatos((s) => s.municipios.find((m) => m.id === config.municipioId)?.impuestos) ??
+    TODOS_ACTIVOS
   const [b, setB] = useState(config)
   const [guardado, setGuardado] = useState(false)
   const cambiar = (parcial: Partial<ConfigMunicipio>) => {
@@ -50,7 +52,13 @@ export default function FormularioCalendario({ config, editable }: FormularioCal
           }}
           onGuardar={() => {
             // Los años que se agregaron quedan cargados hoy: lo que se presentó antes queda marcado como presentado sin calendario.
-            const calendarioTributario = { porVigencia: conCargas(b.calendarioTributario.porVigencia, usuario ? nombreCompleto(usuario) : '', hoy()) }
+            const calendarioTributario = {
+              porVigencia: conCargas(
+                b.calendarioTributario.porVigencia,
+                usuario ? nombreCompleto(usuario) : '',
+                hoy(),
+              ),
+            }
             guardarConfiguracion({ ...config, calendarioTributario, prontoPago: b.prontoPago })
             setB((actual) => ({ ...actual, calendarioTributario }))
             setGuardado(true)

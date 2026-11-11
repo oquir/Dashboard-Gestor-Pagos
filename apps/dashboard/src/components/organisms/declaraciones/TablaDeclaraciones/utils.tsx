@@ -6,7 +6,11 @@ import type { Marcar } from './types'
 export const col = ayudanteColumnas<FilaDeclaracion>()
 
 /** Casillas para elegir declaraciones; la del encabezado marca todas las filtradas, no solo la página. */
-export function columnaSeleccion(filas: FilaDeclaracion[], seleccion: ReadonlySet<string>, marcar: Marcar) {
+export function columnaSeleccion(
+  filas: FilaDeclaracion[],
+  seleccion: ReadonlySet<string>,
+  marcar: Marcar,
+) {
   const marcadas = filas.filter((f) => seleccion.has(f.d.id)).length
   return col.display({
     id: 'seleccion',
@@ -18,12 +22,25 @@ export function columnaSeleccion(filas: FilaDeclaracion[], seleccion: ReadonlySe
         ref={(el) => {
           if (el) el.indeterminate = marcadas > 0 && marcadas < filas.length
         }}
-        onChange={(e) => marcar(filas.map((f) => f.d.id), e.target.checked)}
+        onChange={(e) =>
+          marcar(
+            filas.map((f) => f.d.id),
+            e.target.checked,
+          )
+        }
       />
     ),
     meta: { clase: 'w-10' },
-    cell: ({ row: { original: { d } } }) => (
-      <Casilla aria-label={`Seleccionar la declaración ${d.numero}`} checked={seleccion.has(d.id)} onChange={(e) => marcar([d.id], e.target.checked)} />
+    cell: ({
+      row: {
+        original: { d },
+      },
+    }) => (
+      <Casilla
+        aria-label={`Seleccionar la declaración ${d.numero}`}
+        checked={seleccion.has(d.id)}
+        onChange={(e) => marcar([d.id], e.target.checked)}
+      />
     ),
   })
 }

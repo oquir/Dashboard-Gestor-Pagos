@@ -12,12 +12,19 @@ export default function DescargaAsobancaria({ declaraciones }: DescargaAsobancar
 
   return (
     <Card>
-      <CardHeader titulo="Descargar Asobancaria 2001" descripcion="El archivo de recaudo de un día. Se descarga un solo día a la vez." />
+      <CardHeader
+        titulo="Descargar Asobancaria 2001"
+        descripcion="El archivo de recaudo de un día. Se descarga un solo día a la vez."
+      />
       <div className="space-y-4 p-5">
         <Campo etiqueta="Fecha de recaudo">
           <Input type="date" max={hoy()} value={fecha} onChange={(e) => setFecha(e.target.value)} />
         </Campo>
-        <Boton variante="primario" disabled={!fecha} onClick={() => descargarAsobancaria(fecha, declaraciones)}>
+        <Boton
+          variante="primario"
+          disabled={!fecha}
+          onClick={() => descargarAsobancaria(fecha, declaraciones)}
+        >
           <DocumentDownload className="size-4" aria-hidden /> Descargar archivo
         </Boton>
       </div>

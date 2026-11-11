@@ -18,12 +18,28 @@ export default function CatalogoActividades({ municipioId, vigencia }: CatalogoA
   const delMunicipio = cargas.filter((c) => c.municipioId === municipioId)
   const actual = delMunicipio.find((c) => c.vigencia === vigencia)
   // La plantilla de un año sin cargar trae las del año anterior, para no empezar de cero.
-  const base = actividadesDe(cargas, municipioId, vigencia) ?? delMunicipio.toSorted((a, b) => b.vigencia - a.vigencia)[0]
+  const base =
+    actividadesDe(cargas, municipioId, vigencia) ??
+    delMunicipio.toSorted((a, b) => b.vigencia - a.vigencia)[0]
 
   return (
     <div className="space-y-6">
-      {puedeCargar && <CargaActividades municipioId={municipioId} vigencia={vigencia} base={base} actual={actual} vista={vista} cambiarVista={setVista} />}
-      <TablaActividades vigencia={vigencia} actual={actual} vista={vista} puedeCargar={puedeCargar} />
+      {puedeCargar && (
+        <CargaActividades
+          municipioId={municipioId}
+          vigencia={vigencia}
+          base={base}
+          actual={actual}
+          vista={vista}
+          cambiarVista={setVista}
+        />
+      )}
+      <TablaActividades
+        vigencia={vigencia}
+        actual={actual}
+        vista={vista}
+        puedeCargar={puedeCargar}
+      />
     </div>
   )
 }

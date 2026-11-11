@@ -15,7 +15,11 @@ import { errorFecha, errorNumero } from './utils'
  * Ventana para registrar emplazamientos que el municipio ya notificó: uno, o un lote de omisos con la misma fecha de
  * notificación. Cada uno lleva su número de acto y, si se quiere, la copia del acto.
  */
-export default function ModalEmplazamiento({ tipo, destinatarios, cerrar }: ModalEmplazamientoProps) {
+export default function ModalEmplazamiento({
+  tipo,
+  destinatarios,
+  cerrar,
+}: ModalEmplazamientoProps) {
   const registrarEmplazamientos = useDatos((s) => s.registrarEmplazamientos)
   const existentes = useDatos((s) => s.emplazamientos)
   const [fecha, setFecha] = useState(hoy())
@@ -38,7 +42,9 @@ export default function ModalEmplazamiento({ tipo, destinatarios, cerrar }: Moda
     setCopias((actuales) => ({ ...actuales, [clave]: archivo }))
   }
   const quitarCopia = (clave: string) =>
-    setCopias((actuales) => Object.fromEntries(Object.entries(actuales).filter(([k]) => k !== clave)))
+    setCopias((actuales) =>
+      Object.fromEntries(Object.entries(actuales).filter(([k]) => k !== clave)),
+    )
 
   const enviar = async () => {
     setIntentado(true)
@@ -56,7 +62,11 @@ export default function ModalEmplazamiento({ tipo, destinatarios, cerrar }: Moda
 
   return (
     <Modal
-      titulo={tipo === 'declarar' ? `Emplazar para declarar${varios ? ` a ${destinatarios.length} omisos` : ''}` : 'Registrar emplazamiento para corregir'}
+      titulo={
+        tipo === 'declarar'
+          ? `Emplazar para declarar${varios ? ` a ${destinatarios.length} omisos` : ''}`
+          : 'Registrar emplazamiento para corregir'
+      }
       descripcion={
         tipo === 'declarar'
           ? 'Registra el emplazamiento que el municipio ya notificó. Tiene 1 mes para declarar, y desde la notificación la extemporaneidad es la del art. 642: la tasa tras emplazamiento de Configuración, hasta el 200 % del impuesto.'
@@ -80,7 +90,13 @@ export default function ModalEmplazamiento({ tipo, destinatarios, cerrar }: Moda
           ayuda={varios ? 'La misma para todos los del lote.' : undefined}
           error={intentado ? fallaFecha : undefined}
         >
-          <Input type="date" data-autofocus max={hoy()} value={fecha} onChange={(e) => setFecha(e.target.value)} />
+          <Input
+            type="date"
+            data-autofocus
+            max={hoy()}
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+          />
         </Campo>
 
         <ul className="max-h-[50vh] divide-y divide-slate-100 overflow-y-auto rounded-lg ring-1 ring-slate-200">
@@ -94,14 +110,18 @@ export default function ModalEmplazamiento({ tipo, destinatarios, cerrar }: Moda
                 <Input
                   placeholder={tipo === 'declarar' ? 'Ej.: EPD-2026-014' : 'Ej.: EPC-2026-007'}
                   value={numeros[clave] ?? ''}
-                  onChange={(e) => setNumeros((actuales) => ({ ...actuales, [clave]: e.target.value }))}
+                  onChange={(e) =>
+                    setNumeros((actuales) => ({ ...actuales, [clave]: e.target.value }))
+                  }
                 />
               </Campo>
               {copias[clave] ? (
                 <p className="flex items-center gap-2 text-sm text-slate-700">
                   <Document className="size-4 shrink-0 text-brand-600" aria-hidden />
                   <span className="min-w-0 flex-1 truncate">{copias[clave].name}</span>
-                  <span className="shrink-0 text-xs text-slate-500">{formatoTamano(copias[clave].size)}</span>
+                  <span className="shrink-0 text-xs text-slate-500">
+                    {formatoTamano(copias[clave].size)}
+                  </span>
                   <button
                     type="button"
                     onClick={() => quitarCopia(clave)}
@@ -113,9 +133,18 @@ export default function ModalEmplazamiento({ tipo, destinatarios, cerrar }: Moda
                 </p>
               ) : (
                 <div>
-                  <SelectorArchivo texto="Adjuntar copia del acto" icono={Paperclip} accept={FORMATOS_DOCUMENTO} onChange={elegirCopia(clave)} />
-                  <p className={`mt-1 text-xs ${muyGrande === clave ? 'text-red-600' : 'text-slate-500'}`}>
-                    {muyGrande === clave ? 'Supera los 10 MB y no se adjuntó.' : 'Opcional. PDF, Word, Excel o imagen, hasta 10 MB.'}
+                  <SelectorArchivo
+                    texto="Adjuntar copia del acto"
+                    icono={Paperclip}
+                    accept={FORMATOS_DOCUMENTO}
+                    onChange={elegirCopia(clave)}
+                  />
+                  <p
+                    className={`mt-1 text-xs ${muyGrande === clave ? 'text-red-600' : 'text-slate-500'}`}
+                  >
+                    {muyGrande === clave
+                      ? 'Supera los 10 MB y no se adjuntó.'
+                      : 'Opcional. PDF, Word, Excel o imagen, hasta 10 MB.'}
                   </p>
                 </div>
               )}

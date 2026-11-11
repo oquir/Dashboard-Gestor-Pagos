@@ -1,5 +1,11 @@
 import { emplazamientoDelOmiso } from '../../../../lib/emplazamientos'
-import { etiquetaImpuesto, etiquetaPeriodo, formatoFecha, formatoHaceDias, textoEnProduccion } from '../../../../lib/formato'
+import {
+  etiquetaImpuesto,
+  etiquetaPeriodo,
+  formatoFecha,
+  formatoHaceDias,
+  textoEnProduccion,
+} from '../../../../lib/formato'
 import { idOmiso } from '../../../../lib/omisos'
 import { useOmisos } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
@@ -39,10 +45,14 @@ export default function DeclaracionesFaltantes({ inscripcion }: DeclaracionesFal
                   <p className="truncate text-sm font-medium text-slate-900">
                     {etiquetaImpuesto[o.impuesto]} · {etiquetaPeriodo(o)}
                   </p>
-                  <p className="truncate text-xs text-slate-500">Venció el {formatoFecha(o.vencimiento)}</p>
+                  <p className="truncate text-xs text-slate-500">
+                    Venció el {formatoFecha(o.vencimiento)}
+                  </p>
                   {e && <EmplazamientoResumen e={e} className="mt-2" />}
                 </div>
-                <Badge tono="peligro">Omiso {formatoHaceDias(diferenciaDias(o.vencimiento, hoy()))}</Badge>
+                <Badge tono="peligro">
+                  Omiso {formatoHaceDias(diferenciaDias(o.vencimiento, hoy()))}
+                </Badge>
               </li>
             )
           })}

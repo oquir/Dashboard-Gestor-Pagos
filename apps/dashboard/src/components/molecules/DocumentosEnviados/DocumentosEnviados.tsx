@@ -3,7 +3,12 @@ import { descargarArchivo, formatoTamano } from '../../../lib/archivos'
 import type { DocumentosEnviadosProps } from './types'
 
 /** Documentos que la administración le envió al contribuyente, para descargarlos. */
-export default function DocumentosEnviados({ documentos, titulo, contexto, className = '' }: DocumentosEnviadosProps) {
+export default function DocumentosEnviados({
+  documentos,
+  titulo,
+  contexto,
+  className = '',
+}: DocumentosEnviadosProps) {
   return (
     <ul className={`space-y-1 ${className}`}>
       {documentos.map((a, i) => (

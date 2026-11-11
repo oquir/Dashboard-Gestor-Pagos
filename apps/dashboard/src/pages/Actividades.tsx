@@ -11,7 +11,9 @@ export default function Actividades() {
   const cargas = useDatos((s) => s.actividades)
   const [elegida, setElegida] = useState(ANIO_EN_CURSO)
   const cargadas = cargas.filter((c) => c.municipioId === municipioId).map((c) => c.vigencia)
-  const vigencias = [...new Set([...cargadas, ANIO_EN_CURSO, ANIO_EN_CURSO + 1])].sort((a, b) => b - a)
+  const vigencias = [...new Set([...cargadas, ANIO_EN_CURSO, ANIO_EN_CURSO + 1])].sort(
+    (a, b) => b - a,
+  )
   // Si el municipio que se elige no tiene ese año, se vuelve al año en curso.
   const vigencia = vigencias.includes(elegida) ? elegida : ANIO_EN_CURSO
 
@@ -22,7 +24,11 @@ export default function Actividades() {
         descripcion="Actividades CIIU y tarifas de cada año gravable. El administrador del municipio las carga cada año con la plantilla de Excel."
         acciones={
           municipioId && (
-            <Select aria-label="Año gravable" value={vigencia} onChange={(e) => setElegida(Number(e.target.value))}>
+            <Select
+              aria-label="Año gravable"
+              value={vigencia}
+              onChange={(e) => setElegida(Number(e.target.value))}
+            >
               {vigencias.map((v) => (
                 <option key={v} value={v}>
                   Año gravable {v}
@@ -36,7 +42,11 @@ export default function Actividades() {
       <BuscadorMunicipios todos={false} />
       {municipioId ? (
         // Al cambiar de municipio o de año se descartan la vista previa y los mensajes de la carga.
-        <CatalogoActividades key={`${municipioId}-${vigencia}`} municipioId={municipioId} vigencia={vigencia} />
+        <CatalogoActividades
+          key={`${municipioId}-${vigencia}`}
+          municipioId={municipioId}
+          vigencia={vigencia}
+        />
       ) : (
         <ElegirMunicipio descripcion="Búscalo arriba por su nombre para ver sus actividades." />
       )}

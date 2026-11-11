@@ -1,6 +1,13 @@
 import { useMemo } from 'react'
 import { useDatos } from '../store'
-import type { ConfigMunicipio, Declaracion, Formulario, Impuesto, MediosVentanilla, Municipio } from '../types'
+import type {
+  ConfigMunicipio,
+  Declaracion,
+  Formulario,
+  Impuesto,
+  MediosVentanilla,
+  Municipio,
+} from '../types'
 import { hoy } from '../utils'
 import { municipiosSinCalendario } from './calendario'
 import { calcularSinConsignar } from './consignacion'
@@ -10,7 +17,10 @@ import { aprobacionDe, estadoPago, situacionCorreccion } from './reglas'
 export const IMPUESTOS: Impuesto[] = ['ica', 'reteica', 'autorretencion']
 
 /** Formularios que 1cero1 tiene activos en el municipio: el RIT y los de sus impuestos. */
-export const formulariosDe = (m: Municipio): Formulario[] => [...(m.rit ? ['rit' as const] : []), ...IMPUESTOS.filter((i) => m.impuestos[i])]
+export const formulariosDe = (m: Municipio): Formulario[] => [
+  ...(m.rit ? ['rit' as const] : []),
+  ...IMPUESTOS.filter((i) => m.impuestos[i]),
+]
 
 /**
  * Usuario en sesión y municipio que está viendo. Los roles municipales solo ven
@@ -21,7 +31,8 @@ export function useSesion() {
   const usuarios = useDatos((s) => s.usuarios)
   const municipioSeleccionado = useDatos((s) => s.municipioSeleccionado)
   const usuario = usuarios.find((u) => u.id === usuarioId) ?? null
-  const municipioId = usuario?.rol === '1cero1' ? municipioSeleccionado : (usuario?.municipioId ?? null)
+  const municipioId =
+    usuario?.rol === '1cero1' ? municipioSeleccionado : (usuario?.municipioId ?? null)
   return { usuario, municipioId }
 }
 
@@ -32,22 +43,28 @@ export function useSesion() {
 export function useVerRecaudo() {
   const { usuario, municipioId } = useSesion()
   const configuraciones = useDatos((s) => s.configuraciones)
-  const ocultar = configuraciones.find((c) => c.municipioId === municipioId)?.ocultarRecaudoAFuncionarios ?? true
+  const ocultar =
+    configuraciones.find((c) => c.municipioId === municipioId)?.ocultarRecaudoAFuncionarios ?? true
   return usuario?.rol !== 'funcionario' || !ocultar
 }
 
-export const delMunicipio =<T extends { municipioId: string | null }>(lista: T[], municipioId: string | null) =>
-  municipioId === null ? lista : lista.filter((item) => item.municipioId === municipioId)
+export const delMunicipio = <T extends { municipioId: string | null }>(
+  lista: T[],
+  municipioId: string | null,
+) => (municipioId === null ? lista : lista.filter((item) => item.municipioId === municipioId))
 
 /** Filtro: el municipio del registro tiene activo ese impuesto. */
 export function impuestoActivo(municipios: Municipio[]) {
   const porId = new Map(municipios.map((m) => [m.id, m.impuestos]))
-  return (item: { municipioId: string; impuesto: Impuesto }) => porId.get(item.municipioId)?.[item.impuesto] ?? false
+  return (item: { municipioId: string; impuesto: Impuesto }) =>
+    porId.get(item.municipioId)?.[item.impuesto] ?? false
 }
 
 /** Impuestos que se ven: los del municipio elegido, o los de cualquiera cuando 1cero1 mira todos. */
 export const impuestosVisibles = (municipios: Municipio[], municipioId: string | null) =>
-  IMPUESTOS.filter((i) => municipios.some((m) => (municipioId === null || m.id === municipioId) && m.impuestos[i]))
+  IMPUESTOS.filter((i) =>
+    municipios.some((m) => (municipioId === null || m.id === municipioId) && m.impuestos[i]),
+  )
 
 /** El RIT se ve si el municipio elegido lo tiene activo, o si alguno lo tiene cuando 1cero1 mira todos. */
 export const ritVisible = (municipios: Municipio[], municipioId: string | null) =>
@@ -55,14 +72,25 @@ export const ritVisible = (municipios: Municipio[], municipioId: string | null) 
 
 /** La aprobación previa se ve si algún formulario activo del municipio elegido la tiene, o de cualquiera cuando 1cero1 mira todos. */
 export const aprobacionVisible = (municipios: Municipio[], municipioId: string | null) =>
-  municipios.some((m) => (municipioId === null || m.id === municipioId) && IMPUESTOS.some((i) => m.impuestos[i] && m.aprobacionPrevia[i]))
+  municipios.some(
+    (m) =>
+      (municipioId === null || m.id === municipioId) &&
+      IMPUESTOS.some((i) => m.impuestos[i] && m.aprobacionPrevia[i]),
+  )
 
 /**
  * Las solicitudes de corrección a la baja se ven si el municipio elegido corrige a la baja con el trámite del art. 589
  * anterior, o si alguno lo hace cuando 1cero1 mira todos.
  */
-export const solicitudCorreccionVisible = (configuraciones: ConfigMunicipio[], municipioId: string | null) =>
-  configuraciones.some((c) => (municipioId === null || c.municipioId === municipioId) && c.correccionABaja === 'proyecto_589')
+export const solicitudCorreccionVisible = (
+  configuraciones: ConfigMunicipio[],
+  municipioId: string | null,
+) =>
+  configuraciones.some(
+    (c) =>
+      (municipioId === null || c.municipioId === municipioId) &&
+      c.correccionABaja === 'proyecto_589',
+  )
 
 /** La carga del Asobancaria 2001 se ve si el municipio elegido la tiene, o si alguno la tiene cuando 1cero1 mira todos. */
 export const cargaAsobancariaVisible = (municipios: Municipio[], municipioId: string | null) =>
@@ -75,7 +103,8 @@ export const ventanillaDe = (m: Municipio | undefined, impuesto: Impuesto): Medi
 })
 
 /** El municipio recibe cheques de gerencia en alguno de sus formularios activos. */
-export const recibeCheques = (m: Municipio | undefined) => IMPUESTOS.some((i) => m?.impuestos[i] && m.pagoCheque[i])
+export const recibeCheques = (m: Municipio | undefined) =>
+  IMPUESTOS.some((i) => m?.impuestos[i] && m.pagoCheque[i])
 
 /** Los cheques se ven si el municipio elegido los recibe, o si alguno los recibe cuando 1cero1 mira todos. */
 export const chequesVisibles = (municipios: Municipio[], municipioId: string | null) =>
@@ -88,7 +117,10 @@ export function conRit(municipios: Municipio[]) {
 }
 
 /** Si la declaración se valida contra el RIT: el municipio tiene el RIT y la validación activa en ese formulario. */
-export function seValidaContraRit(municipios: Municipio[], d: { municipioId: string; impuesto: Impuesto }) {
+export function seValidaContraRit(
+  municipios: Municipio[],
+  d: { municipioId: string; impuesto: Impuesto },
+) {
   const m = municipios.find((x) => x.id === d.municipioId)
   return Boolean(m?.rit && m.validarContraRit[d.impuesto])
 }
@@ -98,7 +130,10 @@ export function useDeclaraciones() {
   const { municipioId } = useSesion()
   const declaraciones = useDatos((s) => s.declaraciones)
   const municipios = useDatos((s) => s.municipios)
-  return useMemo(() => delMunicipio(declaraciones, municipioId).filter(impuestoActivo(municipios)), [declaraciones, municipios, municipioId])
+  return useMemo(
+    () => delMunicipio(declaraciones, municipioId).filter(impuestoActivo(municipios)),
+    [declaraciones, municipios, municipioId],
+  )
 }
 
 /** Aprobación previa de cada declaración al día de hoy, según la configuración de su municipio. */
@@ -155,7 +190,10 @@ export function useSinCalendario() {
   const municipios = useDatos((s) => s.municipios)
   const configuraciones = useDatos((s) => s.configuraciones)
   const anio = Number(hoy().slice(0, 4))
-  const faltan = useMemo(() => municipiosSinCalendario(municipios, configuraciones, municipioId, anio), [municipios, configuraciones, municipioId, anio])
+  const faltan = useMemo(
+    () => municipiosSinCalendario(municipios, configuraciones, municipioId, anio),
+    [municipios, configuraciones, municipioId, anio],
+  )
   return { anio, municipios: faltan }
 }
 
@@ -172,7 +210,12 @@ export function useOmisos(municipio?: string | null) {
   const declaraciones = useDatos((s) => s.declaraciones)
   const fecha = hoy()
   return useMemo(
-    () => calcularOmisos({ municipios, configuraciones, inscripciones, declaraciones }, municipioId, fecha),
+    () =>
+      calcularOmisos(
+        { municipios, configuraciones, inscripciones, declaraciones },
+        municipioId,
+        fecha,
+      ),
     [municipios, configuraciones, inscripciones, declaraciones, municipioId, fecha],
   )
 }

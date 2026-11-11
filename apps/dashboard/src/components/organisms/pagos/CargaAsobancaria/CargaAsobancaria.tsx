@@ -52,7 +52,11 @@ export default function CargaAsobancaria() {
               <Document className="size-4 shrink-0 text-brand-600" aria-hidden />
               <span className="min-w-0 flex-1 truncate">{archivo.name}</span>
               {!cargando && (
-                <button type="button" onClick={() => setArchivo(null)} className="shrink-0 text-xs text-slate-500 hover:text-red-600">
+                <button
+                  type="button"
+                  onClick={() => setArchivo(null)}
+                  className="shrink-0 text-xs text-slate-500 hover:text-red-600"
+                >
                   Quitar
                 </button>
               )}
@@ -73,9 +77,14 @@ export default function CargaAsobancaria() {
         {cargando && (
           <div role="status">
             <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-              <div className="h-full rounded-full bg-brand-600 transition-[width] duration-100" style={{ width: `${avance * 100}%` }} />
+              <div
+                className="h-full rounded-full bg-brand-600 transition-[width] duration-100"
+                style={{ width: `${avance * 100}%` }}
+              />
             </div>
-            <p className="mt-1.5 text-xs text-slate-500">{PASOS[Math.min(Math.floor(avance * PASOS.length), PASOS.length - 1)]}</p>
+            <p className="mt-1.5 text-xs text-slate-500">
+              {PASOS[Math.min(Math.floor(avance * PASOS.length), PASOS.length - 1)]}
+            </p>
           </div>
         )}
 
@@ -86,15 +95,17 @@ export default function CargaAsobancaria() {
               {resultado.fecha && `, con el recaudo del ${formatoFecha(resultado.fecha)}`}.
             </p>
             <p className="mt-0.5">
-              Se identificaron {resultado.pagos} pagos por {formatoPesos(resultado.valor)}: {resultado.totales} totales y{' '}
-              {resultado.pagos - resultado.totales} parciales.
-              {resultado.sinCruce > 0 && ` ${resultado.sinCruce} referencias no coinciden con ningún número de factura.`}
+              Se identificaron {resultado.pagos} pagos por {formatoPesos(resultado.valor)}:{' '}
+              {resultado.totales} totales y {resultado.pagos - resultado.totales} parciales.
+              {resultado.sinCruce > 0 &&
+                ` ${resultado.sinCruce} referencias no coinciden con ningún número de factura.`}
             </p>
           </Aviso>
         )}
 
         <Boton variante="primario" disabled={!archivo || cargando} onClick={cargar}>
-          <DocumentUpload className="size-4" aria-hidden /> {cargando ? 'Cargando…' : 'Cargar archivo'}
+          <DocumentUpload className="size-4" aria-hidden />{' '}
+          {cargando ? 'Cargando…' : 'Cargar archivo'}
         </Boton>
       </div>
     </Card>

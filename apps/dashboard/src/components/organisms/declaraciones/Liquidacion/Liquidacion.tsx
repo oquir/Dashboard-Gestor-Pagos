@@ -21,7 +21,12 @@ export default function Liquidacion({ d }: LiquidacionProps) {
           </Boton>
         }
       />
-      <Tabla datos={d.renglones} columnas={COLUMNAS_RENGLONES} densa claseFila={(r) => (RENGLONES_TOTALES.has(r.codigo) ? 'bg-slate-50 font-semibold' : '')} />
+      <Tabla
+        datos={d.renglones}
+        columnas={COLUMNAS_RENGLONES}
+        densa
+        claseFila={(r) => (RENGLONES_TOTALES.has(r.codigo) ? 'bg-slate-50 font-semibold' : '')}
+      />
     </Card>
   )
 }

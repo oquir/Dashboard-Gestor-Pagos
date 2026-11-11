@@ -9,9 +9,18 @@ const col = ayudanteColumnas<FilaRecaudo>()
 
 export const columnasTabla = (series: Serie[]) =>
   col.columns([
-    col.accessor('etiqueta', { header: 'Periodo', enableSorting: false, meta: { clase: 'text-slate-700' } }),
+    col.accessor('etiqueta', {
+      header: 'Periodo',
+      enableSorting: false,
+      meta: { clase: 'text-slate-700' },
+    }),
     ...series.map(({ impuesto }) =>
-      col.accessor((f) => f.valores[impuesto], { id: impuesto, header: etiquetaImpuesto[impuesto], meta: VALOR, cell: ({ getValue }) => formatoPesos(getValue()) }),
+      col.accessor((f) => f.valores[impuesto], {
+        id: impuesto,
+        header: etiquetaImpuesto[impuesto],
+        meta: VALOR,
+        cell: ({ getValue }) => formatoPesos(getValue()),
+      }),
     ),
     col.accessor(totalRecaudo, {
       id: 'total',

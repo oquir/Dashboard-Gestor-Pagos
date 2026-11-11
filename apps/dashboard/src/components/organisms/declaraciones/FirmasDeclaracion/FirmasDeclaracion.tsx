@@ -9,7 +9,10 @@ export default function FirmasDeclaracion({ d }: FirmasDeclaracionProps) {
 
   return (
     <Card>
-      <CardHeader titulo="Firmas" descripcion="Quien diligenció la declaración y el contador o revisor fiscal." />
+      <CardHeader
+        titulo="Firmas"
+        descripcion="Quien diligenció la declaración y el contador o revisor fiscal."
+      />
       <dl className="space-y-4 p-5">
         <Dato etiqueta="Declarante">
           {dec.nombre}

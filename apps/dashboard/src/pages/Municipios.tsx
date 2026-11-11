@@ -1,7 +1,12 @@
 import { useMemo } from 'react'
 import { Navigate } from 'react-router'
 import { ElegirMunicipio, PageHeader } from '../components/molecules'
-import { BuscadorMunicipios, EncabezadoMunicipio, FormulariosMunicipio, ModulosMunicipio } from '../components/organisms'
+import {
+  BuscadorMunicipios,
+  EncabezadoMunicipio,
+  FormulariosMunicipio,
+  ModulosMunicipio,
+} from '../components/organisms'
 import { puede } from '../lib/permisos'
 import { impuestoActivo, useSesion } from '../lib/sesion'
 import { useDatos } from '../store'
@@ -20,19 +25,25 @@ export default function Municipios() {
 
   const cifras = useMemo<CifrasMunicipio | null>(() => {
     if (!municipioId) return null
-    const suyas = declaraciones.filter(impuestoActivo(municipios)).filter((d) => d.municipioId === municipioId)
+    const suyas = declaraciones
+      .filter(impuestoActivo(municipios))
+      .filter((d) => d.municipioId === municipioId)
     const ids = new Set(suyas.map((d) => d.id))
     return {
-      activas: inscripciones.filter((i) => i.municipioId === municipioId && i.estado === 'activa').length,
+      activas: inscripciones.filter((i) => i.municipioId === municipioId && i.estado === 'activa')
+        .length,
       declaraciones: suyas.length,
-      recaudo: pagos.filter((p) => ids.has(p.declaracionId) && p.fecha.startsWith('2026')).reduce((s, p) => s + p.valor, 0),
+      recaudo: pagos
+        .filter((p) => ids.has(p.declaracionId) && p.fecha.startsWith('2026'))
+        .reduce((s, p) => s + p.valor, 0),
       usuarios: usuarios.filter((u) => u.municipioId === municipioId && u.activo).length,
     }
   }, [municipioId, municipios, inscripciones, declaraciones, pagos, usuarios])
 
   if (!puede(usuario?.rol, 'gestionarMunicipios')) return <Navigate to="/" replace />
 
-  const pausas = configuraciones.find((c) => c.municipioId === municipioId)?.formulariosDesactivados ?? {}
+  const pausas =
+    configuraciones.find((c) => c.municipioId === municipioId)?.formulariosDesactivados ?? {}
 
   return (
     <>

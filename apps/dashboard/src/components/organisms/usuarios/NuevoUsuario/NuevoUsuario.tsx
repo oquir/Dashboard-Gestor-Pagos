@@ -5,7 +5,12 @@ import { useDatos } from '../../../../store'
 import type { Usuario } from '../../../../types'
 import { Boton, Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
-import CamposUsuario, { erroresUsuario, hayErrores, ROLES_1CERO1, ROLES_MUNICIPIO } from '../CamposUsuario'
+import CamposUsuario, {
+  erroresUsuario,
+  hayErrores,
+  ROLES_1CERO1,
+  ROLES_MUNICIPIO,
+} from '../CamposUsuario'
 import type { DatosUsuario } from '../CamposUsuario'
 import type { NuevoUsuarioProps } from './types'
 
@@ -16,7 +21,14 @@ export default function NuevoUsuario({ alTerminar }: NuevoUsuarioProps) {
   const guardarUsuario = useDatos((s) => s.guardarUsuario)
   const es1cero1 = usuario?.rol === '1cero1'
   const roles = es1cero1 ? ROLES_1CERO1 : ROLES_MUNICIPIO
-  const [datos, setDatos] = useState<DatosUsuario>({ nombres: '', apellidos: '', cargo: '', correo: '', rol: roles[0], municipioId: municipioId ?? municipios[0].id })
+  const [datos, setDatos] = useState<DatosUsuario>({
+    nombres: '',
+    apellidos: '',
+    cargo: '',
+    correo: '',
+    rol: roles[0],
+    municipioId: municipioId ?? municipios[0].id,
+  })
   const [intentado, setIntentado] = useState(false)
 
   const guardar = () => {
@@ -29,7 +41,12 @@ export default function NuevoUsuario({ alTerminar }: NuevoUsuarioProps) {
       cargo: datos.cargo.trim() || etiquetaRol[datos.rol],
       correo: datos.correo.trim(),
       rol: datos.rol,
-      municipioId: datos.rol === '1cero1' ? null : es1cero1 ? datos.municipioId : (usuario?.municipioId ?? null),
+      municipioId:
+        datos.rol === '1cero1'
+          ? null
+          : es1cero1
+            ? datos.municipioId
+            : (usuario?.municipioId ?? null),
       activo: true,
     }
     guardarUsuario(nuevo)
@@ -50,8 +67,12 @@ export default function NuevoUsuario({ alTerminar }: NuevoUsuarioProps) {
         />
       </div>
       <div className="flex justify-end gap-2 border-t border-slate-100 px-5 py-3">
-        <Boton variante="secundario" onClick={alTerminar}>Cancelar</Boton>
-        <Boton variante="primario" onClick={guardar}>Crear usuario</Boton>
+        <Boton variante="secundario" onClick={alTerminar}>
+          Cancelar
+        </Boton>
+        <Boton variante="primario" onClick={guardar}>
+          Crear usuario
+        </Boton>
       </div>
     </Card>
   )

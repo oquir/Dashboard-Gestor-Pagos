@@ -7,11 +7,28 @@ import { generarDatos } from './data/generar'
 import { datosEnviados, sePuedeQuitar } from './lib/emplazamientos'
 import { nombreCompleto } from './lib/formato'
 import { correccionPorResolver, situacionCorreccion } from './lib/reglas'
-import type { Aprobacion, Archivo, Cheque, ConfigMunicipio, Datos, Emplazamiento, EstadoNovedad, Formulario, Impuesto, Municipio, NuevoEmplazamiento, RegistroBitacora, ResolucionAprobacion, Tarifa, Usuario } from './types'
+import type {
+  Aprobacion,
+  Archivo,
+  Cheque,
+  ConfigMunicipio,
+  Datos,
+  Emplazamiento,
+  EstadoNovedad,
+  Formulario,
+  Impuesto,
+  Municipio,
+  NuevoEmplazamiento,
+  RegistroBitacora,
+  ResolucionAprobacion,
+  Tarifa,
+  Usuario,
+} from './types'
 import { ahora, hoy } from './utils'
 
 /** Lo del municipio que se activa por formulario. */
-type ModuloPorImpuesto = 'impuestos' | 'validarContraRit' | 'aprobacionPrevia' | 'pagoEfectivo' | 'pagoCheque'
+type ModuloPorImpuesto =
+  'impuestos' | 'validarContraRit' | 'aprobacionPrevia' | 'pagoEfectivo' | 'pagoCheque'
 
 interface Estado extends Datos {
   usuarioId: string | null
@@ -28,7 +45,12 @@ interface Estado extends Datos {
     documentos: Archivo[],
   ) => void
   /** Aprueba o rechaza una declaración con aprobación previa; se rechaza solo por una causal del art. 580. */
-  resolverAprobacion: (id: string, resolucion: ResolucionAprobacion, observacion: string, documentos: Archivo[]) => void
+  resolverAprobacion: (
+    id: string,
+    resolucion: ResolucionAprobacion,
+    observacion: string,
+    documentos: Archivo[],
+  ) => void
   /**
    * Acepta o rechaza una solicitud de corrección a la baja. Si ya no está por resolver (se resolvió o pasaron los 6 meses
    * y se aceptó por silencio), la petición falla.
@@ -40,7 +62,12 @@ interface Estado extends Datos {
   quitarEmplazamiento: (id: string) => void
   guardarConfiguracion: (config: ConfigMunicipio) => void
   /** Reemplaza las actividades del año gravable con las del Excel cargado. */
-  cargarActividades: (municipioId: string, vigencia: number, tarifas: Tarifa[], archivo: string) => void
+  cargarActividades: (
+    municipioId: string,
+    vigencia: number,
+    tarifas: Tarifa[],
+    archivo: string,
+  ) => void
   guardarUsuario: (usuario: Usuario) => void
   alternarUsuario: (id: string) => void
   /** Borra el usuario de la demo. Lo que hizo queda con su nombre, que se guarda como texto. */
@@ -71,7 +98,10 @@ interface Estado extends Datos {
   /** Habilita o quita los cheques de gerencia en la ventanilla para un formulario del municipio. */
   alternarPagoCheque: (municipioId: string, impuesto: Impuesto) => void
   /** Recibe hoy un cheque de gerencia en la ventanilla; queda en canje hasta que el banco responda. */
-  recibirCheque: (declaracionId: string, cheque: Pick<Cheque, 'valor' | 'banco' | 'numero' | 'recibo'>) => void
+  recibirCheque: (
+    declaracionId: string,
+    cheque: Pick<Cheque, 'valor' | 'banco' | 'numero' | 'recibo'>,
+  ) => void
   /** El banco pagó el cheque: se vuelve un pago con la fecha en que se recibió. */
   confirmarCheque: (id: string) => void
   /** El banco devolvió el cheque: no hay pago y la declaración vuelve a tener saldo. */
@@ -83,13 +113,19 @@ export const useDatos = create<Estado>()(
   persist(
     (set, get) => {
       const usuarioActual = () => get().usuarios.find((u) => u.id === get().usuarioId)
-      const municipioDeDeclaracion = (declaracionId: string | undefined) => get().declaraciones.find((d) => d.id === declaracionId)?.municipioId ?? null
+      const municipioDeDeclaracion = (declaracionId: string | undefined) =>
+        get().declaraciones.find((d) => d.id === declaracionId)?.municipioId ?? null
 
       /**
        * Lo que hará el back al terminar cada endpoint, salga bien o mal: deja en la bitácora quién hizo la petición,
        * cuándo y con qué datos.
        */
-      const registrar = (peticion: Peticion, municipioId: string | null, datos: Record<string, unknown>, exito = true) => {
+      const registrar = (
+        peticion: Peticion,
+        municipioId: string | null,
+        datos: Record<string, unknown>,
+        exito = true,
+      ) => {
         const u = usuarioActual()
         if (!u) return
         const registro: RegistroBitacora = {
@@ -105,26 +141,42 @@ export const useDatos = create<Estado>()(
       }
 
       const cambiarMunicipio = (municipioId: string, cambio: Partial<Municipio>) =>
-        set((s) => ({ municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, ...cambio } : m)) }))
+        set((s) => ({
+          municipios: s.municipios.map((m) => (m.id === municipioId ? { ...m, ...cambio } : m)),
+        }))
 
       /** Activa o desactiva un módulo del municipio. La bitácora guarda el valor nuevo, no un "alternar". */
-      const alternarModulo = (municipioId: string, modulo: 'activo' | 'rit' | 'cargaAsobancaria') => {
+      const alternarModulo = (
+        municipioId: string,
+        modulo: 'activo' | 'rit' | 'cargaAsobancaria',
+      ) => {
         const m = get().municipios.find((x) => x.id === municipioId)
         if (!m) return
         cambiarMunicipio(municipioId, { [modulo]: !m[modulo] })
-        registrar(modulo === 'activo' ? PETICIONES.cambiarEstadoMunicipio : PETICIONES.cambiarModulo, municipioId, { municipioId, [modulo]: !m[modulo] })
+        registrar(
+          modulo === 'activo' ? PETICIONES.cambiarEstadoMunicipio : PETICIONES.cambiarModulo,
+          municipioId,
+          { municipioId, [modulo]: !m[modulo] },
+        )
       }
 
       /**
        * Lo mismo, para lo que se activa por formulario. Un municipio puede quedar sin ningún impuesto activo: uno recién
        * agregado, o uno al que hubo que desactivarle todo.
        */
-      const alternarModuloPorImpuesto = (municipioId: string, modulo: ModuloPorImpuesto, impuesto: Impuesto) => {
+      const alternarModuloPorImpuesto = (
+        municipioId: string,
+        modulo: ModuloPorImpuesto,
+        impuesto: Impuesto,
+      ) => {
         const m = get().municipios.find((x) => x.id === municipioId)
         if (!m) return
         const valor = !m[modulo][impuesto]
         cambiarMunicipio(municipioId, { [modulo]: { ...m[modulo], [impuesto]: valor } })
-        registrar(PETICIONES.cambiarModulo, municipioId, { municipioId, [modulo]: { [impuesto]: valor } })
+        registrar(PETICIONES.cambiarModulo, municipioId, {
+          municipioId,
+          [modulo]: { [impuesto]: valor },
+        })
       }
 
       return {
@@ -175,13 +227,17 @@ export const useDatos = create<Estado>()(
             }),
           }))
           // De los archivos, el back guarda el nombre.
-          registrar(PETICIONES.resolverNovedad, get().inscripciones.find((i) => i.id === inscripcionId)?.municipioId ?? null, {
-            inscripcionId,
-            novedadId,
-            estado,
-            observacion,
-            documentos: documentos.map((d) => d.nombre),
-          })
+          registrar(
+            PETICIONES.resolverNovedad,
+            get().inscripciones.find((i) => i.id === inscripcionId)?.municipioId ?? null,
+            {
+              inscripcionId,
+              novedadId,
+              estado,
+              observacion,
+              documentos: documentos.map((d) => d.nombre),
+            },
+          )
         },
 
         resolverAprobacion: (id, resolucion, observacion, documentos) => {
@@ -193,7 +249,9 @@ export const useDatos = create<Estado>()(
             observacion: observacion || undefined,
             documentos: documentos.length > 0 ? documentos : undefined,
           }
-          set((s) => ({ declaraciones: s.declaraciones.map((d) => (d.id === id ? { ...d, aprobacion } : d)) }))
+          set((s) => ({
+            declaraciones: s.declaraciones.map((d) => (d.id === id ? { ...d, aprobacion } : d)),
+          }))
           // De los archivos, el back guarda el nombre.
           registrar(PETICIONES.resolverAprobacion, municipioDeDeclaracion(id), {
             id,
@@ -209,21 +267,44 @@ export const useDatos = create<Estado>()(
           const exito = d !== undefined && correccionPorResolver(situacionCorreccion(d, hoy()))
           if (d?.solicitudCorreccion && exito) {
             const { motivo } = d.solicitudCorreccion
-            const resuelta = { estado, motivo, fecha: hoy(), por: usuario ? nombreCompleto(usuario) : '', observacion: observacion || undefined }
-            set((s) => ({ declaraciones: s.declaraciones.map((x) => (x.id === id ? { ...x, solicitudCorreccion: resuelta } : x)) }))
+            const resuelta = {
+              estado,
+              motivo,
+              fecha: hoy(),
+              por: usuario ? nombreCompleto(usuario) : '',
+              observacion: observacion || undefined,
+            }
+            set((s) => ({
+              declaraciones: s.declaraciones.map((x) =>
+                x.id === id ? { ...x, solicitudCorreccion: resuelta } : x,
+              ),
+            }))
           }
-          registrar(PETICIONES.resolverCorreccion, municipioDeDeclaracion(id), { id, estado, observacion }, exito)
+          registrar(
+            PETICIONES.resolverCorreccion,
+            municipioDeDeclaracion(id),
+            { id, estado, observacion },
+            exito,
+          )
         },
 
         registrarEmplazamientos: (nuevos) => {
           if (nuevos.length === 0) return
           const usuario = usuarioActual()
           const registradoPor = usuario ? nombreCompleto(usuario) : ''
-          const siguiente = Math.max(0, ...get().emplazamientos.map((e) => Number(e.id.slice(2)))) + 1
-          const registrados: Emplazamiento[] = nuevos.map((e, i) => ({ ...e, id: `em${siguiente + i}`, registradoPor, fechaRegistro: hoy() }))
+          const siguiente =
+            Math.max(0, ...get().emplazamientos.map((e) => Number(e.id.slice(2)))) + 1
+          const registrados: Emplazamiento[] = nuevos.map((e, i) => ({
+            ...e,
+            id: `em${siguiente + i}`,
+            registradoPor,
+            fechaRegistro: hoy(),
+          }))
           set((s) => ({ emplazamientos: [...s.emplazamientos, ...registrados] }))
           // Un lote es una sola petición.
-          registrar(PETICIONES.registrarEmplazamientos, nuevos[0].municipioId, { emplazamientos: nuevos.map(datosEnviados) })
+          registrar(PETICIONES.registrarEmplazamientos, nuevos[0].municipioId, {
+            emplazamientos: nuevos.map(datosEnviados),
+          })
         },
 
         quitarEmplazamiento: (id) => {
@@ -235,32 +316,59 @@ export const useDatos = create<Estado>()(
 
         guardarConfiguracion: (config) => {
           set((s) => ({
-            configuraciones: s.configuraciones.map((c) => (c.municipioId === config.municipioId ? config : c)),
+            configuraciones: s.configuraciones.map((c) =>
+              c.municipioId === config.municipioId ? config : c,
+            ),
           }))
           registrar(PETICIONES.guardarConfiguracion, config.municipioId, { ...config })
         },
 
         cargarActividades: (municipioId, vigencia, tarifas, archivo) => {
           const usuario = usuarioActual()
-          const carga = { municipioId, vigencia, tarifas, archivo, cargadoPor: usuario ? nombreCompleto(usuario) : '', fechaCarga: hoy() }
+          const carga = {
+            municipioId,
+            vigencia,
+            tarifas,
+            archivo,
+            cargadoPor: usuario ? nombreCompleto(usuario) : '',
+            fechaCarga: hoy(),
+          }
           set((s) => ({
-            actividades: [...s.actividades.filter((a) => a.municipioId !== municipioId || a.vigencia !== vigencia), carga],
+            actividades: [
+              ...s.actividades.filter(
+                (a) => a.municipioId !== municipioId || a.vigencia !== vigencia,
+              ),
+              carga,
+            ],
           }))
-          registrar(PETICIONES.cargarActividades, municipioId, { municipioId, vigencia, archivo, tarifas })
+          registrar(PETICIONES.cargarActividades, municipioId, {
+            municipioId,
+            vigencia,
+            archivo,
+            tarifas,
+          })
         },
 
         guardarUsuario: (usuario) => {
           const existe = get().usuarios.some((u) => u.id === usuario.id)
           set((s) => ({
-            usuarios: existe ? s.usuarios.map((u) => (u.id === usuario.id ? usuario : u)) : [...s.usuarios, usuario],
+            usuarios: existe
+              ? s.usuarios.map((u) => (u.id === usuario.id ? usuario : u))
+              : [...s.usuarios, usuario],
           }))
-          registrar(existe ? PETICIONES.editarUsuario : PETICIONES.crearUsuario, usuario.municipioId, { ...usuario })
+          registrar(
+            existe ? PETICIONES.editarUsuario : PETICIONES.crearUsuario,
+            usuario.municipioId,
+            { ...usuario },
+          )
         },
 
         alternarUsuario: (id) => {
           const u = get().usuarios.find((x) => x.id === id)
           if (!u) return
-          set((s) => ({ usuarios: s.usuarios.map((x) => (x.id === id ? { ...x, activo: !x.activo } : x)) }))
+          set((s) => ({
+            usuarios: s.usuarios.map((x) => (x.id === id ? { ...x, activo: !x.activo } : x)),
+          }))
           registrar(PETICIONES.cambiarEstadoUsuario, u.municipioId, { id, activo: !u.activo })
         },
         eliminarUsuario: (id) => {
@@ -272,22 +380,34 @@ export const useDatos = create<Estado>()(
         activarFormulario: (municipioId, formulario, fecha) => {
           const m = get().municipios.find((x) => x.id === municipioId)
           if (!m) return
-          const activo = formulario === 'rit' ? { rit: true } : { impuestos: { ...m.impuestos, [formulario]: true } }
+          const activo =
+            formulario === 'rit'
+              ? { rit: true }
+              : { impuestos: { ...m.impuestos, [formulario]: true } }
           // La fecha de salida a producción se pone una sola vez.
-          const nueva = m.enProduccionDesde[formulario] ? {} : { enProduccionDesde: { [formulario]: fecha } }
-          cambiarMunicipio(municipioId, { ...activo, enProduccionDesde: { [formulario]: fecha, ...m.enProduccionDesde } })
+          const nueva = m.enProduccionDesde[formulario]
+            ? {}
+            : { enProduccionDesde: { [formulario]: fecha } }
+          cambiarMunicipio(municipioId, {
+            ...activo,
+            enProduccionDesde: { [formulario]: fecha, ...m.enProduccionDesde },
+          })
           registrar(PETICIONES.cambiarModulo, municipioId, {
             municipioId,
             ...(formulario === 'rit' ? { rit: true } : { impuestos: { [formulario]: true } }),
             ...nueva,
           })
         },
-        alternarImpuesto: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'impuestos', impuesto),
+        alternarImpuesto: (municipioId, impuesto) =>
+          alternarModuloPorImpuesto(municipioId, 'impuestos', impuesto),
         alternarRit: (municipioId) => alternarModulo(municipioId, 'rit'),
-        alternarValidacionRit: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'validarContraRit', impuesto),
-        alternarAprobacionPrevia: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'aprobacionPrevia', impuesto),
+        alternarValidacionRit: (municipioId, impuesto) =>
+          alternarModuloPorImpuesto(municipioId, 'validarContraRit', impuesto),
+        alternarAprobacionPrevia: (municipioId, impuesto) =>
+          alternarModuloPorImpuesto(municipioId, 'aprobacionPrevia', impuesto),
         alternarCargaAsobancaria: (municipioId) => alternarModulo(municipioId, 'cargaAsobancaria'),
-        alternarPagoEfectivo: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'pagoEfectivo', impuesto),
+        alternarPagoEfectivo: (municipioId, impuesto) =>
+          alternarModuloPorImpuesto(municipioId, 'pagoEfectivo', impuesto),
 
         registrarPagoVentanilla: (declaracionId, valor, recibo) => {
           const usuario = usuarioActual()
@@ -305,20 +425,35 @@ export const useDatos = create<Estado>()(
               },
             ],
           }))
-          registrar(PETICIONES.registrarPagoVentanilla, municipioDeDeclaracion(declaracionId), { declaracionId, valor, recibo })
+          registrar(PETICIONES.registrarPagoVentanilla, municipioDeDeclaracion(declaracionId), {
+            declaracionId,
+            valor,
+            recibo,
+          })
         },
 
-        alternarPagoCheque: (municipioId, impuesto) => alternarModuloPorImpuesto(municipioId, 'pagoCheque', impuesto),
+        alternarPagoCheque: (municipioId, impuesto) =>
+          alternarModuloPorImpuesto(municipioId, 'pagoCheque', impuesto),
 
         recibirCheque: (declaracionId, cheque) => {
           const usuario = usuarioActual()
           set((s) => ({
             cheques: [
               ...s.cheques,
-              { ...cheque, id: `ch${s.cheques.length + 1}`, declaracionId, fechaRecibo: hoy(), recibidoPor: usuario ? nombreCompleto(usuario) : '', estado: 'en_canje' },
+              {
+                ...cheque,
+                id: `ch${s.cheques.length + 1}`,
+                declaracionId,
+                fechaRecibo: hoy(),
+                recibidoPor: usuario ? nombreCompleto(usuario) : '',
+                estado: 'en_canje',
+              },
             ],
           }))
-          registrar(PETICIONES.recibirCheque, municipioDeDeclaracion(declaracionId), { declaracionId, ...cheque })
+          registrar(PETICIONES.recibirCheque, municipioDeDeclaracion(declaracionId), {
+            declaracionId,
+            ...cheque,
+          })
         },
 
         // Un cheque que ya no está en canje no se puede confirmar ni devolver: la petición falla.
@@ -328,14 +463,36 @@ export const useDatos = create<Estado>()(
           const exito = c?.estado === 'en_canje'
           if (c && exito) {
             set((s) => ({
-              cheques: s.cheques.map((x) => (x.id === id ? { ...x, estado: 'pagado', fechaResolucion: hoy(), resueltoPor: usuario ? nombreCompleto(usuario) : '' } : x)),
+              cheques: s.cheques.map((x) =>
+                x.id === id
+                  ? {
+                      ...x,
+                      estado: 'pagado',
+                      fechaResolucion: hoy(),
+                      resueltoPor: usuario ? nombreCompleto(usuario) : '',
+                    }
+                  : x,
+              ),
               pagos: [
                 ...s.pagos,
-                { id: `p${s.pagos.length + 1}`, declaracionId: c.declaracionId, fecha: c.fechaRecibo, valor: c.valor, medio: 'Cheque de gerencia', recibo: c.recibo, registradoPor: c.recibidoPor },
+                {
+                  id: `p${s.pagos.length + 1}`,
+                  declaracionId: c.declaracionId,
+                  fecha: c.fechaRecibo,
+                  valor: c.valor,
+                  medio: 'Cheque de gerencia',
+                  recibo: c.recibo,
+                  registradoPor: c.recibidoPor,
+                },
               ],
             }))
           }
-          registrar(PETICIONES.confirmarCheque, municipioDeDeclaracion(c?.declaracionId), { id }, exito)
+          registrar(
+            PETICIONES.confirmarCheque,
+            municipioDeDeclaracion(c?.declaracionId),
+            { id },
+            exito,
+          )
         },
 
         devolverCheque: (id, motivo) => {
@@ -345,11 +502,24 @@ export const useDatos = create<Estado>()(
           if (exito) {
             set((s) => ({
               cheques: s.cheques.map((x) =>
-                x.id === id ? { ...x, estado: 'devuelto', fechaResolucion: hoy(), resueltoPor: usuario ? nombreCompleto(usuario) : '', motivoDevolucion: motivo } : x,
+                x.id === id
+                  ? {
+                      ...x,
+                      estado: 'devuelto',
+                      fechaResolucion: hoy(),
+                      resueltoPor: usuario ? nombreCompleto(usuario) : '',
+                      motivoDevolucion: motivo,
+                    }
+                  : x,
               ),
             }))
           }
-          registrar(PETICIONES.devolverCheque, municipioDeDeclaracion(c?.declaracionId), { id, motivo }, exito)
+          registrar(
+            PETICIONES.devolverCheque,
+            municipioDeDeclaracion(c?.declaracionId),
+            { id, motivo },
+            exito,
+          )
         },
 
         reiniciarDemo: () => set({ ...generarDatos(), municipioSeleccionado: null }),

@@ -48,7 +48,9 @@ export function columnasUsuarios(municipios: Municipio[], ver: (id: string) => v
     col.accessor((u) => etiquetaRol[u.rol], {
       id: 'rol',
       header: 'Rol',
-      cell: ({ row: { original: u } }) => <Badge tono={u.rol === '1cero1' ? 'info' : 'neutral'}>{etiquetaRol[u.rol]}</Badge>,
+      cell: ({ row: { original: u } }) => (
+        <Badge tono={u.rol === '1cero1' ? 'info' : 'neutral'}>{etiquetaRol[u.rol]}</Badge>
+      ),
     }),
     col.accessor((u) => nombreMunicipio(u, municipios), {
       id: 'municipio',
@@ -58,7 +60,9 @@ export function columnasUsuarios(municipios: Municipio[], ver: (id: string) => v
     col.accessor((u) => (u.activo ? 'Activo' : 'Inactivo'), {
       id: 'estado',
       header: 'Estado',
-      cell: ({ row: { original: u } }) => <Badge tono={u.activo ? 'exito' : 'neutral'}>{u.activo ? 'Activo' : 'Inactivo'}</Badge>,
+      cell: ({ row: { original: u } }) => (
+        <Badge tono={u.activo ? 'exito' : 'neutral'}>{u.activo ? 'Activo' : 'Inactivo'}</Badge>
+      ),
     }),
   ])
 }

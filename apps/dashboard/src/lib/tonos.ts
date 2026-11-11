@@ -1,5 +1,13 @@
 // Color de cada estado. Siempre va con su texto: el color nunca informa solo.
-import type { EstadoAprobacion, EstadoCheque, EstadoCorreccion, EstadoEmplazamiento, EstadoInscripcion, EstadoNovedad, EstadoPago } from '../types'
+import type {
+  EstadoAprobacion,
+  EstadoCheque,
+  EstadoCorreccion,
+  EstadoEmplazamiento,
+  EstadoInscripcion,
+  EstadoNovedad,
+  EstadoPago,
+} from '../types'
 
 export type Tono = 'neutral' | 'info' | 'exito' | 'alerta' | 'peligro'
 

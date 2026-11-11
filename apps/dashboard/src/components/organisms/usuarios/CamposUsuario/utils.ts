@@ -15,5 +15,12 @@ export function hayErrores(errores: ReturnType<typeof erroresUsuario>) {
 }
 
 export function datosDe(u: Usuario, municipioPorDefecto: string): DatosUsuario {
-  return { nombres: u.nombres, apellidos: u.apellidos, cargo: u.cargo, correo: u.correo, rol: u.rol, municipioId: u.municipioId ?? municipioPorDefecto }
+  return {
+    nombres: u.nombres,
+    apellidos: u.apellidos,
+    cargo: u.cargo,
+    correo: u.correo,
+    rol: u.rol,
+    municipioId: u.municipioId ?? municipioPorDefecto,
+  }
 }

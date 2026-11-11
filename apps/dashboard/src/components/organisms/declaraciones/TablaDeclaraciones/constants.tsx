@@ -21,8 +21,16 @@ export const COLUMNAS = col.columns([
     id: 'numero',
     header: 'Radicado',
     meta: { clase: 'whitespace-nowrap' },
-    cell: ({ row: { original: { d } } }) => (
-      <Link to={`/declaraciones/${d.id}`} aria-label={`Ver la declaración ${d.numero}`} className={CLASE_BOTON_FILA}>
+    cell: ({
+      row: {
+        original: { d },
+      },
+    }) => (
+      <Link
+        to={`/declaraciones/${d.id}`}
+        aria-label={`Ver la declaración ${d.numero}`}
+        className={CLASE_BOTON_FILA}
+      >
         <Document className="size-4 text-brand-600" aria-hidden />
         {d.numero}
       </Link>
@@ -37,15 +45,25 @@ export const COLUMNAS = col.columns([
     id: 'tipo',
     header: 'Tipo de declaración',
     meta: { clase: 'whitespace-nowrap' },
-    cell: ({ row: { original: { d, corrige, aLaBaja, correccion: c } } }) => (
+    cell: ({
+      row: {
+        original: { d, corrige, aLaBaja, correccion: c },
+      },
+    }) => (
       <>
         <p className="text-slate-900">{textoTipoDeclaracion(d.tipo, aLaBaja)}</p>
         {corrige && <p className="text-xs tabular-nums text-slate-500">Corrige la {corrige}</p>}
-        {d.fechaCierre && <p className="text-xs text-slate-500">Cierre: {formatoFecha(d.fechaCierre)}</p>}
+        {d.fechaCierre && (
+          <p className="text-xs text-slate-500">Cierre: {formatoFecha(d.fechaCierre)}</p>
+        )}
         {c && (
           <div className="mt-1">
-            <Badge tono={tonoCorreccion[c.estado]}>Solicitud {etiquetaEstadoCorreccion[c.estado].toLowerCase()}</Badge>
-            {correccionPorResolver(c) && <p className="mt-1 text-xs text-slate-500">Plazo: {formatoFecha(c.limite)}</p>}
+            <Badge tono={tonoCorreccion[c.estado]}>
+              Solicitud {etiquetaEstadoCorreccion[c.estado].toLowerCase()}
+            </Badge>
+            {correccionPorResolver(c) && (
+              <p className="mt-1 text-xs text-slate-500">Plazo: {formatoFecha(c.limite)}</p>
+            )}
           </div>
         )}
       </>
@@ -66,7 +84,11 @@ export const COLUMNAS = col.columns([
     id: 'periodo',
     header: 'Impuesto y periodo',
     meta: { clase: 'whitespace-nowrap' },
-    cell: ({ row: { original: { d } } }) => (
+    cell: ({
+      row: {
+        original: { d },
+      },
+    }) => (
       <>
         <p className="text-slate-900">{etiquetaImpuesto[d.impuesto]}</p>
         <p className="text-xs text-slate-500">{etiquetaPeriodo(d)}</p>
@@ -77,11 +99,17 @@ export const COLUMNAS = col.columns([
     id: 'presentacion',
     header: 'Presentación',
     meta: { clase: 'whitespace-nowrap' },
-    cell: ({ row: { original: { d, sinCalendario } } }) => (
+    cell: ({
+      row: {
+        original: { d, sinCalendario },
+      },
+    }) => (
       <>
         <p className="text-slate-700">{formatoFecha(d.fechaPresentacion)}</p>
         {/* Solo la inicial es extemporánea: la corrección se presenta después del vencimiento sin serlo. */}
-        {d.tipo === 'inicial' && d.fechaPresentacion > d.fechaVencimiento && <p className="text-xs text-amber-700">Extemporánea</p>}
+        {d.tipo === 'inicial' && d.fechaPresentacion > d.fechaVencimiento && (
+          <p className="text-xs text-amber-700">Extemporánea</p>
+        )}
         {sinCalendario && <p className="text-xs text-amber-700">Sin calendario cargado</p>}
       </>
     ),
@@ -97,23 +125,38 @@ export const COLUMNAS = col.columns([
     header: 'Pago',
     // La solicitud de corrección que no se ha aceptado no se paga.
     cell: ({ row: { original: f } }) =>
-      f.pago ? <Badge tono={tonoPago[f.pago]}>{etiquetaEstadoPago[f.pago]}</Badge> : <span className="text-slate-400">No aplica</span>,
+      f.pago ? (
+        <Badge tono={tonoPago[f.pago]}>{etiquetaEstadoPago[f.pago]}</Badge>
+      ) : (
+        <span className="text-slate-400">No aplica</span>
+      ),
   }),
 ])
 
 /** Solo cuando hay declaraciones con aprobación previa; mientras está pendiente, muestra el plazo. */
-export const COLUMNA_APROBACION = col.accessor((f) => (f.aprobacion ? etiquetaEstadoAprobacion[f.aprobacion.estado] : ''), {
-  id: 'aprobacion',
-  header: 'Aprobación',
-  cell: ({ row: { original: { aprobacion: a } } }) =>
-    a ? (
-      <>
-        <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
-        {esperaAprobacion(a) && <p className="mt-1 whitespace-nowrap text-xs text-slate-500">Plazo: {formatoFecha(a.limite)}</p>}
-      </>
-    ) : (
-      <span className="text-slate-400">No aplica</span>
-    ),
-})
+export const COLUMNA_APROBACION = col.accessor(
+  (f) => (f.aprobacion ? etiquetaEstadoAprobacion[f.aprobacion.estado] : ''),
+  {
+    id: 'aprobacion',
+    header: 'Aprobación',
+    cell: ({
+      row: {
+        original: { aprobacion: a },
+      },
+    }) =>
+      a ? (
+        <>
+          <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
+          {esperaAprobacion(a) && (
+            <p className="mt-1 whitespace-nowrap text-xs text-slate-500">
+              Plazo: {formatoFecha(a.limite)}
+            </p>
+          )}
+        </>
+      ) : (
+        <span className="text-slate-400">No aplica</span>
+      ),
+  },
+)
 
 export const ORDEN_INICIAL = [{ id: 'presentacion', desc: true }]

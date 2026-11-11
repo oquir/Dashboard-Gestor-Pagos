@@ -1,5 +1,11 @@
 import { Link } from 'react-router'
-import { etiquetaImpuesto, etiquetaPeriodo, formatoDocumento, formatoFecha, formatoHaceDias } from '../../../../lib/formato'
+import {
+  etiquetaImpuesto,
+  etiquetaPeriodo,
+  formatoDocumento,
+  formatoFecha,
+  formatoHaceDias,
+} from '../../../../lib/formato'
 import { diferenciaDias, hoy } from '../../../../utils'
 import { col } from './utils'
 
@@ -8,9 +14,16 @@ export const COLUMNAS = col.columns([
     id: 'contribuyente',
     header: 'Contribuyente',
     meta: { clase: 'max-w-72' },
-    cell: ({ row: { original: { inscripcion: i } } }) => (
+    cell: ({
+      row: {
+        original: { inscripcion: i },
+      },
+    }) => (
       <>
-        <Link to={`/rit/${i.id}`} className="block truncate font-medium text-slate-900 hover:text-brand-700">
+        <Link
+          to={`/rit/${i.id}`}
+          className="block truncate font-medium text-slate-900 hover:text-brand-700"
+        >
           {i.nombre}
         </Link>
         <p className="truncate text-xs tabular-nums text-slate-500">
@@ -45,7 +58,11 @@ export const COLUMNAS = col.columns([
     id: 'contacto',
     header: 'Contacto',
     meta: { clase: 'max-w-64' },
-    cell: ({ row: { original: { inscripcion: i } } }) => (
+    cell: ({
+      row: {
+        original: { inscripcion: i },
+      },
+    }) => (
       <>
         <p className="truncate tabular-nums text-slate-700">{i.telefono}</p>
         <p className="truncate text-xs text-slate-500">{i.correo}</p>

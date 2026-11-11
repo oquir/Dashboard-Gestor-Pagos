@@ -6,7 +6,12 @@ import { CLASE_LISTA } from './constants'
 import type { ContribuyenteDeclaracionProps } from './types'
 
 /** Los datos de la empresa o de la persona que declara, tal como se escribieron. Si está en el RIT, su nombre lleva a la ficha. */
-export default function ContribuyenteDeclaracion({ d, ins, noInscrito = false, ancha = false }: ContribuyenteDeclaracionProps) {
+export default function ContribuyenteDeclaracion({
+  d,
+  ins,
+  noInscrito = false,
+  ancha = false,
+}: ContribuyenteDeclaracionProps) {
   const { contribuyente: c } = d
 
   return (
@@ -18,7 +23,13 @@ export default function ContribuyenteDeclaracion({ d, ins, noInscrito = false, a
       />
       <dl className={ancha ? CLASE_LISTA.ancha : CLASE_LISTA.angosta}>
         <Dato etiqueta="Nombre o razón social">
-          {ins ? <Link className="font-medium text-brand-700 hover:underline" to={`/rit/${ins.id}`}>{c.nombre}</Link> : c.nombre}
+          {ins ? (
+            <Link className="font-medium text-brand-700 hover:underline" to={`/rit/${ins.id}`}>
+              {c.nombre}
+            </Link>
+          ) : (
+            c.nombre
+          )}
         </Dato>
         <Dato etiqueta="Tipo de documento">{etiquetaTipoDocumento[c.tipoDocumento]}</Dato>
         <Dato etiqueta="Número de documento">
@@ -27,7 +38,9 @@ export default function ContribuyenteDeclaracion({ d, ins, noInscrito = false, a
         <Dato etiqueta="Dirección">{c.direccion}</Dato>
         <Dato etiqueta="Teléfono">{c.telefono}</Dato>
         <Dato etiqueta="Correo">{c.correo}</Dato>
-        {c.establecimientos !== undefined && <Dato etiqueta="Establecimientos en el municipio">{c.establecimientos}</Dato>}
+        {c.establecimientos !== undefined && (
+          <Dato etiqueta="Establecimientos en el municipio">{c.establecimientos}</Dato>
+        )}
       </dl>
     </Card>
   )

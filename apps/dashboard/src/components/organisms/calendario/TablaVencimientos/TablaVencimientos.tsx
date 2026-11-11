@@ -12,7 +12,15 @@ import type { TablaVencimientosProps } from './types'
  * último dígito del NIT o la cédula, una tabla con un renglón por dígito y una columna por periodo. El dígito
  * siempre es sin el de verificación (DV), y la pantalla lo dice: los municipios se confunden con eso.
  */
-export default function TablaVencimientos({ titulo, descripcion, valor, onChange, editable, errores, avisoPeriodicidad }: TablaVencimientosProps) {
+export default function TablaVencimientos({
+  titulo,
+  descripcion,
+  valor,
+  onChange,
+  editable,
+  errores,
+  avisoPeriodicidad,
+}: TablaVencimientosProps) {
   const nombres = NOMBRES_PERIODOS[valor.periodicidad]
 
   return (
@@ -24,7 +32,11 @@ export default function TablaVencimientos({ titulo, descripcion, valor, onChange
         </div>
         {valor.periodicidad !== 'anual' && (
           <Campo etiqueta="Periodicidad" ayuda="Al cambiarla, las fechas quedan vacías.">
-            <Select disabled={!editable} value={valor.periodicidad} onChange={(e) => onChange(conPeriodicidad(valor, e.target.value as Periodicidad))}>
+            <Select
+              disabled={!editable}
+              value={valor.periodicidad}
+              onChange={(e) => onChange(conPeriodicidad(valor, e.target.value as Periodicidad))}
+            >
               {PERIODICIDADES_RETENCION.map((p) => (
                 <option key={p} value={p}>
                   {etiquetaPeriodicidad[p]}
@@ -52,18 +64,26 @@ export default function TablaVencimientos({ titulo, descripcion, valor, onChange
       {valor.porDigito ? (
         <div className="space-y-3">
           <Aviso tono="info">
-            El dígito es el último del NIT o de la cédula <strong>sin el dígito de verificación (DV)</strong>. Por ejemplo, en el NIT 900.123.456-7
-            cuenta el 6, no el 7; en la cédula 43.567.891, el 1.
+            El dígito es el último del NIT o de la cédula{' '}
+            <strong>sin el dígito de verificación (DV)</strong>. Por ejemplo, en el NIT
+            900.123.456-7 cuenta el 6, no el 7; en la cédula 43.567.891, el 1.
           </Aviso>
           <div className="overflow-x-auto">
             <table className="text-sm">
               <thead>
                 <tr>
-                  <th scope="col" className="px-2 pb-1 text-left text-xs font-medium text-slate-500">
+                  <th
+                    scope="col"
+                    className="px-2 pb-1 text-left text-xs font-medium text-slate-500"
+                  >
                     Último dígito (sin DV)
                   </th>
                   {valor.periodos.map((p) => (
-                    <th key={p.periodo} scope="col" className="min-w-40 px-1 pb-1 text-left text-xs font-medium text-slate-700">
+                    <th
+                      key={p.periodo}
+                      scope="col"
+                      className="min-w-40 px-1 pb-1 text-left text-xs font-medium text-slate-700"
+                    >
                       {nombres[p.periodo - 1]}
                     </th>
                   ))}
@@ -72,7 +92,10 @@ export default function TablaVencimientos({ titulo, descripcion, valor, onChange
               <tbody>
                 {DIGITOS.map((d) => (
                   <tr key={d}>
-                    <th scope="row" className="px-2 py-1 text-left font-medium tabular-nums text-slate-700">
+                    <th
+                      scope="row"
+                      className="px-2 py-1 text-left font-medium tabular-nums text-slate-700"
+                    >
                       {d}
                     </th>
                     {valor.periodos.map((p) => (
@@ -108,7 +131,12 @@ export default function TablaVencimientos({ titulo, descripcion, valor, onChange
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {valor.periodos.map((p) => (
             <Campo key={p.periodo} etiqueta={nombres[p.periodo - 1]} error={errores[p.periodo]}>
-              <Input type="date" disabled={!editable} value={p.fechas[0] ?? ''} onChange={(e) => onChange(conFecha(valor, p.periodo, 0, e.target.value))} />
+              <Input
+                type="date"
+                disabled={!editable}
+                value={p.fechas[0] ?? ''}
+                onChange={(e) => onChange(conFecha(valor, p.periodo, 0, e.target.value))}
+              />
             </Campo>
           ))}
         </div>

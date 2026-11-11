@@ -8,7 +8,14 @@ import { AYUDA } from './constants'
 import type { SeccionFormulariosProps } from './types'
 
 /** Formularios que el municipio ofrece a los contribuyentes. Para desactivar uno hay que dar el motivo en una ventana. */
-export default function SeccionFormularios({ b, cambiar, editable, errores, formularios, guardados }: SeccionFormulariosProps) {
+export default function SeccionFormularios({
+  b,
+  cambiar,
+  editable,
+  errores,
+  formularios,
+  guardados,
+}: SeccionFormulariosProps) {
   const { usuario } = useSesion()
   /** El formulario del que se pide el motivo: el que se está apagando o el que ya está apagado. */
   const [pidiendo, setPidiendo] = useState<Formulario | null>(null)
@@ -22,7 +29,12 @@ export default function SeccionFormularios({ b, cambiar, editable, errores, form
   // Cambiar el motivo conserva cuándo y quién lo desactivó, y lo mismo al volver a apagar uno que estaba guardado como desactivado.
   const desactivar = (f: Formulario, motivo: string) => {
     const previo = desactivados[f] ?? guardados[f]
-    fijar(f, previo ? { ...previo, motivo } : { motivo, fecha: hoy(), por: usuario ? nombreCompleto(usuario) : '' })
+    fijar(
+      f,
+      previo
+        ? { ...previo, motivo }
+        : { motivo, fecha: hoy(), por: usuario ? nombreCompleto(usuario) : '' },
+    )
     setPidiendo(null)
   }
 
@@ -38,7 +50,13 @@ export default function SeccionFormularios({ b, cambiar, editable, errores, form
           <div key={f} className="space-y-1.5">
             <Interruptor
               etiqueta={etiquetaFormulario[f]}
-              ayuda={!d ? AYUDA[f] : guardado ? `Desactivado el ${formatoFecha(guardado.fecha)} por ${guardado.por}.` : 'Se desactiva al guardar los cambios.'}
+              ayuda={
+                !d
+                  ? AYUDA[f]
+                  : guardado
+                    ? `Desactivado el ${formatoFecha(guardado.fecha)} por ${guardado.por}.`
+                    : 'Se desactiva al guardar los cambios.'
+              }
               valor={!d}
               deshabilitado={!editable}
               onChange={(activo) => (activo ? fijar(f, undefined) : setPidiendo(f))}
@@ -46,9 +64,14 @@ export default function SeccionFormularios({ b, cambiar, editable, errores, form
             {d && (
               // Alineado con la etiqueta del interruptor.
               <p className="pl-12 text-sm text-slate-600">
-                <span className="font-medium text-slate-700">Motivo:</span> {d.motivo || <span className="text-red-600">{errores[`motivo-${f}`]}</span>}
+                <span className="font-medium text-slate-700">Motivo:</span>{' '}
+                {d.motivo || <span className="text-red-600">{errores[`motivo-${f}`]}</span>}
                 {editable && (
-                  <button type="button" className="ml-2 font-medium text-brand-700 hover:underline" onClick={() => setPidiendo(f)}>
+                  <button
+                    type="button"
+                    className="ml-2 font-medium text-brand-700 hover:underline"
+                    onClick={() => setPidiendo(f)}
+                  >
                     Cambiar
                   </button>
                 )}
@@ -60,7 +83,11 @@ export default function SeccionFormularios({ b, cambiar, editable, errores, form
 
       {pidiendo && (
         <ModalMotivo
-          titulo={desactivados[pidiendo] ? 'Cambiar el motivo' : `Desactivar ${etiquetaFormulario[pidiendo]}`}
+          titulo={
+            desactivados[pidiendo]
+              ? 'Cambiar el motivo'
+              : `Desactivar ${etiquetaFormulario[pidiendo]}`
+          }
           descripcion={
             desactivados[pidiendo]
               ? `${etiquetaFormulario[pidiendo]} está desactivado.`

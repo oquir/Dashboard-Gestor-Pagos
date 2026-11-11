@@ -12,7 +12,10 @@ export default function AvisoSinCalendario({ d, carga }: AvisoSinCalendarioProps
           ? `Se presentó el ${formatoFecha(d.fechaPresentacion)}, antes de que el municipio cargara el calendario del año gravable ${d.vigencia} (lo cargó ${carga.por || 'el municipio'} el ${formatoFecha(carga.fecha)}).`
           : `Se presentó sin el calendario del año gravable ${d.vigencia}: el municipio todavía no lo ha cargado.`}
       </p>
-      <p className="mt-0.5">Revisa que el vencimiento, la sanción y los intereses estén bien: se liquidaron sin las fechas oficiales.</p>
+      <p className="mt-0.5">
+        Revisa que el vencimiento, la sanción y los intereses estén bien: se liquidaron sin las
+        fechas oficiales.
+      </p>
     </Aviso>
   )
 }

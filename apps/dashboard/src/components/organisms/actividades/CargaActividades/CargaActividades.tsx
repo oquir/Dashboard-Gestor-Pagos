@@ -7,7 +7,14 @@ import { Aviso, CardHeader, SelectorArchivo } from '../../../molecules'
 import type { CargaActividadesProps } from './types'
 
 /** Carga de las actividades de un año gravable: plantilla, Excel diligenciado, vista previa y confirmación. */
-export default function CargaActividades({ municipioId, vigencia, base, actual, vista, cambiarVista }: CargaActividadesProps) {
+export default function CargaActividades({
+  municipioId,
+  vigencia,
+  base,
+  actual,
+  vista,
+  cambiarVista,
+}: CargaActividadesProps) {
   const cargarActividades = useDatos((s) => s.cargarActividades)
   const [errores, setErrores] = useState<string[]>([])
   const [cargada, setCargada] = useState<string | null>(null)
@@ -16,7 +23,9 @@ export default function CargaActividades({ municipioId, vigencia, base, actual, 
     setCargada(null)
     const lectura = await leerPlantilla(archivo)
     setErrores(lectura.errores)
-    cambiarVista(lectura.errores.length > 0 ? null : { archivo: archivo.name, tarifas: lectura.tarifas })
+    cambiarVista(
+      lectura.errores.length > 0 ? null : { archivo: archivo.name, tarifas: lectura.tarifas },
+    )
   }
 
   const confirmar = () => {
@@ -40,11 +49,15 @@ export default function CargaActividades({ municipioId, vigencia, base, actual, 
               <DocumentDownload className="size-4" aria-hidden /> Descargar plantilla
             </Boton>
             <p className="mt-1 text-xs text-slate-500">
-              {base ? `Trae las ${base.tarifas.length} actividades de ${base.vigencia} para que ajustes lo que cambió.` : 'Viene vacía, solo con los encabezados.'}
+              {base
+                ? `Trae las ${base.tarifas.length} actividades de ${base.vigencia} para que ajustes lo que cambió.`
+                : 'Viene vacía, solo con los encabezados.'}
             </p>
           </li>
           <li>
-            <p className="mb-1 text-sm font-medium text-slate-700">2. Carga el Excel diligenciado</p>
+            <p className="mb-1 text-sm font-medium text-slate-700">
+              2. Carga el Excel diligenciado
+            </p>
             <SelectorArchivo
               texto="Elegir archivo .xlsx"
               accept=".xlsx"
@@ -69,11 +82,18 @@ export default function CargaActividades({ municipioId, vigencia, base, actual, 
         )}
 
         {vista && (
-          <div role="status" className="flex flex-wrap items-center gap-3 rounded-lg bg-brand-50 px-4 py-3 text-sm text-brand-800">
+          <div
+            role="status"
+            className="flex flex-wrap items-center gap-3 rounded-lg bg-brand-50 px-4 py-3 text-sm text-brand-800"
+          >
             <Document className="size-4 shrink-0" aria-hidden />
             <p className="min-w-0 flex-1">
-              <span className="font-medium">{vista.archivo}</span> trae {vista.tarifas.length} actividades. Revísalas abajo; al confirmar
-              {actual ? ` reemplazan las ${actual.tarifas.length} cargadas` : ' quedan cargadas'} para el año gravable {vigencia}.
+              <span className="font-medium">{vista.archivo}</span> trae {vista.tarifas.length}{' '}
+              actividades. Revísalas abajo; al confirmar
+              {actual
+                ? ` reemplazan las ${actual.tarifas.length} cargadas`
+                : ' quedan cargadas'}{' '}
+              para el año gravable {vigencia}.
             </p>
             <div className="flex gap-2">
               <Boton onClick={() => cambiarVista(null)}>Cancelar</Boton>

@@ -8,12 +8,19 @@ import { COLUMNAS } from './constants'
 import type { TablaActividadesProps } from './types'
 
 /** Actividades y tarifas del año gravable o, mientras no se confirme, las del Excel que se está cargando. */
-export default function TablaActividades({ vigencia, actual, vista, puedeCargar }: TablaActividadesProps) {
+export default function TablaActividades({
+  vigencia,
+  actual,
+  vista,
+  puedeCargar,
+}: TablaActividadesProps) {
   const [texto, setTexto] = useState('')
   const filas = vista?.tarifas ?? actual?.tarifas ?? []
   const fuera = filas.filter(fueraDeTope).length
   const busqueda = normalizar(texto)
-  const encontradas = busqueda ? filas.filter((t) => t.ciiu.includes(busqueda) || normalizar(t.descripcion).includes(busqueda)) : filas
+  const encontradas = busqueda
+    ? filas.filter((t) => t.ciiu.includes(busqueda) || normalizar(t.descripcion).includes(busqueda))
+    : filas
 
   return (
     <Card>
@@ -22,7 +29,8 @@ export default function TablaActividades({ vigencia, actual, vista, puedeCargar 
         descripcion={
           vista
             ? `Vista previa de ${vista.archivo}: aún no se ha guardado.`
-            : actual && `Cargadas por ${actual.cargadoPor} el ${formatoFecha(actual.fechaCarga)} desde ${actual.archivo}.`
+            : actual &&
+              `Cargadas por ${actual.cargadoPor} el ${formatoFecha(actual.fechaCarga)} desde ${actual.archivo}.`
         }
         acciones={
           <div className="flex flex-wrap gap-2">
@@ -44,12 +52,23 @@ export default function TablaActividades({ vigencia, actual, vista, puedeCargar 
               />
             }
           />
-          <Tabla datos={encontradas} columnas={COLUMNAS} idFila={(t) => t.ciiu} densa nombre="actividades" vacio="Ninguna actividad coincide con la búsqueda" />
+          <Tabla
+            datos={encontradas}
+            columnas={COLUMNAS}
+            idFila={(t) => t.ciiu}
+            densa
+            nombre="actividades"
+            vacio="Ninguna actividad coincide con la búsqueda"
+          />
         </>
       ) : (
         <Vacio
           titulo={`Sin actividades para ${vigencia}`}
-          descripcion={puedeCargar ? 'Descarga la plantilla, llénala y cárgala.' : 'El administrador del municipio aún no las ha cargado.'}
+          descripcion={
+            puedeCargar
+              ? 'Descarga la plantilla, llénala y cárgala.'
+              : 'El administrador del municipio aún no las ha cargado.'
+          }
         />
       )}
     </Card>

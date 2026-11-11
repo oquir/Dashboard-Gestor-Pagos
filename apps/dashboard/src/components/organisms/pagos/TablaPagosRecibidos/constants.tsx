@@ -12,14 +12,23 @@ export const COLUMNAS = col.columns([
     meta: { clase: 'whitespace-nowrap text-slate-700' },
     cell: ({ getValue }) => formatoFecha(getValue()),
   }),
-  col.accessor('nombre', { header: 'Contribuyente', meta: { clase: 'max-w-64 truncate text-slate-900' } }),
+  col.accessor('nombre', {
+    header: 'Contribuyente',
+    meta: { clase: 'max-w-64 truncate text-slate-900' },
+  }),
   col.accessor((f) => f.d.numero, {
     id: 'declaracion',
     header: 'Declaración',
     meta: { clase: 'whitespace-nowrap' },
-    cell: ({ row: { original: { d } } }) => (
+    cell: ({
+      row: {
+        original: { d },
+      },
+    }) => (
       <>
-        <Link to={`/declaraciones/${d.id}`} className="text-slate-900 hover:text-brand-700">{d.numero}</Link>
+        <Link to={`/declaraciones/${d.id}`} className="text-slate-900 hover:text-brand-700">
+          {d.numero}
+        </Link>
         <span className="text-xs text-slate-500"> · {etiquetaImpuesto[d.impuesto]}</span>
       </>
     ),

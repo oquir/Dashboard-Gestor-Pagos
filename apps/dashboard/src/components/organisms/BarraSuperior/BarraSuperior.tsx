@@ -17,7 +17,12 @@ export default function BarraSuperior({ abrirMenu }: BarraSuperiorProps) {
 
   const municipio = municipios.find((m) => m.id === municipioId)
   const reiniciar = () => {
-    if (window.confirm('¿Reiniciar la demo? Se pierden los cambios hechos y vuelven los datos originales.')) reiniciarDemo()
+    if (
+      window.confirm(
+        '¿Reiniciar la demo? Se pierden los cambios hechos y vuelven los datos originales.',
+      )
+    )
+      reiniciarDemo()
   }
 
   return (
@@ -39,7 +44,9 @@ export default function BarraSuperior({ abrirMenu }: BarraSuperiorProps) {
           <p className="text-sm font-medium text-slate-900">{nombreCompleto(usuario)}</p>
           <p className="text-xs text-slate-500">{usuario.cargo}</p>
         </div>
-        <Badge tono={usuario.rol === '1cero1' ? 'info' : 'neutral'}>{etiquetaRol[usuario.rol]}</Badge>
+        <Badge tono={usuario.rol === '1cero1' ? 'info' : 'neutral'}>
+          {etiquetaRol[usuario.rol]}
+        </Badge>
         <Boton variante="fantasma" title="Reiniciar los datos de la demo" onClick={reiniciar}>
           <RotateLeft className="size-4" aria-hidden />
           <span className="hidden xl:inline">Reiniciar demo</span>

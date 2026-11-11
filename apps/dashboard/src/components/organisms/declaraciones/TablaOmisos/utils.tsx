@@ -17,7 +17,11 @@ export const columnaMunicipio = (municipios: Municipio[]) =>
   })
 
 /** Casillas para elegir los omisos que se emplazan; la del encabezado marca todos los filtrados que aún no tienen emplazamiento. */
-export function columnaSeleccion(omisos: Omiso[], emplazamientos: Emplazamiento[], { seleccion, marcar }: SeleccionOmisos) {
+export function columnaSeleccion(
+  omisos: Omiso[],
+  emplazamientos: Emplazamiento[],
+  { seleccion, marcar }: SeleccionOmisos,
+) {
   const disponibles = omisos.filter((o) => !emplazamientoDelOmiso(o, emplazamientos)).map(idOmiso)
   const marcadas = disponibles.filter((id) => seleccion.has(id)).length
   return col.display({
@@ -58,6 +62,10 @@ export const columnaEmplazamiento = (emplazamientos: Emplazamiento[]) =>
     meta: { clase: 'min-w-52' },
     cell: ({ row: { original: o } }) => {
       const e = emplazamientoDelOmiso(o, emplazamientos)
-      return e ? <EmplazamientoResumen e={e} /> : <span className="text-xs text-slate-400">Sin emplazamiento</span>
+      return e ? (
+        <EmplazamientoResumen e={e} />
+      ) : (
+        <span className="text-xs text-slate-400">Sin emplazamiento</span>
+      )
     },
   })

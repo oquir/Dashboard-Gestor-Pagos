@@ -6,7 +6,14 @@ import { CardHeader } from '../../molecules'
 import type { ListaArchivosProps } from './types'
 
 /** Archivos cargados por el contribuyente: descarga uno a uno o todos en un .zip. */
-export default function ListaArchivos({ titulo, descripcion, items, contexto, nombreZip, vacio = 'No hay archivos.' }: ListaArchivosProps) {
+export default function ListaArchivos({
+  titulo,
+  descripcion,
+  items,
+  contexto,
+  nombreZip,
+  vacio = 'No hay archivos.',
+}: ListaArchivosProps) {
   const cargados = items.flatMap(({ titulo, archivo }) => (archivo ? [{ titulo, archivo }] : []))
 
   return (
@@ -16,7 +23,10 @@ export default function ListaArchivos({ titulo, descripcion, items, contexto, no
         descripcion={descripcion}
         acciones={
           cargados.length > 0 && (
-            <Boton variante="secundario" onClick={() => descargarZip(nombreZip, cargados, contexto)}>
+            <Boton
+              variante="secundario"
+              onClick={() => descargarZip(nombreZip, cargados, contexto)}
+            >
               <Zip className="size-4" aria-hidden /> Descargar todos (.zip)
             </Boton>
           )
@@ -28,11 +38,16 @@ export default function ListaArchivos({ titulo, descripcion, items, contexto, no
         <ul className="divide-y divide-slate-100">
           {items.map(({ titulo, archivo }) => (
             <li key={titulo} className="flex items-center gap-3 px-5 py-3 text-sm">
-              <Document className={`size-5 shrink-0 ${archivo ? 'text-brand-600' : 'text-slate-300'}`} aria-hidden />
+              <Document
+                className={`size-5 shrink-0 ${archivo ? 'text-brand-600' : 'text-slate-300'}`}
+                aria-hidden
+              />
               <div className="min-w-0 flex-1">
                 <p className={archivo ? 'text-slate-900' : 'text-red-700'}>{titulo}</p>
                 <p className="truncate text-xs text-slate-500">
-                  {archivo ? `${archivo.nombre} · ${formatoTamano(archivo.tamano)} · ${formatoFecha(archivo.fechaCarga)}` : 'No cargado'}
+                  {archivo
+                    ? `${archivo.nombre} · ${formatoTamano(archivo.tamano)} · ${formatoFecha(archivo.fechaCarga)}`
+                    : 'No cargado'}
                 </p>
               </div>
               {archivo && (

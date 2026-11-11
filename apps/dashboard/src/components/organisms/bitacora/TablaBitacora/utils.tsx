@@ -57,7 +57,11 @@ export function columnasBitacora(municipios: Municipio[]) {
       cell: ({ row: { original: r } }) => (
         <>
           <p className="font-medium text-slate-900">{r.usuario.nombre}</p>
-          {r.usuario.rol === '1cero1' ? <Badge tono="info">1cero1</Badge> : <p className="text-xs text-slate-500">{etiquetaRol[r.usuario.rol]}</p>}
+          {r.usuario.rol === '1cero1' ? (
+            <Badge tono="info">1cero1</Badge>
+          ) : (
+            <p className="text-xs text-slate-500">{etiquetaRol[r.usuario.rol]}</p>
+          )}
         </>
       ),
     }),
@@ -81,7 +85,9 @@ export function columnasBitacora(municipios: Municipio[]) {
     col.accessor('exito', {
       header: 'Resultado',
       meta: { clase: 'whitespace-nowrap' },
-      cell: ({ row: { original: r } }) => <Badge tono={r.exito ? 'exito' : 'peligro'}>{textoResultado(r)}</Badge>,
+      cell: ({ row: { original: r } }) => (
+        <Badge tono={r.exito ? 'exito' : 'peligro'}>{textoResultado(r)}</Badge>
+      ),
     }),
   ])
 }

@@ -11,19 +11,26 @@ export default function AvisoSinConsignar({ r }: AvisoSinConsignarProps) {
     return (
       <Aviso tono="peligro" icono={Danger} rol="alert">
         <p className="font-medium">
-          {retenido} no se consignó a tiempo: el plazo de 2 meses venció el {formatoFecha(r.limite)}.
+          {retenido} no se consignó a tiempo: el plazo de 2 meses venció el {formatoFecha(r.limite)}
+          .
         </p>
-        <p className="mt-0.5">No consignarlo puede ser delito (art. 402 del Código Penal). Si paga todo con intereses, se puede cerrar el proceso penal.</p>
+        <p className="mt-0.5">
+          No consignarlo puede ser delito (art. 402 del Código Penal). Si paga todo con intereses,
+          se puede cerrar el proceso penal.
+        </p>
       </Aviso>
     )
   }
   return (
     <Aviso tono="alerta" icono={Danger}>
       <p className="font-medium">
-        {retenido} no se ha consignado. Hay plazo hasta el {formatoFecha(r.limite)} ({plazoConsignacion(r.dias).toLowerCase()}), 2 meses después del
-        vencimiento de la declaración.
+        {retenido} no se ha consignado. Hay plazo hasta el {formatoFecha(r.limite)} (
+        {plazoConsignacion(r.dias).toLowerCase()}), 2 meses después del vencimiento de la
+        declaración.
       </p>
-      <p className="mt-0.5">Si para entonces no se paga completo, puede ser delito (art. 402 del Código Penal).</p>
+      <p className="mt-0.5">
+        Si para entonces no se paga completo, puede ser delito (art. 402 del Código Penal).
+      </p>
     </Aviso>
   )
 }

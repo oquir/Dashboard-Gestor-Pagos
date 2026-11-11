@@ -20,11 +20,17 @@ export interface FiltrosBitacora {
 }
 
 /** El texto se busca en el número, el usuario, la acción, el endpoint y los datos enviados, sin importar tildes ni mayúsculas. */
-export function filtrarBitacora(registros: RegistroBitacora[], { texto, controlador, rol, soloFueraDeHorario, soloFallidas }: FiltrosBitacora) {
+export function filtrarBitacora(
+  registros: RegistroBitacora[],
+  { texto, controlador, rol, soloFueraDeHorario, soloFallidas }: FiltrosBitacora,
+) {
   const busqueda = normalizar(texto)
   return registros.filter(
     (r) =>
-      (!busqueda || [String(r.id), r.usuario.nombre, r.accion, r.endpoint, datosEnTexto(r)].some((t) => normalizar(t).includes(busqueda))) &&
+      (!busqueda ||
+        [String(r.id), r.usuario.nombre, r.accion, r.endpoint, datosEnTexto(r)].some((t) =>
+          normalizar(t).includes(busqueda),
+        )) &&
       (!controlador || r.controlador === controlador) &&
       (!rol || r.usuario.rol === rol) &&
       (!soloFueraDeHorario || fueraDeHorario(r)) &&

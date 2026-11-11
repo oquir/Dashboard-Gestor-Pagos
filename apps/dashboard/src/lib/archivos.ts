@@ -24,7 +24,10 @@ function abrirBase() {
   })
 }
 
-async function operar<T>(modo: IDBTransactionMode, accion: (almacen: IDBObjectStore) => IDBRequest<T>) {
+async function operar<T>(
+  modo: IDBTransactionMode,
+  accion: (almacen: IDBObjectStore) => IDBRequest<T>,
+) {
   const base = await abrirBase()
   return new Promise<T>((resolver, rechazar) => {
     const solicitud = accion(base.transaction(ALMACEN, modo).objectStore(ALMACEN))
@@ -36,7 +39,12 @@ async function operar<T>(modo: IDBTransactionMode, accion: (almacen: IDBObjectSt
 /** Guarda el contenido de un archivo cargado y devuelve sus datos para el estado de la demo. */
 export async function guardarArchivo(archivo: File): Promise<Archivo> {
   const id = crypto.randomUUID()
-  const datos: Archivo = { id, nombre: archivo.name, tamano: archivo.size, fechaCarga: new Date().toISOString().slice(0, 10) }
+  const datos: Archivo = {
+    id,
+    nombre: archivo.name,
+    tamano: archivo.size,
+    fechaCarga: new Date().toISOString().slice(0, 10),
+  }
   try {
     await operar('readwrite', (a) => a.put(archivo, id))
   } catch {
@@ -56,8 +64,15 @@ async function contenidoGuardado(archivo: Archivo) {
 
 /** PDF de una página con unas líneas de texto (solo ASCII, sin fuentes incrustadas). */
 function pdfDeTexto(lineas: string[]) {
-  const ascii = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\x20-\x7e]/g, '?').replace(/[\\()]/g, '\\$&')
-  const texto = lineas.map((l, i) => `BT /F1 ${i === 0 ? 16 : 11} Tf 60 ${760 - i * 22} Td (${ascii(l)}) Tj ET`).join('\n')
+  const ascii = (t: string) =>
+    t
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^\x20-\x7e]/g, '?')
+      .replace(/[\\()]/g, '\\$&')
+  const texto = lineas
+    .map((l, i) => `BT /F1 ${i === 0 ? 16 : 11} Tf 60 ${760 - i * 22} Td (${ascii(l)}) Tj ET`)
+    .join('\n')
   const objetos = [
     '<< /Type /Catalog /Pages 2 0 R >>',
     '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
@@ -79,7 +94,15 @@ function pdfDeTexto(lineas: string[]) {
 
 /** Los archivos de los datos generados no tienen contenido: se descarga un PDF que dice qué documento es y de quién. */
 function pdfDeMuestra(archivo: Archivo, titulo: string, contexto: string[]) {
-  return pdfDeTexto([titulo, ...contexto, '', `Archivo: ${archivo.nombre}`, `Cargado el ${archivo.fechaCarga}`, '', 'Documento de muestra generado por la demo.'])
+  return pdfDeTexto([
+    titulo,
+    ...contexto,
+    '',
+    `Archivo: ${archivo.nombre}`,
+    `Cargado el ${archivo.fechaCarga}`,
+    '',
+    'Documento de muestra generado por la demo.',
+  ])
 }
 
 export function descargarBlob(blob: Blob, nombre: string) {
@@ -94,15 +117,27 @@ export function descargarBlob(blob: Blob, nombre: string) {
 /** Descarga un archivo: el contenido cargado si existe, o el PDF de muestra. */
 export async function descargarArchivo(archivo: Archivo, titulo: string, contexto: string[]) {
   const guardado = await contenidoGuardado(archivo)
-  descargarBlob(guardado ?? new Blob([pdfDeMuestra(archivo, titulo, contexto)], { type: 'application/pdf' }), archivo.nombre)
+  descargarBlob(
+    guardado ?? new Blob([pdfDeMuestra(archivo, titulo, contexto)], { type: 'application/pdf' }),
+    archivo.nombre,
+  )
 }
 
 /** Empaqueta en un solo .zip todos los archivos cargados. */
-export async function descargarZip(nombreZip: string, items: { titulo: string; archivo: Archivo }[], contexto: string[]) {
+export async function descargarZip(
+  nombreZip: string,
+  items: { titulo: string; archivo: Archivo }[],
+  contexto: string[],
+) {
   const entradas = await Promise.all(
     items.map(async ({ titulo, archivo }) => {
       const guardado = await contenidoGuardado(archivo)
-      return [archivo.nombre, guardado ? new Uint8Array(await guardado.arrayBuffer()) : strToU8(pdfDeMuestra(archivo, titulo, contexto))] as const
+      return [
+        archivo.nombre,
+        guardado
+          ? new Uint8Array(await guardado.arrayBuffer())
+          : strToU8(pdfDeMuestra(archivo, titulo, contexto)),
+      ] as const
     }),
   )
   const zip = zipSync(Object.fromEntries(entradas))

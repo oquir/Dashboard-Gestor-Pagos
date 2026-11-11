@@ -5,7 +5,13 @@ import { useSesion } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import { Badge, Boton } from '../../../atoms'
 import { Aviso, Dato, Modal } from '../../../molecules'
-import CamposUsuario, { datosDe, erroresUsuario, hayErrores, ROLES_1CERO1, ROLES_MUNICIPIO } from '../CamposUsuario'
+import CamposUsuario, {
+  datosDe,
+  erroresUsuario,
+  hayErrores,
+  ROLES_1CERO1,
+  ROLES_MUNICIPIO,
+} from '../CamposUsuario'
 import type { DatosUsuario } from '../CamposUsuario'
 import type { DetalleUsuarioProps } from './types'
 
@@ -16,7 +22,12 @@ type Modo = 'ver' | 'editar' | 'eliminar'
  * cuando el municipio pierde el acceso al que tenía), reenviarle las credenciales, desactivarlo o reactivarlo, y
  * eliminarlo después de confirmar. En la demo, los correos no salen de verdad.
  */
-export default function DetalleUsuario({ usuario: u, municipio, gestionable, cerrar }: DetalleUsuarioProps) {
+export default function DetalleUsuario({
+  usuario: u,
+  municipio,
+  gestionable,
+  cerrar,
+}: DetalleUsuarioProps) {
   const { usuario: actual } = useSesion()
   const municipios = useDatos((s) => s.municipios)
   const guardarUsuario = useDatos((s) => s.guardarUsuario)
@@ -48,7 +59,11 @@ export default function DetalleUsuario({ usuario: u, municipio, gestionable, cer
       rol: datos.rol,
       municipioId: datos.rol === '1cero1' ? null : es1cero1 ? datos.municipioId : u.municipioId,
     })
-    setAviso(correo !== u.correo ? `Se guardaron los cambios. El correo ahora es ${correo}: reenvíale las credenciales para que pueda entrar.` : 'Se guardaron los cambios.')
+    setAviso(
+      correo !== u.correo
+        ? `Se guardaron los cambios. El correo ahora es ${correo}: reenvíale las credenciales para que pueda entrar.`
+        : 'Se guardaron los cambios.',
+    )
     setModo('ver')
   }
 
@@ -62,7 +77,9 @@ export default function DetalleUsuario({ usuario: u, municipio, gestionable, cer
   ) : modo === 'editar' ? (
     <>
       <Boton onClick={() => setModo('ver')}>Cancelar</Boton>
-      <Boton variante="primario" onClick={guardar}>Guardar cambios</Boton>
+      <Boton variante="primario" onClick={guardar}>
+        Guardar cambios
+      </Boton>
     </>
   ) : modo === 'eliminar' ? (
     <>
@@ -73,7 +90,11 @@ export default function DetalleUsuario({ usuario: u, municipio, gestionable, cer
     </>
   ) : (
     <>
-      <Boton variante="fantasma" className="mr-auto text-red-600 hover:bg-red-50" onClick={() => setModo('eliminar')}>
+      <Boton
+        variante="fantasma"
+        className="mr-auto text-red-600 hover:bg-red-50"
+        onClick={() => setModo('eliminar')}
+      >
         <Trash className="size-4" aria-hidden /> Eliminar
       </Boton>
       <Boton onClick={editar}>
@@ -92,7 +113,12 @@ export default function DetalleUsuario({ usuario: u, municipio, gestionable, cer
   )
 
   return (
-    <Modal titulo={modo === 'editar' ? 'Editar usuario' : nombreCompleto(u)} descripcion={modo === 'editar' ? nombreCompleto(u) : u.cargo} cerrar={cerrar} pie={pie}>
+    <Modal
+      titulo={modo === 'editar' ? 'Editar usuario' : nombreCompleto(u)}
+      descripcion={modo === 'editar' ? nombreCompleto(u) : u.cargo}
+      cerrar={cerrar}
+      pie={pie}
+    >
       {modo === 'editar' ? (
         <CamposUsuario
           datos={datos}
@@ -120,7 +146,9 @@ export default function DetalleUsuario({ usuario: u, municipio, gestionable, cer
       )}
 
       <div className="mt-4 space-y-3 empty:hidden">
-        {modo === 'ver' && !u.activo && gestionable && <Aviso tono="neutral">No puede entrar al aplicativo mientras esté inactivo.</Aviso>}
+        {modo === 'ver' && !u.activo && gestionable && (
+          <Aviso tono="neutral">No puede entrar al aplicativo mientras esté inactivo.</Aviso>
+        )}
         {modo === 'ver' && aviso && (
           <Aviso tono="exito" icono={CheckCircle} rol="status">
             {aviso}
@@ -129,10 +157,18 @@ export default function DetalleUsuario({ usuario: u, municipio, gestionable, cer
         {modo === 'eliminar' && (
           <Aviso tono="peligro" icono={Warning} rol="alert">
             <p className="font-medium">¿Eliminar a {nombreCompleto(u)}?</p>
-            <p className="mt-0.5">No se puede deshacer. Si solo quieres quitarle el acceso, mejor desactívalo.</p>
+            <p className="mt-0.5">
+              No se puede deshacer. Si solo quieres quitarle el acceso, mejor desactívalo.
+            </p>
           </Aviso>
         )}
-        {!gestionable && <Aviso tono="neutral">{u.id === actual?.id ? 'No puedes cambiar tu propio usuario.' : 'Solo 1cero1 puede cambiar a los usuarios de 1cero1.'}</Aviso>}
+        {!gestionable && (
+          <Aviso tono="neutral">
+            {u.id === actual?.id
+              ? 'No puedes cambiar tu propio usuario.'
+              : 'Solo 1cero1 puede cambiar a los usuarios de 1cero1.'}
+          </Aviso>
+        )}
       </div>
     </Modal>
   )

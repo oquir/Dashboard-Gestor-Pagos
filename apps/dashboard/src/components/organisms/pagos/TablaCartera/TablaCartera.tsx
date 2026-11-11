@@ -8,7 +8,10 @@ import type { TablaCarteraProps } from './types'
 export default function TablaCartera({ cartera }: TablaCarteraProps) {
   return (
     <Card>
-      <CardHeader titulo="Cartera pendiente" descripcion="Declaraciones vigentes con saldo por pagar." />
+      <CardHeader
+        titulo="Cartera pendiente"
+        descripcion="Declaraciones vigentes con saldo por pagar."
+      />
       <Tabla
         datos={cartera}
         columnas={COLUMNAS}

@@ -6,7 +6,12 @@ import type { Causal } from './types'
  * pueden corregir (art. 588, parágrafo 2); la del c), no.
  */
 export const CAUSALES: Record<CausalNoPresentada, Causal> = {
-  lugar: { literal: 'a', etiqueta: 'Lugar de presentación', descripcion: 'No se presentó en un lugar autorizado.', seCorrige: true },
+  lugar: {
+    literal: 'a',
+    etiqueta: 'Lugar de presentación',
+    descripcion: 'No se presentó en un lugar autorizado.',
+    seCorrige: true,
+  },
   identificacion: {
     literal: 'b',
     etiqueta: 'Identificación del declarante',
@@ -22,7 +27,8 @@ export const CAUSALES: Record<CausalNoPresentada, Causal> = {
   firmas: {
     literal: 'd',
     etiqueta: 'Firmas',
-    descripcion: 'No la firmó quien debía declarar, o le falta la firma del contador o del revisor fiscal cuando la ley la exige.',
+    descripcion:
+      'No la firmó quien debía declarar, o le falta la firma del contador o del revisor fiscal cuando la ley la exige.',
     seCorrige: true,
   },
 }

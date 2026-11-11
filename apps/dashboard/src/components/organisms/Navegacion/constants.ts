@@ -1,4 +1,16 @@
-import { City, Calendar, ChartSquare, AddressCard, Briefcase, Category, History, Industry, Settings2, Users, Wallet } from 'reicon-react'
+import {
+  City,
+  Calendar,
+  ChartSquare,
+  AddressCard,
+  Briefcase,
+  Category,
+  History,
+  Industry,
+  Settings2,
+  Users,
+  Wallet,
+} from 'reicon-react'
 import type { EnlaceNavegacion } from './types'
 
 export const NAVEGACION: EnlaceNavegacion[] = [

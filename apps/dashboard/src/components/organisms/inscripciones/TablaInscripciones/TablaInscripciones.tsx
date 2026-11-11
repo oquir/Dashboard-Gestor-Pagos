@@ -11,7 +11,8 @@ export default function TablaInscripciones({ inscripciones, total }: TablaInscri
   const { municipioId } = useSesion()
   const municipios = useDatos((s) => s.municipios)
   const columnas = useMemo(
-    () => (municipioId === null ? col.columns([...COLUMNAS, columnaMunicipio(municipios)]) : COLUMNAS),
+    () =>
+      municipioId === null ? col.columns([...COLUMNAS, columnaMunicipio(municipios)]) : COLUMNAS,
     [municipioId, municipios],
   )
 

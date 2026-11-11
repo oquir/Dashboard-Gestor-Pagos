@@ -23,7 +23,8 @@ export default function BuscadorMunicipios({ todos = true }: BuscadorMunicipiosP
   const [abierto, setAbierto] = useState(false)
   const [resaltado, setResaltado] = useState(0)
   const { opciones, mas } = opcionesMunicipios(municipios, texto, todos)
-  const actual = municipios.find((m) => m.id === elegido)?.nombre ?? (todos ? 'Todos los municipios' : '')
+  const actual =
+    municipios.find((m) => m.id === elegido)?.nombre ?? (todos ? 'Todos los municipios' : '')
   const idOpcion = (municipioId: string | null) => `${id}-${municipioId ?? 'todos'}`
 
   if (!puede(usuario?.rol, 'verTodosLosMunicipios')) return null
@@ -58,7 +59,9 @@ export default function BuscadorMunicipios({ todos = true }: BuscadorMunicipiosP
           aria-autocomplete="list"
           aria-expanded={abierto}
           aria-controls={`${id}-opciones`}
-          aria-activedescendant={abierto && opciones[resaltado] ? idOpcion(opciones[resaltado].id) : undefined}
+          aria-activedescendant={
+            abierto && opciones[resaltado] ? idOpcion(opciones[resaltado].id) : undefined
+          }
           autoComplete="off"
           placeholder="Buscar municipio por nombre"
           value={abierto ? texto : actual}
@@ -69,7 +72,12 @@ export default function BuscadorMunicipios({ todos = true }: BuscadorMunicipiosP
           onFocus={() => {
             setAbierto(true)
             // Sin texto, la lista empieza resaltando el que se está viendo.
-            setResaltado(Math.max(opciones.findIndex((o) => o.id === elegido), 0))
+            setResaltado(
+              Math.max(
+                opciones.findIndex((o) => o.id === elegido),
+                0,
+              ),
+            )
           }}
           onBlur={() => {
             setAbierto(false)
@@ -82,7 +90,12 @@ export default function BuscadorMunicipios({ todos = true }: BuscadorMunicipiosP
             {opciones.length === 0 ? (
               <p className="px-3 py-4 text-sm text-slate-500">Ningún municipio se llama así.</p>
             ) : (
-              <ul id={`${id}-opciones`} role="listbox" aria-label="Municipios" className="max-h-80 overflow-y-auto py-1">
+              <ul
+                id={`${id}-opciones`}
+                role="listbox"
+                aria-label="Municipios"
+                className="max-h-80 overflow-y-auto py-1"
+              >
                 {opciones.map((o, i) => (
                   <li
                     key={o.id ?? 'todos'}
@@ -97,7 +110,9 @@ export default function BuscadorMunicipios({ todos = true }: BuscadorMunicipiosP
                   >
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
-                        <span className="truncate text-sm font-medium text-slate-900">{o.nombre}</span>
+                        <span className="truncate text-sm font-medium text-slate-900">
+                          {o.nombre}
+                        </span>
                         {o.inactivo && <Badge tono="neutral">Inactivo</Badge>}
                       </span>
                       <span className="block truncate text-xs text-slate-500">{o.detalle}</span>
@@ -112,7 +127,11 @@ export default function BuscadorMunicipios({ todos = true }: BuscadorMunicipiosP
                 ))}
               </ul>
             )}
-            {mas > 0 && <p className="border-t border-slate-100 px-3 py-2 text-xs text-slate-500">Hay {mas} más: escribe más del nombre para encontrarlo.</p>}
+            {mas > 0 && (
+              <p className="border-t border-slate-100 px-3 py-2 text-xs text-slate-500">
+                Hay {mas} más: escribe más del nombre para encontrarlo.
+              </p>
+            )}
           </div>
         )}
       </div>

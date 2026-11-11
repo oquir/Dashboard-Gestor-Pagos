@@ -1,6 +1,7 @@
 # RIT: agentes retenedores y autorretenedores (lo validado)
 
 > **Para qué sirve**: retomar en una sesión nueva lo que se investigó y validó sobre tres preguntas:
+>
 > - cómo se llega a ser agente retenedor o autorretenedor del ICA;
 > - cómo los identifica el municipio en el RIT;
 > - qué dicen las normas que cita el mock.
@@ -48,6 +49,7 @@ La guía oficial de Medellín de 2026 lo resume así: los agentes "pueden ser de
   - "y demás entidades públicas o estatales de cualquier naturaleza jurídica con jurisdicción o presencia en Medellín".
 
   Los fondos educativos no son agentes.
+
 - **Pagos con tarjeta (art. 89)**: las entidades adquirentes, pagadoras o financieras retienen el **2 por mil**, sin base mínima.
 - **Por resolución (art. 81)**: la Subsecretaría de Ingresos nombra contribuyentes "atendiendo aspectos tales como las calidades y características del contribuyente".
   - La **Res. 202550100042 del 9 de diciembre de 2025** nombra agentes nuevos desde el 1 de enero de 2026 "por su estructura, capacidad e ingresos generados".
@@ -62,6 +64,7 @@ La guía oficial de Medellín de 2026 lo resume así: los agentes "pueden ser de
   - "documento que acredite la condición de agente retenedor, como un contrato de mandato, poder o designación legal".
 
   La Subsecretaría revisa los documentos y notifica la inscripción.
+
 - **Obligaciones**:
   - retener (art. 87);
   - llevar una subcuenta "RETEICA por pagar";
@@ -71,6 +74,7 @@ La guía oficial de Medellín de 2026 lo resume así: los agentes "pueden ser de
   - reportar información exógena (art. 84).
 
   Si no retiene, responde por ese valor (art. 88). Si en el bimestre no hubo operaciones, no declara (art. 76).
+
 - **Liquidación (art. 83)**:
   - se retiene en pagos desde **15 UVT**, sobre una base sin IVA;
   - la tarifa es **1,8 por mil**;
@@ -116,38 +120,39 @@ La guía oficial de Medellín de 2026 lo resume así: los agentes "pueden ser de
 
 Es el formulario "RIT – Contribuyente", código FO-HAPU 351 IN-F-03: un escaneo de 2 páginas que la guía de 2026 enlaza en `n9.cl/formrit`. Es una versión antigua (cita el Acuerdo 67 de 2008 y dice "Municipio de Medellín"). Esta es la transcripción de lo relevante:
 
-| Casilla | Contenido | Para qué sirve |
-|---|---|---|
-| **1. Opción de uso** | Inscripción / Actualización / Cancelación / Anulación | El tipo de trámite |
-| **2. Clase de contribuyente** (se marca solo una) | Normal / Ocasional / **Retenedor ICA** | **La marca explícita del agente retenedor.** La instrucción dice: "Son personas jurídicas que reciben servicios de contribuyentes dentro del Municipio de Medellín; y a la vez retienen y recaudan el Impuesto respectivo" |
-| **3. Identificación** | Número y DV (no se puede actualizar en el formulario) | **La llave** para cruzar contra las listas de las resoluciones |
-| **6. Tipo de documento** | CC, NIT, TI, CE | — |
-| **7. Naturaleza jurídica** | Códigos (tabla abajo) | **Identifica a los agentes por norma**: sus códigos coinciden con la lista del art. 81 |
-| **8. Tipo de sociedad** | 01 colectiva … 07 de economía mixta, 08 extranjera, 09 civil, 10 asociativa de trabajo, 11 otras | Complementa la casilla 7 |
-| **9. Tipo de entidad** | 30 financiera, 31 oficial, 32 privada, 33 patrimonios autónomos | Separa lo público (31) de lo financiero (30, relevante para el art. 89) |
-| **10. Clase de entidad** | 30 bancos … 40 del orden nacional, 41 del orden departamental, 42 del orden municipal, 43 cooperativa … 62 privada | Ubica a las entidades públicas por su orden y a las financieras |
-| **Sección VII. Firmas** | Incluye un espacio para el registro **de oficio**, con el nombre del funcionario | La administración también puede inscribir |
-| *(no existe)* | **No hay casilla de autorretenedor** | Esa marca la pone la administración (§3) |
+| Casilla                                           | Contenido                                                                                                          | Para qué sirve                                                                                                                                                                                                             |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1. Opción de uso**                              | Inscripción / Actualización / Cancelación / Anulación                                                              | El tipo de trámite                                                                                                                                                                                                         |
+| **2. Clase de contribuyente** (se marca solo una) | Normal / Ocasional / **Retenedor ICA**                                                                             | **La marca explícita del agente retenedor.** La instrucción dice: "Son personas jurídicas que reciben servicios de contribuyentes dentro del Municipio de Medellín; y a la vez retienen y recaudan el Impuesto respectivo" |
+| **3. Identificación**                             | Número y DV (no se puede actualizar en el formulario)                                                              | **La llave** para cruzar contra las listas de las resoluciones                                                                                                                                                             |
+| **6. Tipo de documento**                          | CC, NIT, TI, CE                                                                                                    | —                                                                                                                                                                                                                          |
+| **7. Naturaleza jurídica**                        | Códigos (tabla abajo)                                                                                              | **Identifica a los agentes por norma**: sus códigos coinciden con la lista del art. 81                                                                                                                                     |
+| **8. Tipo de sociedad**                           | 01 colectiva … 07 de economía mixta, 08 extranjera, 09 civil, 10 asociativa de trabajo, 11 otras                   | Complementa la casilla 7                                                                                                                                                                                                   |
+| **9. Tipo de entidad**                            | 30 financiera, 31 oficial, 32 privada, 33 patrimonios autónomos                                                    | Separa lo público (31) de lo financiero (30, relevante para el art. 89)                                                                                                                                                    |
+| **10. Clase de entidad**                          | 30 bancos … 40 del orden nacional, 41 del orden departamental, 42 del orden municipal, 43 cooperativa … 62 privada | Ubica a las entidades públicas por su orden y a las financieras                                                                                                                                                            |
+| **Sección VII. Firmas**                           | Incluye un espacio para el registro **de oficio**, con el nombre del funcionario                                   | La administración también puede inscribir                                                                                                                                                                                  |
+| _(no existe)_                                     | **No hay casilla de autorretenedor**                                                                               | Esa marca la pone la administración (§3)                                                                                                                                                                                   |
 
 **Códigos de la casilla 7 (naturaleza jurídica)**:
 
-| Código | Qué es |
-|---|---|
-| PJ / PN | Persona jurídica / natural |
-| SH / PA | Sociedad de hecho / patrimonio autónomo |
-| CO / UT | Consorcio / unión temporal |
-| CR / SI | Comunidad organizada / sucesión ilíquida |
-| **SM** | Sociedad de economía mixta de todo orden |
-| **UA** | Unidad administrativa con régimen especial |
-| **DA** | Departamento de Antioquia |
-| **LN** | La Nación |
-| **EE** | Entidad del Estado |
-| **EC** | Entidad del Estado de cualquier naturaleza |
+| Código           | Qué es                                                                                                                                            |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PJ / PN          | Persona jurídica / natural                                                                                                                        |
+| SH / PA          | Sociedad de hecho / patrimonio autónomo                                                                                                           |
+| CO / UT          | Consorcio / unión temporal                                                                                                                        |
+| CR / SI          | Comunidad organizada / sucesión ilíquida                                                                                                          |
+| **SM**           | Sociedad de economía mixta de todo orden                                                                                                          |
+| **UA**           | Unidad administrativa con régimen especial                                                                                                        |
+| **DA**           | Departamento de Antioquia                                                                                                                         |
+| **LN**           | La Nación                                                                                                                                         |
+| **EE**           | Entidad del Estado                                                                                                                                |
+| **EC**           | Entidad del Estado de cualquier naturaleza                                                                                                        |
 | **EM / EN / ED** | Establecimiento público y empresa industrial y comercial del orden municipal / nacional / departamental (el último aparece cortado en el escaneo) |
 
 Los códigos en negrilla son exactamente las categorías del art. 81.
 
 Otros datos del formulario:
+
 - **Plazo**: según sus instrucciones, hay que inscribirse dentro de los **30 días** siguientes al inicio de actividades. Es la versión antigua: verificar.
 - **Deducción no verificada**: como la casilla 2 solo admite una clase, el formulario no permite expresar "contribuyente y además retenedor". Esa combinación la lleva la administración en su sistema.
 - **Desfase con la práctica**: el formulario describe al retenedor como "personas jurídicas", pero las resoluciones de hoy también nombran personas naturales.
@@ -155,6 +160,7 @@ Otros datos del formulario:
 ### El RUT de la DIAN (soporte del RIT)
 
 El RUT **no tiene ninguna responsabilidad de ICA**, de retención de ICA ni de autorretención de ICA, porque esas calidades son municipales. Aun así, dos de sus códigos importan:
+
 - **13, gran contribuyente**: donde el estatuto designa agentes o autorretenedores por esa calidad (Bogotá, Cartagena).
 - **47, Régimen Simple (SIMPLE)**: a quien está en el SIMPLE no se le retiene (Acuerdo 093, art. 82, num. 7) y pierde la autorretención (guía de Medellín, pregunta 19).
 
@@ -169,15 +175,15 @@ El RUT **no tiene ninguna responsabilidad de ICA**, de retención de ICA ni de a
 
 ## 5. Qué dicen las normas que cita el mock
 
-| Dónde aparece en el mock | Norma | Qué dice |
-|---|---|---|
-| Inscripción › Calidades ("Nacen de la norma o del acto de designación") | "Resolución ### de AAAA" | Representa el acto que nombra al agente o al autorretenedor. Ejemplos reales: las resoluciones de §2 y §3 |
-| Configuración › Sanciones | Ley 788 de 2002, art. 59 | Los municipios aplican el procedimiento y el régimen sancionatorio del Estatuto Tributario nacional, y pueden **disminuir** los montos y simplificar los trámites. Por eso la configuración no acepta valores mayores a los de ley |
-| Configuración › Anticipo | Ley 43 de 1987, art. 47 | El concejo puede cobrar un anticipo del ICA del año siguiente de hasta el 40 % del impuesto liquidado |
-| Configuración › Corrección a la baja | Estatuto Tributario, art. 589 (versión anterior a la Ley 1819) | Se pide con un proyecto de corrección dentro del año siguiente al vencimiento. La administración tiene 6 meses y, si no responde, el proyecto reemplaza a la declaración. Si la rechaza, hay una sanción del 20 % del menor valor pedido |
-| La misma opción | Ley 1819 de 2016, art. 274 | Modificó el art. 589 para presentar la corrección directamente, dentro del año siguiente al vencimiento. La DIAN la habilitó el 29 de diciembre de 2017 y Bogotá desde el 1 de enero de 2018 (verificado el 2026-11-09); en cada municipio depende de su estatuto (§3.2 de `Pendientes-y-decisiones.md`) |
-| (Base de la retención) | Ley 1819 de 2016, art. 343 | Territorialidad: en qué municipio se entiende hecha la actividad y, por lo tanto, a favor de cuál se retiene. La guía de Medellín manda revisarla antes de cada retención |
-| (Base de todo) | Constitución, arts. 287, 313, 338 y 362 | Autonomía de cada municipio para fijar sus tributos y la forma de recaudarlos |
+| Dónde aparece en el mock                                                | Norma                                                          | Qué dice                                                                                                                                                                                                                                                                                                 |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inscripción › Calidades ("Nacen de la norma o del acto de designación") | "Resolución ### de AAAA"                                       | Representa el acto que nombra al agente o al autorretenedor. Ejemplos reales: las resoluciones de §2 y §3                                                                                                                                                                                                |
+| Configuración › Sanciones                                               | Ley 788 de 2002, art. 59                                       | Los municipios aplican el procedimiento y el régimen sancionatorio del Estatuto Tributario nacional, y pueden **disminuir** los montos y simplificar los trámites. Por eso la configuración no acepta valores mayores a los de ley                                                                       |
+| Configuración › Anticipo                                                | Ley 43 de 1987, art. 47                                        | El concejo puede cobrar un anticipo del ICA del año siguiente de hasta el 40 % del impuesto liquidado                                                                                                                                                                                                    |
+| Configuración › Corrección a la baja                                    | Estatuto Tributario, art. 589 (versión anterior a la Ley 1819) | Se pide con un proyecto de corrección dentro del año siguiente al vencimiento. La administración tiene 6 meses y, si no responde, el proyecto reemplaza a la declaración. Si la rechaza, hay una sanción del 20 % del menor valor pedido                                                                 |
+| La misma opción                                                         | Ley 1819 de 2016, art. 274                                     | Modificó el art. 589 para presentar la corrección directamente, dentro del año siguiente al vencimiento. La DIAN la habilitó el 29 de diciembre de 2017 y Bogotá desde el 1 de enero de 2018 (verificado el 2026-11-09); en cada municipio depende de su estatuto (§3.2 de `Pendientes-y-decisiones.md`) |
+| (Base de la retención)                                                  | Ley 1819 de 2016, art. 343                                     | Territorialidad: en qué municipio se entiende hecha la actividad y, por lo tanto, a favor de cuál se retiene. La guía de Medellín manda revisarla antes de cada retención                                                                                                                                |
+| (Base de todo)                                                          | Constitución, arts. 287, 313, 338 y 362                        | Autonomía de cada municipio para fijar sus tributos y la forma de recaudarlos                                                                                                                                                                                                                            |
 
 ## 6. Resumen sencillo
 
@@ -186,6 +192,7 @@ El RUT **no tiene ninguna responsabilidad de ICA**, de retención de ICA ni de a
   - el **autorretenedor** se aparta una tajadita de sus propias ventas cada dos meses.
 
   Al final del año, cada uno la resta de su cuota: el proveedor retenido en el renglón 27 y el autorretenedor en el 28.
+
 - El agente nace del reglamento **o** de una carta. El autorretenedor, en Medellín, **siempre** de una carta, y la misma carta sirve para quitarle la calidad.
 - El RIT es la libreta: no crea la calidad, solo la anota.
 
@@ -206,6 +213,7 @@ El RUT **no tiene ninguna responsabilidad de ICA**, de retención de ICA ni de a
 > ⚠️ **Todo lo de esta sección aplica SOLO al municipio de RICAURTE, departamento de NARIÑO.** No vale para Medellín (§2 a §4) ni para otros municipios: cada estatuto tributario es distinto.
 >
 > **Fuente**: el Estatuto Tributario de Ricaurte (Nariño), adoptado por el **Acuerdo 13 del 21 de diciembre de 2020** del Concejo Municipal (215 páginas).
+>
 > - Se publica como `CalendarioTributario.pdf`, pero es el estatuto completo y no trae fechas de calendario.
 > - La retención está en los arts. 2.3.51 a 2.3.62 (páginas 53 a 58).
 > - Verificado el 2026-10-25 leyendo esas páginas como imagen, porque el texto del PDF pierde los dígitos (ver §10).
@@ -250,10 +258,10 @@ Todo funciona **por norma**: no hay resoluciones que nombren agentes ni listas a
 
 Resumen de la tabla del estatuto. Las filas son los agentes y las columnas, los sujetos de retención:
 
-| Agente | Le retiene a… | No le retiene a… |
-|---|---|---|
+| Agente                                                                                                                                                                                                               | Le retiene a…                                                                                                                               | No le retiene a…                                                                                            |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | Entidades públicas, gran contribuyente autorretenedor de ICA, gran contribuyente, responsable de IVA, sociedades fiduciarias, consorcios y uniones temporales, régimen tributario especial, otras personas jurídicas | Grandes contribuyentes, responsables de IVA, no responsables de IVA, fiduciarias, consorcios y uniones temporales, otras personas jurídicas | Entidades públicas, grandes contribuyentes **autorretenedores de ICA**, SIMPLE, régimen tributario especial |
-| No responsable de IVA, SIMPLE | — | A nadie: no retienen |
+| No responsable de IVA, SIMPLE                                                                                                                                                                                        | —                                                                                                                                           | A nadie: no retienen                                                                                        |
 
 ⚠️ **Las etiquetas de la esquina de la tabla original están invertidas**: dicen que las columnas son los agentes. El texto del parágrafo 2 dice que los agentes van en la primera columna, y es la única lectura coherente. La otra lectura haría retener a los no responsables de IVA, lo que contradice el parágrafo 1.
 
@@ -301,18 +309,18 @@ Resumen de la tabla del estatuto. Las filas son los agentes y las columnas, los 
 
 ### 7.8 Ricaurte (Nariño) frente a Medellín (Antioquia)
 
-| | Medellín (Antioquia) | Ricaurte (Nariño) |
-|---|---|---|
-| Norma | Acuerdo 093 de 2023 | Acuerdo 13 de 2020 |
-| Agentes | Entidades públicas por norma, más los nombrados por resolución (lista anual por NIT) | Todos por norma, según su categoría del RUT; sin resoluciones |
-| Autorretenedores | Por resolución, de oficio o a solicitud; lista anual; la administración marca el RIT | Solo grandes contribuyentes, a solicitud, con resolución motivada dentro del mes |
-| Periodicidad | Bimestral | **Mensual** |
-| Base mínima | 15 UVT | 5 UVT |
-| Tarifa | 1,8 por mil, única (tarjetas: 2 por mil) | La de la actividad del proveedor (8 por mil si no se sabe; tarjetas: la mínima de la tabla) |
-| Declaración en ceros | No | No |
-| Certificados | Antes del 31 de marzo | Antes del 31 de marzo |
-| Conservación de soportes | 5 años | 4 años |
-| Registro | Formulario RIT con casilla "Retenedor ICA" | Registro de contribuyentes con copia del RUT; nada especial para agentes |
+|                          | Medellín (Antioquia)                                                                 | Ricaurte (Nariño)                                                                           |
+| ------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------- |
+| Norma                    | Acuerdo 093 de 2023                                                                  | Acuerdo 13 de 2020                                                                          |
+| Agentes                  | Entidades públicas por norma, más los nombrados por resolución (lista anual por NIT) | Todos por norma, según su categoría del RUT; sin resoluciones                               |
+| Autorretenedores         | Por resolución, de oficio o a solicitud; lista anual; la administración marca el RIT | Solo grandes contribuyentes, a solicitud, con resolución motivada dentro del mes            |
+| Periodicidad             | Bimestral                                                                            | **Mensual**                                                                                 |
+| Base mínima              | 15 UVT                                                                               | 5 UVT                                                                                       |
+| Tarifa                   | 1,8 por mil, única (tarjetas: 2 por mil)                                             | La de la actividad del proveedor (8 por mil si no se sabe; tarjetas: la mínima de la tabla) |
+| Declaración en ceros     | No                                                                                   | No                                                                                          |
+| Certificados             | Antes del 31 de marzo                                                                | Antes del 31 de marzo                                                                       |
+| Conservación de soportes | 5 años                                                                               | 4 años                                                                                      |
+| Registro                 | Formulario RIT con casilla "Retenedor ICA"                                           | Registro de contribuyentes con copia del RUT; nada especial para agentes                    |
 
 ### 7.9 Resumen sencillo (Ricaurte, Nariño)
 

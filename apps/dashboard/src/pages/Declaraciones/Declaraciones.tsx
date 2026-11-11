@@ -1,15 +1,47 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Card } from '../../components/atoms'
-import { BarraFiltros, Buscador, Filtro, FiltroCasilla, PageHeader, Segmentado } from '../../components/molecules'
-import { BuscadorMunicipios, DescargaDeclaraciones, ListaOmisos, SeleccionDeclaraciones, TablaDeclaraciones } from '../../components/organisms'
+import {
+  BarraFiltros,
+  Buscador,
+  Filtro,
+  FiltroCasilla,
+  PageHeader,
+  Segmentado,
+} from '../../components/molecules'
+import {
+  BuscadorMunicipios,
+  DescargaDeclaraciones,
+  ListaOmisos,
+  SeleccionDeclaraciones,
+  TablaDeclaraciones,
+} from '../../components/organisms'
 import { OPCIONES_APROBACION, OPCIONES_CORRECCION } from '../../constants'
 import { presentadaSinCalendario } from '../../lib/calendario'
 import { formatoDocumento } from '../../lib/formato'
 import { correccionVigente, esCorreccionABaja } from '../../lib/reglas'
-import { conRit, impuestosVisibles, ritVisible, useAprobacion, useDeclaraciones, useEstadoPago, useOmisos, useSesion, useSolicitudCorreccion } from '../../lib/sesion'
+import {
+  conRit,
+  impuestosVisibles,
+  ritVisible,
+  useAprobacion,
+  useDeclaraciones,
+  useEstadoPago,
+  useOmisos,
+  useSesion,
+  useSolicitudCorreccion,
+} from '../../lib/sesion'
 import { useDatos } from '../../store'
-import type { EstadoPago, FilaDeclaracion, FiltroAprobacion, FiltroCorreccion, Impuesto, TipoDeclaracion, ValorFiltro, VistaDeclaraciones } from '../../types'
+import type {
+  EstadoPago,
+  FilaDeclaracion,
+  FiltroAprobacion,
+  FiltroCorreccion,
+  Impuesto,
+  TipoDeclaracion,
+  ValorFiltro,
+  VistaDeclaraciones,
+} from '../../types'
 import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS, VISTAS } from './constants'
 
 export default function Declaraciones() {
@@ -24,7 +56,8 @@ export default function Declaraciones() {
   // La vista va en la dirección (?vista=omisos) para que Inicio pueda enlazar directo a los omisos.
   const [parametros, setParametros] = useSearchParams()
   const conRitVisible = ritVisible(municipios, municipioId)
-  const vista: VistaDeclaraciones = conRitVisible && parametros.get('vista') === 'omisos' ? 'omisos' : 'presentadas'
+  const vista: VistaDeclaraciones =
+    conRitVisible && parametros.get('vista') === 'omisos' ? 'omisos' : 'presentadas'
   const [pestana, setImpuesto] = useState<ValorFiltro<Impuesto>>('')
   const visibles = impuestosVisibles(municipios, municipioId)
   const pestanas = PESTANAS.filter((p) => !p.valor || visibles.includes(p.valor))
@@ -82,9 +115,22 @@ export default function Declaraciones() {
     const busqueda = texto.trim().toLowerCase()
     // Todas las correcciones a la baja, las directas (sin solicitud) o las solicitudes en un estado.
     const pasaCorreccion = (aLaBaja: boolean, c: FilaDeclaracion['correccion']) =>
-      !estadoCorreccion || (aLaBaja && (estadoCorreccion === 'todas' || (estadoCorreccion === 'directa' ? !c : c?.estado === estadoCorreccion)))
+      !estadoCorreccion ||
+      (aLaBaja &&
+        (estadoCorreccion === 'todas' ||
+          (estadoCorreccion === 'directa' ? !c : c?.estado === estadoCorreccion)))
     return filas.filter(
-      ({ d, nombre, documento, pago: p, aprobacion: a, sinCalendario, noInscrito, aLaBaja, correccion: c }) =>
+      ({
+        d,
+        nombre,
+        documento,
+        pago: p,
+        aprobacion: a,
+        sinCalendario,
+        noInscrito,
+        aLaBaja,
+        correccion: c,
+      }) =>
         pasaCorreccion(aLaBaja, c) &&
         (!impuesto || d.impuesto === impuesto) &&
         (!busqueda ||
@@ -98,20 +144,33 @@ export default function Declaraciones() {
         (!filtrarSinCalendario || sinCalendario) &&
         (!filtrarNoInscritos || noInscrito),
     )
-  }, [filas, impuesto, texto, tipo, pago, estadoAprobacion, filtrarSinCalendario, filtrarNoInscritos, estadoCorreccion])
+  }, [
+    filas,
+    impuesto,
+    texto,
+    tipo,
+    pago,
+    estadoAprobacion,
+    filtrarSinCalendario,
+    filtrarNoInscritos,
+    estadoCorreccion,
+  ])
 
   // La selección sobrevive a los filtros, pero solo cuentan y se descargan las declaraciones que siguen visibles.
   const [seleccion, setSeleccion] = useState<ReadonlySet<string>>(new Set())
-  const marcar = useCallback((ids: string[], marcado: boolean) => {
-    setSeleccion((actual) => {
-      const nueva = new Set(actual)
-      for (const id of ids) {
-        if (marcado) nueva.add(id)
-        else nueva.delete(id)
-      }
-      return nueva
-    })
-  }, [setSeleccion])
+  const marcar = useCallback(
+    (ids: string[], marcado: boolean) => {
+      setSeleccion((actual) => {
+        const nueva = new Set(actual)
+        for (const id of ids) {
+          if (marcado) nueva.add(id)
+          else nueva.delete(id)
+        }
+        return nueva
+      })
+    },
+    [setSeleccion],
+  )
   const marcadas = filtradas.filter((f) => seleccion.has(f.d.id))
 
   return (
@@ -127,9 +186,14 @@ export default function Declaraciones() {
           <Segmentado
             etiqueta="Vista"
             className="sm:inline-flex"
-            opciones={VISTAS.map((v) => ({ ...v, conteo: v.valor === 'omisos' ? omisos.omisos.length : filas.length }))}
+            opciones={VISTAS.map((v) => ({
+              ...v,
+              conteo: v.valor === 'omisos' ? omisos.omisos.length : filas.length,
+            }))}
             valor={vista}
-            cambiar={(v) => setParametros(v === 'omisos' ? { vista: 'omisos' } : {}, { replace: true })}
+            cambiar={(v) =>
+              setParametros(v === 'omisos' ? { vista: 'omisos' } : {}, { replace: true })
+            }
           />
         )}
         <Segmentado
@@ -152,11 +216,27 @@ export default function Declaraciones() {
       ) : (
         <Card>
           <BarraFiltros
-            buscador={<Buscador placeholder="Buscar por contribuyente, NIT o cédula, radicado o factura" value={texto} onChange={(e) => setTexto(e.target.value)} />}
+            buscador={
+              <Buscador
+                placeholder="Buscar por contribuyente, NIT o cédula, radicado o factura"
+                value={texto}
+                onChange={(e) => setTexto(e.target.value)}
+              />
+            }
             acciones={<DescargaDeclaraciones declaraciones={marcadas.map((f) => f.d)} />}
           >
-            <Filtro etiqueta="Tipo de declaración" opciones={OPCIONES_TIPO} valor={tipo} cambiar={setTipo} />
-            <Filtro etiqueta="Estado de pago" opciones={OPCIONES_PAGO} valor={pago} cambiar={setPago} />
+            <Filtro
+              etiqueta="Tipo de declaración"
+              opciones={OPCIONES_TIPO}
+              valor={tipo}
+              cambiar={setTipo}
+            />
+            <Filtro
+              etiqueta="Estado de pago"
+              opciones={OPCIONES_PAGO}
+              valor={pago}
+              cambiar={setPago}
+            />
             {conAprobacion && (
               <Filtro
                 etiqueta="Aprobación"
@@ -165,14 +245,41 @@ export default function Declaraciones() {
                 cambiar={setFiltroAprobacion}
               />
             )}
-            {conALaBaja && <Filtro etiqueta="Corrección a la baja" opciones={OPCIONES_CORRECCION} valor={estadoCorreccion} cambiar={setFiltroCorreccion} />}
-            {conSinCalendario && <FiltroCasilla etiqueta="Sin calendario cargado" marcado={soloSinCalendario} cambiar={setSoloSinCalendario} />}
-            {conNoInscritos && <FiltroCasilla etiqueta="No inscritos en el RIT" marcado={soloNoInscritos} cambiar={setSoloNoInscritos} />}
+            {conALaBaja && (
+              <Filtro
+                etiqueta="Corrección a la baja"
+                opciones={OPCIONES_CORRECCION}
+                valor={estadoCorreccion}
+                cambiar={setFiltroCorreccion}
+              />
+            )}
+            {conSinCalendario && (
+              <FiltroCasilla
+                etiqueta="Sin calendario cargado"
+                marcado={soloSinCalendario}
+                cambiar={setSoloSinCalendario}
+              />
+            )}
+            {conNoInscritos && (
+              <FiltroCasilla
+                etiqueta="No inscritos en el RIT"
+                marcado={soloNoInscritos}
+                cambiar={setSoloNoInscritos}
+              />
+            )}
           </BarraFiltros>
 
-          <SeleccionDeclaraciones declaraciones={marcadas.map((f) => f.d)} quitar={() => setSeleccion(new Set())} />
+          <SeleccionDeclaraciones
+            declaraciones={marcadas.map((f) => f.d)}
+            quitar={() => setSeleccion(new Set())}
+          />
 
-          <TablaDeclaraciones filas={filtradas} seleccion={seleccion} marcar={marcar} conAprobacion={conAprobacion} />
+          <TablaDeclaraciones
+            filas={filtradas}
+            seleccion={seleccion}
+            marcar={marcar}
+            conAprobacion={conAprobacion}
+          />
         </Card>
       )}
     </>

@@ -19,7 +19,10 @@ import type { FormularioConfiguracionProps } from './types'
  * Configuración del municipio como borrador: se valida mientras se edita y al final se guarda o se descarta.
  * Los vencimientos, su periodicidad y el pronto pago se editan aparte, en la página Calendario.
  */
-export default function FormularioConfiguracion({ config, editable }: FormularioConfiguracionProps) {
+export default function FormularioConfiguracion({
+  config,
+  editable,
+}: FormularioConfiguracionProps) {
   const guardarConfiguracion = useDatos((s) => s.guardarConfiguracion)
   // Solo se configura lo que el municipio tiene activo: impuestos y RIT (los define 1cero1).
   const municipio = useDatos((s) => s.municipios.find((m) => m.id === config.municipioId))
@@ -39,12 +42,22 @@ export default function FormularioConfiguracion({ config, editable }: Formulario
 
   return (
     <div className="space-y-6">
-      {municipio && <SeccionFormularios {...edicion} formularios={formulariosDe(municipio)} guardados={config.formulariosDesactivados} />}
-      {(impuestos.reteica || impuestos.autorretencion) && <SeccionRetencion {...edicion} impuestos={impuestos} />}
+      {municipio && (
+        <SeccionFormularios
+          {...edicion}
+          formularios={formulariosDe(municipio)}
+          guardados={config.formulariosDesactivados}
+        />
+      )}
+      {(impuestos.reteica || impuestos.autorretencion) && (
+        <SeccionRetencion {...edicion} impuestos={impuestos} />
+      )}
       {impuestos.ica && <SeccionIca {...edicion} />}
       <SeccionProcedimiento {...edicion} conRit={conRit} />
       {recibeCheques(municipio) && <SeccionPagos {...edicion} />}
-      {conAprobacion.length > 0 && <SeccionAprobacionPrevia {...edicion} impuestos={conAprobacion} />}
+      {conAprobacion.length > 0 && (
+        <SeccionAprobacionPrevia {...edicion} impuestos={conAprobacion} />
+      )}
       <SeccionFuncionarios {...edicion} />
       <SeccionSanciones {...edicion} />
 

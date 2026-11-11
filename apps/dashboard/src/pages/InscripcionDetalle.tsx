@@ -32,14 +32,26 @@ export default function InscripcionDetalle() {
   const [seleccion, setSeleccion] = useState<string | null>(null)
 
   if (!inscripcion || (usuario?.municipioId && inscripcion.municipioId !== usuario.municipioId)) {
-    return <Vacio titulo="No se encontró la inscripción" descripcion="Puede que no exista o que sea de otro municipio." />
+    return (
+      <Vacio
+        titulo="No se encontró la inscripción"
+        descripcion="Puede que no exista o que sea de otro municipio."
+      />
+    )
   }
   if (!conRit(municipios)(inscripcion)) {
-    return <Vacio titulo="El RIT no está en el aplicativo para este municipio" descripcion="1cero1 lo puede activar en Municipios." />
+    return (
+      <Vacio
+        titulo="El RIT no está en el aplicativo para este municipio"
+        descripcion="1cero1 lo puede activar en Municipios."
+      />
+    )
   }
 
   const config = configuraciones.find((c) => c.municipioId === inscripcion.municipioId)
-  const tarifas = actividadesDe(cargasActividades, inscripcion.municipioId, new Date().getFullYear())?.tarifas ?? []
+  const tarifas =
+    actividadesDe(cargasActividades, inscripcion.municipioId, new Date().getFullYear())?.tarifas ??
+    []
   const declaraciones = todasDeclaraciones
     .filter((d) => d.inscripcionId === inscripcion.id)
     .filter(impuestoActivo(municipios))
@@ -47,13 +59,24 @@ export default function InscripcionDetalle() {
   const puedeRevisar = puede(usuario?.rol, 'revisar')
   const solicitud = inscripcion.novedades.find((n) => n.id === seleccion)
   // Se compara con la última solicitud aprobada antes de la elegida.
-  const anterior = solicitud && inscripcion.novedades.slice(0, inscripcion.novedades.indexOf(solicitud)).findLast((n) => n.estado === 'aprobada' && n.datos)?.datos
+  const anterior =
+    solicitud &&
+    inscripcion.novedades
+      .slice(0, inscripcion.novedades.indexOf(solicitud))
+      .findLast((n) => n.estado === 'aprobada' && n.datos)?.datos
   const municipio = municipios.find((m) => m.id === inscripcion.municipioId)
   // La inscripción se juzga con los datos que radicó, aunque luego los haya actualizado.
   const radicada = inscripcion.novedades.find((n) => n.tipo === 'inscripcion')
   const ritDesde = municipio?.enProduccionDesde.rit
   const tardia =
-    radicada?.datos && config && ritDesde ? diasInscripcionTardia(radicada.datos.fechaInicioActividades, radicada.fecha, config.plazoInscripcionMeses, ritDesde) : null
+    radicada?.datos && config && ritDesde
+      ? diasInscripcionTardia(
+          radicada.datos.fechaInicioActividades,
+          radicada.fecha,
+          config.plazoInscripcionMeses,
+          ritDesde,
+        )
+      : null
   const soportes = solicitud ? solicitud.soportes : inscripcion.soportes
   const elegir = (novedadId: string | null) => {
     setSeleccion(novedadId)
@@ -70,29 +93,57 @@ export default function InscripcionDetalle() {
       acciones={
         <div className="flex flex-wrap gap-2">
           {tardia && <Badge tono="alerta">Inscripción tardía</Badge>}
-          <Badge tono={tonoInscripcion[inscripcion.estado]}>{etiquetaEstadoInscripcion[inscripcion.estado]}</Badge>
+          <Badge tono={tonoInscripcion[inscripcion.estado]}>
+            {etiquetaEstadoInscripcion[inscripcion.estado]}
+          </Badge>
         </div>
       }
       idPrincipal="ficha"
       principal={
         <>
-          {solicitud && <EncabezadoSolicitud solicitud={solicitud} comparada={Boolean(anterior)} verActuales={() => elegir(null)} tardia={solicitud === radicada ? tardia : null} />}
+          {solicitud && (
+            <EncabezadoSolicitud
+              solicitud={solicitud}
+              comparada={Boolean(anterior)}
+              verActuales={() => elegir(null)}
+              tardia={solicitud === radicada ? tardia : null}
+            />
+          )}
           {solicitud?.cancelacion ? (
             <FichaCancelacion inscripcion={inscripcion} cancelacion={solicitud.cancelacion} />
           ) : (
-            <FichaRit datos={solicitud?.datos ?? inscripcion} anterior={anterior} tarifas={solicitud ? undefined : tarifas} />
+            <FichaRit
+              datos={solicitud?.datos ?? inscripcion}
+              anterior={anterior}
+              tarifas={solicitud ? undefined : tarifas}
+            />
           )}
-          {(inscripcion.estado === 'activa' || inscripcion.estado === 'cancelada') && <DeclaracionesFaltantes inscripcion={inscripcion} />}
-          <DeclaracionesPresentadas declaraciones={declaraciones} regimenSimple={inscripcion.regimenSimple} />
+          {(inscripcion.estado === 'activa' || inscripcion.estado === 'cancelada') && (
+            <DeclaracionesFaltantes inscripcion={inscripcion} />
+          )}
+          <DeclaracionesPresentadas
+            declaraciones={declaraciones}
+            regimenSimple={inscripcion.regimenSimple}
+          />
         </>
       }
       lateral={
         <>
-          <LineaTiempoSolicitudes inscripcion={inscripcion} solicitud={solicitud} elegir={elegir} config={config} puedeRevisar={puedeRevisar} />
+          <LineaTiempoSolicitudes
+            inscripcion={inscripcion}
+            solicitud={solicitud}
+            elegir={elegir}
+            config={config}
+            puedeRevisar={puedeRevisar}
+          />
           <Card>
             <ListaArchivos
               titulo={solicitud ? 'Soportes de la solicitud' : 'Soportes'}
-              descripcion={soportes.length > 0 ? `${soportes.filter((s) => s.archivo).length} de ${soportes.length} cargados` : undefined}
+              descripcion={
+                soportes.length > 0
+                  ? `${soportes.filter((s) => s.archivo).length} de ${soportes.length} cargados`
+                  : undefined
+              }
               items={soportes.map((s) => ({ titulo: s.nombre, archivo: s.archivo }))}
               contexto={[`Contribuyente: ${inscripcion.nombre}`, `RIT: ${inscripcion.numeroRit}`]}
               nombreZip={`soportes_RIT_${inscripcion.numeroRit}${solicitud ? `_${solicitud.tipo}_${solicitud.fecha}` : ''}.zip`}
@@ -102,7 +153,14 @@ export default function InscripcionDetalle() {
           {puedeRevisar &&
             inscripcion.novedades
               .filter((n) => n.estado === 'pendiente')
-              .map((n) => <RespuestaSolicitud key={n.id} inscripcionId={inscripcion.id} novedad={n} correo={inscripcion.correo} />)}
+              .map((n) => (
+                <RespuestaSolicitud
+                  key={n.id}
+                  inscripcionId={inscripcion.id}
+                  novedad={n}
+                  correo={inscripcion.correo}
+                />
+              ))}
         </>
       }
     />

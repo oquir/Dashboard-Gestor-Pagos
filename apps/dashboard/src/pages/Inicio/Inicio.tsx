@@ -1,11 +1,34 @@
-import { ClipboardList, Document, AlertTriangle, ReceiptMinus, UserSearch, Wallet } from 'reicon-react'
+import {
+  ClipboardList,
+  Document,
+  AlertTriangle,
+  ReceiptMinus,
+  UserSearch,
+  Wallet,
+} from 'reicon-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router'
 import { StatTile } from '../../components/molecules'
-import { AlertaCalendario, AlertaSinConsignar, AprobacionesPendientes, BuscadorMunicipios, ListaDeudas, ProximosVencimientos, RecaudoAnual, SolicitudesPendientes } from '../../components/organisms'
+import {
+  AlertaCalendario,
+  AlertaSinConsignar,
+  AprobacionesPendientes,
+  BuscadorMunicipios,
+  ListaDeudas,
+  ProximosVencimientos,
+  RecaudoAnual,
+  SolicitudesPendientes,
+} from '../../components/organisms'
 import { formatoCompacto, formatoFecha } from '../../lib/formato'
 import { puede } from '../../lib/permisos'
-import { correccionPorResolver, correccionVigente, esperaAprobacion, reemplazadas, sePuedePagar, totalPagado } from '../../lib/reglas'
+import {
+  correccionPorResolver,
+  correccionVigente,
+  esperaAprobacion,
+  reemplazadas,
+  sePuedePagar,
+  totalPagado,
+} from '../../lib/reglas'
 import {
   aprobacionVisible,
   conRit,
@@ -51,7 +74,9 @@ export default function Inicio() {
     const porId = new Map(declaraciones.map((d) => [d.id, d]))
 
     const pendientes = enRit
-      .flatMap((ins) => ins.novedades.filter((n) => n.estado === 'pendiente').map((n) => ({ ins, novedad: n })))
+      .flatMap((ins) =>
+        ins.novedades.filter((n) => n.estado === 'pendiente').map((n) => ({ ins, novedad: n })),
+      )
       .sort((a, b) => b.novedad.fecha.localeCompare(a.novedad.fecha))
 
     const recaudo = pagos
@@ -60,7 +85,9 @@ export default function Inicio() {
     // Una declaración corregida se reemplaza por su corrección: se cuenta solo la vigente. La solicitud de corrección que
     // no se ha aceptado no cuenta: sigue vigente la que corrige.
     const fuera = reemplazadas(declaraciones, correccion)
-    const vigentes = declaraciones.filter((d) => !fuera.has(d.id) && correccionVigente(correccion(d)))
+    const vigentes = declaraciones.filter(
+      (d) => !fuera.has(d.id) && correccionVigente(correccion(d)),
+    )
     const pagadas = vigentes.filter((d) => estadoDe(d) === 'pagada').length
 
     const deudas: Deuda[] = vigentes
@@ -81,7 +108,9 @@ export default function Inicio() {
       .sort((x, y) => {
         const [ex, ey] = [esperaAprobacion(x.a), esperaAprobacion(y.a)]
         if (ex !== ey) return ex ? -1 : 1
-        return ex ? x.a.limite.localeCompare(y.a.limite) : (y.a.fecha ?? '').localeCompare(x.a.fecha ?? '')
+        return ex
+          ? x.a.limite.localeCompare(y.a.limite)
+          : (y.a.fecha ?? '').localeCompare(x.a.fecha ?? '')
       })
     const porAprobar = aprobaciones.filter((x) => esperaAprobacion(x.a))
 
@@ -106,26 +135,50 @@ export default function Inicio() {
       porAprobar,
       activas: enRit.filter((i) => i.estado === 'activa').length,
     }
-  }, [todasInscripciones, declaraciones, pagos, municipios, municipioId, aprobacion, correccion, estadoDe])
+  }, [
+    todasInscripciones,
+    declaraciones,
+    pagos,
+    municipios,
+    municipioId,
+    aprobacion,
+    correccion,
+    estadoDe,
+  ])
 
   // Si 1cero1 apaga la aprobación previa, lo que quedó pendiente se sigue mostrando hasta resolverlo.
   const conAprobacion = aprobacionVisible(municipios, municipioId) || datos.porAprobar.length > 0
   const vencidas = datos.porAprobar.filter((x) => x.a.estado === 'vencida').length
   // Igual con las solicitudes de corrección a la baja: si el municipio cambia de trámite, las que quedaron se siguen mostrando.
-  const conCorrecciones = solicitudCorreccionVisible(configuraciones, municipioId) || datos.correccionesPorResolver.length > 0
+  const conCorrecciones =
+    solicitudCorreccionVisible(configuraciones, municipioId) ||
+    datos.correccionesPorResolver.length > 0
   const primeraCorreccion = datos.correccionesPorResolver[0]
   // Si al municipio se le acaba el plazo, se acepta sola: se avisa en ámbar desde 15 días antes.
-  const correccionPronto = primeraCorreccion && diferenciaDias(hoy(), primeraCorreccion.c.limite) <= 15
+  const correccionPronto =
+    primeraCorreccion && diferenciaDias(hoy(), primeraCorreccion.c.limite) <= 15
   // Con el RIT van dos tarjetas: las solicitudes por revisar y los omisos.
-  const tarjetas = 2 + 2 * Number(conRitVisible) + Number(conAprobacion) + Number(conCorrecciones) + Number(verRecaudo)
+  const tarjetas =
+    2 +
+    2 * Number(conRitVisible) +
+    Number(conAprobacion) +
+    Number(conCorrecciones) +
+    Number(verRecaudo)
   // Con un número impar de listas, la primera ocupa toda la fila para que las de deuda vayan juntas.
-  const primeraAncha = (1 + Number(conRitVisible) + Number(conAprobacion)) % 2 === 1 ? 'lg:col-span-2' : ''
+  const primeraAncha =
+    (1 + Number(conRitVisible) + Number(conAprobacion)) % 2 === 1 ? 'lg:col-span-2' : ''
 
   return (
     <>
       <BuscadorMunicipios />
-      <AlertaCalendario anio={sinCalendario.anio} municipios={sinCalendario.municipios} className="mb-6" />
-      {puede(usuario?.rol, 'verAlertaSinConsignar') && <AlertaSinConsignar retenciones={sinConsignar} className="mb-6" />}
+      <AlertaCalendario
+        anio={sinCalendario.anio}
+        municipios={sinCalendario.municipios}
+        className="mb-6"
+      />
+      {puede(usuario?.rol, 'verAlertaSinConsignar') && (
+        <AlertaSinConsignar retenciones={sinConsignar} className="mb-6" />
+      )}
       <div className={`grid gap-4 sm:grid-cols-2 ${COLUMNAS_TARJETAS[tarjetas]}`}>
         {conRitVisible && (
           <StatTile
@@ -143,8 +196,12 @@ export default function Inicio() {
             detalle={
               omisos.length > 0 ? (
                 <>
-                  {omisos.length} {omisos.length === 1 ? 'periodo vencido' : 'periodos vencidos'} sin declarar ·{' '}
-                  <Link to="/declaraciones?vista=omisos" className="font-medium text-brand-700 hover:underline">
+                  {omisos.length} {omisos.length === 1 ? 'periodo vencido' : 'periodos vencidos'}{' '}
+                  sin declarar ·{' '}
+                  <Link
+                    to="/declaraciones?vista=omisos"
+                    className="font-medium text-brand-700 hover:underline"
+                  >
                     Ver la lista
                   </Link>
                 </>
@@ -159,7 +216,13 @@ export default function Inicio() {
             etiqueta="Declaraciones por aprobar"
             valor={String(datos.porAprobar.length)}
             icono={<Document className="size-5" />}
-            detalle={vencidas > 0 ? <span className="text-red-700">{vencidas} con el plazo vencido</span> : 'Dentro del plazo'}
+            detalle={
+              vencidas > 0 ? (
+                <span className="text-red-700">{vencidas} con el plazo vencido</span>
+              ) : (
+                'Dentro del plazo'
+              )
+            }
           />
         )}
         {conCorrecciones && (
@@ -174,7 +237,10 @@ export default function Inicio() {
                     La primera vence el {formatoFecha(primeraCorreccion.c.limite)}
                   </span>{' '}
                   ·{' '}
-                  <Link to="/declaraciones?correccion=por_resolver" className="font-medium text-brand-700 hover:underline">
+                  <Link
+                    to="/declaraciones?correccion=por_resolver"
+                    className="font-medium text-brand-700 hover:underline"
+                  >
                     Ver
                   </Link>
                 </>
@@ -198,7 +264,9 @@ export default function Inicio() {
           icono={<AlertTriangle className="size-5 text-red-600" />}
           detalle={
             datos.noPagadas.length > 0 ? (
-              <span className="text-red-700">${formatoCompacto(datos.saldoNoPagadas)} por pagar</span>
+              <span className="text-red-700">
+                ${formatoCompacto(datos.saldoNoPagadas)} por pagar
+              </span>
             ) : (
               'Sin alertas'
             )
@@ -208,7 +276,11 @@ export default function Inicio() {
           etiqueta="Declaraciones sin pagar el total de la deuda"
           valor={String(datos.pagoIncompleto.length)}
           icono={<AlertTriangle className="size-5 text-amber-600" />}
-          detalle={datos.pagoIncompleto.length > 0 ? `$${formatoCompacto(datos.saldoPagoIncompleto)} de saldo pendiente` : 'Sin alertas'}
+          detalle={
+            datos.pagoIncompleto.length > 0
+              ? `$${formatoCompacto(datos.saldoPagoIncompleto)} de saldo pendiente`
+              : 'Sin alertas'
+          }
         />
       </div>
 

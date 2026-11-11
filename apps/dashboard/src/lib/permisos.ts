@@ -36,4 +36,5 @@ const PERMISOS: Record<Permiso, Rol[]> = {
   verAlertaSinConsignar: ['admin_municipio', 'funcionario'],
 }
 
-export const puede = (rol: Rol | undefined, permiso: Permiso) => rol !== undefined && PERMISOS[permiso].includes(rol)
+export const puede = (rol: Rol | undefined, permiso: Permiso) =>
+  rol !== undefined && PERMISOS[permiso].includes(rol)

@@ -1,5 +1,10 @@
 import { AlertTriangle } from 'reicon-react'
-import { etiquetaEstadoPago, etiquetaImpuesto, etiquetaPeriodo, formatoPesos } from '../../../../lib/formato'
+import {
+  etiquetaEstadoPago,
+  etiquetaImpuesto,
+  etiquetaPeriodo,
+  formatoPesos,
+} from '../../../../lib/formato'
 import { tonoPago } from '../../../../lib/tonos'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, ItemEnlace, Vacio } from '../../../molecules'
@@ -9,7 +14,11 @@ import type { ListaDeudasProps } from './types'
 export default function ListaDeudas({ titulo, descripcion, vacio, deudas }: ListaDeudasProps) {
   return (
     <Card>
-      <CardHeader titulo={titulo} descripcion={descripcion} acciones={<Badge tono={deudas.length > 0 ? 'peligro' : 'neutral'}>{deudas.length}</Badge>} />
+      <CardHeader
+        titulo={titulo}
+        descripcion={descripcion}
+        acciones={<Badge tono={deudas.length > 0 ? 'peligro' : 'neutral'}>{deudas.length}</Badge>}
+      />
       {deudas.length === 0 ? (
         <Vacio titulo={vacio} />
       ) : (
@@ -27,7 +36,9 @@ export default function ListaDeudas({ titulo, descripcion, vacio, deudas }: List
                     {estado === 'ineficaz' ? 'Ineficaz' : etiquetaEstadoPago[estado]}
                   </Badge>
                   <p className="mt-1 text-xs tabular-nums text-slate-700">
-                    {pagado > 0 ? `Debe ${formatoPesos(d.totalAPagar - pagado)} de ${formatoPesos(d.totalAPagar)}` : formatoPesos(d.totalAPagar)}
+                    {pagado > 0
+                      ? `Debe ${formatoPesos(d.totalAPagar - pagado)} de ${formatoPesos(d.totalAPagar)}`
+                      : formatoPesos(d.totalAPagar)}
                   </p>
                 </>
               }

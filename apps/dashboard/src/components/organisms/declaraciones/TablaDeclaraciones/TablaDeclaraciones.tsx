@@ -5,9 +5,19 @@ import type { TablaDeclaracionesProps } from './types'
 import { col, columnaSeleccion } from './utils'
 
 /** Declaraciones filtradas, con casillas para elegirlas. La columna de aprobación va solo si alguna la tiene. */
-export default function TablaDeclaraciones({ filas, seleccion, marcar, conAprobacion }: TablaDeclaracionesProps) {
+export default function TablaDeclaraciones({
+  filas,
+  seleccion,
+  marcar,
+  conAprobacion,
+}: TablaDeclaracionesProps) {
   const columnas = useMemo(
-    () => col.columns([columnaSeleccion(filas, seleccion, marcar), ...COLUMNAS, ...(conAprobacion ? [COLUMNA_APROBACION] : [])]),
+    () =>
+      col.columns([
+        columnaSeleccion(filas, seleccion, marcar),
+        ...COLUMNAS,
+        ...(conAprobacion ? [COLUMNA_APROBACION] : []),
+      ]),
     [filas, seleccion, marcar, conAprobacion],
   )
 

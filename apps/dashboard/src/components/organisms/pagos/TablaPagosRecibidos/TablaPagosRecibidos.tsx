@@ -9,7 +9,15 @@ export default function TablaPagosRecibidos({ pagos }: TablaPagosRecibidosProps)
   return (
     <Card>
       <CardHeader titulo="Pagos recibidos" />
-      <Tabla datos={pagos} columnas={COLUMNAS} porPagina={15} ordenInicial={ORDEN_INICIAL} idFila={(f) => f.p.id} nombre="pagos" vacio="No hay pagos registrados" />
+      <Tabla
+        datos={pagos}
+        columnas={COLUMNAS}
+        porPagina={15}
+        ordenInicial={ORDEN_INICIAL}
+        idFila={(f) => f.p.id}
+        nombre="pagos"
+        vacio="No hay pagos registrados"
+      />
     </Card>
   )
 }

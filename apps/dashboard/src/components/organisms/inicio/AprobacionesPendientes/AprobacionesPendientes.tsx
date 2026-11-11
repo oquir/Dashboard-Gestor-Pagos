@@ -1,5 +1,10 @@
 import { useState } from 'react'
-import { etiquetaEstadoAprobacion, etiquetaImpuesto, etiquetaPeriodo, formatoFecha } from '../../../../lib/formato'
+import {
+  etiquetaEstadoAprobacion,
+  etiquetaImpuesto,
+  etiquetaPeriodo,
+  formatoFecha,
+} from '../../../../lib/formato'
 import { esperaAprobacion } from '../../../../lib/reglas'
 import { tonoAprobacion } from '../../../../lib/tonos'
 import { Badge, Card } from '../../../atoms'
@@ -8,9 +13,14 @@ import { OPCIONES_FILTRO } from './constants'
 import type { AprobacionesPendientesProps, FiltroAprobaciones } from './types'
 
 /** Declaraciones con aprobación previa, filtradas por estado; por defecto, las que esperan aprobación. */
-export default function AprobacionesPendientes({ aprobaciones, className = '' }: AprobacionesPendientesProps) {
+export default function AprobacionesPendientes({
+  aprobaciones,
+  className = '',
+}: AprobacionesPendientesProps) {
   const [filtro, setFiltro] = useState<FiltroAprobaciones>('pendientes')
-  const lista = aprobaciones.filter((x) => (filtro === 'pendientes' ? esperaAprobacion(x.a) : !filtro || x.a.estado === filtro))
+  const lista = aprobaciones.filter((x) =>
+    filtro === 'pendientes' ? esperaAprobacion(x.a) : !filtro || x.a.estado === filtro,
+  )
 
   return (
     <Card className={className}>
@@ -27,7 +37,13 @@ export default function AprobacionesPendientes({ aprobaciones, className = '' }:
         }
       />
       {lista.length === 0 ? (
-        <Vacio titulo={filtro === 'pendientes' ? 'No hay declaraciones por aprobar' : 'No hay declaraciones con esa aprobación'} />
+        <Vacio
+          titulo={
+            filtro === 'pendientes'
+              ? 'No hay declaraciones por aprobar'
+              : 'No hay declaraciones con esa aprobación'
+          }
+        />
       ) : (
         <ul className="divide-y divide-slate-100">
           {lista.slice(0, 6).map(({ d, a }) => (
@@ -38,8 +54,14 @@ export default function AprobacionesPendientes({ aprobaciones, className = '' }:
               detalle={`${d.numero} · ${etiquetaImpuesto[d.impuesto]} · ${etiquetaPeriodo(d)}`}
               derecha={
                 <>
-                  <Badge tono={tonoAprobacion[a.estado]}>{etiquetaEstadoAprobacion[a.estado]}</Badge>
-                  <p className="mt-1 text-xs text-slate-500">{esperaAprobacion(a) ? `Plazo: ${formatoFecha(a.limite)}` : formatoFecha(a.fecha ?? a.limite)}</p>
+                  <Badge tono={tonoAprobacion[a.estado]}>
+                    {etiquetaEstadoAprobacion[a.estado]}
+                  </Badge>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {esperaAprobacion(a)
+                      ? `Plazo: ${formatoFecha(a.limite)}`
+                      : formatoFecha(a.fecha ?? a.limite)}
+                  </p>
                 </>
               }
             />

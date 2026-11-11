@@ -5,7 +5,9 @@ export const ANIOS_ATRAS = 10
 
 /** Qué vence en cada formulario del año gravable. */
 export const DESCRIPCION_FORMULARIO: Record<Impuesto, (vigencia: number) => string> = {
-  ica: (vigencia) => `Declaración del año gravable ${vigencia}; se presenta y paga en ${vigencia + 1}.`,
+  ica: (vigencia) =>
+    `Declaración del año gravable ${vigencia}; se presenta y paga en ${vigencia + 1}.`,
   reteica: (vigencia) => `Lo que los agentes retuvieron en cada periodo de ${vigencia}.`,
-  autorretencion: (vigencia) => `Lo que los autorretenedores se practicaron en cada periodo de ${vigencia}.`,
+  autorretencion: (vigencia) =>
+    `Lo que los autorretenedores se practicaron en cada periodo de ${vigencia}.`,
 }

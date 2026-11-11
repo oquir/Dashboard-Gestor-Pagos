@@ -14,7 +14,11 @@ export default function DescargaDeclaraciones({ declaraciones }: DescargaDeclara
   const descargar = async () => {
     setGenerando(true)
     try {
-      await descargarDeclaracionesZip(declaraciones, useDatos.getState(), `declaraciones_${hoy()}.zip`)
+      await descargarDeclaracionesZip(
+        declaraciones,
+        useDatos.getState(),
+        `declaraciones_${hoy()}.zip`,
+      )
     } finally {
       setGenerando(false)
     }
@@ -24,10 +28,13 @@ export default function DescargaDeclaraciones({ declaraciones }: DescargaDeclara
     <Boton
       variante="primario"
       disabled={generando || cuantas === 0}
-      title={cuantas === 0 ? 'Marca en la tabla las declaraciones que quieres descargar' : undefined}
+      title={
+        cuantas === 0 ? 'Marca en la tabla las declaraciones que quieres descargar' : undefined
+      }
       onClick={descargar}
     >
-      <Zip className="size-4" aria-hidden /> {generando ? 'Generando PDF…' : `Descargar PDF (.zip)${cuantas > 0 ? ` · ${cuantas}` : ''}`}
+      <Zip className="size-4" aria-hidden />{' '}
+      {generando ? 'Generando PDF…' : `Descargar PDF (.zip)${cuantas > 0 ? ` · ${cuantas}` : ''}`}
     </Boton>
   )
 }

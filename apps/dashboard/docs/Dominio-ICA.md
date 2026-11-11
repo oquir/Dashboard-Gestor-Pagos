@@ -18,11 +18,11 @@
 
 Las tres giran alrededor del **impuesto de industria y comercio (ICA)**, un impuesto **municipal** (no de la DIAN) sobre las actividades industriales, comerciales y de servicios que se realizan en el municipio.
 
-| Declaración | Quién la presenta | Periodo típico | Qué es |
-|---|---|---|---|
-| **ICA anual** | El contribuyente | Anual (año gravable = año anterior) | La liquidación definitiva del impuesto |
-| **Retención (ReteICA)** | El **agente retenedor** (quien paga) | Bimestral, a veces mensual | Lo que le descontó a sus proveedores al pagarles |
-| **Autorretención** | El contribuyente **autorretenedor** | Bimestral, a veces mensual | Un anticipo que se liquida sobre sus propios ingresos |
+| Declaración             | Quién la presenta                    | Periodo típico                      | Qué es                                                |
+| ----------------------- | ------------------------------------ | ----------------------------------- | ----------------------------------------------------- |
+| **ICA anual**           | El contribuyente                     | Anual (año gravable = año anterior) | La liquidación definitiva del impuesto                |
+| **Retención (ReteICA)** | El **agente retenedor** (quien paga) | Bimestral, a veces mensual          | Lo que le descontó a sus proveedores al pagarles      |
+| **Autorretención**      | El contribuyente **autorretenedor**  | Bimestral, a veces mensual          | Un anticipo que se liquida sobre sus propios ingresos |
 
 Cómo se conectan: la retención y la autorretención **no son impuestos distintos**, son **cobros anticipados del mismo ICA**. En la declaración anual se restan:
 
@@ -41,19 +41,20 @@ El RIT (Registro de Información Tributaria) es el equivalente municipal del RUT
 
 **Regla general**: el ICA del año N se declara en el año N+1, en las fechas del calendario tributario (Medellín: Acuerdo 093 de 2023, art. 43, y guía del ICA de 2026, pregunta 4). Un negocio activo no presenta en 2026 su declaración normal del año gravable 2026: el año no ha terminado y todavía no se conocen sus ingresos.
 
-**Año gravable y vigencia no son lo mismo**. Según el Consejo de Estado (citado en el concepto 031090 de 2017 de MinHacienda), el *año gravable* es aquel en que se causa el impuesto y sirve de base por sus ingresos, y la *vigencia fiscal* es el año siguiente, cuando nace la obligación de pagar. Así, "ICA vigencia 2026" puede referirse a los ingresos de 2025. El uso de la palabra no es uniforme: en este dashboard `vigencia` significa año gravable, así que hay que confirmar a qué año se refiere un documento o un archivo de un municipio antes de cargarlo.
+**Año gravable y vigencia no son lo mismo**. Según el Consejo de Estado (citado en el concepto 031090 de 2017 de MinHacienda), el _año gravable_ es aquel en que se causa el impuesto y sirve de base por sus ingresos, y la _vigencia fiscal_ es el año siguiente, cuando nace la obligación de pagar. Así, "ICA vigencia 2026" puede referirse a los ingresos de 2025. El uso de la palabra no es uniforme: en este dashboard `vigencia` significa año gravable, así que hay que confirmar a qué año se refiere un documento o un archivo de un municipio antes de cargarlo.
 
 **Lo que parece declarar por anticipado en el ICA** son en realidad casos distintos:
 
-| Caso | Qué es | Por qué tiene sentido |
-|---|---|---|
-| **"ICA 2026" pagado en 2026** | La vigencia fiscal 2026, es decir, los ingresos de 2025 | Es la declaración normal con otro nombre |
-| **Presentar antes del vencimiento** | Sigue siendo el año siguiente al gravable, pero antes del plazo. Manizales ⏳: año gravable 2025 con 10 % hasta el 27 de febrero, 8 % hasta el 31 de marzo y 6 % hasta el 30 de abril de 2026; el plazo normal iba del 4 de mayo al 1 de junio | Es lo que da el descuento por pronto pago |
-| **Cierre del negocio** | Declaración de la fracción del año en curso | Quien cierra no siempre puede esperar el calendario del año siguiente; depende del municipio |
-| **Anticipo** (renglón 30) | Parte del impuesto del año siguiente, cobrada en la declaración normal; no es otra declaración | Es un cobro del municipio, no una decisión del contribuyente. Ibagué cobraba el 30 % hasta el Acuerdo 014 de 2024 |
-| **Periodos bimestrales del ICA** | En Bogotá ⏳, quienes superaron 391 UVT de impuesto a cargo declaran durante el mismo año | Es su calendario normal |
+| Caso                                | Qué es                                                                                                                                                                                                                                         | Por qué tiene sentido                                                                                             |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **"ICA 2026" pagado en 2026**       | La vigencia fiscal 2026, es decir, los ingresos de 2025                                                                                                                                                                                        | Es la declaración normal con otro nombre                                                                          |
+| **Presentar antes del vencimiento** | Sigue siendo el año siguiente al gravable, pero antes del plazo. Manizales ⏳: año gravable 2025 con 10 % hasta el 27 de febrero, 8 % hasta el 31 de marzo y 6 % hasta el 30 de abril de 2026; el plazo normal iba del 4 de mayo al 1 de junio | Es lo que da el descuento por pronto pago                                                                         |
+| **Cierre del negocio**              | Declaración de la fracción del año en curso                                                                                                                                                                                                    | Quien cierra no siempre puede esperar el calendario del año siguiente; depende del municipio                      |
+| **Anticipo** (renglón 30)           | Parte del impuesto del año siguiente, cobrada en la declaración normal; no es otra declaración                                                                                                                                                 | Es un cobro del municipio, no una decisión del contribuyente. Ibagué cobraba el 30 % hasta el Acuerdo 014 de 2024 |
+| **Periodos bimestrales del ICA**    | En Bogotá ⏳, quienes superaron 391 UVT de impuesto a cargo declaran durante el mismo año                                                                                                                                                      | Es su calendario normal                                                                                           |
 
 **Cuándo se declara la fracción de año al cerrar** depende del municipio:
+
 - **Chía y Cajicá**: se declara la fracción del año en curso como parte del trámite de cese.
 - **Medellín**: por regla general no se presenta de inmediato, sino en el calendario del año siguiente, porque "no se permiten declaraciones fraccionadas dentro de la misma vigencia fiscal". La excepción son las sociedades liquidadas y canceladas, que pueden presentarla en taquilla (guía del ICA de 2026, pregunta 12).
 
@@ -62,10 +63,12 @@ El RIT (Registro de Información Tributaria) es el equivalente municipal del RUT
 **La renta no justifica adelantar el ICA al mismo año**: el ICA de un año gravable se puede deducir en la renta de ese año si se paga antes de presentarla (art. 115-1 del Estatuto Tributario; Oficio DIAN 417 de 2020, escrito cuando existía el descuento). La renta de 2026 se presenta en 2027, así que no hace falta pagar en 2026. Sí puede ser un motivo para no esperar al final del plazo del ICA.
 
 **ReteICA y autorretención** se declaran en el mismo año porque su periodo es el año en curso, y no tienen descuento por pronto pago que perder:
+
 - **ReteICA**: se declara después de cerrar el periodo. En Medellín ⏳, noviembre-diciembre de 2026 vence el 20 de enero de 2027. No se encontró una norma sobre presentarla antes del cierre, pero no tendría lógica: esas retenciones aún no han ocurrido.
 - **Autorretención**: aquí **sí hay anticipación real, impuesta por el municipio**. En Medellín ⏳, el bimestre 6 de 2026 vence el 21 de diciembre y la autorretención se practica solo hasta el 15; los ingresos del 16 al 31 de diciembre van a la declaración anual de 2026 (Resolución 202550100057 de 2025, parágrafo 1). Envigado ⏳ adoptó el mismo corte en 2026, según un resumen de la norma, "para asegurar el recaudo en la vigencia 2026".
 
 **Sin confirmar**:
+
 - Se revisó una muestra de municipios: Medellín, Manizales, Chía, Cajicá, Ibagué, Envigado y Bogotá. Cada uno fija sus reglas.
 - En actividades ocasionales, Medellín pide declarar y pagar sobre la fracción trabajada (art. 53) y al presentar (resolución de calendario), pero no se confirmó en qué fecha.
 - Los datos de Bogotá, Ibagué y Envigado salen de notas de prensa o resúmenes, no de la norma.
@@ -91,57 +94,59 @@ El RIT (Registro de Información Tributaria) es el equivalente municipal del RUT
 Adoptado por la **Resolución 4056 del 1 de diciembre de 2017** del Ministerio de Hacienda, es obligatorio en todos los municipios desde las declaraciones presentadas a partir del 1 de enero de 2018. **El dashboard sigue esta numeración al mostrar y revisar las declaraciones anuales.**
 
 Reglas generales del instructivo:
+
 - Todas las casillas de valores se **aproximan al múltiplo de mil más cercano**; si no hay valor, se escribe 0.
 - Los formularios electrónicos deben respetar el contenido y el diseño, pero pueden prediligenciar datos (municipio, códigos DANE), usar listas desplegables e **inhabilitar lo que no aplica** en el municipio (por ejemplo, la sobretasa bomberil donde no existe).
-- **Opción de uso**: *declaración inicial*, *solamente pago* (solo se diligencia la sección E) o *corrección*. La corrección **reemplaza toda la declaración anterior**, salvo la sección de pago, donde solo va lo que se paga con la corrección.
+- **Opción de uso**: _declaración inicial_, _solamente pago_ (solo se diligencia la sección E) o _corrección_. La corrección **reemplaza toda la declaración anterior**, salvo la sección de pago, donde solo va lo que se paga con la corrección.
 
-| Renglón | Contenido | Cálculo / nota |
-|---|---|---|
-| **A. Contribuyente** | | |
-| 1–5 | Nombre o razón social, tipo y número de documento + DV, dirección, teléfono, correo | Consorcio, unión temporal y patrimonio autónomo se marcan aparte |
-| 6 | Número de establecimientos en el municipio | |
-| 7 | Clasificación (régimen común o simplificado, según el municipio) | |
-| **B. Base gravable** | | |
-| 8 | Total de ingresos ordinarios y extraordinarios en todo el país | |
-| 9 | Menos ingresos fuera del municipio | Según las reglas de territorialidad |
-| 10 | Ingresos en este municipio | 8 − 9 |
-| 11 | Menos devoluciones, rebajas y descuentos | |
-| 12 | Menos exportaciones | |
-| 13 | Menos venta de activos fijos | |
-| 14 | Menos actividades excluidas o no sujetas y otros ingresos no gravados | |
-| 15 | Menos actividades exentas en el municipio (por acuerdo) | |
-| 16 | **Total de ingresos gravables** | 10 − 11 − 12 − 13 − 14 − 15 |
-| **C. Actividades** | | |
-| tabla | Por actividad (código y tarifa del municipio): ingresos gravados × tarifa | Empieza por la actividad principal |
-| 17 | **Total impuesto** | Suma de la columna de impuesto |
-| 18 | Generación de energía: kW instalados | Ley 56 de 1981 |
-| 19 | Impuesto por generación de energía | kW × valor por kW de ley, actualizado |
-| **D. Liquidación** | | |
-| 20 | Total impuesto de industria y comercio | 17 + 19 |
-| 21 | **Avisos y tableros** | 15% del 20, **solo si tiene avisos** |
-| 22 | Unidades comerciales adicionales del sector financiero | Decreto 1333, art. 209 |
-| 23 | Sobretasa bomberil | Si el municipio la tiene (Ley 1575 de 2012) |
-| 24 | Sobretasa de seguridad | Si el municipio la tiene (Ley 1421 de 2011) |
-| 25 | **Total impuesto a cargo** | 20 + 21 + 22 + 23 + 24 |
-| 26 | Menos exención o exoneración sobre el impuesto | Distinta de la exención sobre ingresos (15) |
-| 27 | **Menos retenciones** | Practicadas **a favor de este municipio**, con certificados |
-| 28 | **Menos autorretenciones** | Si el declarante es autorretenedor en este municipio |
-| 29 | Menos anticipo liquidado el año anterior | |
-| 30 | Anticipo para el año siguiente | Si el municipio lo exige |
-| 31 | Sanciones | |
-| 32 | Menos saldo a favor del periodo anterior | Si no se pidió devolución ni compensación |
-| 33 | **Total saldo a cargo** | 25 − 26 − 27 − 28 − 29 + 30 + 31 − 32, si es ≥ 0 |
-| 34 | **Total saldo a favor** | La misma operación, si es < 0 |
-| **E. Pago** | | |
-| 35 | Valor a pagar | **Puede ser parcial o total** según el instructivo |
-| 36 | Descuento por pronto pago | Si el municipio lo tiene |
-| 37 | Intereses de mora | |
-| 38 | **Total a pagar** | 35 − 36 + 37 |
-| 39 | Pago voluntario | Solo municipios que lo tengan |
-| 40 | Total a pagar con pago voluntario | 38 + 39 |
-| **F. Firmas** | Declarante; contador o revisor fiscal si el municipio lo exige | |
+| Renglón              | Contenido                                                                           | Cálculo / nota                                                   |
+| -------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| **A. Contribuyente** |                                                                                     |                                                                  |
+| 1–5                  | Nombre o razón social, tipo y número de documento + DV, dirección, teléfono, correo | Consorcio, unión temporal y patrimonio autónomo se marcan aparte |
+| 6                    | Número de establecimientos en el municipio                                          |                                                                  |
+| 7                    | Clasificación (régimen común o simplificado, según el municipio)                    |                                                                  |
+| **B. Base gravable** |                                                                                     |                                                                  |
+| 8                    | Total de ingresos ordinarios y extraordinarios en todo el país                      |                                                                  |
+| 9                    | Menos ingresos fuera del municipio                                                  | Según las reglas de territorialidad                              |
+| 10                   | Ingresos en este municipio                                                          | 8 − 9                                                            |
+| 11                   | Menos devoluciones, rebajas y descuentos                                            |                                                                  |
+| 12                   | Menos exportaciones                                                                 |                                                                  |
+| 13                   | Menos venta de activos fijos                                                        |                                                                  |
+| 14                   | Menos actividades excluidas o no sujetas y otros ingresos no gravados               |                                                                  |
+| 15                   | Menos actividades exentas en el municipio (por acuerdo)                             |                                                                  |
+| 16                   | **Total de ingresos gravables**                                                     | 10 − 11 − 12 − 13 − 14 − 15                                      |
+| **C. Actividades**   |                                                                                     |                                                                  |
+| tabla                | Por actividad (código y tarifa del municipio): ingresos gravados × tarifa           | Empieza por la actividad principal                               |
+| 17                   | **Total impuesto**                                                                  | Suma de la columna de impuesto                                   |
+| 18                   | Generación de energía: kW instalados                                                | Ley 56 de 1981                                                   |
+| 19                   | Impuesto por generación de energía                                                  | kW × valor por kW de ley, actualizado                            |
+| **D. Liquidación**   |                                                                                     |                                                                  |
+| 20                   | Total impuesto de industria y comercio                                              | 17 + 19                                                          |
+| 21                   | **Avisos y tableros**                                                               | 15% del 20, **solo si tiene avisos**                             |
+| 22                   | Unidades comerciales adicionales del sector financiero                              | Decreto 1333, art. 209                                           |
+| 23                   | Sobretasa bomberil                                                                  | Si el municipio la tiene (Ley 1575 de 2012)                      |
+| 24                   | Sobretasa de seguridad                                                              | Si el municipio la tiene (Ley 1421 de 2011)                      |
+| 25                   | **Total impuesto a cargo**                                                          | 20 + 21 + 22 + 23 + 24                                           |
+| 26                   | Menos exención o exoneración sobre el impuesto                                      | Distinta de la exención sobre ingresos (15)                      |
+| 27                   | **Menos retenciones**                                                               | Practicadas **a favor de este municipio**, con certificados      |
+| 28                   | **Menos autorretenciones**                                                          | Si el declarante es autorretenedor en este municipio             |
+| 29                   | Menos anticipo liquidado el año anterior                                            |                                                                  |
+| 30                   | Anticipo para el año siguiente                                                      | Si el municipio lo exige                                         |
+| 31                   | Sanciones                                                                           |                                                                  |
+| 32                   | Menos saldo a favor del periodo anterior                                            | Si no se pidió devolución ni compensación                        |
+| 33                   | **Total saldo a cargo**                                                             | 25 − 26 − 27 − 28 − 29 + 30 + 31 − 32, si es ≥ 0                 |
+| 34                   | **Total saldo a favor**                                                             | La misma operación, si es < 0                                    |
+| **E. Pago**          |                                                                                     |                                                                  |
+| 35                   | Valor a pagar                                                                       | **Puede ser parcial o total** según el instructivo               |
+| 36                   | Descuento por pronto pago                                                           | Si el municipio lo tiene                                         |
+| 37                   | Intereses de mora                                                                   |                                                                  |
+| 38                   | **Total a pagar**                                                                   | 35 − 36 + 37                                                     |
+| 39                   | Pago voluntario                                                                     | Solo municipios que lo tengan                                    |
+| 40                   | Total a pagar con pago voluntario                                                   | 38 + 39                                                          |
+| **F. Firmas**        | Declarante; contador o revisor fiscal si el municipio lo exige                      |                                                                  |
 
 Complementarios y figuras del formulario:
+
 - **Avisos y tableros**: tiene hecho generador propio. El Consejo de Estado lo ha precisado: son avisos, tableros o vallas **en la vía pública o visibles desde ella**. No se cobra automáticamente por tener ICA.
 - **Anticipo** (art. 47 de la Ley 43 de 1987): el municipio puede exigir **hasta el 40%** del impuesto como anticipo del año siguiente. Se cobra en el renglón 30 y se resta al año siguiente en el 29.
 - **Sobretasa bomberil**: se liquida sobre el ICA; el porcentaje depende del municipio (Bogotá 1%; en otros municipios, 4% o más).
@@ -197,6 +202,7 @@ El **RIT (Registro de Información Tributaria)** es el registro municipal que id
 Casi siempre **bimestral**: bimestre 1 = enero–febrero … bimestre 6 = noviembre–diciembre. Algunos municipios son mensuales (Barranquilla, para ciertos contribuyentes). Los plazos suelen depender del **último dígito del NIT**.
 
 Según la experiencia del usuario con los municipios (2026-11-03; no se ha cruzado con normas), los casos son más variados:
+
 - la ReteICA y la autorretención pueden ser mensuales, bimestrales o **trimestrales**, y cada una puede tener una periodicidad distinta;
 - sus vencimientos van por separado;
 - la fecha puede depender del último dígito del NIT **o de la cédula**.
@@ -206,6 +212,7 @@ Según la experiencia del usuario con los municipios (2026-11-03; no se ha cruza
 El FUN es solo para el ICA anual. La Resolución 4056 dice expresamente que, cuando un municipio establece la retención, **el formulario lo define cada entidad**. En consecuencia:
 
 **Lo que casi todos comparten** (sale del Estatuto Tributario nacional que todos aplican):
+
 - Periodo (año y bimestre o mes) y tipo de declaración.
 - Datos del agente retenedor.
 - Liquidación: base × tarifa = retención.
@@ -214,6 +221,7 @@ El FUN es solo para el ICA anual. La Resolución 4056 dice expresamente que, cua
 - Firmas.
 
 **Lo que varía entre municipios** (confirmado también por la experiencia del usuario trabajando con estos formularios):
+
 - **Si se detallan las actividades o no.** Hay municipios donde la declaración **no pide actividades**: solo base y tarifa (o bases por concepto). En otros la liquidación va por actividad CIIU.
 - Tarifa única (Medellín) frente a una tarifa por actividad; o una división por concepto (compras / servicios, cada uno con su base mínima).
 - Periodicidad (bimestral o mensual).
@@ -223,21 +231,21 @@ El FUN es solo para el ICA anual. La Resolución 4056 dice expresamente que, cua
 
 **Ejemplo real, renglón por renglón: formulario bimestral de Medellín**
 
-| Renglón | Contenido | Cálculo / nota |
-|---|---|---|
-| 1 | Periodo declarado: vigencia y bimestre (01–06) | El año es aquel en que se practicaron las retenciones |
-| 2 | Tipo de declaración: normal, extemporánea, corrección (con el radicado que corrige), respuesta a emplazamiento (con su número), respuesta a auto (con su número) | |
-| 3–11 | Documento + DV, nombre, dirección, correo, departamento y municipio (código DANE), teléfonos | |
-| 12 | ¿Hubo actividades con personas sin domicilio ni presencia en el país? | Habilita una tarifa distinta de 2 por mil |
-| 13–15 | Tabla: **tarifa**, **valor base**, **valor retención** | Retención = base × tarifa, redondeada a mil |
-| 16 | Retenciones practicadas en el periodo | Suma de la columna 15 |
-| 17 | Devoluciones, anulaciones, rescisiones y retenciones practicadas en exceso | |
-| 18 | Subtotal | 16 − 17 |
-| 19 | Sanción 1: extemporánea / posterior al emplazamiento | |
-| 20 | Sanción 2: corrección / respuesta a auto | |
-| 21 | Intereses | |
-| 22 | **Total a pagar** | 18 + 19 + 20 + 21 |
-| 23–28 | Firmas: representante legal, contador o revisor fiscal, calidad de quien firma | |
+| Renglón | Contenido                                                                                                                                                        | Cálculo / nota                                        |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 1       | Periodo declarado: vigencia y bimestre (01–06)                                                                                                                   | El año es aquel en que se practicaron las retenciones |
+| 2       | Tipo de declaración: normal, extemporánea, corrección (con el radicado que corrige), respuesta a emplazamiento (con su número), respuesta a auto (con su número) |                                                       |
+| 3–11    | Documento + DV, nombre, dirección, correo, departamento y municipio (código DANE), teléfonos                                                                     |                                                       |
+| 12      | ¿Hubo actividades con personas sin domicilio ni presencia en el país?                                                                                            | Habilita una tarifa distinta de 2 por mil             |
+| 13–15   | Tabla: **tarifa**, **valor base**, **valor retención**                                                                                                           | Retención = base × tarifa, redondeada a mil           |
+| 16      | Retenciones practicadas en el periodo                                                                                                                            | Suma de la columna 15                                 |
+| 17      | Devoluciones, anulaciones, rescisiones y retenciones practicadas en exceso                                                                                       |                                                       |
+| 18      | Subtotal                                                                                                                                                         | 16 − 17                                               |
+| 19      | Sanción 1: extemporánea / posterior al emplazamiento                                                                                                             |                                                       |
+| 20      | Sanción 2: corrección / respuesta a auto                                                                                                                         |                                                       |
+| 21      | Intereses                                                                                                                                                        |                                                       |
+| 22      | **Total a pagar**                                                                                                                                                | 18 + 19 + 20 + 21                                     |
+| 23–28   | Firmas: representante legal, contador o revisor fiscal, calidad de quien firma                                                                                   |                                                       |
 
 ### Reglas que lo diferencian del ICA anual (importan para el diseño)
 
@@ -264,6 +272,7 @@ El contribuyente **se practica la retención sobre sus propios ingresos** y la d
 ### Quiénes son
 
 Los designa el municipio por resolución (o lo pide el contribuyente y la administración lo aprueba). Ejemplos:
+
 - **Cartagena**: entidades vigiladas por la Superfinanciera, estaciones de combustible, grandes contribuyentes de la DIAN, empresas de servicios públicos domiciliarios y los que determine la Secretaría de Hacienda.
 - **Medellín**: los nombrados por resolución de la Subsecretaría de Ingresos y quienes lo solicitan.
 
@@ -288,13 +297,13 @@ Los designa el municipio por resolución (o lo pide el contribuyente y la admini
 
 El sistema debe diferenciar estrictamente qué sanciones autoliquida el usuario (extemporaneidad, corrección) y cuáles impone la alcaldía (inexactitud).
 
-- **Art. 59 de la Ley 788 de 2002**: los municipios aplican el procedimiento y el régimen sancionatorio del **Estatuto Tributario nacional**. **Pueden reducir el monto de las sanciones y simplificar los procedimientos, pero no imponer sanciones mayores ni distintas.** Es el fundamento de la regla del proyecto: *la ley es el tope por defecto, el municipio solo puede bajarla*.
+- **Art. 59 de la Ley 788 de 2002**: los municipios aplican el procedimiento y el régimen sancionatorio del **Estatuto Tributario nacional**. **Pueden reducir el monto de las sanciones y simplificar los procedimientos, pero no imponer sanciones mayores ni distintas.** Es el fundamento de la regla del proyecto: _la ley es el tope por defecto, el municipio solo puede bajarla_.
 - **Extemporaneidad antes del emplazamiento** (art. 641): 5% por mes o fracción, con tope del 100%.
 - **Extemporaneidad después del emplazamiento** (art. 642): 10% por mes o fracción, con tope del 200%. Por eso los formularios de retención separan dos tipos de sanción.
 - **Regla en correcciones**: la extemporaneidad es de la declaración inicial; **en la corrección nunca se liquida como una sanción aparte**. Si la inicial fue a tiempo, la corrección solo lleva la sanción por corrección. Si la inicial fue extemporánea, la sanción por corrección **aumenta un 5% del mayor valor por cada mes o fracción** entre el vencimiento y la presentación de la inicial, sin superar el 100% del mayor valor (art. 644, parágrafo 1).
 - **Emplazamiento**: notificación formal de la alcaldía que separa la sanción voluntaria de la agravada. En ambos casos da 1 mes de plazo:
-  - **Para declarar** (art. 715 ETN): notifica la omisión de presentar. Si el contribuyente declara, la extemporaneidad pasa al 10% por mes, con tope del 200% (art. 642); si no, siguen la sanción por no declarar (art. 643) y la *liquidación oficial de aforo* (art. 717).
-  - **Para corregir** (art. 685 ETN): la alcaldía lo envía cuando tiene indicios de inexactitud. Toda corrección presentada después de la notificación, dentro del mes o después, y antes del requerimiento especial, lleva el 20% (art. 644, numeral 2). Es **facultativo**: no responderlo no genera sanción, y la alcaldía *puede* seguir con requerimiento especial, pero no es automático ni obligatorio.
+  - **Para declarar** (art. 715 ETN): notifica la omisión de presentar. Si el contribuyente declara, la extemporaneidad pasa al 10% por mes, con tope del 200% (art. 642); si no, siguen la sanción por no declarar (art. 643) y la _liquidación oficial de aforo_ (art. 717).
+  - **Para corregir** (art. 685 ETN): la alcaldía lo envía cuando tiene indicios de inexactitud. Toda corrección presentada después de la notificación, dentro del mes o después, y antes del requerimiento especial, lleva el 20% (art. 644, numeral 2). Es **facultativo**: no responderlo no genera sanción, y la alcaldía _puede_ seguir con requerimiento especial, pero no es automático ni obligatorio.
 - **Sanción mínima de 10 UVT** (art. 639) y **gradualidad** (art. 640). El sistema debe comparar la sanción calculada con el mínimo (en 2026, $523.740) y cobrar la mayor.
 - **Corrección frente a inexactitud**: las dos tratan de un error en lo declarado; la diferencia está en **quién lo detecta**.
   - **Corrección** (art. 644): el contribuyente corrige **por su cuenta** y paga **10%** del mayor valor a pagar (o del menor saldo a favor) si corrige después del vencimiento del plazo y antes de cualquier actuación de la administración, o **20%** si corrige después del emplazamiento para corregir o del auto de inspección, pero antes del requerimiento especial. Se autoliquida en la propia declaración de corrección. Solo aplica si la corrección **sube** el valor a pagar o **baja** el saldo a favor; corregir a la baja sigue otro trámite (art. 589) que la administración tiene que aprobar.
@@ -324,14 +333,14 @@ Lo que el dominio les exige a los cuatro frentes del dashboard: las inscripcione
 
 ### 6.2 Declaraciones
 
-| | ICA anual | ReteICA | Autorretención |
-|---|---|---|---|
-| Formulario | FUN (nacional) | Lo define cada municipio | Lo define cada municipio |
-| Tipos de declaración | Inicial, corrección y clausura | Inicial y corrección | Inicial y corrección |
-| Descuento por pronto pago | Si el municipio lo tiene | No | No |
-| Pago parcial | Sí (renglón 35) | No: sin pago total es ineficaz | No: sin pago total es ineficaz |
-| Saldo a favor | Sí (renglón 34) | No | No |
-| Se resta en el ICA anual | — | Renglón 27 del proveedor, con certificado | Renglón 28 del mismo contribuyente |
+|                           | ICA anual                      | ReteICA                                   | Autorretención                     |
+| ------------------------- | ------------------------------ | ----------------------------------------- | ---------------------------------- |
+| Formulario                | FUN (nacional)                 | Lo define cada municipio                  | Lo define cada municipio           |
+| Tipos de declaración      | Inicial, corrección y clausura | Inicial y corrección                      | Inicial y corrección               |
+| Descuento por pronto pago | Si el municipio lo tiene       | No                                        | No                                 |
+| Pago parcial              | Sí (renglón 35)                | No: sin pago total es ineficaz            | No: sin pago total es ineficaz     |
+| Saldo a favor             | Sí (renglón 34)                | No                                        | No                                 |
+| Se resta en el ICA anual  | —                              | Renglón 27 del proveedor, con certificado | Renglón 28 del mismo contribuyente |
 
 - **El tipo de declaración decide la sanción** (normal, extemporánea, corrección, respuesta a emplazamiento o a auto). **Exclusión mutua**: una inicial lleva extemporaneidad (llegó tarde) y una corrección lleva sanción por corrección (se equivocó); nunca las dos como renglones separados. Una inicial extemporánea que luego se corrige no suma las dos: se resuelve con el recargo del 5% mensual dentro de la sanción por corrección (sección 5).
 - **Quién liquida cada sanción**: la extemporaneidad y la corrección las autoliquida el declarante; la inexactitud la impone la alcaldía, así que una declaración que la trae autoliquidada es una inconsistencia, salvo la corrección que acepta un requerimiento especial (sección 5). Los porcentajes y la sanción mínima salen de la configuración del municipio (sección 6.4).
@@ -352,7 +361,7 @@ Lo que el dominio les exige a los cuatro frentes del dashboard: las inscripcione
 
 ### 6.3 Pagos
 
-- **ICA anual**: el pago puede ser parcial (renglón 35), así que una declaración puede quedar con saldo pendiente. La opción de uso *solamente pago* solo diligencia la sección E: el dashboard registra pagos sin una nueva liquidación.
+- **ICA anual**: el pago puede ser parcial (renglón 35), así que una declaración puede quedar con saldo pendiente. La opción de uso _solamente pago_ solo diligencia la sección E: el dashboard registra pagos sin una nueva liquidación.
 - **Descuento por pronto pago** (reglas por defecto de la sección 2, ajustables por municipio): solo sobre el impuesto neto a cargo, nunca sobre sanciones ni intereses; exige paz y salvo y se pierde si el pago es parcial, extemporáneo o entra en un acuerdo de pago.
 - **Intereses de mora**: diarios, con la tasa vigente al momento del pago, que cambia cada mes (secciones 5 y 7). En una corrección de mayor valor fuera de plazo, solo sobre la diferencia.
 - **ReteICA y autorretención**: sin pago total la declaración es ineficaz, sin necesidad de acto administrativo, y no hay saldo a favor. En ReteICA, lo retenido de más se descuenta en el renglón de devoluciones y anulaciones de ese periodo o de los siguientes.
@@ -372,6 +381,7 @@ No hay formulario nacional de retención ni de autorretención, y cada concejo f
   - vencimientos de cada formulario por separado, con una fecha única o según el último dígito del NIT o la cédula.
 
   Un periodo puede vencer antes de terminar: la autorretención del último bimestre puede tener fecha de corte y vencimiento en diciembre (sección 1.2).
+
 - **Beneficios y cobros**: descuento por pronto pago (tramos de fechas y porcentajes por año gravable, y condiciones), anticipo (hasta el 40%) y pago voluntario.
 - **Procedimiento**: si se exige la declaración en ceros, si la cancelación del RIT es automática o verificada, cuándo se presenta la fracción de año al cerrar (de inmediato o en el calendario siguiente, sección 1.2), si la corrección a la baja sigue el art. 589 clásico o la corrección directa, los soportes de inscripción por calidad y el plazo para inscribirse.
 - **Sanciones**: la configuración parte de los valores de ley (extemporaneidad del 5% o 10% por mes, con topes del 100% y 200%; corrección del 10% o 20%; mínimo de 10 UVT) y **no acepta valores mayores**: el municipio solo puede bajarlos (sección 5).
@@ -381,21 +391,21 @@ No hay formulario nacional de retención ni de autorretención, y cada concejo f
 
 Verificados el 2026-09-22, salvo los que indican otra fecha. Revisar antes de reutilizarlos.
 
-| Dato | Valor | Vigencia |
-|---|---|---|
-| UVT | $52.374 | 2026 |
-| Sanción mínima (10 UVT) | $523.740 | 2026 |
-| Base mínima ReteICA Bogotá | Servicios 4 UVT · compras 27 UVT | 2026 |
-| Base mínima ReteICA Barranquilla | Servicios 4 UVT · compras 27 UVT | 2026 |
-| Base mínima ReteICA Cali | Servicios 3 UVT · compras 15 UVT | 2026 |
-| Base mínima ReteICA Medellín | 15 UVT para todo pago (tarifa 2 por mil) | 2026 |
-| Base mínima ReteICA Bucaramanga | Servicios 25 UVT · compras 50 UVT | 2026 |
-| Plazos ReteICA Bogotá | 20 mar, 22 may, 17 jul, 18 sep, 20 nov de 2026; 15 ene de 2027 | 2026 |
-| Bimestre 6 en Medellín | ReteICA: vence el 20 ene de 2027. Autorretención: se practica hasta el 15 dic y vence el 21 dic de 2026 | 2026 (verificado el 2026-11-02) |
-| Pronto pago ICA en Manizales | 10% hasta el 27 feb, 8% hasta el 31 mar y 6% hasta el 30 abr de 2026; tope de 300 UVT; no aplica al SIMPLE | Año gravable 2025 (verificado el 2026-11-02) |
-| Autorretención del bimestre 6 en Envigado | Corte al 15 dic de 2026 | 2026 (resumen de la norma, 2026-11-02) |
-| ICA bimestral en Bogotá | Más de 391 UVT de impuesto a cargo en 2025 | 2026 (nota de prensa, 2026-11-02) |
-| Tasa de interés de mora | 27,66% E.A. (usura − 2 puntos) | **Solo agosto de 2026**: la tasa es mensual y la de septiembre de 2026 no se encontró publicada; actualizar antes de usarla para liquidar intereses |
+| Dato                                      | Valor                                                                                                      | Vigencia                                                                                                                                            |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UVT                                       | $52.374                                                                                                    | 2026                                                                                                                                                |
+| Sanción mínima (10 UVT)                   | $523.740                                                                                                   | 2026                                                                                                                                                |
+| Base mínima ReteICA Bogotá                | Servicios 4 UVT · compras 27 UVT                                                                           | 2026                                                                                                                                                |
+| Base mínima ReteICA Barranquilla          | Servicios 4 UVT · compras 27 UVT                                                                           | 2026                                                                                                                                                |
+| Base mínima ReteICA Cali                  | Servicios 3 UVT · compras 15 UVT                                                                           | 2026                                                                                                                                                |
+| Base mínima ReteICA Medellín              | 15 UVT para todo pago (tarifa 2 por mil)                                                                   | 2026                                                                                                                                                |
+| Base mínima ReteICA Bucaramanga           | Servicios 25 UVT · compras 50 UVT                                                                          | 2026                                                                                                                                                |
+| Plazos ReteICA Bogotá                     | 20 mar, 22 may, 17 jul, 18 sep, 20 nov de 2026; 15 ene de 2027                                             | 2026                                                                                                                                                |
+| Bimestre 6 en Medellín                    | ReteICA: vence el 20 ene de 2027. Autorretención: se practica hasta el 15 dic y vence el 21 dic de 2026    | 2026 (verificado el 2026-11-02)                                                                                                                     |
+| Pronto pago ICA en Manizales              | 10% hasta el 27 feb, 8% hasta el 31 mar y 6% hasta el 30 abr de 2026; tope de 300 UVT; no aplica al SIMPLE | Año gravable 2025 (verificado el 2026-11-02)                                                                                                        |
+| Autorretención del bimestre 6 en Envigado | Corte al 15 dic de 2026                                                                                    | 2026 (resumen de la norma, 2026-11-02)                                                                                                              |
+| ICA bimestral en Bogotá                   | Más de 391 UVT de impuesto a cargo en 2025                                                                 | 2026 (nota de prensa, 2026-11-02)                                                                                                                   |
+| Tasa de interés de mora                   | 27,66% E.A. (usura − 2 puntos)                                                                             | **Solo agosto de 2026**: la tasa es mensual y la de septiembre de 2026 no se encontró publicada; actualizar antes de usarla para liquidar intereses |
 
 ## 8. Sin verificar o pendiente
 
@@ -437,7 +447,7 @@ Verificados el 2026-09-22, salvo los que indican otra fecha. Revisar antes de re
 - [Asuntos Legales (KPMG, 2018): la DIAN habilita la corrección directa](https://www.asuntoslegales.com.co/analisis/camilo-andres-rodriguez-vargas-400361/eliminadas-las-liquidaciones-de-correccion-tributarias-2595612)
 - [ICEF: en Bogotá, la corrección de menor valor se presenta en los bancos desde 2018](https://icef.com.co/component/k2/item/3124-correcciones-de-pago-de-impuestos-por-menor-valor-se-presentaran-en-bancos)
 - [Corte Constitucional, C-005 de 1998: sanción por rechazar la corrección del art. 589 anterior](https://www.corteconstitucional.gov.co/relatoria/1998/C-005-98.htm)
-- [Consejo de Estado, exp. 20960: art. 589 anterior en el ICA de Rionegro](https://www.consejodeestado.gov.co/documentos/boletines/PDF/05001-23-33-000-2013-00758-01(20960).pdf)
+- [Consejo de Estado, exp. 20960: art. 589 anterior en el ICA de Rionegro](<https://www.consejodeestado.gov.co/documentos/boletines/PDF/05001-23-33-000-2013-00758-01(20960).pdf>)
 - [Ámbito Jurídico: hecho generador de avisos y tableros](https://www.ambitojuridico.com/noticias/tributario/asi-se-determina-el-hecho-generador-del-impuesto-de-avisos-y-tableros-1104-am)
 - [Acuerdo 093 de 2023 de Medellín](https://www.medellin.gov.co/es/wp-content/uploads/2024/01/ACUERDO-093-2023-GACETA.pdf) (arts. 43, 53 y 76)
 - [Guía de preguntas frecuentes del ICA anual de Medellín (2026)](https://www.medellin.gov.co/es/wp-content/uploads/2026/03/4.-DE-GEHA-ING-Guia-de-Preguntas-y-Respuestas-Frecuentes_Declaracion-Anual-de-Industria-y-Comercio.pdf) (preguntas 4 y 12)

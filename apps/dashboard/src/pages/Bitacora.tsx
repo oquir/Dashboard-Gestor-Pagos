@@ -16,7 +16,10 @@ import { useDatos } from '../store'
 import type { Rol, ValorFiltro } from '../types'
 import { hoy } from '../utils'
 
-const OPCIONES_CONTROLADOR: Record<string, string> = { '': 'Todo controlador', ...Object.fromEntries(CONTROLADORES.map((c) => [c, c])) }
+const OPCIONES_CONTROLADOR: Record<string, string> = {
+  '': 'Todo controlador',
+  ...Object.fromEntries(CONTROLADORES.map((c) => [c, c])),
+}
 const OPCIONES_ROL: Record<ValorFiltro<Rol>, string> = { '': 'Todo rol', ...etiquetaRol }
 
 /** Lo más que cabe en una celda de Excel. */
@@ -50,7 +53,8 @@ export default function Bitacora() {
   // Con un municipio elegido no salen los registros que no son de ninguno, como el inicio de sesión de 1cero1.
   const delQueSeVe = useMemo(() => delMunicipio(bitacora, municipioId), [bitacora, municipioId])
   const filtrados = useMemo(
-    () => filtrarBitacora(delQueSeVe, { texto, controlador, rol, soloFueraDeHorario, soloFallidas }),
+    () =>
+      filtrarBitacora(delQueSeVe, { texto, controlador, rol, soloFueraDeHorario, soloFallidas }),
     [delQueSeVe, texto, controlador, rol, soloFueraDeHorario, soloFallidas],
   )
 
@@ -90,17 +94,36 @@ export default function Bitacora() {
       <BuscadorMunicipios />
       <Card>
         <BarraFiltros
-          buscador={<Buscador placeholder="Buscar por número, usuario, acción, endpoint o datos" value={texto} onChange={(e) => setTexto(e.target.value)} />}
+          buscador={
+            <Buscador
+              placeholder="Buscar por número, usuario, acción, endpoint o datos"
+              value={texto}
+              onChange={(e) => setTexto(e.target.value)}
+            />
+          }
           acciones={
             <Boton variante="primario" disabled={filtrados.length === 0} onClick={descargar}>
               <Download className="size-4" aria-hidden /> Descargar Excel
             </Boton>
           }
         >
-          <Filtro etiqueta="Controlador" opciones={OPCIONES_CONTROLADOR} valor={controlador} cambiar={setControlador} />
+          <Filtro
+            etiqueta="Controlador"
+            opciones={OPCIONES_CONTROLADOR}
+            valor={controlador}
+            cambiar={setControlador}
+          />
           <Filtro etiqueta="Rol" opciones={OPCIONES_ROL} valor={rol} cambiar={setRol} />
-          <FiltroCasilla etiqueta="Solo fuera de horario" marcado={soloFueraDeHorario} cambiar={setSoloFueraDeHorario} />
-          <FiltroCasilla etiqueta="Solo las que fallaron" marcado={soloFallidas} cambiar={setSoloFallidas} />
+          <FiltroCasilla
+            etiqueta="Solo fuera de horario"
+            marcado={soloFueraDeHorario}
+            cambiar={setSoloFueraDeHorario}
+          />
+          <FiltroCasilla
+            etiqueta="Solo las que fallaron"
+            marcado={soloFallidas}
+            cambiar={setSoloFallidas}
+          />
         </BarraFiltros>
         <TablaBitacora registros={filtrados} total={delQueSeVe.length} />
       </Card>

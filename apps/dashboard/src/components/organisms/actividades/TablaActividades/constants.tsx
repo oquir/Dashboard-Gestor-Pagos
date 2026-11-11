@@ -9,7 +9,11 @@ const col = ayudanteColumnas<Tarifa>()
 export const COLUMNAS = col.columns([
   col.accessor('ciiu', { header: 'CIIU', meta: { clase: 'tabular-nums text-slate-500' } }),
   col.accessor('descripcion', { header: 'Actividad', meta: { clase: 'text-slate-900' } }),
-  col.accessor((t) => etiquetaSector[t.sector], { id: 'sector', header: 'Sector', meta: { clase: 'text-slate-600' } }),
+  col.accessor((t) => etiquetaSector[t.sector], {
+    id: 'sector',
+    header: 'Sector',
+    meta: { clase: 'text-slate-600' },
+  }),
   col.accessor('porMil', {
     header: 'Tarifa (por mil)',
     meta: { alinear: 'derecha', clase: 'whitespace-nowrap tabular-nums text-slate-900' },

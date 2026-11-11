@@ -28,12 +28,16 @@ export default function Login() {
           </span>
           <div>
             <h1 className="text-2xl font-semibold text-slate-900">Gestor de Pagos</h1>
-            <p className="text-sm text-slate-500">Industria y comercio, ReteICA, AutoReteICA y RIT · demo con datos simulados</p>
+            <p className="text-sm text-slate-500">
+              Industria y comercio, ReteICA, AutoReteICA y RIT · demo con datos simulados
+            </p>
           </div>
         </div>
 
         <h2 className="mb-1 text-lg font-semibold text-slate-900">Elige con qué usuario entrar</h2>
-        <p className="mb-6 text-sm text-slate-500">No hay contraseñas: es una demo para validar cómo se verá el aplicativo con cada rol.</p>
+        <p className="mb-6 text-sm text-slate-500">
+          No hay contraseñas: es una demo para validar cómo se verá el aplicativo con cada rol.
+        </p>
 
         <div className="space-y-8">
           {ORDEN.map((rol) => (
@@ -44,15 +48,27 @@ export default function Login() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {usuarios
-                  .filter((u) => u.rol === rol && u.activo && (u.municipioId === null || municipios.find((m) => m.id === u.municipioId)?.activo))
+                  .filter(
+                    (u) =>
+                      u.rol === rol &&
+                      u.activo &&
+                      (u.municipioId === null ||
+                        municipios.find((m) => m.id === u.municipioId)?.activo),
+                  )
                   .map((u) => (
-                    <button key={u.id} type="button" onClick={() => entrar(u.id)} className="text-left">
+                    <button
+                      key={u.id}
+                      type="button"
+                      onClick={() => entrar(u.id)}
+                      className="text-left"
+                    >
                       <Card className="h-full p-4 transition hover:border-brand-300 hover:shadow-md">
                         <p className="font-medium text-slate-900">{nombreCompleto(u)}</p>
                         <p className="text-sm text-slate-500">{u.cargo}</p>
                         <div className="mt-3">
                           <Badge tono={rol === '1cero1' ? 'info' : 'neutral'}>
-                            {municipios.find((m) => m.id === u.municipioId)?.nombre ?? 'Todos los municipios'}
+                            {municipios.find((m) => m.id === u.municipioId)?.nombre ??
+                              'Todos los municipios'}
                           </Badge>
                         </div>
                       </Card>

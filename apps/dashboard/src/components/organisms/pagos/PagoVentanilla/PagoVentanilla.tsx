@@ -29,16 +29,26 @@ export default function PagoVentanilla({ d, saldo, medios, chequeParcial }: Pago
   const valorFijo = conCheque && !chequeParcial
   const v = valorFijo ? saldo : Number(valor)
   const errorValor = v > saldo ? `Supera el saldo pendiente de ${formatoPesos(saldo)}.` : undefined
-  const valido = v > 0 && !errorValor && recibo.trim() !== '' && (!conCheque || (banco !== '' && numero.trim() !== ''))
+  const valido =
+    v > 0 &&
+    !errorValor &&
+    recibo.trim() !== '' &&
+    (!conCheque || (banco !== '' && numero.trim() !== ''))
 
   const ayudaValor = valorFijo
     ? 'El municipio no recibe cheques por valor parcial: el cheque debe cubrir el saldo pendiente.'
     : `Saldo pendiente: ${formatoPesos(saldo)}. ${d.impuesto === 'ica' ? 'El ICA anual admite pago parcial.' : 'Solo el pago total le da efecto a la declaración.'}`
 
   const registrar = () => {
-    if (conCheque) recibirCheque(d.id, { valor: v, banco, numero: numero.trim(), recibo: recibo.trim() })
+    if (conCheque)
+      recibirCheque(d.id, { valor: v, banco, numero: numero.trim(), recibo: recibo.trim() })
     else registrarPagoVentanilla(d.id, v, recibo.trim())
-    setRegistrado({ medio: conCheque ? 'cheque' : 'efectivo', valor: v, recibo: recibo.trim(), saldo: saldo - v })
+    setRegistrado({
+      medio: conCheque ? 'cheque' : 'efectivo',
+      valor: v,
+      recibo: recibo.trim(),
+      saldo: saldo - v,
+    })
     setValor(String(saldo - v))
     setRecibo('')
     setBanco('')
@@ -57,16 +67,25 @@ export default function PagoVentanilla({ d, saldo, medios, chequeParcial }: Pago
             {registrado.medio === 'cheque' ? (
               <>
                 <p className="font-medium">
-                  Se recibió el cheque de gerencia por {formatoPesos(registrado.valor)} con el recibo {registrado.recibo}.
+                  Se recibió el cheque de gerencia por {formatoPesos(registrado.valor)} con el
+                  recibo {registrado.recibo}.
                 </p>
-                <p className="mt-0.5">Queda en canje: cuenta como pago, con la fecha de hoy, cuando se confirme que el banco lo pagó.</p>
+                <p className="mt-0.5">
+                  Queda en canje: cuenta como pago, con la fecha de hoy, cuando se confirme que el
+                  banco lo pagó.
+                </p>
               </>
             ) : (
               <>
                 <p className="font-medium">
-                  Se registró el pago de {formatoPesos(registrado.valor)} con el recibo {registrado.recibo}.
+                  Se registró el pago de {formatoPesos(registrado.valor)} con el recibo{' '}
+                  {registrado.recibo}.
                 </p>
-                <p className="mt-0.5">{registrado.saldo > 0 ? `Saldo pendiente: ${formatoPesos(registrado.saldo)}.` : 'La declaración quedó pagada.'}</p>
+                <p className="mt-0.5">
+                  {registrado.saldo > 0
+                    ? `Saldo pendiente: ${formatoPesos(registrado.saldo)}.`
+                    : 'La declaración quedó pagada.'}
+                </p>
               </>
             )}
           </Aviso>
@@ -74,13 +93,35 @@ export default function PagoVentanilla({ d, saldo, medios, chequeParcial }: Pago
 
         {saldo > 0 && (
           <>
-            {medios.efectivo && medios.cheque && <Segmentado etiqueta="Medio de pago" opciones={MEDIOS} valor={medio} cambiar={setMedio} />}
+            {medios.efectivo && medios.cheque && (
+              <Segmentado
+                etiqueta="Medio de pago"
+                opciones={MEDIOS}
+                valor={medio}
+                cambiar={setMedio}
+              />
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
-              <Campo etiqueta={conCheque ? 'Valor del cheque' : 'Valor recibido'} error={errorValor} ayuda={ayudaValor}>
-                <Input type="number" min={1} max={saldo} disabled={valorFijo} value={valorFijo ? saldo : valor} onChange={(e) => setValor(e.target.value)} />
+              <Campo
+                etiqueta={conCheque ? 'Valor del cheque' : 'Valor recibido'}
+                error={errorValor}
+                ayuda={ayudaValor}
+              >
+                <Input
+                  type="number"
+                  min={1}
+                  max={saldo}
+                  disabled={valorFijo}
+                  value={valorFijo ? saldo : valor}
+                  onChange={(e) => setValor(e.target.value)}
+                />
               </Campo>
               <Campo etiqueta="Número del recibo de caja">
-                <Input value={recibo} onChange={(e) => setRecibo(e.target.value)} placeholder="Ej.: RC-004512" />
+                <Input
+                  value={recibo}
+                  onChange={(e) => setRecibo(e.target.value)}
+                  placeholder="Ej.: RC-004512"
+                />
               </Campo>
               {conCheque && (
                 <>
@@ -93,13 +134,18 @@ export default function PagoVentanilla({ d, saldo, medios, chequeParcial }: Pago
                     </Select>
                   </Campo>
                   <Campo etiqueta="Número del cheque">
-                    <Input value={numero} onChange={(e) => setNumero(e.target.value)} inputMode="numeric" />
+                    <Input
+                      value={numero}
+                      onChange={(e) => setNumero(e.target.value)}
+                      inputMode="numeric"
+                    />
                   </Campo>
                 </>
               )}
             </div>
             <Boton variante="primario" disabled={!valido} onClick={registrar}>
-              <MoneyReceive className="size-4" aria-hidden /> {conCheque ? 'Recibir cheque' : 'Registrar pago'}
+              <MoneyReceive className="size-4" aria-hidden />{' '}
+              {conCheque ? 'Recibir cheque' : 'Registrar pago'}
             </Boton>
           </>
         )}

@@ -12,7 +12,10 @@ import type { ProximosVencimientosProps } from './types'
 import { vencimientosProximos } from './utils'
 
 /** Los próximos vencimientos del calendario, de cada formulario activo; si las fechas cambian por dígito, el rango. */
-export default function ProximosVencimientos({ className = '', municipioId }: ProximosVencimientosProps) {
+export default function ProximosVencimientos({
+  className = '',
+  municipioId,
+}: ProximosVencimientosProps) {
   const { usuario } = useSesion()
   const configuraciones = useDatos((s) => s.configuraciones)
   const municipios = useDatos((s) => s.municipios)
@@ -29,12 +32,18 @@ export default function ProximosVencimientos({ className = '', municipioId }: Pr
       <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
         <div>
           <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
-            <Calendar className="size-5 text-indigo-600" aria-hidden /> Próximos vencimientos tributarios
+            <Calendar className="size-5 text-indigo-600" aria-hidden /> Próximos vencimientos
+            tributarios
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">Fechas límite de presentación y pago según el calendario municipal.</p>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Fechas límite de presentación y pago según el calendario municipal.
+          </p>
         </div>
         {puedeEditar && (
-          <Link to="/calendario" className="text-xs font-medium text-indigo-600 hover:text-indigo-800 underline shrink-0">
+          <Link
+            to="/calendario"
+            className="text-xs font-medium text-indigo-600 hover:text-indigo-800 underline shrink-0"
+          >
             Configurar calendario
           </Link>
         )}
@@ -51,7 +60,10 @@ export default function ProximosVencimientos({ className = '', municipioId }: Pr
             const urgente = item.diasRestantes > 0 && item.diasRestantes <= 10
 
             return (
-              <li key={item.id} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
+              <li
+                key={item.id}
+                className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50"
+              >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="truncate text-sm font-medium text-slate-900">{item.impuesto}</p>

@@ -10,7 +10,11 @@ import type { AlertaCalendarioProps } from './types'
  * Aviso de Inicio desde el 1 de enero, mientras el municipio no cargue el calendario del año. Al administrador y a
  * 1cero1 los lleva a Calendario; al funcionario le dice que lo carga el administrador. Con el calendario cargado, no sale.
  */
-export default function AlertaCalendario({ anio, municipios, className = '' }: AlertaCalendarioProps) {
+export default function AlertaCalendario({
+  anio,
+  municipios,
+  className = '',
+}: AlertaCalendarioProps) {
   const { usuario } = useSesion()
   if (municipios.length === 0) return null
   const editable = puede(usuario?.rol, 'editarConfiguracion')
@@ -38,11 +42,13 @@ export default function AlertaCalendario({ anio, municipios, className = '' }: A
           {editable && !varios && (
             <>
               Agrega el año gravable {anio} con las fechas del acto del municipio
-              {unico.impuestos.ica && `, y revisa la fecha del ICA del año gravable ${anio - 1}, que vence en ${anio}`}.{' '}
+              {unico.impuestos.ica &&
+                `, y revisa la fecha del ICA del año gravable ${anio - 1}, que vence en ${anio}`}
+              .{' '}
             </>
           )}
-          Mientras tanto, las declaraciones que entren quedan marcadas como presentadas sin calendario: revisa su vencimiento, su sanción
-          y sus intereses. {enlace}
+          Mientras tanto, las declaraciones que entren quedan marcadas como presentadas sin
+          calendario: revisa su vencimiento, su sanción y sus intereses. {enlace}
         </p>
       </Aviso>
     </div>

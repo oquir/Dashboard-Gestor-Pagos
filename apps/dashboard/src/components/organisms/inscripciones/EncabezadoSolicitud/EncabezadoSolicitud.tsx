@@ -4,20 +4,31 @@ import { Badge, Boton } from '../../../atoms'
 import type { EncabezadoSolicitudProps } from './types'
 
 /** Franja sobre el formulario de una solicitud: cuál se está viendo y cómo volver a los datos actuales. */
-export default function EncabezadoSolicitud({ solicitud, comparada, verActuales, tardia }: EncabezadoSolicitudProps) {
+export default function EncabezadoSolicitud({
+  solicitud,
+  comparada,
+  verActuales,
+  tardia,
+}: EncabezadoSolicitudProps) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-brand-200 bg-brand-50 px-5 py-4">
       <div>
         <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-900">
-          Formulario de {etiquetaTipoNovedad[solicitud.tipo].toLowerCase()} radicado el {formatoFecha(solicitud.fecha)}
-          <Badge tono={tonoNovedad[solicitud.estado]}>{etiquetaEstadoNovedad[solicitud.estado]}</Badge>
+          Formulario de {etiquetaTipoNovedad[solicitud.tipo].toLowerCase()} radicado el{' '}
+          {formatoFecha(solicitud.fecha)}
+          <Badge tono={tonoNovedad[solicitud.estado]}>
+            {etiquetaEstadoNovedad[solicitud.estado]}
+          </Badge>
         </p>
         <p className="mt-0.5 text-sm text-slate-600">
-          Lo que diligenció el contribuyente{comparada ? '. Se marca lo que cambió frente a la solicitud aprobada anterior.' : '.'}
+          Lo que diligenció el contribuyente
+          {comparada ? '. Se marca lo que cambió frente a la solicitud aprobada anterior.' : '.'}
         </p>
         {tardia && (
           <p className="mt-1 text-sm text-amber-800">
-            Inscripción tardía: se radicó {tardia.dias === 1 ? '1 día' : `${tardia.dias} días`} después del plazo, que vencía el {formatoFecha(tardia.limite)}. El municipio puede sancionarla según su estatuto.
+            Inscripción tardía: se radicó {tardia.dias === 1 ? '1 día' : `${tardia.dias} días`}{' '}
+            después del plazo, que vencía el {formatoFecha(tardia.limite)}. El municipio puede
+            sancionarla según su estatuto.
           </p>
         )}
       </div>

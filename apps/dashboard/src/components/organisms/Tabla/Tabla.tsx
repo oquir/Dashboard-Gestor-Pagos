@@ -22,7 +22,10 @@ export default function Tabla<T extends RowData>({
     columns: columnas,
     data: datos,
     getRowId: idFila ? (fila: T) => idFila(fila) : undefined,
-    initialState: { sorting: ordenInicial, pagination: { pageIndex: 0, pageSize: porPagina ?? Number.MAX_SAFE_INTEGER } },
+    initialState: {
+      sorting: ordenInicial,
+      pagination: { pageIndex: 0, pageSize: porPagina ?? Number.MAX_SAFE_INTEGER },
+    },
   })
 
   if (datos.length === 0) return <Vacio titulo={vacio} />
@@ -39,7 +42,10 @@ export default function Tabla<T extends RowData>({
         <table className="w-full text-sm">
           <thead>
             {tabla.getHeaderGroups().map((grupo) => (
-              <tr key={grupo.id} className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500">
+              <tr
+                key={grupo.id}
+                className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500"
+              >
                 {grupo.headers.map((h) => {
                   const derecha = h.column.columnDef.meta?.alinear === 'derecha'
                   const orden = h.column.getIsSorted()
@@ -47,7 +53,9 @@ export default function Tabla<T extends RowData>({
                     <th
                       key={h.id}
                       className={`${relleno} font-medium ${derecha ? 'text-right' : ''}`}
-                      aria-sort={orden === 'asc' ? 'ascending' : orden === 'desc' ? 'descending' : undefined}
+                      aria-sort={
+                        orden === 'asc' ? 'ascending' : orden === 'desc' ? 'descending' : undefined
+                      }
                     >
                       {h.isPlaceholder ? null : h.column.getCanSort() ? (
                         <button
@@ -75,11 +83,17 @@ export default function Tabla<T extends RowData>({
           </thead>
           <tbody className="divide-y divide-slate-100">
             {tabla.getRowModel().rows.map((fila) => (
-              <tr key={fila.id} className={claseFila ? claseFila(fila.original) : 'hover:bg-slate-50'}>
+              <tr
+                key={fila.id}
+                className={claseFila ? claseFila(fila.original) : 'hover:bg-slate-50'}
+              >
                 {fila.getAllCells().map((celda) => {
                   const meta = celda.column.columnDef.meta
                   return (
-                    <td key={celda.id} className={`${relleno} ${meta?.alinear === 'derecha' ? 'text-right' : ''} ${meta?.clase ?? ''}`}>
+                    <td
+                      key={celda.id}
+                      className={`${relleno} ${meta?.alinear === 'derecha' ? 'text-right' : ''} ${meta?.clase ?? ''}`}
+                    >
                       <tabla.FlexRender cell={celda} />
                     </td>
                   )
@@ -100,10 +114,20 @@ export default function Tabla<T extends RowData>({
               <span className="mr-2">
                 Página {pageIndex + 1} de {tabla.getPageCount()}
               </span>
-              <Boton variante="fantasma" aria-label="Página anterior" disabled={!tabla.getCanPreviousPage()} onClick={() => tabla.previousPage()}>
+              <Boton
+                variante="fantasma"
+                aria-label="Página anterior"
+                disabled={!tabla.getCanPreviousPage()}
+                onClick={() => tabla.previousPage()}
+              >
                 <ChevronLeft className="size-4" />
               </Boton>
-              <Boton variante="fantasma" aria-label="Página siguiente" disabled={!tabla.getCanNextPage()} onClick={() => tabla.nextPage()}>
+              <Boton
+                variante="fantasma"
+                aria-label="Página siguiente"
+                disabled={!tabla.getCanNextPage()}
+                onClick={() => tabla.nextPage()}
+              >
                 <ChevronRight className="size-4" />
               </Boton>
             </div>

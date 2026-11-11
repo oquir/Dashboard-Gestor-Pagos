@@ -1,5 +1,12 @@
 import { etiquetaEstadoPago, etiquetaTipoDeclaracion } from '../../lib/formato'
-import type { EstadoPago, Impuesto, Opcion, TipoDeclaracion, ValorFiltro, VistaDeclaraciones } from '../../types'
+import type {
+  EstadoPago,
+  Impuesto,
+  Opcion,
+  TipoDeclaracion,
+  ValorFiltro,
+  VistaDeclaraciones,
+} from '../../types'
 
 /** Lo presentado o lo que debía presentarse y no se presentó; los omisos solo existen donde está el RIT. */
 export const VISTAS: Opcion<VistaDeclaraciones>[] = [
@@ -14,5 +21,11 @@ export const PESTANAS: Opcion<ValorFiltro<Impuesto>>[] = [
   { valor: 'autorretencion', texto: 'AutoReteICA' },
 ]
 
-export const OPCIONES_TIPO: Record<ValorFiltro<TipoDeclaracion>, string> = { '': 'Todo tipo', ...etiquetaTipoDeclaracion }
-export const OPCIONES_PAGO: Record<ValorFiltro<EstadoPago>, string> = { '': 'Todo estado de pago', ...etiquetaEstadoPago }
+export const OPCIONES_TIPO: Record<ValorFiltro<TipoDeclaracion>, string> = {
+  '': 'Todo tipo',
+  ...etiquetaTipoDeclaracion,
+}
+export const OPCIONES_PAGO: Record<ValorFiltro<EstadoPago>, string> = {
+  '': 'Todo estado de pago',
+  ...etiquetaEstadoPago,
+}

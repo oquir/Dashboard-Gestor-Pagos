@@ -15,7 +15,14 @@ import {
   formatoPesos,
   textoTipoDeclaracion,
 } from './formato'
-import { correccionVigente, esCorreccionABaja, estadoPago, RENGLONES_TOTALES, situacionCorreccion, totalPagado } from './reglas'
+import {
+  correccionVigente,
+  esCorreccionABaja,
+  estadoPago,
+  RENGLONES_TOTALES,
+  situacionCorreccion,
+  totalPagado,
+} from './reglas'
 
 /** Lo que el PDF necesita además de la declaración; el estado de la demo lo cumple. */
 export interface FuentePdf {
@@ -30,7 +37,8 @@ export interface FuentePdf {
 const TITULOS: Record<Impuesto, string> = {
   ica: 'Formulario Único Nacional de Declaración y Pago del Impuesto de Industria y Comercio',
   reteica: 'Declaración de retenciones del impuesto de industria y comercio (ReteICA)',
-  autorretencion: 'Declaración de autorretenciones del impuesto de industria y comercio (AutoReteICA)',
+  autorretencion:
+    'Declaración de autorretenciones del impuesto de industria y comercio (AutoReteICA)',
 }
 
 const MARGEN = 40
@@ -79,7 +87,11 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
         estilo(false, 8, GRIS)
         doc.text(etiqueta, x, y)
         estilo(false, 10)
-        doc.text((doc.splitTextToSize(limpio(valor), ANCHO / 2 - 16) as string[])[0] ?? '', x, y + 13)
+        doc.text(
+          (doc.splitTextToSize(limpio(valor), ANCHO / 2 - 16) as string[])[0] ?? '',
+          x,
+          y + 13,
+        )
       })
       y += 30
     }
@@ -94,7 +106,11 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   estilo(true, 12)
   doc.text(`MUNICIPIO DE ${municipio?.nombre.toUpperCase() ?? ''}`, MARGEN + 14, y + 22)
   estilo(false, 9, GRIS)
-  doc.text(`${municipio?.departamento ?? ''} · Código DANE ${municipio?.codigoDane ?? ''}`, MARGEN + 14, y + 36)
+  doc.text(
+    `${municipio?.departamento ?? ''} · Código DANE ${municipio?.codigoDane ?? ''}`,
+    MARGEN + 14,
+    y + 36,
+  )
   estilo(true, 10)
   doc.text(titulo, MARGEN + 14, y + 54)
   estilo(false, 8, GRIS)
@@ -102,7 +118,12 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   estilo(true, 12)
   doc.text(d.numero, DERECHA - 14, y + 36, { align: 'right' })
   estilo(false, 9)
-  doc.text(`Tipo: ${textoTipoDeclaracion(d.tipo, esCorreccionABaja(d, corregida))}`, DERECHA - 14, y + 50, { align: 'right' })
+  doc.text(
+    `Tipo: ${textoTipoDeclaracion(d.tipo, esCorreccionABaja(d, corregida))}`,
+    DERECHA - 14,
+    y + 50,
+    { align: 'right' },
+  )
   y += alto + 26
 
   seccion('A. Datos de la declaración')
@@ -117,7 +138,10 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   // Mientras el municipio no la acepte, la solicitud de corrección a la baja no sirve para pagar.
   if (solicitud) {
     const estado = etiquetaEstadoCorreccion[solicitud.estado]
-    datos.push(['Solicitud de corrección', correccionVigente(solicitud) ? estado : `${estado}: no sirve para pagar`])
+    datos.push([
+      'Solicitud de corrección',
+      correccionVigente(solicitud) ? estado : `${estado}: no sirve para pagar`,
+    ])
   }
   if (d.fechaCierre) datos.push(['Fecha de cierre', formatoFecha(d.fechaCierre)])
   campos(datos)
@@ -132,7 +156,8 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
     ['Teléfono', con.telefono],
     ['Correo electrónico', con.correo],
   ]
-  if (con.establecimientos !== undefined) contribuyente.push(['Establecimientos en el municipio', String(con.establecimientos)])
+  if (con.establecimientos !== undefined)
+    contribuyente.push(['Establecimientos en el municipio', String(con.establecimientos)])
   if (ins && municipio?.rit) contribuyente.push(['Número de RIT', ins.numeroRit])
   campos(contribuyente)
 
@@ -182,7 +207,16 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
     // La solicitud de corrección que no se ha aceptado no se paga.
     [
       'Estado del pago',
-      correccionVigente(solicitud) ? etiquetaEstadoPago[estadoPago(d, fuente.pagos, fuente.configuraciones.find((c) => c.municipioId === d.municipioId), hoy())] : 'No aplica',
+      correccionVigente(solicitud)
+        ? etiquetaEstadoPago[
+            estadoPago(
+              d,
+              fuente.pagos,
+              fuente.configuraciones.find((c) => c.municipioId === d.municipioId),
+              hoy(),
+            )
+          ]
+        : 'No aplica',
     ],
   ]
   if (d.saldoAFavor > 0) pago.push(['Saldo a favor', formatoPesos(d.saldoAFavor)])
@@ -195,7 +229,11 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
     ['Documento del declarante', formatoDocumento(d.declarante)],
     c ? [etiquetaCargoContable[c.cargo], c.nombre] : ['Contador o revisor fiscal', 'No firma'],
   ]
-  if (c) firmas.push([`Documento del ${etiquetaCargoContable[c.cargo].toLowerCase()}`, formatoDocumento(c)], ['Tarjeta profesional', c.tarjetaProfesional])
+  if (c)
+    firmas.push(
+      [`Documento del ${etiquetaCargoContable[c.cargo].toLowerCase()}`, formatoDocumento(c)],
+      ['Tarjeta profesional', c.tarjetaProfesional],
+    )
   campos(firmas)
 
   // Pie en todas las páginas
@@ -204,7 +242,13 @@ function dibujar(doc: jsPDF, d: Declaracion, fuente: FuentePdf) {
   for (let p = 1; p <= paginas; p++) {
     doc.setPage(p)
     estilo(false, 8, GRIS)
-    doc.text(limpio(`Copia de la declaración ${d.numero} · Generada por el Gestor de Pagos el ${generado}`), MARGEN, 792 - 30)
+    doc.text(
+      limpio(
+        `Copia de la declaración ${d.numero} · Generada por el Gestor de Pagos el ${generado}`,
+      ),
+      MARGEN,
+      792 - 30,
+    )
     doc.text(`Página ${p} de ${paginas}`, DERECHA, 792 - 30, { align: 'right' })
   }
 }
@@ -218,12 +262,21 @@ async function pdfDeDeclaracion(d: Declaracion, fuente: FuentePdf) {
 
 export async function descargarDeclaracion(d: Declaracion, fuente: FuentePdf) {
   const pdf = await pdfDeDeclaracion(d, fuente)
-  descargarBlob(new Blob([pdf as Uint8Array<ArrayBuffer>], { type: 'application/pdf' }), `${d.numero}.pdf`)
+  descargarBlob(
+    new Blob([pdf as Uint8Array<ArrayBuffer>], { type: 'application/pdf' }),
+    `${d.numero}.pdf`,
+  )
 }
 
 /** Un .zip con el PDF de cada declaración. */
-export async function descargarDeclaracionesZip(lista: Declaracion[], fuente: FuentePdf, nombreZip: string) {
-  const entradas = await Promise.all(lista.map(async (d) => [`${d.numero}.pdf`, await pdfDeDeclaracion(d, fuente)] as const))
+export async function descargarDeclaracionesZip(
+  lista: Declaracion[],
+  fuente: FuentePdf,
+  nombreZip: string,
+) {
+  const entradas = await Promise.all(
+    lista.map(async (d) => [`${d.numero}.pdf`, await pdfDeDeclaracion(d, fuente)] as const),
+  )
   const zip = zipSync(Object.fromEntries(entradas))
   descargarBlob(new Blob([zip as Uint8Array<ArrayBuffer>], { type: 'application/zip' }), nombreZip)
 }

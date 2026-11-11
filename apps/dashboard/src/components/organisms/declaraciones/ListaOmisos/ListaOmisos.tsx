@@ -14,7 +14,16 @@ import ModalEmplazamiento from '../ModalEmplazamiento'
 import TablaOmisos from '../TablaOmisos'
 import { COLUMNAS_EXCEL, OPCIONES_EMPLAZAMIENTO } from './constants'
 import type { FiltroEmplazamiento, ListaOmisosProps } from './types'
-import { destinatarioDe, estadoEmplazamientoDe, filaExcel, filtrarOmisos, opcionesAnio, textoDesde, textoSinCalendario, textoSinCeros } from './utils'
+import {
+  destinatarioDe,
+  estadoEmplazamientoDe,
+  filaExcel,
+  filtrarOmisos,
+  opcionesAnio,
+  textoDesde,
+  textoSinCalendario,
+  textoSinCeros,
+} from './utils'
 
 /**
  * Los omisos del municipio que se está viendo: avisos de lo que no se pudo revisar, filtros por texto, año gravable y
@@ -39,7 +48,9 @@ export default function ListaOmisos({ resultado, impuesto }: ListaOmisosProps) {
   // Si el año elegido ya no tiene omisos con el impuesto de la pestaña, se vuelve a "Todo año gravable".
   const anio = anioElegido in anios ? anioElegido : ''
   const filtrados = filtrarOmisos(delImpuesto, texto, anio).filter(
-    (o) => !filtroEmplazamiento || estadoEmplazamientoDe(o, emplazamientos, declaraciones, fecha) === filtroEmplazamiento,
+    (o) =>
+      !filtroEmplazamiento ||
+      estadoEmplazamientoDe(o, emplazamientos, declaraciones, fecha) === filtroEmplazamiento,
   )
   const nombres = new Map(municipios.map((m) => [m.id, m.nombre]))
 
@@ -55,7 +66,9 @@ export default function ListaOmisos({ resultado, impuesto }: ListaOmisosProps) {
     })
   }, [])
   const seleccionTabla = useMemo(() => ({ seleccion, marcar }), [seleccion, marcar])
-  const marcados = filtrados.filter((o) => seleccion.has(idOmiso(o)) && !emplazamientoDelOmiso(o, emplazamientos))
+  const marcados = filtrados.filter(
+    (o) => seleccion.has(idOmiso(o)) && !emplazamientoDelOmiso(o, emplazamientos),
+  )
 
   const descargar = () => {
     const libro = crearXlsx({
@@ -64,7 +77,12 @@ export default function ListaOmisos({ resultado, impuesto }: ListaOmisosProps) {
         COLUMNAS_EXCEL.map((c) => c.titulo),
         ...filtrados.map((o) => {
           const e = emplazamientoDelOmiso(o, emplazamientos)
-          return filaExcel(o, nombres, fecha, e && { e, estado: situacionEmplazamiento(e, declaraciones, fecha).estado })
+          return filaExcel(
+            o,
+            nombres,
+            fecha,
+            e && { e, estado: situacionEmplazamiento(e, declaraciones, fecha).estado },
+          )
         }),
       ],
       anchos: COLUMNAS_EXCEL.map((c) => c.ancho),
@@ -100,7 +118,13 @@ export default function ListaOmisos({ resultado, impuesto }: ListaOmisosProps) {
           }
         />
         <BarraFiltros
-          buscador={<Buscador placeholder="Buscar por nombre, NIT o cédula, o número de RIT" value={texto} onChange={(e) => setTexto(e.target.value)} />}
+          buscador={
+            <Buscador
+              placeholder="Buscar por nombre, NIT o cédula, o número de RIT"
+              value={texto}
+              onChange={(e) => setTexto(e.target.value)}
+            />
+          }
           acciones={
             <Boton variante="primario" disabled={filtrados.length === 0} onClick={descargar}>
               <Download className="size-4" aria-hidden /> Descargar Excel
@@ -108,12 +132,18 @@ export default function ListaOmisos({ resultado, impuesto }: ListaOmisosProps) {
           }
         >
           <Filtro etiqueta="Año gravable" opciones={anios} valor={anio} cambiar={setAnio} />
-          <Filtro etiqueta="Emplazamiento" opciones={OPCIONES_EMPLAZAMIENTO} valor={filtroEmplazamiento} cambiar={setFiltroEmplazamiento} />
+          <Filtro
+            etiqueta="Emplazamiento"
+            opciones={OPCIONES_EMPLAZAMIENTO}
+            valor={filtroEmplazamiento}
+            cambiar={setFiltroEmplazamiento}
+          />
         </BarraFiltros>
         {puedeEmplazar && marcados.length > 0 && (
           <div className="flex flex-wrap items-center gap-3 border-b border-brand-100 bg-brand-50 px-4 py-2.5 text-sm">
             <span className="font-medium text-brand-800">
-              {marcados.length} {marcados.length === 1 ? 'omiso seleccionado' : 'omisos seleccionados'}
+              {marcados.length}{' '}
+              {marcados.length === 1 ? 'omiso seleccionado' : 'omisos seleccionados'}
             </span>
             <Boton variante="primario" onClick={() => setEmplazando(true)}>
               Emplazar para declarar
@@ -123,7 +153,11 @@ export default function ListaOmisos({ resultado, impuesto }: ListaOmisosProps) {
             </Boton>
           </div>
         )}
-        <TablaOmisos omisos={filtrados} total={delImpuesto.length} seleccion={puedeEmplazar ? seleccionTabla : undefined} />
+        <TablaOmisos
+          omisos={filtrados}
+          total={delImpuesto.length}
+          seleccion={puedeEmplazar ? seleccionTabla : undefined}
+        />
       </Card>
 
       {emplazando && (

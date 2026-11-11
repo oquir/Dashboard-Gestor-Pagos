@@ -12,11 +12,16 @@ const diaSiguiente = (iso: string) => {
   d.setUTCDate(d.getUTCDate() + 1)
   return d.toISOString().slice(0, 10)
 }
-const finDeMes = (iso: string) => new Date(Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)), 0)).toISOString().slice(0, 10)
+const finDeMes = (iso: string) =>
+  new Date(Date.UTC(Number(iso.slice(0, 4)), Number(iso.slice(5, 7)), 0)).toISOString().slice(0, 10)
 
 /** Un tramo nuevo arranca el día siguiente al último y llega hasta fin de ese mes. */
 export function tramoNuevo(vigencia: number, tramos: TramoProntoPago[]): TramoProntoPago {
-  const ultimo = tramos.map((t) => t.hasta).filter(Boolean).sort().at(-1)
+  const ultimo = tramos
+    .map((t) => t.hasta)
+    .filter(Boolean)
+    .sort()
+    .at(-1)
   const desde = ultimo ? diaSiguiente(ultimo) : `${vigencia + 1}-01-01`
   return { desde, hasta: finDeMes(desde), porcentaje: tramos.at(-1)?.porcentaje ?? 10 }
 }
@@ -25,10 +30,17 @@ function erroresTramos(vigencia: number, tramos: TramoProntoPago[]) {
   return tramos.map((t, i) => {
     if (!t.desde || !t.hasta) return 'Completa las dos fechas.'
     if (t.desde > t.hasta) return 'La fecha final es anterior a la inicial.'
-    if (t.desde <= `${vigencia}-12-31`) return `El año gravable ${vigencia} se declara y paga desde ${vigencia + 1}.`
-    if (t.porcentaje <= 0 || t.porcentaje > 100) return 'El descuento debe ser mayor que 0 y máximo 100 %.'
-    const cruce = tramos.find((o, j) => j !== i && o.desde && o.hasta && o.desde <= t.hasta && t.desde <= o.hasta)
-    return cruce && `Se cruza con el tramo del ${formatoFecha(cruce.desde)} al ${formatoFecha(cruce.hasta)}.`
+    if (t.desde <= `${vigencia}-12-31`)
+      return `El año gravable ${vigencia} se declara y paga desde ${vigencia + 1}.`
+    if (t.porcentaje <= 0 || t.porcentaje > 100)
+      return 'El descuento debe ser mayor que 0 y máximo 100 %.'
+    const cruce = tramos.find(
+      (o, j) => j !== i && o.desde && o.hasta && o.desde <= t.hasta && t.desde <= o.hasta,
+    )
+    return (
+      cruce &&
+      `Se cruza con el tramo del ${formatoFecha(cruce.desde)} al ${formatoFecha(cruce.hasta)}.`
+    )
   })
 }
 
@@ -36,15 +48,22 @@ function erroresTramos(vigencia: number, tramos: TramoProntoPago[]) {
 export function erroresConfiguracion(b: ConfigMunicipio) {
   const errores: Record<string, string> = {}
   for (const clave of Object.keys(SANCIONES_LEY) as (keyof ConfigMunicipio['sanciones'])[]) {
-    if (b.sanciones[clave] > SANCIONES_LEY[clave]) errores[clave] = `La ley fija como máximo ${SANCIONES_LEY[clave]}; el municipio solo puede bajarla.`
+    if (b.sanciones[clave] > SANCIONES_LEY[clave])
+      errores[clave] =
+        `La ley fija como máximo ${SANCIONES_LEY[clave]}; el municipio solo puede bajarla.`
     if (b.sanciones[clave] < 0) errores[clave] = 'No puede ser negativa.'
   }
-  if (b.anticipoPorcentaje > ANTICIPO_MAXIMO) errores.anticipo = `Máximo ${ANTICIPO_MAXIMO}% (art. 47 de la Ley 43 de 1987).`
-  if (b.sobretasaBomberil.activa && b.sobretasaBomberil.porcentaje <= 0) errores.sobretasa = 'Debe ser mayor que 0; si no se cobra, desactívala.'
-  if (b.aprobacionPrevia.plazoDiasHabiles < 1) errores.plazoAprobacion = 'Debe ser de al menos 1 día hábil.'
-  if (b.aprobacionPrevia.vigenciaReciboDiasHabiles < 1) errores.vigenciaRecibo = 'Debe ser de al menos 1 día hábil.'
+  if (b.anticipoPorcentaje > ANTICIPO_MAXIMO)
+    errores.anticipo = `Máximo ${ANTICIPO_MAXIMO}% (art. 47 de la Ley 43 de 1987).`
+  if (b.sobretasaBomberil.activa && b.sobretasaBomberil.porcentaje <= 0)
+    errores.sobretasa = 'Debe ser mayor que 0; si no se cobra, desactívala.'
+  if (b.aprobacionPrevia.plazoDiasHabiles < 1)
+    errores.plazoAprobacion = 'Debe ser de al menos 1 día hábil.'
+  if (b.aprobacionPrevia.vigenciaReciboDiasHabiles < 1)
+    errores.vigenciaRecibo = 'Debe ser de al menos 1 día hábil.'
   for (const [formulario, desactivado] of Object.entries(b.formulariosDesactivados)) {
-    if (!desactivado.motivo.trim()) errores[`motivo-${formulario}`] = 'Indica por qué se desactiva el formulario.'
+    if (!desactivado.motivo.trim())
+      errores[`motivo-${formulario}`] = 'Indica por qué se desactiva el formulario.'
   }
   return errores
 }
@@ -62,6 +81,7 @@ export function erroresCalendario(b: ConfigMunicipio, impuestos: Record<Impuesto
       })
     }
   }
-  for (const cal of b.calendarioTributario.porVigencia) Object.assign(errores, erroresVencimientos(cal, impuestos))
+  for (const cal of b.calendarioTributario.porVigencia)
+    Object.assign(errores, erroresVencimientos(cal, impuestos))
   return errores
 }

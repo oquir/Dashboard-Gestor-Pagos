@@ -15,13 +15,26 @@ export default function SeccionProntoPago({ b, cambiar, editable, errores }: Edi
   const [elegida, setElegida] = useState<number>()
   // Por defecto, el año gravable que se está declarando.
   const vigencia =
-    elegida !== undefined && vigencias.includes(elegida) ? elegida : vigencias.includes(ANIO_EN_CURSO - 1) ? ANIO_EN_CURSO - 1 : vigencias[0]
+    elegida !== undefined && vigencias.includes(elegida)
+      ? elegida
+      : vigencias.includes(ANIO_EN_CURSO - 1)
+        ? ANIO_EN_CURSO - 1
+        : vigencias[0]
   const tramos = valor.porVigencia.find((v) => v.vigencia === vigencia)?.tramos ?? []
-  const conErrores = (v: number) => Object.keys(errores).some((clave) => clave.startsWith(`pronto-${v}-`))
+  const conErrores = (v: number) =>
+    Object.keys(errores).some((clave) => clave.startsWith(`pronto-${v}-`))
 
   const cambiarTramos = (nuevos: TramoProntoPago[]) =>
-    cambiar({ prontoPago: { ...valor, porVigencia: valor.porVigencia.map((v) => (v.vigencia === vigencia ? { ...v, tramos: nuevos } : v)) } })
-  const cambiarTramo = (i: number, parcial: Partial<TramoProntoPago>) => cambiarTramos(tramos.map((t, j) => (j === i ? { ...t, ...parcial } : t)))
+    cambiar({
+      prontoPago: {
+        ...valor,
+        porVigencia: valor.porVigencia.map((v) =>
+          v.vigencia === vigencia ? { ...v, tramos: nuevos } : v,
+        ),
+      },
+    })
+  const cambiarTramo = (i: number, parcial: Partial<TramoProntoPago>) =>
+    cambiarTramos(tramos.map((t, j) => (j === i ? { ...t, ...parcial } : t)))
 
   // El año nuevo copia los tramos del último, corridos un año: los concejos suelen repetir el esquema.
   const agregarVigencia = () => {
@@ -32,11 +45,24 @@ export default function SeccionProntoPago({ b, cambiar, editable, errores }: Edi
       desde: moverAnios(t.desde, 1),
       hasta: moverAnios(t.hasta, 1),
     }))
-    cambiar({ prontoPago: { ...valor, porVigencia: [...valor.porVigencia, { vigencia: nueva, tramos: copia.length > 0 ? copia : [tramoNuevo(nueva, [])] }] } })
+    cambiar({
+      prontoPago: {
+        ...valor,
+        porVigencia: [
+          ...valor.porVigencia,
+          { vigencia: nueva, tramos: copia.length > 0 ? copia : [tramoNuevo(nueva, [])] },
+        ],
+      },
+    })
     setElegida(nueva)
   }
   const quitarVigencia = () => {
-    cambiar({ prontoPago: { ...valor, porVigencia: valor.porVigencia.filter((v) => v.vigencia !== vigencia) } })
+    cambiar({
+      prontoPago: {
+        ...valor,
+        porVigencia: valor.porVigencia.filter((v) => v.vigencia !== vigencia),
+      },
+    })
     setElegida(undefined)
   }
 
@@ -86,10 +112,13 @@ export default function SeccionProntoPago({ b, cambiar, editable, errores }: Edi
           ) : (
             <div className="space-y-2">
               <p className="text-xs text-slate-500">
-                El año gravable {vigencia} se declara en {vigencia + 1}. El descuento depende de la fecha de pago; por fuera de estos tramos no hay descuento.
+                El año gravable {vigencia} se declara en {vigencia + 1}. El descuento depende de la
+                fecha de pago; por fuera de estos tramos no hay descuento.
               </p>
               {tramos.length === 0 ? (
-                <p className="text-sm text-slate-500">Sin tramos: este año gravable no tiene descuento.</p>
+                <p className="text-sm text-slate-500">
+                  Sin tramos: este año gravable no tiene descuento.
+                </p>
               ) : (
                 <div className={`${COLUMNAS_TRAMO} text-xs font-medium text-slate-500`}>
                   <span>Pago desde</span>
@@ -102,8 +131,20 @@ export default function SeccionProntoPago({ b, cambiar, editable, errores }: Edi
                 return (
                   <div key={i}>
                     <div className={`${COLUMNAS_TRAMO} items-center`}>
-                      <Input type="date" aria-label={`Inicio del tramo ${i + 1}`} disabled={!editable} value={t.desde} onChange={(e) => cambiarTramo(i, { desde: e.target.value })} />
-                      <Input type="date" aria-label={`Fin del tramo ${i + 1}`} disabled={!editable} value={t.hasta} onChange={(e) => cambiarTramo(i, { hasta: e.target.value })} />
+                      <Input
+                        type="date"
+                        aria-label={`Inicio del tramo ${i + 1}`}
+                        disabled={!editable}
+                        value={t.desde}
+                        onChange={(e) => cambiarTramo(i, { desde: e.target.value })}
+                      />
+                      <Input
+                        type="date"
+                        aria-label={`Fin del tramo ${i + 1}`}
+                        disabled={!editable}
+                        value={t.hasta}
+                        onChange={(e) => cambiarTramo(i, { hasta: e.target.value })}
+                      />
                       <Input
                         type="number"
                         min={0}
@@ -114,7 +155,12 @@ export default function SeccionProntoPago({ b, cambiar, editable, errores }: Edi
                         onChange={(e) => cambiarTramo(i, { porcentaje: numero(e.target.value) })}
                       />
                       {editable && (
-                        <Boton variante="fantasma" className="px-2" aria-label={`Quitar el tramo ${i + 1}`} onClick={() => cambiarTramos(tramos.filter((_, j) => j !== i))}>
+                        <Boton
+                          variante="fantasma"
+                          className="px-2"
+                          aria-label={`Quitar el tramo ${i + 1}`}
+                          onClick={() => cambiarTramos(tramos.filter((_, j) => j !== i))}
+                        >
                           <Xmark className="size-4" aria-hidden />
                         </Boton>
                       )}
