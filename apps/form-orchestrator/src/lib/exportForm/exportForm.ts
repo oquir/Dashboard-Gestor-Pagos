@@ -1,0 +1,83 @@
+import { GRID_BASE_COLUMNS } from "../../constants/grid";
+import type { FormExport, FormExportFile } from "../../types/exportForm";
+import type { CanvasRow, FormStep, IntroModalStep } from "../../types/formStructure";
+import type { SetupConfig } from "../../types/setup";
+import { buildDraftPayload } from "../persistence/persistence";
+import { buildNameIndex, mapFormStep, mapRows } from "./exportForm.utils";
+
+// El JSON que se lleva el consumidor: todo lo que hace falta para dibujar y validar el formulario.
+// Es la frontera del proyecto, asi que lo que no salga de aca no existe para el aplicativo.
+
+export function buildFormExport(
+  formSteps: FormStep[],
+  setupConfig: SetupConfig,
+  introModalSteps: IntroModalStep[],
+  formScript: string,
+): FormExport {
+  // El indice cubre los dos lienzos a la vez porque los ids se traducen a nombres al salir:
+  // hacia afuera un campo se identifica por su nombre tecnico, nunca por su uuid.
+  const allRows: CanvasRow[] = [
+    ...formSteps.flatMap((step) => step.rows),
+    ...introModalSteps.flatMap((step) => step.rows),
+  ];
+  const names: Map<string, string> = buildNameIndex(allRows);
+  // El compilador del script necesita saber que nombres existen para decidir que {x} es un campo
+  // y que {x} es JS del autor. Se arma una vez y baja a cada paso.
+  const knownNames: Set<string> = new Set(names.values());
+  const prelude: string = formScript.trim();
+
+  return {
+    projectMeta: {
+      formId: `frm_${Date.now()}`,
+      formType: setupConfig.formType,
+      version: "1.0.0",
+      createdAt: new Date().toISOString(),
+    },
+    setupConfig: {
+      hasIntroModal: setupConfig.hasIntroModal,
+      introModal: setupConfig.hasIntroModal
+        ? {
+            steps: introModalSteps.map((step) => ({
+              stepId: step.stepId,
+              title: step.title,
+              subtitle: step.subtitle || undefined,
+              rows: mapRows(step.rows, names, knownNames),
+            })),
+          }
+        : undefined,
+    },
+    formSchema: {
+      gridBaseColumns: GRID_BASE_COLUMNS,
+      prelude: prelude.length > 0 ? prelude : undefined,
+      steps: formSteps.map((step) => mapFormStep(step, names, knownNames)),
+    },
+  };
+}
+
+export function downloadFormExport(
+  formSteps: FormStep[],
+  setupConfig: SetupConfig,
+  introModalSteps: IntroModalStep[],
+  formScript: string,
+): void {
+  // El archivo lleva, ademas del contrato, la copia del borrador con la que se vuelve a abrir el
+  // proyecto: lo compilado no alcanza para reeditar, porque las validaciones salen como texto
+  // Zod, los estilos fusionados y las comprobaciones apagadas no viajan. Va solo en la descarga:
+  // el simulador y la vista JSON leen buildFormExport, que no la trae.
+  const data: FormExportFile = {
+    ...buildFormExport(formSteps, setupConfig, introModalSteps, formScript),
+    builderDraft: buildDraftPayload({
+      formSteps,
+      introModal: { steps: introModalSteps },
+      formScript,
+      setupConfig,
+    }),
+  };
+  const blob: Blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor: HTMLAnchorElement = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${data.projectMeta.formId}.json`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}

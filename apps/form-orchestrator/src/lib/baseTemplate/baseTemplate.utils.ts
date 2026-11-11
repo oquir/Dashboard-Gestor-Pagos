@@ -1,0 +1,210 @@
+import { v4 as uuidv4 } from "uuid";
+import { GRID_BASE_COLUMNS } from "../../constants/grid";
+import type {
+  ApiBinding,
+  CanvasField,
+  CatalogFill,
+  FieldCondition,
+  FieldDataSource,
+  FieldRule,
+  FieldValidationOverride,
+} from "../../types/field";
+import type { CanvasRow } from "../../types/formStructure";
+import { supportsRounding } from "../fieldRounding/fieldRounding";
+import type {
+  FieldSpec,
+  NumericDefaults,
+  TemplateCondition,
+  TemplateRule,
+  TemplateValidationOverride,
+} from "./baseTemplate.types";
+
+export function bindingFor(spec: FieldSpec): ApiBinding | undefined {
+  if (spec.path !== undefined) return { kind: "mapped", path: spec.path };
+  if (spec.excluded) return { kind: "excluded" };
+
+  return undefined;
+}
+
+function pendingCondition(condition: TemplateCondition | undefined): FieldCondition | undefined {
+  if (!condition) return undefined;
+
+  return { fieldId: condition.field, operator: condition.operator, value: condition.value };
+}
+
+function pendingRules(rules: TemplateRule[] | undefined): FieldRule[] | undefined {
+  if (!rules || rules.length === 0) return undefined;
+
+  return rules.map((rule) => ({
+    id: uuidv4(),
+    label: rule.label,
+    matchAll: true,
+    when: rule.when.map((condition) => ({
+      id: uuidv4(),
+      fieldId: condition.field,
+      operator: condition.operator,
+      value: condition.value,
+    })),
+    effects: [{ id: uuidv4(), kind: "script" as const, source: rule.script }],
+  }));
+}
+
+function pendingOverrides(
+  overrides: TemplateValidationOverride[] | undefined,
+): FieldValidationOverride[] | undefined {
+  if (!overrides || overrides.length === 0) return undefined;
+
+  return overrides.map((override) => ({
+    id: uuidv4(),
+    when: {
+      fieldId: override.when.field,
+      operator: override.when.operator,
+      value: override.when.value,
+    },
+    validations: override.validations,
+  }));
+}
+
+function resolvePointer(
+  condition: FieldCondition | undefined,
+  idsByName: Map<string, string>,
+): FieldCondition | undefined {
+  if (!condition) return undefined;
+
+  const targetId: string | undefined = idsByName.get(condition.fieldId);
+
+  return targetId ? { ...condition, fieldId: targetId } : undefined;
+}
+
+// La plantilla apunta al campo observado por nombre; los uuid solo existen despues de buildRow.
+export function resolveTemplateConditions<T extends { rows: CanvasRow[] }>(steps: T[]): T[] {
+  const idsByName: Map<string, string> = new Map();
+
+  for (const step of steps) {
+    for (const row of step.rows) {
+      for (const field of row.fields) idsByName.set(field.name, field.id);
+    }
+  }
+
+  for (const step of steps) {
+    for (const row of step.rows) {
+      for (const field of row.fields) {
+        field.visibleWhen = resolvePointer(field.visibleWhen, idsByName);
+        field.enableWhen = resolvePointer(field.enableWhen, idsByName);
+
+        // Una etiqueta que apunta a un campo inexistente queda suelta, no rota: se desliga.
+        if (field.labelFor) field.labelFor = idsByName.get(field.labelFor);
+
+        if (field.dataSource?.dependsOn) {
+          const parentId: string | undefined = idsByName.get(field.dataSource.dependsOn);
+          field.dataSource = parentId
+            ? { ...field.dataSource, dependsOn: parentId }
+            : { ...field.dataSource, dependsOn: undefined };
+        }
+
+        const source: FieldDataSource | undefined = field.dataSource;
+
+        if (source?.fills) {
+          const fills: CatalogFill[] = source.fills.flatMap((fill) => {
+            const targetId: string | undefined = idsByName.get(fill.field);
+
+            return targetId ? [{ ...fill, field: targetId }] : [];
+          });
+
+          field.dataSource = { ...source, fills: fills.length > 0 ? fills : undefined };
+        }
+
+        if (field.validations.overrides) {
+          field.validations.overrides = field.validations.overrides.flatMap((override) => {
+            const targetId: string | undefined = idsByName.get(override.when.fieldId);
+            return targetId ? [{ ...override, when: { ...override.when, fieldId: targetId } }] : [];
+          });
+        }
+
+        if (field.logic.rules) {
+          field.logic.rules = field.logic.rules.map((rule) => ({
+            ...rule,
+            when: rule.when.flatMap((condition) => {
+              const targetId: string | undefined = idsByName.get(condition.fieldId);
+              return targetId ? [{ ...condition, fieldId: targetId }] : [];
+            }),
+          }));
+        }
+      }
+    }
+  }
+
+  return steps;
+}
+
+// Prende las tres propiedades numericas sobre el paso entero en vez de campo por campo. Son
+// reglas del formulario completo, y declararlas treinta y pico de veces significaria que el
+// renglon numero treinta y seis se agrega sin ellas y nadie lo nota.
+//
+// Cada una tiene su alcance:
+//   formato   -- todos. Hasta una tarifa de 1,5 se lee mejor con la convencion local.
+//   redondeo  -- todos menos los que no llevan plata, que van en roundingExceptions.
+//   signo     -- todos los `number`, que ya declaraban min: 0, y solo los calculados nombrados
+//                en clampedCalculated, que son los que de verdad pueden dar negativo.
+//   decimales -- todos el mismo, salvo los de decimalsByField. La declaracion no lleva decimales
+//                en ningun renglon; la tarifa es la unica excepcion.
+export function applyNumericDefaults<T extends { rows: CanvasRow[] }>(
+  steps: T[],
+  defaults: NumericDefaults,
+): T[] {
+  const skipRounding: Set<string> = new Set(defaults.roundingExceptions);
+  const clamped: Set<string> = new Set(defaults.clampedCalculated);
+
+  for (const step of steps) {
+    for (const row of step.rows) {
+      for (const field of row.fields) {
+        if (!supportsRounding(field.type)) continue;
+
+        field.formatted = true;
+        field.decimals = defaults.decimalsByField[field.name] ?? defaults.decimals;
+        if (!skipRounding.has(field.name)) field.rounding = true;
+        if (field.type === "number" || clamped.has(field.name)) field.allowsNegative = false;
+      }
+    }
+  }
+
+  return steps;
+}
+
+export function buildRow(specs: FieldSpec[], groupId?: string): CanvasRow {
+  const fields: CanvasField[] = [];
+  let colStart = 1;
+
+  for (const spec of specs) {
+    fields.push({
+      id: uuidv4(),
+      name: spec.name,
+      type: spec.type,
+      label: spec.label,
+      colStart,
+      colSpan: spec.colSpan,
+      validations: {
+        ...(spec.required ? { required: true } : {}),
+        ...(spec.min === undefined ? {} : { min: spec.min }),
+        ...(spec.pattern === undefined ? {} : { pattern: spec.pattern }),
+        ...(spec.message === undefined ? {} : { message: spec.message }),
+        ...(spec.validationOverrides === undefined
+          ? {}
+          : { overrides: pendingOverrides(spec.validationOverrides) }),
+      },
+      styles: {},
+      logic: { script: spec.script, rules: pendingRules(spec.rules) },
+      alwaysDisabled: spec.alwaysDisabled,
+      apiBinding: bindingFor(spec),
+      visibleWhen: pendingCondition(spec.visibleWhen),
+      enableWhen: pendingCondition(spec.enableWhen),
+      dataSource: spec.dataSource,
+      labelFor: spec.labelFor,
+      inlineOptions: spec.inlineOptions,
+    });
+
+    colStart += spec.colSpan;
+  }
+
+  return { id: uuidv4(), columns: GRID_BASE_COLUMNS, fields, groupId };
+}

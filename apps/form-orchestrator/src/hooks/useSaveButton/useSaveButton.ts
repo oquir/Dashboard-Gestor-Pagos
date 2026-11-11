@@ -1,0 +1,38 @@
+import { useEffect, useRef, useState } from "react";
+import { saveDraft } from "../../lib/persistence/persistence";
+import { useFormStore } from "../../store/formStore";
+import { JUST_SAVED_DURATION_MS } from "./useSaveButton.constants";
+import type { UseSaveButtonResult } from "./useSaveButton.types";
+
+// El boton avisa "guardado" tambien cuando guarda el autoguardado, no solo al pulsarlo: por eso
+// observa lastSavedAt en vez de encender el aviso dentro de handleSave.
+export function useSaveButton(): UseSaveButtonResult {
+  const markSaved = useFormStore((state) => state.markSaved);
+  const lastSavedAt = useFormStore((state) => state.lastSavedAt);
+  const [justSaved, setJustSaved] = useState<boolean>(false);
+  const timeoutRef = useRef<number | null>(null);
+  const previousSavedAtRef = useRef<string | null>(lastSavedAt);
+
+  function handleSave(): void {
+    const { formSteps, introModal, formScript, setupConfig } = useFormStore.getState();
+    saveDraft({ formSteps, introModal, formScript, setupConfig });
+    markSaved();
+  }
+
+  useEffect(() => {
+    if (lastSavedAt === previousSavedAtRef.current) return;
+    previousSavedAtRef.current = lastSavedAt;
+    if (!lastSavedAt) return;
+    setJustSaved(true);
+    if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    timeoutRef.current = window.setTimeout(() => setJustSaved(false), JUST_SAVED_DURATION_MS);
+  }, [lastSavedAt]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  return { lastSavedAt, justSaved, handleSave };
+}

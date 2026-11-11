@@ -1,0 +1,244 @@
+import { v4 as uuidv4 } from "uuid";
+import { INDUSTRIA_COMERCIO_FORM_STEPS } from "../constants/baseTemplate";
+import { GRID_BASE_COLUMNS } from "../constants/grid";
+import {
+  getIndustriaComercioFormTemplate,
+  getIndustriaComercioIntroTemplate,
+} from "../lib/baseTemplate/baseTemplate";
+import { collectFieldNames, slugifyFieldName, uniqueFieldName } from "../lib/fieldName/fieldName";
+import type { CanvasField, FieldOption } from "../types/field";
+import type {
+  CanvasRow,
+  FormStep,
+  FormStepTemplate,
+  IntroModalStep,
+  IntroStepTemplate,
+} from "../types/formStructure";
+import type { CanvasTarget, FieldPlacement } from "../types/placement";
+import type { FormType } from "../types/setup";
+import type { StateSlice } from "../types/store";
+// Constructores, recorridos de todo el lienzo y arranque desde la plantilla.
+
+import { THEME_STORAGE_KEY } from "./formStore.constants";
+
+// Vive aca y no en formStore.ts porque este archivo la necesita; formStore.ts la reexporta para
+// sus componentes de siempre, asi el ciclo de imports queda en un solo sentido.
+export function findFieldById(rows: CanvasRow[], fieldId: string | null): CanvasField | null {
+  if (!fieldId) return null;
+
+  for (const row of rows) {
+    const field = row.fields.find((f) => f.id === fieldId);
+    if (field) return field;
+  }
+
+  return null;
+}
+
+export function crossingNotice(labels: string[]): string | null {
+  if (labels.length === 0) return null;
+
+  return `Quedaron enlaces cruzados entre el modal de entrada y el formulario (${labels.join(", ")}). Siguen funcionando al llenar el formulario, pero el panel de Lógica no los va a ofrecer para editar.`;
+}
+
+export function allRows(state: StateSlice): CanvasRow[] {
+  return [
+    ...state.formSteps.flatMap((step) => step.rows),
+    ...state.introModal.steps.flatMap((step) => step.rows),
+  ];
+}
+
+export function rowsOfTarget(state: StateSlice, target: CanvasTarget): CanvasRow[] {
+  const steps: { stepId: string; rows: CanvasRow[] }[] =
+    target.type === "formStep" ? state.formSteps : state.introModal.steps;
+
+  return steps.find((step) => step.stepId === target.stepId)?.rows ?? [];
+}
+
+// Despues de deshacer o rehacer el documento es otro, y la vista tiene que seguir apuntando a algo
+// que exista en el. El historial ya guarda el paso activo y la seleccion de cada momento, asi que
+// casi nunca hay nada que corregir: esto es la red para cuando no coinciden.
+export function reconcileViewAfterHistory(
+  state: StateSlice & { activeCanvas: CanvasTarget; selectedFieldIds: string[] },
+): { activeCanvas: CanvasTarget; selectedFieldIds: string[]; transferNotice: null } {
+  const steps: { stepId: string }[] =
+    state.activeCanvas.type === "formStep" ? state.formSteps : state.introModal.steps;
+  const activeCanvas: CanvasTarget = steps.some((step) => step.stepId === state.activeCanvas.stepId)
+    ? state.activeCanvas
+    : { type: "formStep", stepId: state.formSteps[0].stepId };
+  const present: Set<string> = new Set<string>(
+    rowsOfTarget(state, activeCanvas).flatMap((row) => row.fields.map((field) => field.id)),
+  );
+  const kept: string[] = state.selectedFieldIds.filter((fieldId) => present.has(fieldId));
+
+  return {
+    activeCanvas,
+    // La misma referencia si no se cayo ninguno: el store compara por identidad.
+    selectedFieldIds: kept.length === state.selectedFieldIds.length ? state.selectedFieldIds : kept,
+    // El aviso de cruce hablaba de una mudanza que se acaba de deshacer.
+    transferNotice: null,
+  };
+}
+
+// El otro lado de la frontera modal / formulario respecto del destino. Es lo que hay que mirar para
+// saber que referencias quedan cruzadas despues de la mudanza.
+export function rowsAcrossFrom(state: StateSlice, target: CanvasTarget): CanvasRow[] {
+  return target.type === "formStep"
+    ? state.introModal.steps.flatMap((step) => step.rows)
+    : state.formSteps.flatMap((step) => step.rows);
+}
+
+export function findAnyField(state: StateSlice, fieldId: string): CanvasField | null {
+  for (const step of state.formSteps) {
+    const field = findFieldById(step.rows, fieldId);
+    if (field) return field;
+  }
+
+  for (const step of state.introModal.steps) {
+    const field = findFieldById(step.rows, fieldId);
+    if (field) return field;
+  }
+
+  return null;
+}
+
+export function getInitialDarkMode(): boolean {
+  if (typeof window === "undefined") return false;
+  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (stored === "dark") return true;
+  if (stored === "light") return false;
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+// Los tipos de formulario que no son industria y comercio arrancan en blanco: no hay plantilla,
+// asi que cada paso recibe una fila vacia y el usuario construye desde cero.
+export function buildInitialFormSteps(formType: FormType): FormStep[] {
+  const isIndustriaComercio: boolean = formType === "industria_comercio";
+  const stepCount: number = isIndustriaComercio ? INDUSTRIA_COMERCIO_FORM_STEPS : 1;
+  const templates: FormStepTemplate[] = isIndustriaComercio
+    ? getIndustriaComercioFormTemplate()
+    : [];
+
+  return Array.from({ length: stepCount }, (_, index) => {
+    const template: FormStepTemplate | undefined = templates[index];
+
+    return {
+      stepId: uuidv4(),
+      title: template?.title ?? `Paso ${index + 1}`,
+      subtitle: template?.subtitle,
+      rows: template?.rows ?? [createEmptyRow()],
+      groups: template?.groups,
+    };
+  });
+}
+
+export function buildInitialIntroSteps(formType: FormType, stepCount: number): IntroModalStep[] {
+  const templates: IntroStepTemplate[] =
+    formType === "industria_comercio" ? getIndustriaComercioIntroTemplate() : [];
+
+  return Array.from({ length: stepCount }, (_, index) => {
+    const template: IntroStepTemplate | undefined = templates[index];
+
+    return {
+      stepId: uuidv4(),
+      title: template?.title ?? `Paso ${index + 1}`,
+      subtitle: template?.subtitle,
+      rows: template?.rows ?? [createEmptyRow()],
+    };
+  });
+}
+
+// Aplica el cambio en los dos lienzos sin averiguar en cual esta el campo. Recorrer de mas es
+// barato y evita que cada accion del store tenga que ramificar por tipo de lienzo.
+export function mapFieldEverywhere(
+  slice: StateSlice,
+  fieldId: string,
+  updater: (field: CanvasField) => CanvasField,
+): StateSlice {
+  const applyTo = (rows: CanvasRow[]) =>
+    rows.map((row) => ({
+      ...row,
+      fields: row.fields.map((field) => (field.id === fieldId ? updater(field) : field)),
+    }));
+
+  return {
+    formSteps: slice.formSteps.map((step) => ({
+      ...step,
+      rows: applyTo(step.rows),
+    })),
+    introModal: {
+      steps: slice.introModal.steps.map((step) => ({
+        ...step,
+        rows: applyTo(step.rows),
+      })),
+    },
+  };
+}
+
+export function createOptions(optionCount: number): FieldOption[] {
+  return Array.from({ length: Math.max(2, optionCount) }, (_, index) => ({
+    id: uuidv4(),
+    label: `Opción ${index + 1}`,
+  }));
+}
+
+export function mapRowEverywhere(
+  slice: StateSlice,
+  rowId: string,
+  updater: (row: CanvasRow) => CanvasRow,
+): StateSlice {
+  const applyTo = (rows: CanvasRow[]) => rows.map((row) => (row.id === rowId ? updater(row) : row));
+
+  return {
+    formSteps: slice.formSteps.map((step) => ({
+      ...step,
+      rows: applyTo(step.rows),
+    })),
+    introModal: {
+      steps: slice.introModal.steps.map((step) => ({
+        ...step,
+        rows: applyTo(step.rows),
+      })),
+    },
+  };
+}
+
+export function createEmptyRow(): CanvasRow {
+  return { id: uuidv4(), columns: GRID_BASE_COLUMNS, fields: [] };
+}
+
+export function allFieldNames(slice: StateSlice, exceptFieldId?: string): Set<string> {
+  const rows: CanvasRow[] = [
+    ...slice.formSteps.flatMap((step) => step.rows),
+    ...slice.introModal.steps.flatMap((step) => step.rows),
+  ];
+
+  return collectFieldNames(rows, exceptFieldId);
+}
+
+// Un campo recien soltado no trae opciones aunque su tipo las admita: se configuran despues, y
+// solo si el campo se marca excluido del payload. Uno mapeado las recibe del catalogo en runtime.
+export function createEmptyField(
+  type: string,
+  label: string,
+  placement: FieldPlacement,
+  taken: Set<string>,
+): CanvasField {
+  const field: CanvasField = {
+    id: uuidv4(),
+    name: uniqueFieldName(slugifyFieldName(label), taken),
+    type,
+    label,
+    colStart: placement.colStart,
+    colSpan: placement.colSpan,
+    validations: {},
+    styles: {},
+    logic: {},
+  };
+
+  if (type === "file") {
+    field.fileConfig = { acceptedFormats: [], maxSizeMB: 10 };
+  }
+
+  return field;
+}
