@@ -193,7 +193,7 @@ export default function Declarations() {
             }))}
             value={view}
             change={(v) =>
-              setParams(v === 'nonFilers' ? { view: 'omisos' } : {}, { replace: true })
+              setParams(v === 'nonFilers' ? { vista: 'omisos' } : {}, { replace: true })
             }
           />
         )}
