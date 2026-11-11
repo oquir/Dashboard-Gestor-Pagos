@@ -21,6 +21,7 @@ export function useDraftRecovery(): DraftRecovery {
     // llega: solo restoreDraft lo escribe, y ese camino exige status "ok".
     if (result.status === "invalid") {
       clearDraft();
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- el borrador se lee de localStorage al montar
       setPending({ draft: null, renamed: [], wasInvalid: true });
       return;
     }

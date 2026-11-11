@@ -10,7 +10,7 @@ export function RichTextView({ content, className }: RichTextViewProps) {
   return (
     <div className={`flex flex-col gap-1 ${className ?? "text-xs text-fg-soft"}`}>
       {(content ?? []).map((paragraph, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: los parrafos no tienen id propio
+        // los parrafos no tienen id propio
         <p key={index}>
           {paragraph.children.map((leaf, leafIndex) => renderLeaf(leaf, leafIndex))}
         </p>

@@ -39,7 +39,6 @@ export function ScriptEditor({
   // Solo al montar. `value` es el contenido inicial y de ahi en mas lo sostiene CodeMirror -- el
   // efecto de abajo trae los cambios de afuera --, y el id, la etiqueta y el placeholder no cambian
   // mientras el panel vive. Depender de cualquiera de los cuatro rearmaria el editor entero.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: rearmar el editor tiraria el cursor
   useEffect(() => {
     const host: HTMLDivElement | null = hostRef.current;
     if (!host) return;
@@ -77,6 +76,7 @@ export function ScriptEditor({
       view.destroy();
       viewRef.current = null;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- rearmar el editor tiraria el cursor
   }, []);
 
   // Cambios que vienen de afuera -- el insertador de campos, cargar un borrador, cambiar de campo

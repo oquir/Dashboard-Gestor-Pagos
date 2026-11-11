@@ -220,6 +220,7 @@ const MIGRATIONS: Record<number, DraftMigration> = {
   // descarta lo que no declara, asi que el borrador validaria igual -- pero seguiria arrastrando
   // los componentes en localStorage para siempre, invisibles y sin nada que los pueda leer.
   4: (draft) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- se saca de la copia a proposito
     const { savedComponents, ...resto } = draft;
 
     return resto;

@@ -30,6 +30,7 @@ export function useExportReview(): UseExportReviewResult {
     if (pendingReveal.kind === "row") element = getRowElement(pendingReveal.id);
 
     element?.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- consume el reveal pendiente despues del commit
     setPendingReveal(null);
   }, [pendingReveal]);
 

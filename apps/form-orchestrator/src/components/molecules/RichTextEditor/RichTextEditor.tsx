@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs -- falso positivo: el hook devuelve refs junto a valores comunes */
 import { useRichTextEditor } from "../../../hooks/useRichTextEditor/useRichTextEditor";
 import {
   EDITOR_CLASSES,
@@ -48,7 +49,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       {editor.linkOpen && (
         <div className="flex items-center gap-1">
           <input
-            // biome-ignore lint/a11y/noAutofocus: el campo aparece por accion explicita del usuario
+            // el campo aparece por accion explicita del usuario
             autoFocus
             value={editor.linkValue}
             placeholder="https://…"
@@ -65,7 +66,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         </div>
       )}
 
-      {/* biome-ignore lint/a11y/useSemanticElements: un textarea no admite formato en linea */}
+      {/* un textarea no admite formato en linea */}
       <div
         ref={editor.editorRef}
         contentEditable

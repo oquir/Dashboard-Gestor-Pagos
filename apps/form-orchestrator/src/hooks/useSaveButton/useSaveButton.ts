@@ -23,6 +23,7 @@ export function useSaveButton(): UseSaveButtonResult {
     if (lastSavedAt === previousSavedAtRef.current) return;
     previousSavedAtRef.current = lastSavedAt;
     if (!lastSavedAt) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reacciona a un guardado escrito en el store
     setJustSaved(true);
     if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
     timeoutRef.current = window.setTimeout(() => setJustSaved(false), JUST_SAVED_DURATION_MS);

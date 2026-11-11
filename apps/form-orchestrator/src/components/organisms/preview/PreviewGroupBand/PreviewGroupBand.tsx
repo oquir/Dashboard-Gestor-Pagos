@@ -53,7 +53,7 @@ export function PreviewGroupBand({ groupId, rows, preview }: PreviewGroupBandPro
       <ul className="flex list-none flex-col gap-3">
         {scopes.map((scope, index) => (
           <li
-            // biome-ignore lint/suspicious/noArrayIndexKey: las repeticiones no tienen id propio
+            // las repeticiones no tienen id propio
             key={index}
             className="rounded-md border border-border bg-surface p-3"
           >

@@ -49,6 +49,7 @@ export function useFormPreview(): FormPreviewApi {
   const [revealed, setRevealed] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reconcilia las respuestas cuando cambia el modelo
     setState((previous) => reconcileState(model, previous));
   }, [model]);
 

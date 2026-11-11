@@ -46,6 +46,7 @@ export function CanvasToolbar() {
         : getBandElement(pendingReveal.id);
 
     element?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- consume el reveal pendiente despues del commit
     setPendingReveal(null);
   }, [pendingReveal]);
 

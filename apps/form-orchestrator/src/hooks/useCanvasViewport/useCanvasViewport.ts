@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs -- el ancla se captura en render a proposito, ver captureAnchor */
 import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { getViewportLayout } from "../../lib/canvasViewport/canvasViewport";
 import { wheelZoom } from "../../lib/canvasZoom/canvasZoom";
@@ -47,6 +48,7 @@ export function useCanvasViewport(): CanvasViewportReturn {
 
     const initial: PortSize = readPortSize(port);
     portSizeRef.current = initial;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- primera medida del puerto al montarlo
     setPortSize(initial);
 
     const observer = new ResizeObserver(() => {
@@ -121,7 +123,7 @@ export function useCanvasViewport(): CanvasViewportReturn {
   // Despues del commit: antes, la raiz todavia tiene el tamano viejo y el navegador recortaria el
   // scroll que le pidamos. zoom y portSize van como disparadores a proposito: el efecto tiene que
   // correr justo despues del commit que siguio a la captura del ancla.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: zoom y portSize son disparadores, no datos leidos
+  // zoom y portSize son disparadores, no datos leidos
   useLayoutEffect(() => {
     const anchor: ViewAnchor | null = pendingAnchor.current;
     if (!anchor || !content || !port) return;
