@@ -1,20 +1,20 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { Layout } from './components/templates'
-import Actividades from './pages/Actividades'
-import Bitacora from './pages/Bitacora'
-import BitacoraDetalle from './pages/BitacoraDetalle'
-import Calendario from './pages/Calendario'
-import Configuracion from './pages/Configuracion'
-import DeclaracionDetalle from './pages/DeclaracionDetalle'
-import Declaraciones from './pages/Declaraciones'
-import InscripcionDetalle from './pages/InscripcionDetalle'
-import Inscripciones from './pages/Inscripciones'
-import Inicio from './pages/Inicio'
+import Activities from './pages/Activities'
+import AuditLog from './pages/AuditLog'
+import AuditLogDetail from './pages/AuditLogDetail'
+import Calendar from './pages/Calendar'
+import Settings from './pages/Settings'
+import DeclarationDetail from './pages/DeclarationDetail'
+import Declarations from './pages/Declarations'
+import RegistrationDetail from './pages/RegistrationDetail'
+import Registrations from './pages/Registrations'
+import Home from './pages/Home'
 import Login from './pages/Login'
-import Municipios from './pages/Municipios'
-import Pagos from './pages/Pagos'
-import Reportes from './pages/Reportes'
-import Usuarios from './pages/Usuarios'
+import Municipalities from './pages/Municipalities'
+import Payments from './pages/Payments'
+import Reports from './pages/Reports'
+import Users from './pages/Users'
 
 export default function App() {
   return (
@@ -22,20 +22,20 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<Layout />}>
-          <Route index element={<Inicio />} />
-          <Route path="rit" element={<Inscripciones />} />
-          <Route path="rit/:id" element={<InscripcionDetalle />} />
-          <Route path="declaraciones" element={<Declaraciones />} />
-          <Route path="declaraciones/:id" element={<DeclaracionDetalle />} />
-          <Route path="pagos" element={<Pagos />} />
-          <Route path="reportes" element={<Reportes />} />
-          <Route path="actividades" element={<Actividades />} />
-          <Route path="calendario" element={<Calendario />} />
-          <Route path="configuracion" element={<Configuracion />} />
-          <Route path="usuarios" element={<Usuarios />} />
-          <Route path="municipios" element={<Municipios />} />
-          <Route path="bitacora" element={<Bitacora />} />
-          <Route path="bitacora/:id" element={<BitacoraDetalle />} />
+          <Route index element={<Home />} />
+          <Route path="rit" element={<Registrations />} />
+          <Route path="rit/:id" element={<RegistrationDetail />} />
+          <Route path="declaraciones" element={<Declarations />} />
+          <Route path="declaraciones/:id" element={<DeclarationDetail />} />
+          <Route path="pagos" element={<Payments />} />
+          <Route path="reportes" element={<Reports />} />
+          <Route path="actividades" element={<Activities />} />
+          <Route path="calendario" element={<Calendar />} />
+          <Route path="configuracion" element={<Settings />} />
+          <Route path="usuarios" element={<Users />} />
+          <Route path="municipios" element={<Municipalities />} />
+          <Route path="bitacora" element={<AuditLog />} />
+          <Route path="bitacora/:id" element={<AuditLogDetail />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

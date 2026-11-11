@@ -1,0 +1,52 @@
+import type { Tax, Frequency } from '../types'
+
+/** Nombre de cada periodo del año según la periodicidad; el periodo 1 va en la posición 0. */
+export const PERIOD_NAMES: Record<Frequency, string[]> = {
+  annual: ['Fecha límite'],
+  monthly: [
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
+  ],
+  bimonthly: [
+    'Bimestre 1 (ene – feb)',
+    'Bimestre 2 (mar – abr)',
+    'Bimestre 3 (may – jun)',
+    'Bimestre 4 (jul – ago)',
+    'Bimestre 5 (sep – oct)',
+    'Bimestre 6 (nov – dic)',
+  ],
+  quarterly: [
+    'Trimestre 1 (ene – mar)',
+    'Trimestre 2 (abr – jun)',
+    'Trimestre 3 (jul – sep)',
+    'Trimestre 4 (oct – dic)',
+  ],
+}
+
+/** Meses que abarca cada periodo según la periodicidad. */
+export const MONTHS_PER_PERIOD: Record<Frequency, number> = {
+  annual: 12,
+  quarterly: 3,
+  bimonthly: 2,
+  monthly: 1,
+}
+
+/** Último dígito del NIT o de la cédula, en el orden en que lo listan los calendarios. */
+export const DIGITS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+
+/** Cuando no se sabe qué tiene activo el municipio, se muestran los tres impuestos. */
+export const ALL_ACTIVE: Record<Tax, boolean> = {
+  ica: true,
+  reteica: true,
+  selfWithholding: true,
+}

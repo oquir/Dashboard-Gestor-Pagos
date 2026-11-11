@@ -1,11 +1,11 @@
 import type { ReactNode } from 'react'
 
 export interface ModalProps {
-  titulo: string
-  descripcion?: ReactNode
+  title: string
+  description?: ReactNode
   /** Se llama al cerrar con la X, con Esc o al hacer clic fuera de la ventana. */
-  cerrar: () => void
+  close: () => void
   /** Botones al pie de la ventana. */
-  pie?: ReactNode
+  footer?: ReactNode
   children: ReactNode
 }

@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react'
-import { CLASE_CAMPO } from '../../constants'
+import { FIELD_CLASS } from '../../constants'
 
 export default function Select({ className = '', ...props }: ComponentProps<'select'>) {
-  return <select className={`${CLASE_CAMPO} pr-8 ${className}`} {...props} />
+  return <select className={`${FIELD_CLASS} pr-8 ${className}`} {...props} />
 }

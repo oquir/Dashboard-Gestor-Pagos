@@ -1,0 +1,88 @@
+import { Link } from 'react-router'
+import { AddressCard } from 'reicon-react'
+import { ROW_BUTTON_CLASS } from '../../../../constants'
+import {
+  capacityLabel,
+  registrationStatusLabel,
+  ritChangeStatusLabel,
+  ritChangeKindLabel,
+  personTypeLabel,
+  documentFormat,
+  formatDate,
+  lastProcedure,
+  registrationTone,
+} from '../../../../lib'
+import { Badge } from '../../../atoms'
+import { col } from './RegistrationsTable.utils'
+
+export const COLUMNS = col.columns([
+  col.accessor('ritNumber', {
+    header: 'RIT',
+    meta: { classes: 'whitespace-nowrap' },
+    cell: ({ row: { original: i } }) => (
+      <Link
+        to={`/rit/${i.id}`}
+        aria-label={`Ver la inscripción ${i.ritNumber} de ${i.name}`}
+        className={ROW_BUTTON_CLASS}
+      >
+        <AddressCard className="size-4 text-brand-600" aria-hidden />
+        {i.ritNumber}
+      </Link>
+    ),
+  }),
+  col.accessor('name', {
+    header: 'Nombre o razón social',
+    // Sin ancho mínimo, las razones sociales largas se partían en tres o cuatro líneas.
+    meta: { classes: 'min-w-72' },
+    cell: ({ row: { original: i } }) => (
+      <>
+        <p className="font-medium text-slate-900">{i.name}</p>
+        <p className="text-xs text-slate-500">{documentFormat(i)}</p>
+      </>
+    ),
+  }),
+  col.accessor((i) => personTypeLabel[i.personType], {
+    id: 'tipoPersona',
+    header: 'Tipo de persona',
+    meta: { classes: 'whitespace-nowrap text-slate-700' },
+  }),
+  col.display({
+    id: 'calidades',
+    header: 'Calidades',
+    cell: ({ row: { original: i } }) => (
+      <div className="flex flex-wrap gap-1">
+        {i.capacities.map((c) => (
+          <Badge key={c.capacity} tone={c.capacity === 'taxpayer' ? 'neutral' : 'info'}>
+            {capacityLabel[c.capacity]}
+          </Badge>
+        ))}
+        {i.simpleRegime && <Badge>SIMPLE</Badge>}
+      </div>
+    ),
+  }),
+  col.accessor((i) => ritChangeKindLabel[lastProcedure(i).kind], {
+    id: 'tramite',
+    header: 'Tipo de trámite',
+    meta: { classes: 'whitespace-nowrap' },
+    cell: ({ row: { original: i } }) => {
+      const t = lastProcedure(i)
+      return (
+        <>
+          <p className="text-slate-900">{ritChangeKindLabel[t.kind]}</p>
+          <p
+            className={`text-xs ${t.status === 'pending' ? 'font-medium text-amber-700' : 'text-slate-500'}`}
+          >
+            {ritChangeStatusLabel[t.status]} · {formatDate(t.date)}
+          </p>
+        </>
+      )
+    },
+  }),
+  col.accessor((i) => registrationStatusLabel[i.status], {
+    id: 'estado',
+    header: 'Estado',
+    cell: ({ row: { original: i } }) => (
+      <Badge tone={registrationTone[i.status]}>{registrationStatusLabel[i.status]}</Badge>
+    ),
+  }),
+])

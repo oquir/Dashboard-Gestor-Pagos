@@ -1,49 +1,45 @@
 import { Xmark } from 'reicon-react'
 import { useState } from 'react'
 import { Navigate, Outlet } from 'react-router'
-import { useSesion } from '../../lib'
-import { Boton } from '../atoms'
-import { Marca } from '../molecules'
-import { BarraSuperior, Navegacion } from '../organisms'
+import { useSession } from '../../lib'
+import { Button } from '../atoms'
+import { Mark } from '../molecules'
+import { TopBar, Navigation } from '../organisms'
 
 /** Estructura de las páginas con sesión: menú lateral (cajón en pantallas angostas), barra superior y contenido. */
 export default function Layout() {
-  const { usuario } = useSesion()
-  const [menuAbierto, setMenuAbierto] = useState(false)
+  const { user } = useSession()
+  const [menuOpen, setMenuOpen] = useState(false)
 
-  if (!usuario) return <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/login" replace />
 
   return (
     <div className="min-h-screen lg:flex">
       <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
-        <Marca />
-        <Navegacion />
+        <Mark />
+        <Navigation />
         <p className="border-t border-slate-100 px-5 py-4 text-xs text-slate-400">
           Demo con datos simulados · sin API
         </p>
       </aside>
 
-      {menuAbierto && (
+      {menuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-slate-900/40" onClick={() => setMenuAbierto(false)} />
+          <div className="absolute inset-0 bg-slate-900/40" onClick={() => setMenuOpen(false)} />
           <aside className="relative flex h-full w-72 flex-col bg-white shadow-xl">
             <div className="flex items-center justify-between pr-3">
-              <Marca />
-              <Boton
-                variante="fantasma"
-                aria-label="Cerrar menú"
-                onClick={() => setMenuAbierto(false)}
-              >
+              <Mark />
+              <Button variant="ghost" aria-label="Cerrar menú" onClick={() => setMenuOpen(false)}>
                 <Xmark className="size-5" />
-              </Boton>
+              </Button>
             </div>
-            <Navegacion alElegir={() => setMenuAbierto(false)} />
+            <Navigation onPick={() => setMenuOpen(false)} />
           </aside>
         </div>
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <BarraSuperior abrirMenu={() => setMenuAbierto(true)} />
+        <TopBar openMenu={() => setMenuOpen(true)} />
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
           <Outlet />
         </main>

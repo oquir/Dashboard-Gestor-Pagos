@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import type { Tono } from '../../../lib'
+import type { Tone } from '../../../lib'
 
 export interface BadgeProps {
-  tono?: Tono
+  tone?: Tone
   children: ReactNode
 }

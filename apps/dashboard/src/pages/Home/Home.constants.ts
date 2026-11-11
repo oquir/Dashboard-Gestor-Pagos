@@ -1,0 +1,11 @@
+export const CURRENT_YEAR = 2026
+
+/** Columnas de la fila de indicadores según cuántos hay, para que ninguno quede solo en la segunda fila. */
+export const CARD_COLUMNS: Record<number, string> = {
+  2: '',
+  3: 'lg:grid-cols-3',
+  4: 'xl:grid-cols-4',
+  5: 'lg:grid-cols-3 xl:grid-cols-5',
+  6: 'lg:grid-cols-3',
+  7: 'xl:grid-cols-4',
+}

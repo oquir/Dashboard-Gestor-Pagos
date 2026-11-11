@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 
 export interface StatTileProps {
-  etiqueta: string
-  valor: string
-  detalle?: ReactNode
-  icono?: ReactNode
+  label: string
+  value: string
+  detail?: ReactNode
+  icon?: ReactNode
 }

@@ -1,13 +1,13 @@
 import type { PageHeaderProps } from './PageHeader.types'
 
-export default function PageHeader({ titulo, descripcion, acciones }: PageHeaderProps) {
+export default function PageHeader({ title, description, actions }: PageHeaderProps) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{titulo}</h1>
-        {descripcion && <p className="mt-1 max-w-3xl text-sm text-slate-500">{descripcion}</p>}
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">{title}</h1>
+        {description && <p className="mt-1 max-w-3xl text-sm text-slate-500">{description}</p>}
       </div>
-      {acciones && <div className="flex flex-wrap gap-2">{acciones}</div>}
+      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
     </div>
   )
 }

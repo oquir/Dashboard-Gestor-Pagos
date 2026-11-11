@@ -1,8 +1,0 @@
-import { etiquetaEstadoAprobacion } from '../../../../lib'
-import type { FiltroAprobaciones } from './AprobacionesPendientes.types'
-
-export const OPCIONES_FILTRO: Record<FiltroAprobaciones, string> = {
-  pendientes: 'Pendientes',
-  ...etiquetaEstadoAprobacion,
-  '': 'Toda aprobación',
-}
