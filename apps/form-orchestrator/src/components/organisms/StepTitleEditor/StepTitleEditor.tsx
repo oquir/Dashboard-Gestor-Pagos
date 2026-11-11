@@ -1,5 +1,5 @@
 import { useFormStore } from '../../../store/formStore'
-import { LabeledInput } from '../../molecules/LabeledInput'
+import { LabeledInput } from '../../molecules'
 
 export function StepTitleEditor() {
   const activeCanvas = useFormStore((state) => state.activeCanvas)

@@ -1,6 +1,6 @@
 import { useFieldRules } from '../../../../hooks/useFieldRules/useFieldRules'
-import { FieldRuleCard } from '../../../molecules/FieldRuleCard'
-import { PanelSection } from '../../../molecules/PanelSection'
+import { FieldRuleCard } from '../../../molecules'
+import { PanelSection } from '../../../molecules'
 import { ADD_LINK_CLASSES, COUNT_CLASSES, RULES_HINT } from './FieldRulesEditor.constants'
 import type { FieldRulesEditorProps } from './FieldRulesEditor.types'
 

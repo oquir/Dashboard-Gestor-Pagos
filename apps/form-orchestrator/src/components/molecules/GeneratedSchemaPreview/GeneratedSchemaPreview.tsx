@@ -1,5 +1,5 @@
-import { CodeBlock } from '../../atoms/CodeBlock'
-import { CopyIconButton } from '../../atoms/CopyIconButton'
+import { CodeBlock } from '../../atoms'
+import { CopyIconButton } from '../../atoms'
 import { PanelSection } from '../PanelSection'
 
 export function GeneratedSchemaPreview({ schema }: { schema: string }) {

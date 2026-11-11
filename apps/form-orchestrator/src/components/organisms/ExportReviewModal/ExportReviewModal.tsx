@@ -1,6 +1,6 @@
-import { Button } from '../../atoms/Button'
-import { ModalActions } from '../../atoms/ModalActions'
-import { ModalShell } from '../../atoms/ModalShell'
+import { Button } from '../../atoms'
+import { ModalActions } from '../../atoms'
+import { ModalShell } from '../../atoms'
 import {
   ERROR_BADGE_CLASSES,
   ITEM_CLASSES,

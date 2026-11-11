@@ -1,6 +1,6 @@
 import { useFieldScriptEditor } from '../../../../hooks/useFieldScriptEditor/useFieldScriptEditor'
-import { PanelSection } from '../../../molecules/PanelSection'
-import { ScriptInput } from '../../../molecules/ScriptInput'
+import { PanelSection } from '../../../molecules'
+import { ScriptInput } from '../../../molecules'
 import {
   DATE_HELPERS_HINT,
   ERROR_CLASSES,

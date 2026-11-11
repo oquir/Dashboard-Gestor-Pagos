@@ -1,5 +1,5 @@
-import { Input } from '../../atoms/Input'
-import { Label } from '../../atoms/Label'
+import { Input } from '../../atoms'
+import { Label } from '../../atoms'
 import type { LabeledInputProps } from './LabeledInput.types'
 
 export function LabeledInput({ id, label, ...rest }: LabeledInputProps) {

@@ -1,7 +1,7 @@
 import { Plus } from 'reicon-react'
 import { getActiveRows, useFormStore } from '../../../store/formStore'
-import { DashedAddButton } from '../../atoms/DashedAddButton'
-import { StepTabChip } from '../../molecules/StepTabChip'
+import { DashedAddButton } from '../../atoms'
+import { StepTabChip } from '../../molecules'
 import { ADD_BUTTON_CLASSES, GROUP_CAPTION_CLASSES } from './CanvasTabs.constants'
 import { resolveTransferState } from './CanvasTabs.utils'
 

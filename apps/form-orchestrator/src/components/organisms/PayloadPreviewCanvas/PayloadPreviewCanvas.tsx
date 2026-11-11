@@ -1,6 +1,6 @@
 import { CheckCircle, Copy } from 'reicon-react'
 import { usePayloadPreviewCanvas } from '../../../hooks/usePayloadPreviewCanvas/usePayloadPreviewCanvas'
-import { JsonCode } from '../../molecules/JsonCode'
+import { JsonCode } from '../../molecules'
 import { colorClassForSummaryValue } from './PayloadPreviewCanvas.utils'
 
 export function PayloadPreviewCanvas() {

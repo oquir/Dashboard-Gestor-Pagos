@@ -3,7 +3,7 @@ import { maxLengthOf } from '../../../../lib/fieldLength/fieldLength'
 import { showsOptionsInline } from '../../../../lib/fieldOptions/fieldOptions'
 import { catalogOptions } from '../../../../lib/mockCatalog/mockCatalog'
 import type { CatalogOption } from '../../../../types/catalog'
-import { RichTextView } from '../../../atoms/RichTextView'
+import { RichTextView } from '../../../atoms'
 import { PreviewNumberInput } from '../PreviewNumberInput'
 import { PreviewSearchSelect } from '../PreviewSearchSelect'
 import {

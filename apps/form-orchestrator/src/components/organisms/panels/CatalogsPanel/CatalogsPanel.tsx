@@ -1,7 +1,7 @@
 import { CATALOGS } from '../../../../constants/catalog'
 import { HINT_CLASSES } from '../../../../constants/uiClasses'
 import { useFormStore } from '../../../../store/formStore'
-import { CatalogCard } from '../../../molecules/CatalogCard'
+import { CatalogCard } from '../../../molecules'
 import { ValoresAnualesEditor } from '../ValoresAnualesEditor'
 
 export function CatalogsPanel() {

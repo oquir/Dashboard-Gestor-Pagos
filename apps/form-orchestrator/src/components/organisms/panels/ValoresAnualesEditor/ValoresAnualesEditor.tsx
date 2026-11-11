@@ -13,9 +13,9 @@ import {
 } from '../../../../lib/valoresBank/valoresBank'
 import { useFormStore } from '../../../../store/formStore'
 import type { ValorAnual, ValoresParseResult } from '../../../../types/valores'
-import { Button } from '../../../atoms/Button'
-import { BinaryChoiceToggle } from '../../../molecules/BinaryChoiceToggle'
-import { PanelSection } from '../../../molecules/PanelSection'
+import { Button } from '../../../atoms'
+import { BinaryChoiceToggle } from '../../../molecules'
+import { PanelSection } from '../../../molecules'
 import {
   ACTION_CLASSES,
   BADGE_EMPTY_CLASSES,

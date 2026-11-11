@@ -6,7 +6,7 @@ import {
 } from '../../../lib/fieldCondition/fieldCondition'
 import { useFormStore } from '../../../store/formStore'
 import type { CanvasField, ConditionOperator, FieldValidationOverride } from '../../../types/field'
-import { TwoColumnFieldGroup } from '../../atoms/TwoColumnFieldGroup'
+import { TwoColumnFieldGroup } from '../../atoms'
 import { ConditionFieldSelect } from '../ConditionFieldSelect'
 import { ConditionOperatorSelect } from '../ConditionOperatorSelect'
 import { ConditionValueInput } from '../ConditionValueInput'

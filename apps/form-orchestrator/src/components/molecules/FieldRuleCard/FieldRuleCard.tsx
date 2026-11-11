@@ -6,7 +6,7 @@ import {
 } from '../../../lib/fieldCondition/fieldCondition'
 import { createConstantEffect, createScriptEffect } from '../../../lib/fieldRule/fieldRule'
 import type { CanvasField } from '../../../types/field'
-import { IconButton } from '../../atoms/IconButton'
+import { IconButton } from '../../atoms'
 import { ConditionFieldSelect } from '../ConditionFieldSelect'
 import { ConditionOperatorSelect } from '../ConditionOperatorSelect'
 import { ConditionValueInput } from '../ConditionValueInput'

@@ -1,4 +1,4 @@
-import { FieldTypeBadge } from '../../atoms/FieldTypeBadge'
+import { FieldTypeBadge } from '../../atoms'
 import { FieldPreviewControl } from '../FieldPreviewControl'
 import type { RowDragPreviewProps } from './RowDragPreview.types'
 

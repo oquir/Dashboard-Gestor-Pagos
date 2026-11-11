@@ -4,7 +4,7 @@ import {
   isOptionBasedField,
   showsOptionsInline,
 } from '../../../lib/fieldOptions/fieldOptions'
-import { RichTextView } from '../../atoms/RichTextView'
+import { RichTextView } from '../../atoms'
 import {
   CATALOG_HINT_CLASSES,
   CHIP_INLINE_CLASSES,

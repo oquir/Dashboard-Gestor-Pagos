@@ -2,9 +2,9 @@ import { useApiMappingPanel } from '../../../../hooks/useApiMappingPanel/useApiM
 import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
 import { allowsManualOptions, isOptionBasedField } from '../../../../lib/fieldOptions/fieldOptions'
 import type { CanvasField } from '../../../../types/field'
-import { ToggleSwitch } from '../../../atoms/ToggleSwitch'
-import { ApiPathSelect } from '../../../molecules/ApiPathSelect'
-import { PanelSection } from '../../../molecules/PanelSection'
+import { ToggleSwitch } from '../../../atoms'
+import { ApiPathSelect } from '../../../molecules'
+import { PanelSection } from '../../../molecules'
 import { FieldOptionsModal } from '../../FieldOptionsModal'
 import { FieldDataSourceEditor } from '../FieldDataSourceEditor'
 import {

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { HexColorInput, HexColorPicker } from 'react-colorful'
 import { useClickOutside } from '../../../hooks/useClickOutside/useClickOutside'
-import { Label } from '../../atoms/Label'
+import { Label } from '../../atoms'
 import type { ColorPickerFieldProps } from './ColorPickerField.types'
 
 // La muestra va dentro del mismo marco que el hex y no al lado: son dos formas de escribir el mismo

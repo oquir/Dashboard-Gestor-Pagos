@@ -1,5 +1,5 @@
 import { Xmark } from 'reicon-react'
-import { IconButton } from '../../atoms/IconButton'
+import { IconButton } from '../../atoms'
 import { ScriptInput } from '../ScriptInput'
 import type { RuleEffectRowProps } from './RuleEffectRow.types'
 

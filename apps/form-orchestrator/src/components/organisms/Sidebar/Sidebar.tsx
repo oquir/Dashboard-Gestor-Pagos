@@ -5,9 +5,9 @@ import {
   getSelectedFieldId,
   useFormStore,
 } from '../../../store/formStore'
-import { PanelHeader } from '../../atoms/PanelHeader'
-import { SelectionSummary } from '../../molecules/SelectionSummary'
-import { SidebarTabRail } from '../../molecules/SidebarTabRail'
+import { PanelHeader } from '../../atoms'
+import { SelectionSummary } from '../../molecules'
+import { SidebarTabRail } from '../../molecules'
 import { FieldPalette } from '../FieldPalette'
 import { ApiMappingPanel } from '../panels/ApiMappingPanel'
 import { AttributesPanel } from '../panels/AttributesPanel'

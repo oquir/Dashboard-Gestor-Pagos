@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { mappedFieldCount } from '../../../../lib/runtimePayload/runtimePayload'
 import type { RuntimeIssue } from '../../../../types/formRuntime'
-import { JsonCode } from '../../../molecules/JsonCode'
-import { TabButtonGroup } from '../../../molecules/TabButtonGroup'
+import { JsonCode } from '../../../molecules'
+import { TabButtonGroup } from '../../../molecules'
 import { RESULT_TABS, type ResultTab } from './PreviewResults.constants'
 import type { PreviewResultsProps } from './PreviewResults.types'
 

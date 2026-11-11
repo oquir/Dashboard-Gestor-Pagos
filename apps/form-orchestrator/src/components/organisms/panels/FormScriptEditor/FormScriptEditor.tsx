@@ -1,6 +1,6 @@
 import { useFormScriptEditor } from '../../../../hooks/useFormScriptEditor/useFormScriptEditor'
-import { PanelSection } from '../../../molecules/PanelSection'
-import { ScriptInput } from '../../../molecules/ScriptInput'
+import { PanelSection } from '../../../molecules'
+import { ScriptInput } from '../../../molecules'
 import {
   ERROR_CLASSES,
   HINT_CLASSES,

@@ -1,4 +1,4 @@
-import { Label } from '../../atoms/Label'
+import { Label } from '../../atoms'
 import type { LabeledRangeSliderProps } from './LabeledRangeSlider.types'
 
 export function LabeledRangeSlider({
