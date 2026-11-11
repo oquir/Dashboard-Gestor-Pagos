@@ -1,0 +1,19 @@
+{
+  "name": "gestor-pagos-monorepo",
+  "private": true,
+  "type": "module",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.18.0",
+      "onFail": "error"
+    }
+  },
+  "scripts": {
+    "dev": "pnpm --recursive --parallel dev",
+    "dev:dashboard": "pnpm --filter dashboard-gestor-pagos dev",
+    "dev:formularios": "pnpm --filter form-orchestrator dev",
+    "build": "pnpm --recursive build",
+    "lint": "pnpm --recursive lint"
+  }
+}
