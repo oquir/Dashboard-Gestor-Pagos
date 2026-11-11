@@ -1,5 +1,6 @@
 import { X } from 'reicon-react'
 import { useEffect, useId, useRef } from 'react'
+import { MODAL_ICON_BUTTON_CLASS, SIZE_CLASSES } from './Modal.constants'
 import type { ModalProps } from './Modal.types'
 
 /**
@@ -11,6 +12,7 @@ export default function Modal({
   description,
   close,
   footer,
+  actions,
   size = 'md',
   children,
 }: ModalProps) {
@@ -35,7 +37,7 @@ export default function Modal({
       }}
       // El clic en el fondo llega al propio <dialog>; el de adentro, a sus hijos.
       onClick={(e) => e.target === e.currentTarget && close()}
-      className={`m-auto w-[calc(100%-2rem)] ${size === 'xl' ? 'max-w-4xl' : 'max-w-lg'} rounded-xl bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/40`}
+      className={`${SIZE_CLASSES[size]} flex-col bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/40 open:flex`}
     >
       <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
         <div>
@@ -44,16 +46,19 @@ export default function Modal({
           </h2>
           {description && <p className="mt-0.5 text-sm text-slate-500">{description}</p>}
         </div>
-        <button
-          type="button"
-          aria-label="Cerrar"
-          onClick={close}
-          className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
-        >
-          <X className="size-5" aria-hidden />
-        </button>
+        <div className="flex shrink-0 items-center gap-1">
+          {actions}
+          <button
+            type="button"
+            aria-label="Cerrar"
+            onClick={close}
+            className={MODAL_ICON_BUTTON_CLASS}
+          >
+            <X className="size-5" aria-hidden />
+          </button>
+        </div>
       </div>
-      <div className="px-5 py-4">{children}</div>
+      <div className="min-h-0 flex-1 overflow-auto px-5 py-4">{children}</div>
       {footer && (
         <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 px-5 py-3">
           {footer}
