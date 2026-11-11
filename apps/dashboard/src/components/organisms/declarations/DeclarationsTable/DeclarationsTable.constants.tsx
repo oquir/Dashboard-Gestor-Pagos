@@ -78,10 +78,14 @@ export const COLUMNS = col.columns([
     cell: ({ row: { original: f } }) => (
       <>
         <p className="truncate text-slate-700">{f.name}</p>
-        <p className="truncate text-xs tabular-nums text-slate-500">{f.document}</p>
         {f.unregistered && <p className="text-xs text-amber-700">No inscrito en el RIT</p>}
       </>
     ),
+  }),
+  col.accessor((f) => f.document, {
+    id: 'idDocument',
+    header: 'Documento',
+    meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
   }),
   col.accessor((f) => `${f.d.tax}-${f.d.fiscalYear}-${f.d.period}`, {
     id: 'period',
