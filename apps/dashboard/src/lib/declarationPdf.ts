@@ -269,12 +269,14 @@ async function declarationPdf(d: Declaration, source: PdfFont) {
   return new Uint8Array(doc.output('arraybuffer'))
 }
 
-export async function downloadDeclaration(d: Declaration, source: PdfFont) {
+/** El PDF de la declaración en memoria, para mostrarlo sin descargarlo. */
+export async function declarationBlob(d: Declaration, source: PdfFont) {
   const pdf = await declarationPdf(d, source)
-  downloadBlob(
-    new Blob([pdf as Uint8Array<ArrayBuffer>], { type: 'application/pdf' }),
-    `${d.number}.pdf`,
-  )
+  return new Blob([pdf as Uint8Array<ArrayBuffer>], { type: 'application/pdf' })
+}
+
+export async function downloadDeclaration(d: Declaration, source: PdfFont) {
+  downloadBlob(await declarationBlob(d, source), `${d.number}.pdf`)
 }
 
 /** Un .zip con el PDF de cada declaración. */
