@@ -23,7 +23,7 @@
 | Bitácora de cambios | **Sí**; hecha el 2026-11-04 con datos de prueba | Solo la ve 1cero1, con la fecha y la hora de cada cambio, también los de 1cero1 (§3.9) |
 | Buscador global | **Por ahora no** | La respuesta quedó a medias: confirmarla |
 | Cuadre de caja | **Descartado** (2026-11-09) | No le toca a 1cero1: lo hace el sistema de rentas del municipio (§3.8) |
-| Plazo de inscripción en el RIT, declaración en ceros, omisos, calendario de vencimientos y soportes por calidad | **En revisión** | El usuario los está estudiando con las explicaciones de §3 |
+| Plazo de inscripción en el RIT, declaración en ceros, omisos y calendario de vencimientos | **Sí**: implementados entre el 2026-10-30 y el 2026-11-06 (§2.1 y §2.2) | El usuario los estudió con las explicaciones de §3 |
 | Calendario como página aparte (2026-11-03) | **Sí**: vencimientos, periodicidad y pronto pago (también su interruptor) van en la página Calendario, no en Configuración | Hacerlo más sencillo |
 | Carga y exportación del calendario en JSON (2026-11-03) | **Descartado** | No le sirve a nadie |
 | Calendario combinado de ReteICA y AutoReteICA (2026-11-03) | **Descartado**: cada una tiene siempre sus propios vencimientos | En la práctica los municipios las separan |
@@ -59,6 +59,7 @@
 | Quitar un emplazamiento (2026-11-10) | **Sí**, si se registró por error, y queda en la bitácora. Solo mientras nadie lo haya respondido | Un error de fecha o de contribuyente le cobraría al contribuyente una sanción que no debe |
 | Copia del acto del emplazamiento (2026-11-10) | **Opcional**, una por emplazamiento, y se descarga desde el dashboard | El acto lo expide el municipio en su sistema; la copia ayuda a quien revisa |
 | Municipios de la demo (2026-11-10) | **Villeta y Ricaurte (Cundinamarca) y Garzón (Huila)**, con su código DANE, en lugar de San José del Valle, Puerto Esperanza y Santa Rosa de los Andes. Cada uno conserva la configuración y los datos del que reemplaza, en ese orden: Villeta solo tiene ICA, Ricaurte tiene aprobación previa en el ICA y no valida la ReteICA contra el RIT, y Garzón no tiene RIT. El Ricaurte de la demo es el de Cundinamarca; el estatuto de §7 de `Contexto-RIT.md` es el de Ricaurte (Nariño) | Lo pidió el usuario: municipios reales para las pruebas |
+| Soportes del RIT por calidad (2026-11-10) | **Descartado en el dashboard**: qué documentos pide cada municipio, según el tipo de persona y la calidad, lo decide el orquestador de formularios. El dashboard solo muestra y deja descargar los que trae cada inscripción (§3.12) | Así la regla vive en un solo aplicativo, y es más sencillo configurarla donde se arma el formulario |
 | Emplazamientos en Inicio (2026-11-10) | **No**: se ven en Omisos, en el detalle de la declaración y en el inscrito del RIT | Lo que sigue al vencer el plazo, la sanción por no declarar y el aforo, lo hace el municipio en su sistema |
 
 ## 2. Lo que falta, con su estado
@@ -101,7 +102,7 @@ Estos campos se editan en Configuración, pero ninguna pantalla ni dato cambiaba
 | Usuarios | Botón en cada fila que abre el detalle del usuario: editar sus datos (también el correo, cuando el municipio pierde el acceso al que tenía), desactivar o reactivar, eliminar y reenviar las credenciales (el correo es simulado) | **Implementado** (2026-11-04). Separar permisos: descartado |
 | Recibos de caja y de pago | Poder descargarlos (§3.10) | Descartado |
 | Causales del art. 580 | Escoger la causal al rechazar en la aprobación previa, con comentario y documentos opcionales (§3.11) | **Implementado** (2026-11-10) |
-| Soportes del RIT por calidad | Que cada municipio configure qué documentos exige (§3.12) | En revisión |
+| Soportes del RIT por calidad | Que cada municipio configure qué documentos exige (§3.12) | Descartado: lo hace el orquestador de formularios |
 | Festivos | Descontarlos de los días hábiles | Fuera del mock |
 | Vista previa de los correos | Ver el correo que la app dice que "se envía" | Descartado |
 | Buscador global | Buscar por NIT, cédula, radicado o factura desde la barra superior | Por ahora no |
@@ -352,6 +353,8 @@ Rechazar por otra cosa, como una tarifa mal puesta, no tiene base: eso se arregl
 
 En el mock, la lista de documentos está fija y es igual para todos los municipios, aunque cada uno pide algo distinto. Medellín le pide a un agente el formulario RIT y cuatro documentos; Ricaurte (Nariño), solo una copia del RUT. Hacerla configurable sería que cada administrador marque qué exige según el tipo de persona y la calidad. Para una demo, es de lo menos importante.
 
+**Decisión del 2026-11-10**: no se configura en el dashboard. El orquestador de formularios muestra los documentos que pide cada municipio según lo que marque el contribuyente (por ejemplo, autorretenedor), y el dashboard recibe la inscripción con lo que se adjuntó. La lista fija de la demo (`soportesRequeridos` en `src/data/generar.ts`) solo sirve para generar datos de prueba.
+
 ### 3.13 Emplazamientos
 
 Un emplazamiento no es una fecha general como el calendario: es un aviso que la alcaldía le notifica a un contribuyente por un periodo concreto (un año gravable en el ICA; un bimestre o mes en ReteICA y AutoReteICA). No sube la sanción por sí solo: la sube presentar o corregir después de notificado. Hay dos:
@@ -543,6 +546,6 @@ El cruce con el RIT queda como un extra:
 
 ## 5. Para retomar
 
-- **En revisión por el usuario**: los soportes por calidad. La explicación está en §3.12.
+- **Descartado el 2026-11-10**: los soportes por calidad, que pasan al orquestador de formularios (§3.12).
 - **Por confirmar**: el buscador global, porque la respuesta quedó a medias.
 - **Siguiente paso**: el usuario decide qué hacer. Cada punto se hace en su versión mínima. La sugerencia del 2026-11-04, que las declaraciones de la demo sigan la periodicidad del calendario (§2.1), quedó hecha el 2026-11-06.
