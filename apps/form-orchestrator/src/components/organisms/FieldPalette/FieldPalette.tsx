@@ -1,4 +1,4 @@
-import { PaletteChip } from '../../molecules/PaletteChip/PaletteChip'
+import { PaletteChip } from '../../molecules/PaletteChip'
 import {
   PALETTE_SECTIONS,
   SECTION_GRID_CLASSES,

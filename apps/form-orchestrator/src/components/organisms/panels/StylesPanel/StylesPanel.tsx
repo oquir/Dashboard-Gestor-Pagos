@@ -1,11 +1,11 @@
 import { useFormStore } from '../../../../store/formStore'
 import type { CanvasField, FieldStyles } from '../../../../types/field'
-import { Textarea } from '../../../atoms/TextArea/Textarea'
-import { TwoColumnFieldGroup } from '../../../atoms/TwoColumnFieldGroup/TwoColumnFieldGroup'
-import { ColorPickerField } from '../../../molecules/ColorPickerField/ColorPickerField'
-import { CssValidationHint } from '../../../molecules/CssValidationHint/CssValidationHint'
-import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
-import { PxInput } from '../../../molecules/PxInput/PxInput'
+import { Textarea } from '../../../atoms/TextArea'
+import { TwoColumnFieldGroup } from '../../../atoms/TwoColumnFieldGroup'
+import { ColorPickerField } from '../../../molecules/ColorPickerField'
+import { CssValidationHint } from '../../../molecules/CssValidationHint'
+import { PanelSection } from '../../../molecules/PanelSection'
+import { PxInput } from '../../../molecules/PxInput'
 
 export function StylesPanel({ field }: { field: CanvasField }) {
   const updateFieldStyles = useFormStore((state) => state.updateFieldStyles)

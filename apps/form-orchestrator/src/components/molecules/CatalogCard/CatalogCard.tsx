@@ -1,8 +1,8 @@
 import { useCatalogCard } from '../../../hooks/useCatalogCard/useCatalogCard'
 import type { CatalogEntry } from '../../../types/catalog'
-import { Button } from '../../atoms/Button/Button'
-import { BinaryChoiceToggle } from '../BinaryChoiceToggle/BinaryChoiceToggle'
-import { PanelSection } from '../PanelSection/PanelSection'
+import { Button } from '../../atoms/Button'
+import { BinaryChoiceToggle } from '../BinaryChoiceToggle'
+import { PanelSection } from '../PanelSection'
 import {
   ACTION_CLASSES,
   BADGE_EMPTY_CLASSES,

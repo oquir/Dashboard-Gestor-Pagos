@@ -3,9 +3,9 @@ import { maxLengthOf } from '../../../../lib/fieldLength/fieldLength'
 import { showsOptionsInline } from '../../../../lib/fieldOptions/fieldOptions'
 import { catalogOptions } from '../../../../lib/mockCatalog/mockCatalog'
 import type { CatalogOption } from '../../../../types/catalog'
-import { RichTextView } from '../../../atoms/RichTextView/RichTextView'
-import { PreviewNumberInput } from '../PreviewNumberInput/PreviewNumberInput'
-import { PreviewSearchSelect } from '../PreviewSearchSelect/PreviewSearchSelect'
+import { RichTextView } from '../../../atoms/RichTextView'
+import { PreviewNumberInput } from '../PreviewNumberInput'
+import { PreviewSearchSelect } from '../PreviewSearchSelect'
 import {
   CHIP_ACTIVE_CLASSES,
   CHIP_BASE_CLASSES,

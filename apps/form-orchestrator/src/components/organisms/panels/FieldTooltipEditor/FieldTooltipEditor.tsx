@@ -1,12 +1,12 @@
 import { TOOLTIP_POSITIONS } from '../../../../constants/fieldTooltip'
 import { useFormStore } from '../../../../store/formStore'
 import type { FieldTooltip } from '../../../../types/field'
-import { Label } from '../../../atoms/Label/Label'
-import { Textarea } from '../../../atoms/TextArea/Textarea'
-import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
-import { CssValidationHint } from '../../../molecules/CssValidationHint/CssValidationHint'
-import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
-import { RichTextEditor } from '../../../molecules/RichTextEditor/RichTextEditor'
+import { Label } from '../../../atoms/Label'
+import { Textarea } from '../../../atoms/TextArea'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch'
+import { CssValidationHint } from '../../../molecules/CssValidationHint'
+import { PanelSection } from '../../../molecules/PanelSection'
+import { RichTextEditor } from '../../../molecules/RichTextEditor'
 import {
   POSITION_ACTIVE_CLASSES,
   POSITION_BUTTON_CLASSES,

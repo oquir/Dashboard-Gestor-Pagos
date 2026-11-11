@@ -3,10 +3,10 @@ import { conFechaAnual } from '../../../../lib/maxDates/maxDates'
 import { maxDatesEnUso, usesCustomMaxDates } from '../../../../lib/maxDatesBank/maxDatesBank'
 import { useFormStore } from '../../../../store/formStore'
 import type { FechasMaximasPresentacion } from '../../../../types/maxDates'
-import { BinaryChoiceToggle } from '../../../molecules/BinaryChoiceToggle/BinaryChoiceToggle'
-import { MaxDatesDeclaracionSection } from '../../../molecules/MaxDatesDeclaracionSection/MaxDatesDeclaracionSection'
-import { MaxDatesPasteForm } from '../../../molecules/MaxDatesPasteForm/MaxDatesPasteForm'
-import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { BinaryChoiceToggle } from '../../../molecules/BinaryChoiceToggle'
+import { MaxDatesDeclaracionSection } from '../../../molecules/MaxDatesDeclaracionSection'
+import { MaxDatesPasteForm } from '../../../molecules/MaxDatesPasteForm'
+import { PanelSection } from '../../../molecules/PanelSection'
 import {
   ACTION_CLASSES,
   BADGE_EMPTY_CLASSES,

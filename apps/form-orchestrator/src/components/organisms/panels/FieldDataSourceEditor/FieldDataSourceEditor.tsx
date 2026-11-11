@@ -1,7 +1,7 @@
 import { CATALOGS, findCatalog } from '../../../../constants/catalog'
 import { useFormStore } from '../../../../store/formStore'
-import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
-import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch'
+import { PanelSection } from '../../../molecules/PanelSection'
 import {
   HINT_CLASSES,
   NO_PARENT_VALUE,

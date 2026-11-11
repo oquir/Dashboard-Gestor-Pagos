@@ -1,9 +1,9 @@
 import { InfoCircle } from 'reicon-react'
 import { useFormStore } from '../../../../store/formStore'
 import type { FieldValidationOverride } from '../../../../types/field'
-import { DashedAddButton } from '../../../atoms/DashedAddButton/DashedAddButton'
-import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
-import { ValidationOverrideCard } from '../../../molecules/ValidationOverrideCard/ValidationOverrideCard'
+import { DashedAddButton } from '../../../atoms/DashedAddButton'
+import { PanelSection } from '../../../molecules/PanelSection'
+import { ValidationOverrideCard } from '../../../molecules/ValidationOverrideCard'
 import { ADD_BUTTON_CLASSES, HINT, HINT_CLASSES } from './ValidationOverridesEditor.constants'
 import type { ValidationOverridesEditorProps } from './ValidationOverridesEditor.types'
 

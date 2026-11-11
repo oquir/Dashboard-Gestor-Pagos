@@ -715,6 +715,8 @@ Atomic design: `src/components/atoms|molecules|organisms/` + `src/components/lay
 
 `X.ts` is the module's public API — helpers/constants/types belong in co-located files, not inline.
 
+**Every component folder has an `index.ts`** (`export * from './X'`) and is imported by its folder (`'../atoms/Button'`), not `'../atoms/Button/Button'`. Files inside the same folder keep importing `./X` directly (going through the index would be a cycle). The two `React.lazy` imports (`FormSimulator`, `ScriptEditor`) still point at the file. There are no per-level barrels (`atoms/index.ts`) on purpose: one under `organisms/` would drag `preview/` into the initial chunk and break the lazy boundary.
+
 **A co-located `X.types.ts`/`X.constants.ts` is private to its folder.** The moment code outside that folder imports it, the declaration moves to `src/types/`/`src/constants/` (both directions audited to zero, kept that way). When the leaking declaration drags neighbours along, **move the whole file** rather than splitting it (`types/exportForm.ts`, `types/payloadMapping.ts`). Genuinely private stuff stays put (`FieldSpec` in `baseTemplate`, `TopologicalResult` in `fieldGraph`, `SALDO_NETO`, `CONDITION_COPY`, tokenizer regexes).
 
 Not tool-enforced — a restricted-imports rule doesn't fit (matches exact specifiers only, and the same target is spelled differently from every importer); verified with throwaway audit scripts instead.

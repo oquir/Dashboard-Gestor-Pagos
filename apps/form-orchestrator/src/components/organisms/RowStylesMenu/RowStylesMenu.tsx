@@ -6,11 +6,11 @@ import {
 } from '../../../constants/uiClasses'
 import { useClickOutside } from '../../../hooks/useClickOutside/useClickOutside'
 import { useFormStore } from '../../../store/formStore'
-import { Label } from '../../atoms/Label/Label'
-import { Textarea } from '../../atoms/TextArea/Textarea'
-import { TwoColumnFieldGroup } from '../../atoms/TwoColumnFieldGroup/TwoColumnFieldGroup'
-import { CssValidationHint } from '../../molecules/CssValidationHint/CssValidationHint'
-import { PxInput } from '../../molecules/PxInput/PxInput'
+import { Label } from '../../atoms/Label'
+import { Textarea } from '../../atoms/TextArea'
+import { TwoColumnFieldGroup } from '../../atoms/TwoColumnFieldGroup'
+import { CssValidationHint } from '../../molecules/CssValidationHint'
+import { PxInput } from '../../molecules/PxInput'
 import type { RowStylesMenuProps } from './RowStylesMenu.types'
 
 // Mismo icono que la pestaña "Estilos" de un campo (Sidebar.constants): es el mismo concepto, un

@@ -1,5 +1,5 @@
-import { FieldTypeBadge } from '../../atoms/FieldTypeBadge/FieldTypeBadge'
-import { FieldPreviewControl } from '../FieldPreviewControl/FieldPreviewControl'
+import { FieldTypeBadge } from '../../atoms/FieldTypeBadge'
+import { FieldPreviewControl } from '../FieldPreviewControl'
 import type { RowDragPreviewProps } from './RowDragPreview.types'
 
 // Replica de la fila, no un chip: se dibuja al ancho real que se midio al empezar el arrastre para

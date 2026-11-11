@@ -1,7 +1,7 @@
 import { useFieldResize } from '../../../hooks/useFieldResize/useFieldResize'
 import type { FieldResizeHandleVariantProps } from '../../../types/fieldResize'
-import { FieldResizeHandleBar } from '../FieldResizeHandleBar/FieldResizeHandleBar'
-import { FieldResizeHandleKnob } from '../FieldResizeHandleKnob/FieldResizeHandleKnob'
+import { FieldResizeHandleBar } from '../FieldResizeHandleBar'
+import { FieldResizeHandleKnob } from '../FieldResizeHandleKnob'
 import type { FieldResizeHandleProps } from './FieldResizeHandle.types'
 
 export function FieldResizeHandle({

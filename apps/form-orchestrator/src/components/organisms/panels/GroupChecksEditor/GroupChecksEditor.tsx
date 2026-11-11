@@ -1,9 +1,9 @@
 import { Plus, Trash } from 'reicon-react'
 import { useGroupChecksEditor } from '../../../../hooks/useGroupChecksEditor/useGroupChecksEditor'
 import { validateFieldScript } from '../../../../lib/fieldScript/fieldScript'
-import { IconButton } from '../../../atoms/IconButton/IconButton'
-import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
-import { ScriptInput } from '../../../molecules/ScriptInput/ScriptInput'
+import { IconButton } from '../../../atoms/IconButton'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch'
+import { ScriptInput } from '../../../molecules/ScriptInput'
 import {
   CHECK_CARD_CLASSES,
   CHECK_HINT,

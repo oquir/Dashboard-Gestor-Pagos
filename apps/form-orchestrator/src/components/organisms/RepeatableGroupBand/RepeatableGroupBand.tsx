@@ -4,8 +4,8 @@ import { Layers, Plus } from 'reicon-react'
 import { PAYLOAD_SCHEMA } from '../../../constants/payloadSchema'
 import { arrayPaths } from '../../../lib/payloadSchema/payloadSchema'
 import { useFormStore } from '../../../store/formStore'
-import { CanvasRow } from '../CanvasRow/CanvasRow'
-import { GroupChecksEditor } from '../panels/GroupChecksEditor/GroupChecksEditor'
+import { CanvasRow } from '../CanvasRow'
+import { GroupChecksEditor } from '../panels/GroupChecksEditor'
 import {
   BAND_ACTION_CLASSES,
   BAND_CLASSES,

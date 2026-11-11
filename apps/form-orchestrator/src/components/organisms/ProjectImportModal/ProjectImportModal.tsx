@@ -1,9 +1,9 @@
 import { WARNING_BANNER_CLASSES } from '../../../constants/uiClasses'
 import { useProjectImport } from '../../../hooks/useProjectImport/useProjectImport'
-import { Button } from '../../atoms/Button/Button'
-import { ModalActions } from '../../atoms/ModalActions/ModalActions'
-import { ModalShell } from '../../atoms/ModalShell/ModalShell'
-import { ProjectFilePicker } from '../../molecules/ProjectFilePicker/ProjectFilePicker'
+import { Button } from '../../atoms/Button'
+import { ModalActions } from '../../atoms/ModalActions'
+import { ModalShell } from '../../atoms/ModalShell'
+import { ProjectFilePicker } from '../../molecules/ProjectFilePicker'
 import type { ProjectImportModalProps } from './ProjectImportModal.types'
 
 export function ProjectImportModal({ onClose }: ProjectImportModalProps) {

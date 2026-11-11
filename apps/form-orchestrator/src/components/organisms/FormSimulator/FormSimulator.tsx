@@ -2,8 +2,8 @@ import { ArrowLeft, Moon, Sun } from 'reicon-react'
 import { useFormPreview } from '../../../hooks/useFormPreview/useFormPreview'
 import { useFormStore } from '../../../store/formStore'
 import type { FormPreviewApi } from '../../../types/formPreview'
-import { PreviewForm } from '../preview/PreviewForm/PreviewForm'
-import { PreviewResults } from '../preview/PreviewResults/PreviewResults'
+import { PreviewForm } from '../preview/PreviewForm'
+import { PreviewResults } from '../preview/PreviewResults'
 import { EXIT_BUTTON_CLASSES, ICON_BUTTON_CLASSES } from './FormSimulator.constants'
 
 export function FormSimulator() {

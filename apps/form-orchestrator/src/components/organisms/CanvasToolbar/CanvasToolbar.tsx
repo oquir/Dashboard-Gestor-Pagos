@@ -6,7 +6,7 @@ import { useFormHistory } from '../../../hooks/useFormHistory/useFormHistory'
 import { getBandElement, getRowElement } from '../../../lib/canvasDom/canvasDom'
 import { getActiveGroups, getActiveRows, useFormStore } from '../../../store/formStore'
 import type { CanvasRow, RepeatableGroup } from '../../../types/formStructure'
-import { MoveToStepMenu } from '../MoveToStepMenu/MoveToStepMenu'
+import { MoveToStepMenu } from '../MoveToStepMenu'
 import {
   SELECTION_COUNT_CLASSES,
   TOOL_BUTTON_ACTIVE_CLASSES,

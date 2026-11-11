@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { CheckCircle, Copy } from 'reicon-react'
 import { buildFormExport } from '../../../lib/exportForm/exportForm'
 import { useFormStore } from '../../../store/formStore'
-import { JsonCode } from '../../molecules/JsonCode/JsonCode'
+import { JsonCode } from '../../molecules/JsonCode'
 
 export function JsonPreviewCanvas() {
   const formSteps = useFormStore((state) => state.formSteps)

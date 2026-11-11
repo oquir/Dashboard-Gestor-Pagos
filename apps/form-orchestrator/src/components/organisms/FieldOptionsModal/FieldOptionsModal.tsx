@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Button } from '../../atoms/Button/Button'
-import { ModalActions } from '../../atoms/ModalActions/ModalActions'
-import { ModalShell } from '../../atoms/ModalShell/ModalShell'
-import { LabeledInput } from '../../molecules/LabeledInput/LabeledInput'
+import { Button } from '../../atoms/Button'
+import { ModalActions } from '../../atoms/ModalActions'
+import { ModalShell } from '../../atoms/ModalShell'
+import { LabeledInput } from '../../molecules/LabeledInput'
 import type { FieldOptionsModalProps } from './FieldOptionsModal.types'
 
 export function FieldOptionsModal({ fieldTypeLabel, onConfirm, onCancel }: FieldOptionsModalProps) {

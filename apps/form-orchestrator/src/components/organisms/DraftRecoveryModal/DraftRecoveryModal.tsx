@@ -1,7 +1,7 @@
-import { Button } from '../../atoms/Button/Button'
-import { ModalActions } from '../../atoms/ModalActions/ModalActions'
-import { ModalShell } from '../../atoms/ModalShell/ModalShell'
-import { FieldRenameNotice } from '../../molecules/FieldRenameNotice/FieldRenameNotice'
+import { Button } from '../../atoms/Button'
+import { ModalActions } from '../../atoms/ModalActions'
+import { ModalShell } from '../../atoms/ModalShell'
+import { FieldRenameNotice } from '../../molecules/FieldRenameNotice'
 import type { DraftRecoveryModalProps } from './DraftRecoveryModal.types'
 
 export function DraftRecoveryModal({

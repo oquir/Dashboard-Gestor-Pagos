@@ -1,4 +1,4 @@
-import { Label } from '../../atoms/Label/Label'
+import { Label } from '../../atoms/Label'
 import {
   LABEL_TARGET_HINT_CLASSES,
   LABEL_TARGET_SELECT_CLASSES,

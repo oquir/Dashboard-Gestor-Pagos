@@ -5,7 +5,7 @@ import {
   TOOLTIP_TEXT_CLASSES,
 } from '../../../constants/fieldTooltip'
 import { resolveTooltipStyles } from '../../../lib/cssStyles/cssStyles'
-import { RichTextView } from '../../atoms/RichTextView/RichTextView'
+import { RichTextView } from '../../atoms/RichTextView'
 import { TOOLTIP_BUBBLE_CLASSES } from './TooltipBubble.constants'
 import type { TooltipBubbleProps } from './TooltipBubble.types'
 

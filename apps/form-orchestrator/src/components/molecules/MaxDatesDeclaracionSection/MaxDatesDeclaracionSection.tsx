@@ -1,5 +1,5 @@
-import { MaxDatesAnioRow } from '../MaxDatesAnioRow/MaxDatesAnioRow'
-import { PanelSection } from '../PanelSection/PanelSection'
+import { MaxDatesAnioRow } from '../MaxDatesAnioRow'
+import { PanelSection } from '../PanelSection'
 import {
   BADGE_EMPTY_CLASSES,
   BADGE_LOADED_CLASSES,

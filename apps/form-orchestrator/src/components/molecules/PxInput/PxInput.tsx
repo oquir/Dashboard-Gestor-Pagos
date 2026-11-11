@@ -1,5 +1,5 @@
-import { Input } from '../../atoms/Input/Input'
-import { Label } from '../../atoms/Label/Label'
+import { Input } from '../../atoms/Input'
+import { Label } from '../../atoms/Label'
 import type { PxInputProps } from './PxInput.types'
 import { toPxAmount } from './PxInput.utils'
 

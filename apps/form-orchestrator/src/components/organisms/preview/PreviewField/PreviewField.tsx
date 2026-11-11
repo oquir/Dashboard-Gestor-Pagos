@@ -2,8 +2,8 @@ import type { CSSProperties } from 'react'
 import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
 import { isSimulatedCatalog } from '../../../../lib/mockCatalog/mockCatalog'
 import { isRequiredBySchema } from '../../../../lib/runtimeValidation/runtimeValidation.utils'
-import { PreviewTooltip } from '../../../molecules/PreviewTooltip/PreviewTooltip'
-import { PreviewFieldControl } from '../PreviewFieldControl/PreviewFieldControl'
+import { PreviewTooltip } from '../../../molecules/PreviewTooltip'
+import { PreviewFieldControl } from '../PreviewFieldControl'
 import type { PreviewFieldProps } from './PreviewField.types'
 
 export function PreviewField({

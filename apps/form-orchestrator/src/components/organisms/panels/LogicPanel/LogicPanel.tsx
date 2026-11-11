@@ -1,11 +1,11 @@
 import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
 import { getAllFields, useFormStore } from '../../../../store/formStore'
 import type { CanvasField } from '../../../../types/field'
-import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
-import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
-import { ConditionEditor } from '../ConditionEditor/ConditionEditor'
-import { FieldRulesEditor } from '../FieldRulesEditor/FieldRulesEditor'
-import { FieldScriptEditor } from '../FieldScriptEditor/FieldScriptEditor'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch'
+import { PanelSection } from '../../../molecules/PanelSection'
+import { ConditionEditor } from '../ConditionEditor'
+import { FieldRulesEditor } from '../FieldRulesEditor'
+import { FieldScriptEditor } from '../FieldScriptEditor'
 import { HINT_CLASSES } from './LogicPanel.constants'
 
 export function LogicPanel({ field }: { field: CanvasField }) {

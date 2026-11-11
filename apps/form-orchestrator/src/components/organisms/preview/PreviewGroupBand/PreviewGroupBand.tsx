@@ -2,7 +2,7 @@ import { Plus, Trash } from 'reicon-react'
 import { checkKey } from '../../../../lib/runtimeValidation/runtimeValidation.utils'
 import type { ExportedRepeatableGroup } from '../../../../types/exportForm'
 import type { RuntimeScope } from '../../../../types/formRuntime'
-import { PreviewRowsGrid } from '../PreviewRowsGrid/PreviewRowsGrid'
+import { PreviewRowsGrid } from '../PreviewRowsGrid'
 import type { PreviewGroupBandProps } from './PreviewGroupBand.types'
 
 export function PreviewGroupBand({ groupId, rows, preview }: PreviewGroupBandProps) {

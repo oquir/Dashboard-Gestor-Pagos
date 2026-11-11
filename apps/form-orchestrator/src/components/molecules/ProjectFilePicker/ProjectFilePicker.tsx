@@ -1,6 +1,6 @@
 import { type ChangeEvent, useRef } from 'react'
-import { Button } from '../../atoms/Button/Button'
-import { FieldRenameNotice } from '../FieldRenameNotice/FieldRenameNotice'
+import { Button } from '../../atoms/Button'
+import { FieldRenameNotice } from '../FieldRenameNotice'
 import { ERROR_BOX_CLASSES, FILE_ACCEPT, SUMMARY_BOX_CLASSES } from './ProjectFilePicker.constants'
 import type { ProjectFilePickerProps } from './ProjectFilePicker.types'
 import { summaryLine } from './ProjectFilePicker.utils'

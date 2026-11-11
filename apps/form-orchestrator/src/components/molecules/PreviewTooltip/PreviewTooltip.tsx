@@ -5,7 +5,7 @@ import {
   TOOLTIP_SURFACE_CLASSES,
   TOOLTIP_TEXT_CLASSES,
 } from '../../../constants/fieldTooltip'
-import { RichTextView } from '../../atoms/RichTextView/RichTextView'
+import { RichTextView } from '../../atoms/RichTextView'
 import type { PreviewTooltipProps } from './PreviewTooltip.types'
 
 export function PreviewTooltip({ tooltip, label }: PreviewTooltipProps) {

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { slugifyFieldName } from '../../../lib/fieldName/fieldName'
 import { useFormStore } from '../../../store/formStore'
-import { LabeledInput } from '../LabeledInput/LabeledInput'
+import { LabeledInput } from '../LabeledInput'
 import {
   ERROR_CLASSES,
   ERROR_INPUT_CLASSES,

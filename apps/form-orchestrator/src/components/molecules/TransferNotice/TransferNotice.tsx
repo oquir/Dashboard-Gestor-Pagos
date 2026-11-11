@@ -1,6 +1,6 @@
 import { Xmark } from 'reicon-react'
 import { useFormStore } from '../../../store/formStore'
-import { IconButton } from '../../atoms/IconButton/IconButton'
+import { IconButton } from '../../atoms/IconButton'
 
 export function TransferNotice() {
   const transferNotice = useFormStore((state) => state.transferNotice)

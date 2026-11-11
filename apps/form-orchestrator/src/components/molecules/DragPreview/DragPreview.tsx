@@ -1,5 +1,5 @@
 import { useFormStore } from '../../../store/formStore'
-import { RowDragPreview } from '../RowDragPreview/RowDragPreview'
+import { RowDragPreview } from '../RowDragPreview'
 import type { DragPreviewProps } from './DragPreview.types'
 import { getDragLabel } from './DragPreview.utils'
 

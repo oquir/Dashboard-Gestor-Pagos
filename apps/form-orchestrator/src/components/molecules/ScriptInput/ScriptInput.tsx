@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Label } from '../../atoms/Label/Label'
+import { Label } from '../../atoms/Label'
 import { SCRIPT_SELECT_CLASSES, SCRIPT_TEXTAREA_CLASSES } from './ScriptInput.constants'
 import type { ScriptInputProps } from './ScriptInput.types'
 

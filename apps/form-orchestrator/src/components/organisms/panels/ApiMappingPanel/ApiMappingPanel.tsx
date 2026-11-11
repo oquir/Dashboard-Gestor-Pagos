@@ -2,11 +2,11 @@ import { useApiMappingPanel } from '../../../../hooks/useApiMappingPanel/useApiM
 import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
 import { allowsManualOptions, isOptionBasedField } from '../../../../lib/fieldOptions/fieldOptions'
 import type { CanvasField } from '../../../../types/field'
-import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
-import { ApiPathSelect } from '../../../molecules/ApiPathSelect/ApiPathSelect'
-import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
-import { FieldOptionsModal } from '../../FieldOptionsModal/FieldOptionsModal'
-import { FieldDataSourceEditor } from '../FieldDataSourceEditor/FieldDataSourceEditor'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch'
+import { ApiPathSelect } from '../../../molecules/ApiPathSelect'
+import { PanelSection } from '../../../molecules/PanelSection'
+import { FieldOptionsModal } from '../../FieldOptionsModal'
+import { FieldDataSourceEditor } from '../FieldDataSourceEditor'
 import {
   ERROR_CLASSES,
   HINT_CLASSES,

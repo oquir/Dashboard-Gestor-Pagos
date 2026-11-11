@@ -6,11 +6,11 @@ import {
 } from '../../../lib/fieldCondition/fieldCondition'
 import { createConstantEffect, createScriptEffect } from '../../../lib/fieldRule/fieldRule'
 import type { CanvasField } from '../../../types/field'
-import { IconButton } from '../../atoms/IconButton/IconButton'
-import { ConditionFieldSelect } from '../ConditionFieldSelect/ConditionFieldSelect'
-import { ConditionOperatorSelect } from '../ConditionOperatorSelect/ConditionOperatorSelect'
-import { ConditionValueInput } from '../ConditionValueInput/ConditionValueInput'
-import { RuleEffectRow } from '../RuleEffectRow/RuleEffectRow'
+import { IconButton } from '../../atoms/IconButton'
+import { ConditionFieldSelect } from '../ConditionFieldSelect'
+import { ConditionOperatorSelect } from '../ConditionOperatorSelect'
+import { ConditionValueInput } from '../ConditionValueInput'
+import { RuleEffectRow } from '../RuleEffectRow'
 import {
   ADD_LINK_CLASSES,
   MOVE_BUTTON_CLASSES,

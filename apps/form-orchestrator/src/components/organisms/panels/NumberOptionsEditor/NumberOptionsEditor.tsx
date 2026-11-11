@@ -1,7 +1,7 @@
 import { allowsNegative } from '../../../../lib/fieldSign/fieldSign'
 import { useFormStore } from '../../../../store/formStore'
-import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
-import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch'
+import { PanelSection } from '../../../molecules/PanelSection'
 import { DECIMAL_CHOICES } from './NumberOptionsEditor.constants'
 import type { NumberOptionsEditorProps } from './NumberOptionsEditor.types'
 

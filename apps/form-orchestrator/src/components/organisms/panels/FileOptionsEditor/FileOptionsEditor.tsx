@@ -1,5 +1,5 @@
 import { useFormStore } from '../../../../store/formStore'
-import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { PanelSection } from '../../../molecules/PanelSection'
 import { FILE_FORMAT_PRESETS } from './FileOptionsEditor.constants'
 import type { FileOptionsEditorProps } from './FileOptionsEditor.types'
 import { togglePreset } from './FileOptionsEditor.utils'

@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import { fieldKey } from '../../../../lib/runtimeValidation/runtimeValidation.utils'
-import { PreviewField } from '../PreviewField/PreviewField'
+import { PreviewField } from '../PreviewField'
 import type { PreviewRowsGridProps } from './PreviewRowsGrid.types'
 
 export function PreviewRowsGrid({

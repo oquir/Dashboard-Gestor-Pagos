@@ -1,5 +1,5 @@
-import { PreviewGroupBand } from '../PreviewGroupBand/PreviewGroupBand'
-import { PreviewRowsGrid } from '../PreviewRowsGrid/PreviewRowsGrid'
+import { PreviewGroupBand } from '../PreviewGroupBand'
+import { PreviewRowsGrid } from '../PreviewRowsGrid'
 import type { PreviewStepProps } from './PreviewStep.types'
 import { toPreviewBlocks } from './PreviewStep.utils'
 
