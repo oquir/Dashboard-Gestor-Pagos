@@ -5,8 +5,8 @@ import { useDatos } from '../../../../store'
 import { Boton, Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
 import Tabla from '../../Tabla'
-import { COLUMNAS_RENGLONES } from './constants'
-import type { LiquidacionProps } from './types'
+import { COLUMNAS_RENGLONES } from './Liquidacion.constants'
+import type { LiquidacionProps } from './Liquidacion.types'
 
 /** Renglones de la declaración, con subtotales y totales resaltados, y su descarga en PDF. */
 export default function Liquidacion({ d }: LiquidacionProps) {

@@ -1,4 +1,4 @@
-import type { Variante } from './types'
+import type { Variante } from './Boton.types'
 
 export const CLASES_BOTON: Record<Variante, string> = {
   primario: 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm',

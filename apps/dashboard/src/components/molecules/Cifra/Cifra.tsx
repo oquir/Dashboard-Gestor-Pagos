@@ -1,4 +1,4 @@
-import type { CifraProps } from './types'
+import type { CifraProps } from './Cifra.types'
 
 /** Cifra destacada con su etiqueta, para resúmenes dentro de una tarjeta. */
 export default function Cifra({ etiqueta, children }: CifraProps) {

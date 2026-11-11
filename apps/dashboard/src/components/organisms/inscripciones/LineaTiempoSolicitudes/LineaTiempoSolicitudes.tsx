@@ -3,7 +3,7 @@ import { tonoNovedad } from '../../../../lib/tonos'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, ItemSeleccionable } from '../../../molecules'
 import RespuestaEnviada from '../RespuestaEnviada'
-import type { LineaTiempoSolicitudesProps } from './types'
+import type { LineaTiempoSolicitudesProps } from './LineaTiempoSolicitudes.types'
 
 /** Solicitudes del inscrito, de la más reciente a la más antigua. Al elegir una, su formulario se ve en la ficha. */
 export default function LineaTiempoSolicitudes({

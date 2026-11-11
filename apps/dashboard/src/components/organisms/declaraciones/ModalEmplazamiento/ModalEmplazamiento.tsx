@@ -8,8 +8,8 @@ import type { NuevoEmplazamiento } from '../../../../types'
 import { hoy } from '../../../../utils'
 import { Boton, Input } from '../../../atoms'
 import { Campo, Modal, SelectorArchivo } from '../../../molecules'
-import type { ModalEmplazamientoProps } from './types'
-import { errorFecha, errorNumero } from './utils'
+import type { ModalEmplazamientoProps } from './ModalEmplazamiento.types'
+import { errorFecha, errorNumero } from './ModalEmplazamiento.utils'
 
 /**
  * Ventana para registrar emplazamientos que el municipio ya notificó: uno, o un lote de omisos con la misma fecha de

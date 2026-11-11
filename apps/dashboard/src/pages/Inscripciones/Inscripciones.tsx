@@ -21,7 +21,7 @@ import {
   OPCIONES_TIPO_PERSONA,
   OPCIONES_TRAMITE,
   PLURAL,
-} from './constants'
+} from './Inscripciones.constants'
 
 export default function Inscripciones() {
   const { municipioId } = useSesion()

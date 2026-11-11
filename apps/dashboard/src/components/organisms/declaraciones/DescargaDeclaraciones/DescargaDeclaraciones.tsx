@@ -4,7 +4,7 @@ import { descargarDeclaracionesZip } from '../../../../lib/pdfDeclaracion'
 import { useDatos } from '../../../../store'
 import { hoy } from '../../../../utils'
 import { Boton } from '../../../atoms'
-import type { DescargaDeclaracionesProps } from './types'
+import type { DescargaDeclaracionesProps } from './DescargaDeclaraciones.types'
 
 /** Descarga en PDF, dentro de un .zip, las declaraciones marcadas. Siempre está a la vista; sin marcadas, está apagado. */
 export default function DescargaDeclaraciones({ declaraciones }: DescargaDeclaracionesProps) {

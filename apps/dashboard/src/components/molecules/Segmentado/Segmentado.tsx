@@ -1,4 +1,4 @@
-import type { SegmentadoProps } from './types'
+import type { SegmentadoProps } from './Segmentado.types'
 
 /** Botones de opción única: las pestañas de una página o los controles de una gráfica. */
 export default function Segmentado<T extends string | number>({

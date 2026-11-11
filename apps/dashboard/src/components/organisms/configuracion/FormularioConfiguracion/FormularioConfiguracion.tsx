@@ -13,7 +13,7 @@ import SeccionPagos from '../SeccionPagos'
 import SeccionProcedimiento from '../SeccionProcedimiento'
 import SeccionRetencion from '../SeccionRetencion'
 import SeccionSanciones from '../SeccionSanciones'
-import type { FormularioConfiguracionProps } from './types'
+import type { FormularioConfiguracionProps } from './FormularioConfiguracion.types'
 
 /**
  * Configuración del municipio como borrador: se valida mientras se edita y al final se guarda o se descarta.

@@ -1,5 +1,5 @@
-import { CLASES_TONO } from './constants'
-import type { AvisoProps } from './types'
+import { CLASES_TONO } from './Aviso.constants'
+import type { AvisoProps } from './Aviso.types'
 
 /** Recuadro de color para resultados, errores y avisos. El color siempre va con su texto. */
 export default function Aviso({ tono, icono: Icono, rol, children }: AvisoProps) {

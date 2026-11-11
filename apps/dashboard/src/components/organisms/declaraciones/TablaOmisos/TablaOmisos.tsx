@@ -3,9 +3,9 @@ import { idOmiso } from '../../../../lib/omisos'
 import { useSesion } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import Tabla from '../../Tabla'
-import { COLUMNAS, ORDEN_INICIAL } from './constants'
-import type { TablaOmisosProps } from './types'
-import { col, columnaEmplazamiento, columnaMunicipio, columnaSeleccion } from './utils'
+import { COLUMNAS, ORDEN_INICIAL } from './TablaOmisos.constants'
+import type { TablaOmisosProps } from './TablaOmisos.types'
+import { col, columnaEmplazamiento, columnaMunicipio, columnaSeleccion } from './TablaOmisos.utils'
 
 /**
  * Periodos vencidos sin declarar, del más antiguo al más reciente, con su emplazamiento. Quien puede emplazar tiene

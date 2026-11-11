@@ -11,7 +11,7 @@ import {
   Users,
   Wallet,
 } from 'reicon-react'
-import type { EnlaceNavegacion } from './types'
+import type { EnlaceNavegacion } from './Navegacion.types'
 
 export const NAVEGACION: EnlaceNavegacion[] = [
   { a: '/', texto: 'Inicio', icono: Category },

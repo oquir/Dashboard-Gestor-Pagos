@@ -1,2 +1,2 @@
 export { default } from './ProximosVencimientos'
-export type * from './types'
+export type * from './ProximosVencimientos.types'

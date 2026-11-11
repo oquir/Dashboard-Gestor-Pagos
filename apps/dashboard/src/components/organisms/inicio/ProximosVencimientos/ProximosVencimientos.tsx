@@ -8,8 +8,8 @@ import { useDatos } from '../../../../store'
 import { hoy } from '../../../../utils'
 import { Badge, Card } from '../../../atoms'
 import { Vacio } from '../../../molecules'
-import type { ProximosVencimientosProps } from './types'
-import { vencimientosProximos } from './utils'
+import type { ProximosVencimientosProps } from './ProximosVencimientos.types'
+import { vencimientosProximos } from './ProximosVencimientos.utils'
 
 /** Los próximos vencimientos del calendario, de cada formulario activo; si las fechas cambian por dígito, el rango. */
 export default function ProximosVencimientos({

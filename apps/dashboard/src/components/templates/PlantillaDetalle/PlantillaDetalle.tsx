@@ -1,7 +1,7 @@
 import { ArrowLeft } from 'reicon-react'
 import { Link } from 'react-router'
 import { PageHeader } from '../../molecules'
-import type { PlantillaDetalleProps } from './types'
+import type { PlantillaDetalleProps } from './PlantillaDetalle.types'
 
 /** Página de detalle: enlace para volver al listado, encabezado y dos columnas (la ancha y la lateral). */
 export default function PlantillaDetalle({

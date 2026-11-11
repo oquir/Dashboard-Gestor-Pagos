@@ -1,4 +1,4 @@
-import type { BarraFiltrosProps } from './types'
+import type { BarraFiltrosProps } from './BarraFiltros.types'
 
 export default function BarraFiltros({ buscador, acciones, children }: BarraFiltrosProps) {
   return (

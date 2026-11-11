@@ -6,7 +6,7 @@ import type { EdicionConfiguracion, TramoProntoPago } from '../../../../types'
 import { moverAnios } from '../../../../utils'
 import { Boton, Input, Select } from '../../../atoms'
 import { Campo, Interruptor, Seccion } from '../../../molecules'
-import { COLUMNAS_TRAMO } from './constants'
+import { COLUMNAS_TRAMO } from './SeccionProntoPago.constants'
 
 /** Si el municipio da descuento por pronto pago en el ICA anual y, si lo da, sus tramos en cada año gravable. */
 export default function SeccionProntoPago({ b, cambiar, editable, errores }: EdicionConfiguracion) {

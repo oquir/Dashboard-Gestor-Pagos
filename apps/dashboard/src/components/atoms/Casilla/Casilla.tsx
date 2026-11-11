@@ -1,4 +1,4 @@
-import type { CasillaProps } from './types'
+import type { CasillaProps } from './Casilla.types'
 
 /** Casilla de verificación con el color de la marca. */
 export default function Casilla({ pequena = false, className = '', ...props }: CasillaProps) {

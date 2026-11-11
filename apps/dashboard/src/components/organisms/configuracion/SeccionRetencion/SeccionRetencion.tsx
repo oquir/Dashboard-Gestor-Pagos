@@ -4,7 +4,7 @@ import { UVT } from '../../../../lib/reglas'
 import type { ConfigMunicipio } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Campo, Interruptor, Seccion } from '../../../molecules'
-import type { SeccionRetencionProps } from './types'
+import type { SeccionRetencionProps } from './SeccionRetencion.types'
 
 /** ReteICA y AutoReteICA: tarifas y bases mínimas. La periodicidad va en la página Calendario. Muestra solo lo que el municipio tiene activo. */
 export default function SeccionRetencion({

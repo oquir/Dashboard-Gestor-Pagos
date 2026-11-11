@@ -17,7 +17,7 @@ import { Boton, Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
 import EmplazamientoResumen from '../EmplazamientoResumen'
 import ModalEmplazamiento from '../ModalEmplazamiento'
-import type { EmplazamientosDeclaracionProps } from './types'
+import type { EmplazamientosDeclaracionProps } from './EmplazamientosDeclaracion.types'
 
 /**
  * Los emplazamientos de la declaración: al que responde (el de declarar de su periodo o el de corregir de la que corrige)

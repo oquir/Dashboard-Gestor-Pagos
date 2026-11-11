@@ -13,7 +13,7 @@ import {
 import { ultimoTramite } from '../../../../lib/reglas'
 import { tonoInscripcion } from '../../../../lib/tonos'
 import { Badge } from '../../../atoms'
-import { col } from './utils'
+import { col } from './TablaInscripciones.utils'
 
 export const COLUMNAS = col.columns([
   col.accessor('numeroRit', {

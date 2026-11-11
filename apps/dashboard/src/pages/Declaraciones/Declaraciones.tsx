@@ -42,7 +42,7 @@ import type {
   ValorFiltro,
   VistaDeclaraciones,
 } from '../../types'
-import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS, VISTAS } from './constants'
+import { OPCIONES_PAGO, OPCIONES_TIPO, PESTANAS, VISTAS } from './Declaraciones.constants'
 
 export default function Declaraciones() {
   const { municipioId } = useSesion()

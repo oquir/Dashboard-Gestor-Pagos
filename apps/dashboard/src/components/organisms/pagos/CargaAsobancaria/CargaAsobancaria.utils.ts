@@ -1,4 +1,4 @@
-import type { Resultado } from './types'
+import type { Resultado } from './CargaAsobancaria.types'
 
 /** Resultado de prueba: en la demo del archivo solo se lee la fecha; el cruce se simula. */
 export function simular(archivo: string, fecha: string | undefined): Resultado {

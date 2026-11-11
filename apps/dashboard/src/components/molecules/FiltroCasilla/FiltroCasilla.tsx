@@ -1,5 +1,5 @@
 import { Casilla } from '../../atoms'
-import type { FiltroCasillaProps } from './types'
+import type { FiltroCasillaProps } from './FiltroCasilla.types'
 
 /**
  * Filtro de sí o no con forma de botón, del mismo alto que las listas de `Filtro`, para que se vean como una sola fila.

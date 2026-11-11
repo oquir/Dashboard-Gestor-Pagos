@@ -16,8 +16,8 @@ import { useDatos } from '../../../../store'
 import { hoy } from '../../../../utils'
 import { Badge, Boton } from '../../../atoms'
 import { DocumentosEnviados, Modal } from '../../../molecules'
-import type { EmplazamientoResumenProps } from './types'
-import { textoPlazo } from './utils'
+import type { EmplazamientoResumenProps } from './EmplazamientoResumen.types'
+import { textoPlazo } from './EmplazamientoResumen.utils'
 
 /**
  * Un emplazamiento: su estado, el número del acto, la notificación, el plazo o lo que sigue, y la copia. Mientras nadie

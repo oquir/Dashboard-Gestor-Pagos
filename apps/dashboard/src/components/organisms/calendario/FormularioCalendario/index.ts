@@ -1,2 +1,2 @@
 export { default } from './FormularioCalendario'
-export type * from './types'
+export type * from './FormularioCalendario.types'

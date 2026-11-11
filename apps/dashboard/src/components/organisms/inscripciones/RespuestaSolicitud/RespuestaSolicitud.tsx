@@ -5,7 +5,7 @@ import { etiquetaTipoNovedad, formatoFecha } from '../../../../lib/formato'
 import { useDatos } from '../../../../store'
 import { Boton, Card, Textarea } from '../../../atoms'
 import { AdjuntarDocumentos, Campo, CardHeader } from '../../../molecules'
-import type { Respuesta, RespuestaSolicitudProps } from './types'
+import type { Respuesta, RespuestaSolicitudProps } from './RespuestaSolicitud.types'
 
 /** Tarjeta con la que la administración resuelve una solicitud del RIT y le responde al contribuyente. */
 export default function RespuestaSolicitud({

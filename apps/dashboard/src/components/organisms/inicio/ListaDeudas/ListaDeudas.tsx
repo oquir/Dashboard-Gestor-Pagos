@@ -8,7 +8,7 @@ import {
 import { tonoPago } from '../../../../lib/tonos'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, ItemEnlace, Vacio } from '../../../molecules'
-import type { ListaDeudasProps } from './types'
+import type { ListaDeudasProps } from './ListaDeudas.types'
 
 /** Declaraciones con deuda: las seis más recientes, con lo que falta por pagar. */
 export default function ListaDeudas({ titulo, descripcion, vacio, deudas }: ListaDeudasProps) {

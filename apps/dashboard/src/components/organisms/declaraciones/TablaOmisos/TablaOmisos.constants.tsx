@@ -7,7 +7,7 @@ import {
   formatoHaceDias,
 } from '../../../../lib/formato'
 import { diferenciaDias, hoy } from '../../../../utils'
-import { col } from './utils'
+import { col } from './TablaOmisos.utils'
 
 export const COLUMNAS = col.columns([
   col.accessor((o) => o.inscripcion.nombre, {

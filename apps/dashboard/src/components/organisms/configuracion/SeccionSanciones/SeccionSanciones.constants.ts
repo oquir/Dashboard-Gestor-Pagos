@@ -1,4 +1,4 @@
-import type { ClaveSancion } from './types'
+import type { ClaveSancion } from './SeccionSanciones.types'
 
 export const ETIQUETAS_SANCION: Record<ClaveSancion, string> = {
   extemporaneidad: 'Extemporaneidad (% por mes)',

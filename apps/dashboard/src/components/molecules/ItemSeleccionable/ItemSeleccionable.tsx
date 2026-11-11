@@ -1,5 +1,5 @@
 import { ChevronRight } from 'reicon-react'
-import type { ItemSeleccionableProps } from './types'
+import type { ItemSeleccionableProps } from './ItemSeleccionable.types'
 
 /** Elemento de una lista que se elige con un clic; el elegido queda resaltado. */
 export default function ItemSeleccionable({ activo, onClick, children }: ItemSeleccionableProps) {

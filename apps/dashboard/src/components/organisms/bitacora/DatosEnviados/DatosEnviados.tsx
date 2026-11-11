@@ -1,6 +1,6 @@
 import { Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
-import type { DatosEnviadosProps } from './types'
+import type { DatosEnviadosProps } from './DatosEnviados.types'
 
 /** Lo que se envió en la petición, completo y con formato. */
 export default function DatosEnviados({ r }: DatosEnviadosProps) {

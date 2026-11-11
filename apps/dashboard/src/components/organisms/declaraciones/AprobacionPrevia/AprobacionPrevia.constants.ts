@@ -1,5 +1,5 @@
 import type { CausalNoPresentada } from '../../../../types'
-import type { Causal } from './types'
+import type { Causal } from './AprobacionPrevia.types'
 
 /**
  * Causales del art. 580 del Estatuto Tributario, en el orden de sus literales. Las de los literales a), b) y d) se

@@ -3,7 +3,7 @@ import { etiquetaImpuesto } from '../../../../lib/formato'
 import type { ConfigMunicipio } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Campo, Seccion } from '../../../molecules'
-import type { SeccionAprobacionPreviaProps } from './types'
+import type { SeccionAprobacionPreviaProps } from './SeccionAprobacionPrevia.types'
 
 /** Plazos de la aprobación previa en los formularios donde 1cero1 la activó. */
 export default function SeccionAprobacionPrevia({

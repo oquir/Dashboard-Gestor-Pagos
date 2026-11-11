@@ -1,2 +1,2 @@
 export { default } from './BarraGuardar'
-export type * from './types'
+export type * from './BarraGuardar.types'

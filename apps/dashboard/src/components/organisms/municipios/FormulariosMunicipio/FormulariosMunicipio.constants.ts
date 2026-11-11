@@ -1,4 +1,4 @@
-import type { GrupoOpciones } from './types'
+import type { GrupoOpciones } from './FormulariosMunicipio.types'
 
 /** Columnas de la matriz, agrupadas por para qué sirven. */
 export const GRUPOS: GrupoOpciones[] = [

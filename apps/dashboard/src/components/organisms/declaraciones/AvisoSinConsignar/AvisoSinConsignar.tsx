@@ -1,7 +1,7 @@
 import { Danger } from 'reicon-react'
 import { formatoFecha, plazoConsignacion } from '../../../../lib/formato'
 import { Aviso } from '../../../molecules'
-import type { AvisoSinConsignarProps } from './types'
+import type { AvisoSinConsignarProps } from './AvisoSinConsignar.types'
 
 /** En el detalle de una ReteICA o AutoReteICA con saldo: hasta cuándo hay para consignarlo y qué pasa si no. */
 export default function AvisoSinConsignar({ r }: AvisoSinConsignarProps) {

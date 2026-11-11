@@ -12,7 +12,7 @@ import { useDatos } from '../../../../store'
 import { diferenciaDias, hoy } from '../../../../utils'
 import { Badge, Boton, Card, Textarea } from '../../../atoms'
 import { Aviso, Campo, CardHeader, Dato } from '../../../molecules'
-import type { SolicitudCorreccionProps } from './types'
+import type { SolicitudCorreccionProps } from './SolicitudCorreccion.types'
 
 /**
  * Solicitud de corrección a la baja con el trámite del art. 589 anterior: el municipio la acepta o la rechaza dentro de

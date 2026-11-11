@@ -1,2 +1,2 @@
 export { default } from './TablaOmisos'
-export type * from './types'
+export type * from './TablaOmisos.types'

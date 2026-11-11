@@ -1,5 +1,5 @@
-import { CLASES_BOTON } from './constants'
-import type { BotonProps } from './types'
+import { CLASES_BOTON } from './Boton.constants'
+import type { BotonProps } from './Boton.types'
 
 export default function Boton({ variante = 'secundario', className = '', ...props }: BotonProps) {
   return (

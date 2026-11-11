@@ -1,6 +1,6 @@
 import { Download } from 'reicon-react'
 import { descargarArchivo, formatoTamano } from '../../../lib/archivos'
-import type { DocumentosEnviadosProps } from './types'
+import type { DocumentosEnviadosProps } from './DocumentosEnviados.types'
 
 /** Documentos que la administración le envió al contribuyente, para descargarlos. */
 export default function DocumentosEnviados({

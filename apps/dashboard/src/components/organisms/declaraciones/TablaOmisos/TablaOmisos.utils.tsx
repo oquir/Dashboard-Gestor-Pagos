@@ -5,7 +5,7 @@ import { ayudanteColumnas } from '../../../../lib/tabla'
 import type { Emplazamiento, Municipio, Omiso } from '../../../../types'
 import { Casilla } from '../../../atoms'
 import EmplazamientoResumen from '../EmplazamientoResumen'
-import type { SeleccionOmisos } from './types'
+import type { SeleccionOmisos } from './TablaOmisos.types'
 
 export const col = ayudanteColumnas<Omiso>()
 

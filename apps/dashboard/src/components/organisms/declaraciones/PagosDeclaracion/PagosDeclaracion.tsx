@@ -3,7 +3,7 @@ import { totalEnCanje, totalPagado } from '../../../../lib/reglas'
 import { tonoCheque } from '../../../../lib/tonos'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Dato, Vacio } from '../../../molecules'
-import type { PagosDeclaracionProps } from './types'
+import type { PagosDeclaracionProps } from './PagosDeclaracion.types'
 
 /** Pagos recibidos para la declaración, los cheques sin pagar, el total pagado y el saldo. */
 export default function PagosDeclaracion({ d, pagos, cheques }: PagosDeclaracionProps) {

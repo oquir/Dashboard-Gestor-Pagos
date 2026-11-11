@@ -4,9 +4,9 @@ import { fechaDeRecaudo } from '../../../../lib/asobancaria'
 import { formatoFecha, formatoPesos } from '../../../../lib/formato'
 import { Boton, Card } from '../../../atoms'
 import { Aviso, CardHeader, SelectorArchivo } from '../../../molecules'
-import { DURACION_MS, PASOS } from './constants'
-import type { Resultado } from './types'
-import { simular } from './utils'
+import { DURACION_MS, PASOS } from './CargaAsobancaria.constants'
+import type { Resultado } from './CargaAsobancaria.types'
+import { simular } from './CargaAsobancaria.utils'
 
 /**
  * Los pagos con código de barras no los notifica el banco: el municipio carga el archivo

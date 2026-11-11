@@ -1,5 +1,5 @@
 import type { Opcion } from '../../../../types'
-import type { Medio } from './types'
+import type { Medio } from './PagoVentanilla.types'
 
 export const MEDIOS: Opcion<Medio>[] = [
   { valor: 'efectivo', texto: 'Efectivo' },

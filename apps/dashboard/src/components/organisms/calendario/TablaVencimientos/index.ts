@@ -1,2 +1,2 @@
 export { default } from './TablaVencimientos'
-export type * from './types'
+export type * from './TablaVencimientos.types'

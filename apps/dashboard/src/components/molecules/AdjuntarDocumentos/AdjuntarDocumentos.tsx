@@ -4,7 +4,7 @@ import type { ChangeEvent } from 'react'
 import { FORMATOS_DOCUMENTO, TAMANO_MAXIMO_ARCHIVO } from '../../../constants'
 import { formatoTamano } from '../../../lib/archivos'
 import SelectorArchivo from '../SelectorArchivo'
-import type { AdjuntarDocumentosProps } from './types'
+import type { AdjuntarDocumentosProps } from './AdjuntarDocumentos.types'
 
 /** Documentos que la administración le envía al contribuyente con su respuesta: los elegidos, para quitarlos, y el botón para agregar. */
 export default function AdjuntarDocumentos({

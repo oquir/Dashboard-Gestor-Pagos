@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Boton, Textarea } from '../../atoms'
 import Campo from '../Campo'
 import Modal from '../Modal'
-import type { ModalMotivoProps } from './types'
+import type { ModalMotivoProps } from './ModalMotivo.types'
 
 /** Ventana que pide el motivo antes de hacer algo, como desactivar un formulario. No deja confirmar sin escribirlo. */
 export default function ModalMotivo({

@@ -1,6 +1,6 @@
 import { Select } from '../../atoms'
-import type { FiltroProps } from './types'
-import { entradas } from './utils'
+import type { FiltroProps } from './Filtro.types'
+import { entradas } from './Filtro.utils'
 
 /**
  * Lista desplegable para filtrar un listado. Las opciones van en el orden del objeto

@@ -6,7 +6,7 @@ import { useDatos } from '../../../../store'
 import type { VistaPrevia } from '../../../../types'
 import CargaActividades from '../CargaActividades'
 import TablaActividades from '../TablaActividades'
-import type { CatalogoActividadesProps } from './types'
+import type { CatalogoActividadesProps } from './CatalogoActividades.types'
 
 /** Actividades de un año gravable del municipio: la carga desde Excel (si el rol puede) y el listado. */
 export default function CatalogoActividades({ municipioId, vigencia }: CatalogoActividadesProps) {

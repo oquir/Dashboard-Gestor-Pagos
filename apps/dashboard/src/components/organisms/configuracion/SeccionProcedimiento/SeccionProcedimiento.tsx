@@ -2,7 +2,7 @@ import { numero } from '../../../../lib/configuracion'
 import type { ConfigMunicipio } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Campo, Interruptor, Seccion } from '../../../molecules'
-import type { SeccionProcedimientoProps } from './types'
+import type { SeccionProcedimientoProps } from './SeccionProcedimiento.types'
 
 /** Corrección a la baja y, si el municipio tiene el RIT en el aplicativo, sus plazos y su cancelación. */
 export default function SeccionProcedimiento({

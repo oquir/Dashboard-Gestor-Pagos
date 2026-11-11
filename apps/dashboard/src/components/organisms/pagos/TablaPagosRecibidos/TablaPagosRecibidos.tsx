@@ -1,8 +1,8 @@
 import { Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
 import Tabla from '../../Tabla'
-import { COLUMNAS, ORDEN_INICIAL } from './constants'
-import type { TablaPagosRecibidosProps } from './types'
+import { COLUMNAS, ORDEN_INICIAL } from './TablaPagosRecibidos.constants'
+import type { TablaPagosRecibidosProps } from './TablaPagosRecibidos.types'
 
 /** Pagos recibidos, del más reciente al más antiguo. */
 export default function TablaPagosRecibidos({ pagos }: TablaPagosRecibidosProps) {

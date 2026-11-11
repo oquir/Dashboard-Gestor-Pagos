@@ -1,5 +1,5 @@
 import type { CausalNoPresentada, MediosVentanilla } from '../../../../types'
-import { CAUSALES } from './constants'
+import { CAUSALES } from './AprobacionPrevia.constants'
 
 /** Cómo puede pagar el contribuyente, según lo que el municipio recibe en su ventanilla para este formulario. */
 export function textoMedios({ efectivo, cheque }: MediosVentanilla) {

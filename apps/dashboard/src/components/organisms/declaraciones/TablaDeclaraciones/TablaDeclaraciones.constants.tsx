@@ -14,7 +14,7 @@ import {
 import { correccionPorResolver, esperaAprobacion } from '../../../../lib/reglas'
 import { tonoAprobacion, tonoCorreccion, tonoPago } from '../../../../lib/tonos'
 import { Badge } from '../../../atoms'
-import { col } from './utils'
+import { col } from './TablaDeclaraciones.utils'
 
 export const COLUMNAS = col.columns([
   col.accessor((f) => f.d.numero, {

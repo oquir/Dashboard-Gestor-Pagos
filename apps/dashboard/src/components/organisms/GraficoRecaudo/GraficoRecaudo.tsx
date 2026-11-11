@@ -4,9 +4,9 @@ import { totalRecaudo } from '../../../utils'
 import { Boton, Card } from '../../atoms'
 import { CardHeader } from '../../molecules'
 import Tabla from '../Tabla'
-import { ALTO, SERIES, TODOS } from './constants'
-import type { GraficoRecaudoProps, SegmentoActivo } from './types'
-import { columnasTabla, maximoRedondo } from './utils'
+import { ALTO, SERIES, TODOS } from './GraficoRecaudo.constants'
+import type { GraficoRecaudoProps, SegmentoActivo } from './GraficoRecaudo.types'
+import { columnasTabla, maximoRedondo } from './GraficoRecaudo.utils'
 
 /** Columnas apiladas: recaudo por periodo, una serie por impuesto. */
 export default function GraficoRecaudo({

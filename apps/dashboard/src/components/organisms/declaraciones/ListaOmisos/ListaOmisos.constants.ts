@@ -1,5 +1,5 @@
 import type { Columna } from '../../../../lib/reportes'
-import type { FiltroEmplazamiento } from './types'
+import type { FiltroEmplazamiento } from './ListaOmisos.types'
 
 /** Opciones del filtro por emplazamiento: un omiso emplazado sigue en plazo o ya lo venció. */
 export const OPCIONES_EMPLAZAMIENTO: Record<FiltroEmplazamiento, string> = {

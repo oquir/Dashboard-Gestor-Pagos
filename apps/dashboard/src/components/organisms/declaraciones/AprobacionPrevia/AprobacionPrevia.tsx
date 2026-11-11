@@ -16,9 +16,9 @@ import {
   Dato,
   DocumentosEnviados,
 } from '../../../molecules'
-import { CAUSALES } from './constants'
-import type { AprobacionPreviaProps } from './types'
-import { textoMedios, textoQueHacer } from './utils'
+import { CAUSALES } from './AprobacionPrevia.constants'
+import type { AprobacionPreviaProps } from './AprobacionPrevia.types'
+import { textoMedios, textoQueHacer } from './AprobacionPrevia.utils'
 
 /**
  * Visto bueno del municipio antes del pago. Solo se rechaza por una causal del art. 580 del Estatuto Tributario, con un

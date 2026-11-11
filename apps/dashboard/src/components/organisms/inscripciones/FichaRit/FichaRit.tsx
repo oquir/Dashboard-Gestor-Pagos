@@ -1,9 +1,9 @@
 import { etiquetaCalidad, formatoFecha } from '../../../../lib/formato'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
-import { HABILITA } from './constants'
-import type { CampoFicha, FichaRitProps } from './types'
-import { campos, camposContador } from './utils'
+import { HABILITA } from './FichaRit.constants'
+import type { CampoFicha, FichaRitProps } from './FichaRit.types'
+import { campos, camposContador } from './FichaRit.utils'
 
 /** Datos, contador, calidades y actividades del inscrito. Con `anterior`, marca lo que cambió frente a ese formulario. */
 export default function FichaRit({ datos, anterior, tarifas }: FichaRitProps) {

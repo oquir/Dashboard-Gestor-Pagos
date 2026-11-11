@@ -3,7 +3,7 @@ import { textoDesactivado, textoSalidaProduccion } from '../../../../lib/formato
 import { useDatos } from '../../../../store'
 import { Interruptor, Seccion } from '../../../molecules'
 import ModalSalidaProduccion from '../ModalSalidaProduccion'
-import type { ModulosMunicipioProps } from './types'
+import type { ModulosMunicipioProps } from './ModulosMunicipio.types'
 
 /**
  * Lo que el municipio tiene en el aplicativo además de sus formularios de impuestos. La primera vez que se activa el

@@ -1,6 +1,6 @@
 import { X } from 'reicon-react'
 import { useEffect, useId, useRef } from 'react'
-import type { ModalProps } from './types'
+import type { ModalProps } from './Modal.types'
 
 /**
  * Ventana sobre la página, hecha con el `<dialog>` del navegador: se abre al montarse, atrapa el foco y se cierra

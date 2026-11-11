@@ -4,7 +4,7 @@ import { formatoCompacto } from '../../../../lib/formato'
 import { useDatos } from '../../../../store'
 import { Badge, Boton, Card } from '../../../atoms'
 import { Cifra } from '../../../molecules'
-import type { EncabezadoMunicipioProps } from './types'
+import type { EncabezadoMunicipioProps } from './EncabezadoMunicipio.types'
 
 /** El municipio elegido: dónde está, su estado, sus cifras y el acceso a su tablero. */
 export default function EncabezadoMunicipio({ municipio: m, cifras: c }: EncabezadoMunicipioProps) {

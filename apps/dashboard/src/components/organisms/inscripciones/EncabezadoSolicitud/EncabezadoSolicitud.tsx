@@ -1,7 +1,7 @@
 import { etiquetaEstadoNovedad, etiquetaTipoNovedad, formatoFecha } from '../../../../lib/formato'
 import { tonoNovedad } from '../../../../lib/tonos'
 import { Badge, Boton } from '../../../atoms'
-import type { EncabezadoSolicitudProps } from './types'
+import type { EncabezadoSolicitudProps } from './EncabezadoSolicitud.types'
 
 /** Franja sobre el formulario de una solicitud: cuál se está viendo y cómo volver a los datos actuales. */
 export default function EncabezadoSolicitud({

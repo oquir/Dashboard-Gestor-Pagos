@@ -1,7 +1,7 @@
 import { etiquetaCargoContable, formatoDocumento } from '../../../../lib/formato'
 import { Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
-import type { FirmasDeclaracionProps } from './types'
+import type { FirmasDeclaracionProps } from './FirmasDeclaracion.types'
 
 /** Quien diligenció la declaración y el contador o revisor fiscal; no lo tiene quien no está obligado a llevar contabilidad. */
 export default function FirmasDeclaracion({ d }: FirmasDeclaracionProps) {

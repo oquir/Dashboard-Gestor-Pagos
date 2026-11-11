@@ -48,7 +48,7 @@ import {
 import { useDatos } from '../../store'
 import type { Deuda } from '../../types'
 import { diferenciaDias, hoy } from '../../utils'
-import { ANIO_ACTUAL, COLUMNAS_TARJETAS } from './constants'
+import { ANIO_ACTUAL, COLUMNAS_TARJETAS } from './Inicio.constants'
 
 export default function Inicio() {
   const { usuario, municipioId } = useSesion()

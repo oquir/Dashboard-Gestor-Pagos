@@ -3,7 +3,7 @@ import { formatoFecha, formatoPesos } from '../../../../lib/formato'
 import { menorValor } from '../../../../lib/reglas'
 import { Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
-import type { DatosDeclaracionProps } from './types'
+import type { DatosDeclaracionProps } from './DatosDeclaracion.types'
 
 /** Ficha de la declaración: factura, fechas y la declaración que corrige. */
 export default function DatosDeclaracion({ d, corregida, aLaBaja = false }: DatosDeclaracionProps) {

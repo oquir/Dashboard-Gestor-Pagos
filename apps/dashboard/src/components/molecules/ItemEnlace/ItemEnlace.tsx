@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import type { ItemEnlaceProps } from './types'
+import type { ItemEnlaceProps } from './ItemEnlace.types'
 
 /** Fila de una lista que lleva al detalle: título y detalle a la izquierda, estado o valor a la derecha. */
 export default function ItemEnlace({ a, titulo, detalle, derecha }: ItemEnlaceProps) {

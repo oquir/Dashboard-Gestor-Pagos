@@ -1,6 +1,6 @@
 import { COLUMNAS, SIN_APROBACION } from '../../../../lib/reportes'
 import type { IdReporte } from '../../../../lib/reportes'
-import { columnasTabla } from './utils'
+import { columnasTabla } from './TablaReporte.utils'
 
 /** Columnas de la tabla de cada reporte, fijas como pide TanStack Table. */
 export const TABLAS = Object.fromEntries(

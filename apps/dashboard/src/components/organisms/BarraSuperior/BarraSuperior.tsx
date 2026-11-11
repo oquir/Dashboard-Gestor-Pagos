@@ -4,7 +4,7 @@ import { puede } from '../../../lib/permisos'
 import { useSesion } from '../../../lib/sesion'
 import { useDatos } from '../../../store'
 import { Badge, Boton } from '../../atoms'
-import type { BarraSuperiorProps } from './types'
+import type { BarraSuperiorProps } from './BarraSuperior.types'
 
 /** El municipio del usuario (1cero1 elige el que ve en cada vista), el usuario en sesión y las acciones de la demo. */
 export default function BarraSuperior({ abrirMenu }: BarraSuperiorProps) {

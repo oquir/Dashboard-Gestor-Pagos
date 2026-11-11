@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import Tabla from '../../Tabla'
-import { COLUMNA_APROBACION, COLUMNAS, ORDEN_INICIAL } from './constants'
-import type { TablaDeclaracionesProps } from './types'
-import { col, columnaSeleccion } from './utils'
+import { COLUMNA_APROBACION, COLUMNAS, ORDEN_INICIAL } from './TablaDeclaraciones.constants'
+import type { TablaDeclaracionesProps } from './TablaDeclaraciones.types'
+import { col, columnaSeleccion } from './TablaDeclaraciones.utils'
 
 /** Declaraciones filtradas, con casillas para elegirlas. La columna de aprobación va solo si alguna la tiene. */
 export default function TablaDeclaraciones({

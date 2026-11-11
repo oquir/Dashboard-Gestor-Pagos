@@ -9,8 +9,11 @@ import { esperaAprobacion } from '../../../../lib/reglas'
 import { tonoAprobacion } from '../../../../lib/tonos'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Filtro, ItemEnlace, Vacio } from '../../../molecules'
-import { OPCIONES_FILTRO } from './constants'
-import type { AprobacionesPendientesProps, FiltroAprobaciones } from './types'
+import { OPCIONES_FILTRO } from './AprobacionesPendientes.constants'
+import type {
+  AprobacionesPendientesProps,
+  FiltroAprobaciones,
+} from './AprobacionesPendientes.types'
 
 /** Declaraciones con aprobación previa, filtradas por estado; por defecto, las que esperan aprobación. */
 export default function AprobacionesPendientes({

@@ -4,8 +4,8 @@ import { formatoPesos } from '../../../../lib/formato'
 import { useDatos } from '../../../../store'
 import { Boton, Card, Input, Select } from '../../../atoms'
 import { Aviso, Campo, CardHeader, Segmentado } from '../../../molecules'
-import { BANCOS, MEDIOS } from './constants'
-import type { Medio, PagoVentanillaProps, Registrado } from './types'
+import { BANCOS, MEDIOS } from './PagoVentanilla.constants'
+import type { Medio, PagoVentanillaProps, Registrado } from './PagoVentanilla.types'
 
 /**
  * Pago en la ventanilla del municipio: el contribuyente no pagó en el banco ni en línea,

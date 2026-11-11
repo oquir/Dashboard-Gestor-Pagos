@@ -1,8 +1,8 @@
 import { Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
 import Tabla from '../../Tabla'
-import { COLUMNAS, ORDEN_INICIAL } from './constants'
-import type { RetencionesSinConsignarProps } from './types'
+import { COLUMNAS, ORDEN_INICIAL } from './RetencionesSinConsignar.constants'
+import type { RetencionesSinConsignarProps } from './RetencionesSinConsignar.types'
 
 /** ReteICA y AutoReteICA con saldo y el plazo que les queda para consignarlo (art. 402 del Código Penal). */
 export default function RetencionesSinConsignar({ filas }: RetencionesSinConsignarProps) {

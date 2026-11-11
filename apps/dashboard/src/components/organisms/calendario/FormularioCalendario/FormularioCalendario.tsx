@@ -10,7 +10,7 @@ import { hoy } from '../../../../utils'
 import { BarraGuardar } from '../../../molecules'
 import SeccionCalendario from '../SeccionCalendario'
 import SeccionProntoPago from '../SeccionProntoPago'
-import type { FormularioCalendarioProps } from './types'
+import type { FormularioCalendarioProps } from './FormularioCalendario.types'
 
 /**
  * Vencimientos y pronto pago del municipio como borrador: se validan mientras se editan y al final se guardan

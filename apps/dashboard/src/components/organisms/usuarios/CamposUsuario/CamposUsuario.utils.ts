@@ -1,6 +1,6 @@
 import type { Usuario } from '../../../../types'
-import { PATRON_CORREO } from './constants'
-import type { DatosUsuario } from './types'
+import { PATRON_CORREO } from './CamposUsuario.constants'
+import type { DatosUsuario } from './CamposUsuario.types'
 
 export function erroresUsuario(d: DatosUsuario) {
   return {

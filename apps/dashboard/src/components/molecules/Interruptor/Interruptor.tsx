@@ -1,5 +1,5 @@
 import { Conmutador } from '../../atoms'
-import type { InterruptorProps } from './types'
+import type { InterruptorProps } from './Interruptor.types'
 
 /** Interruptor con su etiqueta y una ayuda opcional, para encender o apagar una opción. */
 export default function Interruptor({

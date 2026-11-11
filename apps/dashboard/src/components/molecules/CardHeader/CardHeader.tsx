@@ -1,4 +1,4 @@
-import type { CardHeaderProps } from './types'
+import type { CardHeaderProps } from './CardHeader.types'
 
 export default function CardHeader({ titulo, descripcion, acciones }: CardHeaderProps) {
   return (

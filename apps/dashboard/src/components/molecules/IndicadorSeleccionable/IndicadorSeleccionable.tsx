@@ -1,4 +1,4 @@
-import type { IndicadorSeleccionableProps } from './types'
+import type { IndicadorSeleccionableProps } from './IndicadorSeleccionable.types'
 
 /** Indicador que también filtra: al elegirlo, el listado muestra solo lo que cuenta. */
 export default function IndicadorSeleccionable({

@@ -2,8 +2,8 @@ import { etiquetaImpuesto, formatoPesos } from '../../../lib/formato'
 import { ayudanteColumnas } from '../../../lib/tabla'
 import type { FilaRecaudo } from '../../../types'
 import { totalRecaudo } from '../../../utils'
-import { VALOR } from './constants'
-import type { Serie } from './types'
+import { VALOR } from './GraficoRecaudo.constants'
+import type { Serie } from './GraficoRecaudo.types'
 
 const col = ayudanteColumnas<FilaRecaudo>()
 

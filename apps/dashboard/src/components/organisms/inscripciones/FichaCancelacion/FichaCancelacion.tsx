@@ -1,7 +1,7 @@
 import { formatoDocumento, formatoFecha } from '../../../../lib/formato'
 import { Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
-import type { FichaCancelacionProps } from './types'
+import type { FichaCancelacionProps } from './FichaCancelacion.types'
 
 /** Lo que diligenció el contribuyente al pedir la cancelación del RIT. */
 export default function FichaCancelacion({ inscripcion, cancelacion }: FichaCancelacionProps) {

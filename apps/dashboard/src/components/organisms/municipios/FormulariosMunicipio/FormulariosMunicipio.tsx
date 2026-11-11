@@ -6,8 +6,8 @@ import type { Impuesto } from '../../../../types'
 import { Badge, Card, Conmutador } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
 import ModalSalidaProduccion from '../ModalSalidaProduccion'
-import { GRUPOS, LEYENDA } from './constants'
-import type { FormulariosMunicipioProps, OpcionFormulario } from './types'
+import { GRUPOS, LEYENDA } from './FormulariosMunicipio.constants'
+import type { FormulariosMunicipioProps, OpcionFormulario } from './FormulariosMunicipio.types'
 
 /**
  * Matriz de los formularios del municipio: cuáles gestiona y, para cada uno, su revisión y lo que recibe en la ventanilla.

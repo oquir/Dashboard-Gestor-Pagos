@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from 'react-router'
 import { Badge, Card } from '../../components/atoms'
 import { etiquetaRol, nombreCompleto } from '../../lib/formato'
 import { useDatos } from '../../store'
-import { DESCRIPCION_ROL, ORDEN } from './constants'
+import { DESCRIPCION_ROL, ORDEN } from './Login.constants'
 
 export default function Login() {
   const usuarioId = useDatos((s) => s.usuarioId)

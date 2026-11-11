@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'reicon-react'
 import { useNavigate } from 'react-router'
 import { Boton } from '../../../atoms'
-import type { RecorridoBitacoraProps } from './types'
+import type { RecorridoBitacoraProps } from './RecorridoBitacora.types'
 
 /** Ir al registro anterior o al siguiente por número, dentro de lo que se recorre: un municipio o todos. */
 export default function RecorridoBitacora({ anterior, siguiente, ambito }: RecorridoBitacoraProps) {

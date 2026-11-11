@@ -5,8 +5,8 @@ import { useSesion } from '../../../lib/sesion'
 import { useDatos } from '../../../store'
 import { Badge, Card } from '../../atoms'
 import { Buscador } from '../../molecules'
-import type { BuscadorMunicipiosProps } from './types'
-import { opcionesMunicipios } from './utils'
+import type { BuscadorMunicipiosProps } from './BuscadorMunicipios.types'
+import { opcionesMunicipios } from './BuscadorMunicipios.utils'
 
 /**
  * Con él, 1cero1 elige en cada vista el municipio que ve, o todos, buscándolo por su nombre; la elección sigue al cambiar

@@ -1,5 +1,5 @@
 import { DocumentUpload } from 'reicon-react'
-import type { SelectorArchivoProps } from './types'
+import type { SelectorArchivoProps } from './SelectorArchivo.types'
 
 /** Botón punteado que abre el selector de archivos del sistema. */
 export default function SelectorArchivo({

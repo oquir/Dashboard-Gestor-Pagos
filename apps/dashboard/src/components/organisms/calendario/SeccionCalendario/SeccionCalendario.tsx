@@ -9,15 +9,15 @@ import type { CalendarioVigencia } from '../../../../types'
 import { Boton, Input, Select } from '../../../atoms'
 import { Aviso, Campo, Seccion } from '../../../molecules'
 import TablaVencimientos from '../TablaVencimientos'
-import { DESCRIPCION_FORMULARIO } from './constants'
-import type { SeccionCalendarioProps } from './types'
+import { DESCRIPCION_FORMULARIO } from './SeccionCalendario.constants'
+import type { SeccionCalendarioProps } from './SeccionCalendario.types'
 import {
   aniosParaAgregar,
   calendarioMasCercano,
   erroresDelFormulario,
   textoAgregado,
   textoOtraPeriodicidad,
-} from './utils'
+} from './SeccionCalendario.utils'
 
 /** Vencimientos de cada año gravable, también de años pasados: un calendario por cada formulario activo del municipio. */
 export default function SeccionCalendario({

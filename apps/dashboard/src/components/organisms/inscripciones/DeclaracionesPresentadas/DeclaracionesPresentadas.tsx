@@ -7,7 +7,7 @@ import {
 } from '../../../../lib/formato'
 import { Card } from '../../../atoms'
 import { CardHeader, ItemEnlace, Vacio } from '../../../molecules'
-import type { DeclaracionesPresentadasProps } from './types'
+import type { DeclaracionesPresentadasProps } from './DeclaracionesPresentadas.types'
 
 /** Declaraciones del inscrito; cada una lleva a su detalle. */
 export default function DeclaracionesPresentadas({

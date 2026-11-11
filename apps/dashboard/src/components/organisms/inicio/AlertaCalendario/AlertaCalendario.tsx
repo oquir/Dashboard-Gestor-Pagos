@@ -4,7 +4,7 @@ import { formatoLista } from '../../../../lib/formato'
 import { puede } from '../../../../lib/permisos'
 import { useSesion } from '../../../../lib/sesion'
 import { Aviso } from '../../../molecules'
-import type { AlertaCalendarioProps } from './types'
+import type { AlertaCalendarioProps } from './AlertaCalendario.types'
 
 /**
  * Aviso de Inicio desde el 1 de enero, mientras el municipio no cargue el calendario del año. Al administrador y a

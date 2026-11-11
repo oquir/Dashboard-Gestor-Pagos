@@ -4,8 +4,8 @@ import { etiquetaPeriodicidad } from '../../../../lib/formato'
 import type { Periodicidad } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Aviso, Campo, Interruptor } from '../../../molecules'
-import { PERIODICIDADES_RETENCION } from './constants'
-import type { TablaVencimientosProps } from './types'
+import { PERIODICIDADES_RETENCION } from './TablaVencimientos.constants'
+import type { TablaVencimientosProps } from './TablaVencimientos.types'
 
 /**
  * Vencimientos de un formulario en un año gravable: una fecha por periodo o, si el municipio las separa por el

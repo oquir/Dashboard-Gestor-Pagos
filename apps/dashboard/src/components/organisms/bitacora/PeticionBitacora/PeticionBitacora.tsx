@@ -3,7 +3,7 @@ import { useDatos } from '../../../../store'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import { nombreMunicipio, textoResultado } from '../TablaBitacora'
-import type { PeticionBitacoraProps } from './types'
+import type { PeticionBitacoraProps } from './PeticionBitacora.types'
 
 /** Quién hizo la petición, cuándo, a qué endpoint y si salió bien. */
 export default function PeticionBitacora({ r }: PeticionBitacoraProps) {

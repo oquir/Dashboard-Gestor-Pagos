@@ -1,8 +1,8 @@
 import { Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
 import Tabla from '../../Tabla'
-import { COLUMNAS, ORDEN_INICIAL } from './constants'
-import type { TablaCarteraProps } from './types'
+import { COLUMNAS, ORDEN_INICIAL } from './TablaCartera.constants'
+import type { TablaCarteraProps } from './TablaCartera.types'
 
 /** Declaraciones vigentes con saldo por pagar, de la mayor deuda a la menor. */
 export default function TablaCartera({ cartera }: TablaCarteraProps) {

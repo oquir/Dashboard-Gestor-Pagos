@@ -1,7 +1,7 @@
 import { numeroRepetido } from '../../../../lib/emplazamientos'
 import { formatoFecha } from '../../../../lib/formato'
 import type { Emplazamiento } from '../../../../types'
-import type { Destinatario } from './types'
+import type { Destinatario } from './ModalEmplazamiento.types'
 
 /** La fecha de notificación: obligatoria, no futura y no anterior al vencimiento o a la presentación más reciente. */
 export function errorFecha(

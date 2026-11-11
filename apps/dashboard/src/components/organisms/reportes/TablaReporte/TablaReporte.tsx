@@ -6,8 +6,8 @@ import { hoy } from '../../../../utils'
 import { Boton, Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
 import Tabla from '../../Tabla'
-import { TABLA_SIN_APROBACION, TABLAS } from './constants'
-import type { TablaReporteProps } from './types'
+import { TABLA_SIN_APROBACION, TABLAS } from './TablaReporte.constants'
+import type { TablaReporteProps } from './TablaReporte.types'
 
 /** Datos del reporte elegido, paginados, y su descarga en Excel. */
 export default function TablaReporte({

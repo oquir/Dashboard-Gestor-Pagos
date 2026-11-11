@@ -1,4 +1,4 @@
-import type { ConmutadorProps } from './types'
+import type { ConmutadorProps } from './Conmutador.types'
 
 /** Interruptor de encendido y apagado con el color de la marca. Por dentro es una casilla, así que se usa igual. */
 export default function Conmutador({ className = '', ...props }: ConmutadorProps) {

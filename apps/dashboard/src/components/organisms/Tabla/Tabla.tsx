@@ -4,7 +4,7 @@ import { ArrowDown, ArrowUp, Sort, ChevronLeft, ChevronRight } from 'reicon-reac
 import { caracteristicas } from '../../../lib/tabla'
 import { Boton } from '../../atoms'
 import { Vacio } from '../../molecules'
-import type { TablaProps } from './types'
+import type { TablaProps } from './Tabla.types'
 
 export default function Tabla<T extends RowData>({
   datos,

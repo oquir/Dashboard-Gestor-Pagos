@@ -2,8 +2,8 @@ import { etiquetaRol } from '../../../../lib/formato'
 import type { Rol } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Campo } from '../../../molecules'
-import type { CamposUsuarioProps } from './types'
-import { erroresUsuario } from './utils'
+import type { CamposUsuarioProps } from './CamposUsuario.types'
+import { erroresUsuario } from './CamposUsuario.utils'
 
 /** Los campos de un usuario, los mismos al crearlo y al editarlo. */
 export default function CamposUsuario({

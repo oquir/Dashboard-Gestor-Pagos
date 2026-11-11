@@ -2,8 +2,8 @@ import { Link } from 'react-router'
 import { etiquetaTipoDocumento, numeroDocumento } from '../../../../lib/formato'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
-import { CLASE_LISTA } from './constants'
-import type { ContribuyenteDeclaracionProps } from './types'
+import { CLASE_LISTA } from './ContribuyenteDeclaracion.constants'
+import type { ContribuyenteDeclaracionProps } from './ContribuyenteDeclaracion.types'
 
 /** Los datos de la empresa o de la persona que declara, tal como se escribieron. Si está en el RIT, su nombre lleva a la ficha. */
 export default function ContribuyenteDeclaracion({

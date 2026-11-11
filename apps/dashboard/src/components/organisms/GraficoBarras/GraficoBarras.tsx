@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { formatoCompacto, formatoPesos } from '../../../lib/formato'
 import { Card } from '../../atoms'
 import { CardHeader, Vacio } from '../../molecules'
-import { porcentaje } from './constants'
-import type { GraficoBarrasProps } from './types'
+import { porcentaje } from './GraficoBarras.constants'
+import type { GraficoBarrasProps } from './GraficoBarras.types'
 
 /** Barras horizontales: cuánto aporta cada categoría al total. */
 export default function GraficoBarras({

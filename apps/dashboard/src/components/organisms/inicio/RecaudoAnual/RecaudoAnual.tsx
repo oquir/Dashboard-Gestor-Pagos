@@ -13,8 +13,8 @@ import type { FilaRecaudo } from '../../../../types'
 import { totalRecaudo } from '../../../../utils'
 import { Segmentado } from '../../../molecules'
 import GraficoRecaudo from '../../GraficoRecaudo'
-import { BIMESTRES, VISTAS } from './constants'
-import type { RecaudoAnualProps, Vista } from './types'
+import { BIMESTRES, VISTAS } from './RecaudoAnual.constants'
+import type { RecaudoAnualProps, Vista } from './RecaudoAnual.types'
 
 /** Recaudo del año elegido, por mes o por bimestre: el año en curso sale de los pagos; los anteriores, del histórico. */
 export default function RecaudoAnual({ anioActual }: RecaudoAnualProps) {

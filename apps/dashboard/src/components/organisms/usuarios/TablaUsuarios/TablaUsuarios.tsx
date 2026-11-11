@@ -4,8 +4,8 @@ import { useDatos } from '../../../../store'
 import { Card } from '../../../atoms'
 import Tabla from '../../Tabla'
 import DetalleUsuario from '../DetalleUsuario'
-import type { TablaUsuariosProps } from './types'
-import { columnasUsuarios, esGestionable, nombreMunicipio } from './utils'
+import type { TablaUsuariosProps } from './TablaUsuarios.types'
+import { columnasUsuarios, esGestionable, nombreMunicipio } from './TablaUsuarios.utils'
 
 /** Usuarios con su rol y estado. El botón de cada fila abre su detalle, donde se desactiva, se elimina o se le reenvían las credenciales. */
 export default function TablaUsuarios({ usuarios }: TablaUsuariosProps) {

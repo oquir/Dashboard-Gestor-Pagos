@@ -1,5 +1,5 @@
 import { Card } from '../../atoms'
-import type { StatTileProps } from './types'
+import type { StatTileProps } from './StatTile.types'
 
 export default function StatTile({ etiqueta, valor, detalle, icono }: StatTileProps) {
   return (

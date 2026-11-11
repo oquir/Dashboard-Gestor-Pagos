@@ -4,7 +4,7 @@ import { descargarPlantilla, leerPlantilla } from '../../../../lib/plantillaActi
 import { useDatos } from '../../../../store'
 import { Boton, Card } from '../../../atoms'
 import { Aviso, CardHeader, SelectorArchivo } from '../../../molecules'
-import type { CargaActividadesProps } from './types'
+import type { CargaActividadesProps } from './CargaActividades.types'
 
 /** Carga de las actividades de un año gravable: plantilla, Excel diligenciado, vista previa y confirmación. */
 export default function CargaActividades({

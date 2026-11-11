@@ -13,7 +13,7 @@ import { diferenciaDias, hoy } from '../../../../utils'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Vacio } from '../../../molecules'
 import EmplazamientoResumen from '../../declaraciones/EmplazamientoResumen'
-import type { DeclaracionesFaltantesProps } from './types'
+import type { DeclaracionesFaltantesProps } from './DeclaracionesFaltantes.types'
 
 /** Periodos vencidos que el inscrito debía declarar y no ha declarado, desde que cada formulario salió a producción en el aplicativo. */
 export default function DeclaracionesFaltantes({ inscripcion }: DeclaracionesFaltantesProps) {

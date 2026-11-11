@@ -1,7 +1,7 @@
 import { hoy } from '../../../utils'
 import { Input } from '../../atoms'
 import Campo from '../Campo'
-import type { RangoFechasProps } from './types'
+import type { RangoFechasProps } from './RangoFechas.types'
 
 /** Fechas desde y hasta, sin pasar de hoy. */
 export default function RangoFechas({

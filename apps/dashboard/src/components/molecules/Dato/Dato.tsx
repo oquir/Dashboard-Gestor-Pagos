@@ -1,4 +1,4 @@
-import type { DatoProps } from './types'
+import type { DatoProps } from './Dato.types'
 
 /** Fila etiqueta–valor para fichas de detalle. */
 export default function Dato({ etiqueta, children }: DatoProps) {

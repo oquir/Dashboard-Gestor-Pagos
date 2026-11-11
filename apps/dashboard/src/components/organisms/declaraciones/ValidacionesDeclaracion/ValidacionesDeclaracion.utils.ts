@@ -8,7 +8,7 @@ import {
 } from '../../../../lib/reglas'
 import type { Declaracion, Inscripcion } from '../../../../types'
 import { diferenciaDias } from '../../../../utils'
-import type { ContextoSancion, Validacion } from './types'
+import type { ContextoSancion, Validacion } from './ValidacionesDeclaracion.types'
 
 /** Cruces automáticos que el funcionario ve antes de aprobar la declaración. */
 export function validaciones(

@@ -12,7 +12,7 @@ import CamposUsuario, {
   ROLES_MUNICIPIO,
 } from '../CamposUsuario'
 import type { DatosUsuario } from '../CamposUsuario'
-import type { NuevoUsuarioProps } from './types'
+import type { NuevoUsuarioProps } from './NuevoUsuario.types'
 
 /** Alta de un usuario: 1cero1 lo crea en cualquier municipio; el administrador, solo en el suyo. */
 export default function NuevoUsuario({ alTerminar }: NuevoUsuarioProps) {

@@ -1,7 +1,7 @@
 import { etiquetaTipoNovedad, formatoFecha } from '../../../../lib/formato'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, ItemEnlace, Vacio } from '../../../molecules'
-import type { SolicitudesPendientesProps } from './types'
+import type { SolicitudesPendientesProps } from './SolicitudesPendientes.types'
 
 /** Las seis solicitudes del RIT por revisar más recientes; cada una lleva a la ficha del inscrito. */
 export default function SolicitudesPendientes({

@@ -2,8 +2,8 @@ import { Danger } from 'reicon-react'
 import { Link } from 'react-router'
 import { formatoCompacto, formatoFecha, plazoConsignacion } from '../../../../lib/formato'
 import { Aviso } from '../../../molecules'
-import type { AlertaSinConsignarProps } from './types'
-import { saldoDe } from './utils'
+import type { AlertaSinConsignarProps } from './AlertaSinConsignar.types'
+import { saldoDe } from './AlertaSinConsignar.utils'
 
 /**
  * Alerta de Inicio cuando hay ReteICA o AutoReteICA sin consignar: en rojo si alguna ya pasó los 2 meses del art. 402

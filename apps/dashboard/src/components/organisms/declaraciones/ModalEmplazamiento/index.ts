@@ -1,2 +1,2 @@
 export { default } from './ModalEmplazamiento'
-export type * from './types'
+export type * from './ModalEmplazamiento.types'

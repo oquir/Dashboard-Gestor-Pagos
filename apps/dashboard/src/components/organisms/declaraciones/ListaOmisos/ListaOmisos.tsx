@@ -12,8 +12,8 @@ import { Boton, Card } from '../../../atoms'
 import { Aviso, BarraFiltros, Buscador, CardHeader, Filtro } from '../../../molecules'
 import ModalEmplazamiento from '../ModalEmplazamiento'
 import TablaOmisos from '../TablaOmisos'
-import { COLUMNAS_EXCEL, OPCIONES_EMPLAZAMIENTO } from './constants'
-import type { FiltroEmplazamiento, ListaOmisosProps } from './types'
+import { COLUMNAS_EXCEL, OPCIONES_EMPLAZAMIENTO } from './ListaOmisos.constants'
+import type { FiltroEmplazamiento, ListaOmisosProps } from './ListaOmisos.types'
 import {
   destinatarioDe,
   estadoEmplazamientoDe,
@@ -23,7 +23,7 @@ import {
   textoDesde,
   textoSinCalendario,
   textoSinCeros,
-} from './utils'
+} from './ListaOmisos.utils'
 
 /**
  * Los omisos del municipio que se está viendo: avisos de lo que no se pudo revisar, filtros por texto, año gravable y

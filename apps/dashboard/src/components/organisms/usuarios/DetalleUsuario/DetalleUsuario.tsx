@@ -13,7 +13,7 @@ import CamposUsuario, {
   ROLES_MUNICIPIO,
 } from '../CamposUsuario'
 import type { DatosUsuario } from '../CamposUsuario'
-import type { DetalleUsuarioProps } from './types'
+import type { DetalleUsuarioProps } from './DetalleUsuario.types'
 
 type Modo = 'ver' | 'editar' | 'eliminar'
 

@@ -1,2 +1,2 @@
 export { default } from './SeccionCalendario'
-export type * from './types'
+export type * from './SeccionCalendario.types'

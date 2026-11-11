@@ -3,7 +3,7 @@ import { SANCIONES_LEY } from '../../../../lib/reglas'
 import type { EdicionConfiguracion } from '../../../../types'
 import { Input } from '../../../atoms'
 import { Campo, Seccion } from '../../../molecules'
-import { CLAVES_SANCION, ETIQUETAS_SANCION, USO_SANCION } from './constants'
+import { CLAVES_SANCION, ETIQUETAS_SANCION, USO_SANCION } from './SeccionSanciones.constants'
 
 /** Sanciones del municipio, con el máximo de ley de cada una. */
 export default function SeccionSanciones({ b, cambiar, editable, errores }: EdicionConfiguracion) {

@@ -6,7 +6,7 @@ import { SANCION_CHEQUE_DEVUELTO } from '../../../../lib/reglas'
 import { useDatos } from '../../../../store'
 import { Boton, Card, Textarea } from '../../../atoms'
 import { Aviso, Campo, CardHeader, Vacio } from '../../../molecules'
-import type { ChequesEnCanjeProps, Resuelto } from './types'
+import type { ChequesEnCanjeProps, Resuelto } from './ChequesEnCanje.types'
 
 /**
  * Cheques de gerencia recibidos en la ventanilla que el banco aún no ha pagado. Si los paga, cuentan

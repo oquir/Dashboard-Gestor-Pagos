@@ -1,8 +1,8 @@
 import { etiquetaFormulario, normalizar } from '../../../lib/formato'
 import { formulariosDe } from '../../../lib/sesion'
 import type { Municipio } from '../../../types'
-import { MAX_RESULTADOS } from './constants'
-import type { OpcionMunicipio } from './types'
+import { MAX_RESULTADOS } from './BuscadorMunicipios.constants'
+import type { OpcionMunicipio } from './BuscadorMunicipios.types'
 
 /** Los municipios cuyo nombre contiene el texto, sin importar tildes ni mayúsculas. Primero los que empiezan por él. */
 export function buscarMunicipios(municipios: Municipio[], texto: string) {

@@ -1,4 +1,4 @@
 export { default } from './CamposUsuario'
-export type { DatosUsuario } from './types'
-export { datosDe, erroresUsuario, hayErrores } from './utils'
-export { ROLES_1CERO1, ROLES_MUNICIPIO } from './constants'
+export type { DatosUsuario } from './CamposUsuario.types'
+export { datosDe, erroresUsuario, hayErrores } from './CamposUsuario.utils'
+export { ROLES_1CERO1, ROLES_MUNICIPIO } from './CamposUsuario.constants'

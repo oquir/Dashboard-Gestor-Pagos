@@ -1,4 +1,4 @@
-import type { CampoProps } from './types'
+import type { CampoProps } from './Campo.types'
 
 export default function Campo({ etiqueta, ayuda, error, children }: CampoProps) {
   return (

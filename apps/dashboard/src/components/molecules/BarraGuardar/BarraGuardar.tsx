@@ -1,6 +1,6 @@
 import { Save } from 'reicon-react'
 import { Boton } from '../../atoms'
-import type { BarraGuardarProps } from './types'
+import type { BarraGuardarProps } from './BarraGuardar.types'
 
 /** Pie fijo de un formulario en borrador: avisa si hay errores o si ya se guardó, y deja descartar o guardar. */
 export default function BarraGuardar({

@@ -1,7 +1,7 @@
 import { Calendar } from 'reicon-react'
 import { formatoFecha } from '../../../../lib/formato'
 import { Aviso } from '../../../molecules'
-import type { AvisoSinCalendarioProps } from './types'
+import type { AvisoSinCalendarioProps } from './AvisoSinCalendario.types'
 
 /** En el detalle de una declaración presentada antes de que el municipio cargara el calendario de su año gravable. */
 export default function AvisoSinCalendario({ d, carga }: AvisoSinCalendarioProps) {

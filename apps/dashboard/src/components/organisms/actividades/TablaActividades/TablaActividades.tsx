@@ -4,8 +4,8 @@ import { fueraDeTope } from '../../../../lib/reglas'
 import { Badge, Card } from '../../../atoms'
 import { BarraFiltros, Buscador, CardHeader, Vacio } from '../../../molecules'
 import Tabla from '../../Tabla'
-import { COLUMNAS } from './constants'
-import type { TablaActividadesProps } from './types'
+import { COLUMNAS } from './TablaActividades.constants'
+import type { TablaActividadesProps } from './TablaActividades.types'
 
 /** Actividades y tarifas del año gravable o, mientras no se confirme, las del Excel que se está cargando. */
 export default function TablaActividades({

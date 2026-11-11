@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 import { useSesion } from '../../../../lib/sesion'
 import { useDatos } from '../../../../store'
 import Tabla from '../../Tabla'
-import { COLUMNAS } from './constants'
-import type { TablaInscripcionesProps } from './types'
-import { col, columnaMunicipio } from './utils'
+import { COLUMNAS } from './TablaInscripciones.constants'
+import type { TablaInscripcionesProps } from './TablaInscripciones.types'
+import { col, columnaMunicipio } from './TablaInscripciones.utils'
 
 /** Inscritos en el RIT. Cuando 1cero1 mira todos los municipios, agrega la columna de municipio. */
 export default function TablaInscripciones({ inscripciones, total }: TablaInscripcionesProps) {

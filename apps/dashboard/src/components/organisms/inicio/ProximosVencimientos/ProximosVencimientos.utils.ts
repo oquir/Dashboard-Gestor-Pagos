@@ -3,8 +3,8 @@ import { etiquetaImpuesto, etiquetaPeriodo } from '../../../../lib/formato'
 import { IMPUESTOS } from '../../../../lib/sesion'
 import type { ConfigMunicipio, Municipio } from '../../../../types'
 import { diferenciaDias } from '../../../../utils'
-import type { VencimientoProximo } from './types'
-import { CUANTOS, DIAS_VENCIDO } from './constants'
+import type { VencimientoProximo } from './ProximosVencimientos.types'
+import { CUANTOS, DIAS_VENCIDO } from './ProximosVencimientos.constants'
 
 /**
  * Vencimientos más cercanos de los formularios activos del municipio (o de todos, si no hay uno elegido):

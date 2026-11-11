@@ -1,4 +1,4 @@
-import type { PageHeaderProps } from './types'
+import type { PageHeaderProps } from './PageHeader.types'
 
 export default function PageHeader({ titulo, descripcion, acciones }: PageHeaderProps) {
   return (

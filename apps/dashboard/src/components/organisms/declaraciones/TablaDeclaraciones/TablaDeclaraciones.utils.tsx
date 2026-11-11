@@ -1,7 +1,7 @@
 import { ayudanteColumnas } from '../../../../lib/tabla'
 import type { FilaDeclaracion } from '../../../../types'
 import { Casilla } from '../../../atoms'
-import type { Marcar } from './types'
+import type { Marcar } from './TablaDeclaraciones.types'
 
 export const col = ayudanteColumnas<FilaDeclaracion>()
 

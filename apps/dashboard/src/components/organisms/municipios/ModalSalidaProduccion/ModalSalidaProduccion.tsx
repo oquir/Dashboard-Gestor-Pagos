@@ -3,7 +3,7 @@ import { etiquetaFormulario } from '../../../../lib/formato'
 import { hoy } from '../../../../utils'
 import { Boton, Input } from '../../../atoms'
 import { Campo, Modal } from '../../../molecules'
-import type { ModalSalidaProduccionProps } from './types'
+import type { ModalSalidaProduccionProps } from './ModalSalidaProduccion.types'
 
 /**
  * Ventana que sale al activar un formulario por primera vez: pide su fecha de salida a producción, que después no se

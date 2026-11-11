@@ -1,5 +1,5 @@
 import { Boton } from '../../../atoms'
-import type { SeleccionDeclaracionesProps } from './types'
+import type { SeleccionDeclaracionesProps } from './SeleccionDeclaraciones.types'
 
 /** Aparece al marcar declaraciones: dice cuántas hay marcadas y permite quitar la selección. La descarga va junto al buscador. */
 export default function SeleccionDeclaraciones({

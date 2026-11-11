@@ -1,6 +1,6 @@
 import { Card } from '../../atoms'
 import CardHeader from '../CardHeader'
-import type { SeccionProps } from './types'
+import type { SeccionProps } from './Seccion.types'
 
 /** Tarjeta de formulario: título y campos en dos columnas. */
 export default function Seccion({ titulo, descripcion, children }: SeccionProps) {

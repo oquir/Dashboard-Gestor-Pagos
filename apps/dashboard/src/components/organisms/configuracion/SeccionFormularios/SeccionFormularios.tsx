@@ -4,8 +4,8 @@ import { useSesion } from '../../../../lib/sesion'
 import type { Formulario, FormularioDesactivado } from '../../../../types'
 import { hoy } from '../../../../utils'
 import { Interruptor, ModalMotivo, Seccion } from '../../../molecules'
-import { AYUDA } from './constants'
-import type { SeccionFormulariosProps } from './types'
+import { AYUDA } from './SeccionFormularios.constants'
+import type { SeccionFormulariosProps } from './SeccionFormularios.types'
 
 /** Formularios que el municipio ofrece a los contribuyentes. Para desactivar uno hay que dar el motivo en una ventana. */
 export default function SeccionFormularios({

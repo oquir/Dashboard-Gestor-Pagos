@@ -3,7 +3,7 @@ import { descargarArchivo, descargarZip, formatoTamano } from '../../../lib/arch
 import { formatoFecha } from '../../../lib/formato'
 import { Boton } from '../../atoms'
 import { CardHeader } from '../../molecules'
-import type { ListaArchivosProps } from './types'
+import type { ListaArchivosProps } from './ListaArchivos.types'
 
 /** Archivos cargados por el contribuyente: descarga uno a uno o todos en un .zip. */
 export default function ListaArchivos({

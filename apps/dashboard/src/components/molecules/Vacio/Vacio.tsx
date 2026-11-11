@@ -1,4 +1,4 @@
-import type { VacioProps } from './types'
+import type { VacioProps } from './Vacio.types'
 
 export default function Vacio({ titulo, descripcion }: VacioProps) {
   return (

@@ -4,7 +4,7 @@ import { descargarAsobancaria } from '../../../../lib/asobancaria'
 import { hoy } from '../../../../utils'
 import { Boton, Card, Input } from '../../../atoms'
 import { Campo, CardHeader } from '../../../molecules'
-import type { DescargaAsobancariaProps } from './types'
+import type { DescargaAsobancariaProps } from './DescargaAsobancaria.types'
 
 /** Archivo de recaudo de un solo día; en la demo trae datos de prueba. */
 export default function DescargaAsobancaria({ declaraciones }: DescargaAsobancariaProps) {

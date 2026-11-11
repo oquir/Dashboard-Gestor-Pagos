@@ -5,7 +5,7 @@ import {
   formatoFecha,
 } from '../../../../lib/formato'
 import type { DatosRit, FirmanteContable } from '../../../../types'
-import type { CampoFicha } from './types'
+import type { CampoFicha } from './FichaRit.types'
 
 export const campos = (d: DatosRit): CampoFicha[] => [
   ['Nombre o razón social', d.nombre],

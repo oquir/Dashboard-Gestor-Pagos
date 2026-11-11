@@ -1,5 +1,5 @@
-import { CLASES_TONO } from './constants'
-import type { BadgeProps } from './types'
+import { CLASES_TONO } from './Badge.constants'
+import type { BadgeProps } from './Badge.types'
 
 export default function Badge({ tono = 'neutral', children }: BadgeProps) {
   return (

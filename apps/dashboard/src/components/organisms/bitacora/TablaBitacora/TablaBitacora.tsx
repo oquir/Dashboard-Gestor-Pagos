@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { useDatos } from '../../../../store'
 import Tabla from '../../Tabla'
-import type { TablaBitacoraProps } from './types'
-import { columnasBitacora, ORDEN_INICIAL } from './utils'
+import type { TablaBitacoraProps } from './TablaBitacora.types'
+import { columnasBitacora, ORDEN_INICIAL } from './TablaBitacora.utils'
 
 /** Los registros de la bitácora, del más reciente al más antiguo. El número abre el registro, con los datos enviados. */
 export default function TablaBitacora({ registros, total }: TablaBitacoraProps) {

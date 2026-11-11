@@ -2,8 +2,8 @@ import { NavLink } from 'react-router'
 import { puede } from '../../../lib/permisos'
 import { ritVisible, useSesion } from '../../../lib/sesion'
 import { useDatos } from '../../../store'
-import { NAVEGACION } from './constants'
-import type { NavegacionProps } from './types'
+import { NAVEGACION } from './Navegacion.constants'
+import type { NavegacionProps } from './Navegacion.types'
 
 /** Páginas que el rol puede ver; Inscripciones, solo si el municipio tiene el RIT en el aplicativo. */
 export default function Navegacion({ alElegir }: NavegacionProps) {

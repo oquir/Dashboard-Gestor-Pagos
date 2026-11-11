@@ -1,5 +1,5 @@
 import { DocumentosEnviados } from '../../../molecules'
-import type { RespuestaEnviadaProps } from './types'
+import type { RespuestaEnviadaProps } from './RespuestaEnviada.types'
 
 /** Observación y documentos que la administración le envió al contribuyente al resolver la solicitud. */
 export default function RespuestaEnviada({ novedad, inscripcion }: RespuestaEnviadaProps) {

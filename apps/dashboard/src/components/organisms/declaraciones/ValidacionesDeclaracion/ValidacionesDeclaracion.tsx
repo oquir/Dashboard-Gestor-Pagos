@@ -1,8 +1,8 @@
 import { AlertTriangle, TickCircle } from 'reicon-react'
 import { Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'
-import type { ValidacionesDeclaracionProps } from './types'
-import { validaciones } from './utils'
+import type { ValidacionesDeclaracionProps } from './ValidacionesDeclaracion.types'
+import { validaciones } from './ValidacionesDeclaracion.utils'
 
 /** Lo que cumple y las inconsistencias de la declaración. */
 export default function ValidacionesDeclaracion({

@@ -1,7 +1,7 @@
 import { ANIO_EN_CURSO } from '../../../../constants'
 import { etiquetaImpuesto, etiquetaPeriodicidad, formatoLista } from '../../../../lib/formato'
 import type { CalendarioVigencia, Declaracion, Impuesto, Periodicidad } from '../../../../types'
-import { ANIOS_ATRAS } from './constants'
+import { ANIOS_ATRAS } from './SeccionCalendario.constants'
 
 /**
  * Aviso cuando el calendario del año ya no tiene la periodicidad con que se presentaron sus declaraciones: ellas
