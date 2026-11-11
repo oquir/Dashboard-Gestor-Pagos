@@ -1,7 +1,7 @@
-import { GRID_BASE_COLUMNS } from '../../constants/grid'
-import type { FormExport, FormExportFile } from '../../types/exportForm'
-import type { CanvasRow, FormStep, IntroModalStep } from '../../types/formStructure'
-import type { SetupConfig } from '../../types/setup'
+import { GRID_BASE_COLUMNS } from '../../constants'
+import type { FormExport, FormExportFile } from '../../types'
+import type { CanvasRow, FormStep, IntroModalStep } from '../../types'
+import type { SetupConfig } from '../../types'
 import { buildDraftPayload } from '../persistence/persistence'
 import { buildNameIndex, mapFormStep, mapRows } from './exportForm.utils'
 

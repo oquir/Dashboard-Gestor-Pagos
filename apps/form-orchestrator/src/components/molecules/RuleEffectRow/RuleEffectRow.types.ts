@@ -1,4 +1,4 @@
-import type { CanvasField, RuleEffect } from '../../../types/field'
+import type { CanvasField, RuleEffect } from '../../../types'
 
 export interface RuleEffectRowProps {
   effect: RuleEffect

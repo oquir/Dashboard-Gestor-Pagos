@@ -1,4 +1,4 @@
-import type { SelectionRect } from '../../types/canvasSelection'
+import type { SelectionRect } from '../../types'
 import type { ScrollPoint } from './useCanvasMarquee.types'
 
 // Cuanto hay que sumarle a una coordenada de la ventana para llevarla al espacio de scroll del

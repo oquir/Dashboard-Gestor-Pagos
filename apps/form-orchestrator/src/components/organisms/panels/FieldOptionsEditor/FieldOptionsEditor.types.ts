@@ -1,4 +1,4 @@
-import type { CanvasField } from '../../../../types/field'
+import type { CanvasField } from '../../../../types'
 
 export interface FieldOptionsEditorProps {
   field: CanvasField

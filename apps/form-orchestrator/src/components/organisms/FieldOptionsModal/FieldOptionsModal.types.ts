@@ -1,4 +1,4 @@
-import type { OptionsSetup } from '../../../types/formStoreTypes'
+import type { OptionsSetup } from '../../../types'
 
 export interface FieldOptionsModalProps {
   fieldTypeLabel: string

@@ -1,1 +1,1 @@
-export { SELECT_CLASSES } from '../../../../constants/uiClasses'
+export { SELECT_CLASSES } from '../../../../constants'

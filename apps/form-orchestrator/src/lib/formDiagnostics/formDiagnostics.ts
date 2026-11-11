@@ -1,4 +1,4 @@
-import type { DiagnoseFormInput, FormProblem } from '../../types/formDiagnostics'
+import type { DiagnoseFormInput, FormProblem } from '../../types'
 import type { LocatedItems, PreludeCheck, ProblemDraft } from './formDiagnostics.types'
 import {
   checkPrelude,

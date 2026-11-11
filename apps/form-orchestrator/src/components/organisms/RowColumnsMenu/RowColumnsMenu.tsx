@@ -1,7 +1,7 @@
 import { useRef } from 'react'
-import { MAX_ROW_COLUMNS, MIN_ROW_COLUMNS } from '../../../constants/grid'
-import { ROW_TOOLBAR_ITEM_CLASSES, ROW_TOOLBAR_POPOVER_CLASSES } from '../../../constants/uiClasses'
-import { useClickOutside } from '../../../hooks/useClickOutside/useClickOutside'
+import { MAX_ROW_COLUMNS, MIN_ROW_COLUMNS } from '../../../constants'
+import { ROW_TOOLBAR_ITEM_CLASSES, ROW_TOOLBAR_POPOVER_CLASSES } from '../../../constants'
+import { useClickOutside } from '../../../hooks'
 import { useFormStore } from '../../../store/formStore'
 import type { RowColumnsMenuProps } from './RowColumnsMenu.types'
 

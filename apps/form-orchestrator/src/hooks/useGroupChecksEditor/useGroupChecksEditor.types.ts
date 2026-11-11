@@ -1,6 +1,6 @@
-import type { CanvasField } from '../../types/field'
-import type { RepeatableGroup } from '../../types/formStructure'
-import type { GroupCheck } from '../../types/groupCheck'
+import type { CanvasField } from '../../types'
+import type { RepeatableGroup } from '../../types'
+import type { GroupCheck } from '../../types'
 
 export interface UseGroupChecksEditorParams {
   group: RepeatableGroup

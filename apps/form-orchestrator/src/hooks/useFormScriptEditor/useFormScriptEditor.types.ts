@@ -1,4 +1,4 @@
-import type { PreludeValidation } from '../../types/fieldScript'
+import type { PreludeValidation } from '../../types'
 
 export interface UseFormScriptEditorResult {
   formScript: string

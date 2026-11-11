@@ -1,4 +1,4 @@
-import type { ProjectFileLoad, ProjectFileSummary } from '../../types/projectFile'
+import type { ProjectFileLoad, ProjectFileSummary } from '../../types'
 
 export interface UseProjectImportResult {
   fileName: string | null

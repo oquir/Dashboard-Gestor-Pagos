@@ -1,5 +1,5 @@
-import { WARNING_BANNER_CLASSES } from '../../../constants/uiClasses'
-import { useProjectImport } from '../../../hooks/useProjectImport/useProjectImport'
+import { WARNING_BANNER_CLASSES } from '../../../constants'
+import { useProjectImport } from '../../../hooks'
 import { Button } from '../../atoms'
 import { ModalActions } from '../../atoms'
 import { ModalShell } from '../../atoms'

@@ -1,4 +1,4 @@
-import { useFieldScriptEditor } from '../../../../hooks/useFieldScriptEditor/useFieldScriptEditor'
+import { useFieldScriptEditor } from '../../../../hooks'
 import { PanelSection } from '../../../molecules'
 import { ScriptInput } from '../../../molecules'
 import {

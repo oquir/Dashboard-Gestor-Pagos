@@ -1,4 +1,4 @@
-import { useFieldRules } from '../../../../hooks/useFieldRules/useFieldRules'
+import { useFieldRules } from '../../../../hooks'
 import { FieldRuleCard } from '../../../molecules'
 import { PanelSection } from '../../../molecules'
 import { ADD_LINK_CLASSES, COUNT_CLASSES, RULES_HINT } from './FieldRulesEditor.constants'

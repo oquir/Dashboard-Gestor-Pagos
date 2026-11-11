@@ -1,4 +1,4 @@
-import type { CanvasToolItem } from '../types/ui'
+import type { CanvasToolItem } from '../types'
 
 // La lista canonica de herramientas del lienzo. El atajo sale de aca tanto para el teclado como
 // para el title de cada boton, asi los dos no pueden anunciar teclas distintas.

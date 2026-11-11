@@ -1,4 +1,4 @@
-import { NUMERIC_FIELD_TYPES } from '../../constants/fieldTypes'
+import { NUMERIC_FIELD_TYPES } from '../../constants'
 import type { ClampResult, SignedField } from './fieldSign.types'
 
 // Si un campo numerico admite valores negativos. Se aplica en dos momentos distintos, porque hay

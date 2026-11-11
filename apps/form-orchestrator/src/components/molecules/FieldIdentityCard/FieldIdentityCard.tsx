@@ -1,5 +1,5 @@
-import { FIELD_TYPE_ICONS } from '../../../constants/fieldTypeIcons'
-import { FIELD_TYPES } from '../../../constants/fieldTypes'
+import { FIELD_TYPE_ICONS } from '../../../constants'
+import { FIELD_TYPES } from '../../../constants'
 import type { FieldIdentityCardProps } from './FieldIdentityCard.types'
 
 // Ancla del panel: contra que campo se esta trabajando. El encabezado ya dice el nombre tecnico,

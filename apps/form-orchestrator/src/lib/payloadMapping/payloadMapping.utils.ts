@@ -1,7 +1,7 @@
-import { NUMERIC_FIELD_TYPES } from '../../constants/fieldTypes'
-import type { CanvasField } from '../../types/field'
-import type { LeafBindingStatus, MappingNode } from '../../types/payloadMapping'
-import type { SchemaNode, SchemaNodeType } from '../../types/payloadSchema'
+import { NUMERIC_FIELD_TYPES } from '../../constants'
+import type { CanvasField } from '../../types'
+import type { LeafBindingStatus, MappingNode } from '../../types'
+import type { SchemaNode, SchemaNodeType } from '../../types'
 
 // Vive aca y no en payloadMapping.ts porque buildNode la necesita; ese archivo la reexporta para
 // quien la pida desde afuera, asi el ciclo de imports queda en un solo sentido.

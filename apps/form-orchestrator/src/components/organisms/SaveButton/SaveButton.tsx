@@ -1,5 +1,5 @@
 import { Check, Save22 } from 'reicon-react'
-import { useSaveButton } from '../../../hooks/useSaveButton/useSaveButton'
+import { useSaveButton } from '../../../hooks'
 import { SAVE_BUTTON_BASE_CLASSES, SAVE_BUTTON_STATE_CLASSES } from './SaveButton.constants'
 
 export function SaveButton() {

@@ -1,4 +1,4 @@
-import type { CatalogDefinition, CatalogEntry, StoredCatalog } from '../../types/catalog'
+import type { CatalogDefinition, CatalogEntry, StoredCatalog } from '../../types'
 
 export interface UseCatalogCardParams {
   catalog: CatalogDefinition

@@ -1,5 +1,5 @@
 import type { MouseEvent } from 'react'
-import type { CanvasField } from '../../../types/field'
+import type { CanvasField } from '../../../types'
 
 export interface CanvasFieldChipProps {
   field: CanvasField

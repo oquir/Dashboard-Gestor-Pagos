@@ -1,5 +1,5 @@
 import type { useDraggable } from '@dnd-kit/core'
-import type { CanvasRow } from '../../../types/formStructure'
+import type { CanvasRow } from '../../../types'
 
 type DraggableHandle = ReturnType<typeof useDraggable>
 

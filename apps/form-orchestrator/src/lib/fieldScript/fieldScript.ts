@@ -1,4 +1,4 @@
-import { SCRIPT_PARAM_NAMES } from '../../constants/fieldScript'
+import { SCRIPT_PARAM_NAMES } from '../../constants'
 import type {
   PreludeValidation,
   ScriptCompileResult,
@@ -6,7 +6,7 @@ import type {
   ScriptFunctionResult,
   ScriptRef,
   ScriptValidation,
-} from '../../types/fieldScript'
+} from '../../types'
 import { scanScript } from './fieldScript.utils'
 
 // API publica del script de campo: de texto con {campo} a cuerpo de funcion ejecutable, mas las

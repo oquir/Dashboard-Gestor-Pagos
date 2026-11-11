@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Xmark } from 'reicon-react'
-import { CHROME_ON_ROW_CLASSES, CHROME_PINNED_CLASSES } from '../../../constants/uiClasses'
+import { CHROME_ON_ROW_CLASSES, CHROME_PINNED_CLASSES } from '../../../constants'
 import { useFormStore } from '../../../store/formStore'
 import { IconButton } from '../../atoms'
 import { RowDragHandle } from '../../atoms'

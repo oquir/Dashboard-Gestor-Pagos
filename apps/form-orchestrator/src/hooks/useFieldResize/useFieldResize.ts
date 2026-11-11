@@ -1,5 +1,5 @@
 import { type PointerEvent as ReactPointerEvent, useState } from 'react'
-import { GRID_GAP_PX } from '../../constants/grid'
+import { GRID_GAP_PX } from '../../constants'
 import { getCanvasScale } from '../../lib/canvasZoom/canvasZoom'
 import type { UseFieldResizeParams, UseFieldResizeResult } from './useFieldResize.types'
 

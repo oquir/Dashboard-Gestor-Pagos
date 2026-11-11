@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Layers, Plus, Redo, Trash6, Undo, Xmark } from 'reicon-react'
-import { CANVAS_TOOLS } from '../../../constants/canvasTool'
-import { CANVAS_TOOLBAR_ACTION_CLASSES } from '../../../constants/uiClasses'
-import { useFormHistory } from '../../../hooks/useFormHistory/useFormHistory'
+import { CANVAS_TOOLS } from '../../../constants'
+import { CANVAS_TOOLBAR_ACTION_CLASSES } from '../../../constants'
+import { useFormHistory } from '../../../hooks'
 import { getBandElement, getRowElement } from '../../../lib/canvasDom/canvasDom'
 import { getActiveGroups, getActiveRows, useFormStore } from '../../../store/formStore'
-import type { CanvasRow, RepeatableGroup } from '../../../types/formStructure'
+import type { CanvasRow, RepeatableGroup } from '../../../types'
 import { MoveToStepMenu } from '../MoveToStepMenu'
 import {
   SELECTION_COUNT_CLASSES,

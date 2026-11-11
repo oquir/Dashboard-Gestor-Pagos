@@ -1,5 +1,5 @@
 import { useFormStore } from '../../../../store/formStore'
-import type { CanvasField, FieldStyles } from '../../../../types/field'
+import type { CanvasField, FieldStyles } from '../../../../types'
 import { Textarea } from '../../../atoms'
 import { TwoColumnFieldGroup } from '../../../atoms'
 import { ColorPickerField } from '../../../molecules'

@@ -1,4 +1,4 @@
-import type { ExportedField } from '../../../../types/exportForm'
+import type { ExportedField } from '../../../../types'
 
 export interface PreviewNumberInputProps {
   field: ExportedField

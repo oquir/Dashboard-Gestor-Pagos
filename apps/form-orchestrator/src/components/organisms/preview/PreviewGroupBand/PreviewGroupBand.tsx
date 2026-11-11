@@ -1,7 +1,7 @@
 import { Plus, Trash } from 'reicon-react'
 import { checkKey } from '../../../../lib/runtimeValidation/runtimeValidation.utils'
-import type { ExportedRepeatableGroup } from '../../../../types/exportForm'
-import type { RuntimeScope } from '../../../../types/formRuntime'
+import type { ExportedRepeatableGroup } from '../../../../types'
+import type { RuntimeScope } from '../../../../types'
 import { PreviewRowsGrid } from '../PreviewRowsGrid'
 import type { PreviewGroupBandProps } from './PreviewGroupBand.types'
 

@@ -1,5 +1,5 @@
 import { Maximize22 } from 'reicon-react'
-import { CHROME_ON_FIELD_CLASSES, CHROME_PINNED_CLASSES } from '../../../constants/uiClasses'
+import { CHROME_ON_FIELD_CLASSES, CHROME_PINNED_CLASSES } from '../../../constants'
 import type { FieldDragHandleProps } from './FieldDragHandle.types'
 
 // Se oculta entera al reposo, igual que el tirador de ancho. Antes solo se atenuaba el icono, asi

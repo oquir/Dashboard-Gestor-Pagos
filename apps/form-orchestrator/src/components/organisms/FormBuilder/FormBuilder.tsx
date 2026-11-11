@@ -1,6 +1,6 @@
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { lazy, Suspense } from 'react'
-import { useDragAndDrop } from '../../../hooks/useDragAndDrop/useDragAndDrop'
+import { useDragAndDrop } from '../../../hooks'
 import { useFormStore } from '../../../store/formStore'
 import { SimulatorLoading } from '../../atoms'
 import { AppLayout } from '../../layout'

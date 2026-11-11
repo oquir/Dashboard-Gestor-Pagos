@@ -1,7 +1,7 @@
-import type { CanvasField } from '../../types/field'
-import type { OptionsSetup } from '../../types/formStoreTypes'
-import type { RepeatableGroup } from '../../types/formStructure'
-import type { SchemaLeaf } from '../../types/payloadSchema'
+import type { CanvasField } from '../../types'
+import type { OptionsSetup } from '../../types'
+import type { RepeatableGroup } from '../../types'
+import type { SchemaLeaf } from '../../types'
 
 export interface UseApiMappingPanelParams {
   field: CanvasField

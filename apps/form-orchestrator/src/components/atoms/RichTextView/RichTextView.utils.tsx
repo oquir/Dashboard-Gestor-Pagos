@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { safeHref } from '../../../lib/richText/richText.utils'
-import type { RichTextLeaf } from '../../../types/richText'
+import type { RichTextLeaf } from '../../../types'
 
 export function renderLeaf(leaf: RichTextLeaf, key: number): ReactNode {
   let node: ReactNode = leaf.text

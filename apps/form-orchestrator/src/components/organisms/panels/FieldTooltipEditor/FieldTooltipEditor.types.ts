@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react'
-import type { CanvasField } from '../../../../types/field'
-import type { IconProps } from '../../../../types/icon'
+import type { CanvasField } from '../../../../types'
+import type { IconProps } from '../../../../types'
 
 export interface FieldTooltipEditorProps {
   field: CanvasField

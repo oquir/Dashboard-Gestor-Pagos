@@ -1,4 +1,4 @@
-import type { FechasMaximasPresentacion } from '../../../types/maxDates'
+import type { FechasMaximasPresentacion } from '../../../types'
 
 export interface MaxDatesPasteFormProps {
   onLoad: (fechas: FechasMaximasPresentacion) => void

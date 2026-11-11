@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { clearDraft, loadDraft } from '../../lib/persistence/persistence'
 import { useFormStore } from '../../store/formStore'
-import type { DraftRecovery, DraftRecoveryStatus } from '../../types/draftRecovery'
-import type { DraftLoad } from '../../types/persistenceTypes'
+import type { DraftRecovery, DraftRecoveryStatus } from '../../types'
+import type { DraftLoad } from '../../types'
 import { NOTHING_PENDING } from './useDraftRecovery.constants'
 import type { PendingDraft } from './useDraftRecovery.types'
 

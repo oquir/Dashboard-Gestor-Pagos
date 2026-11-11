@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { ChevronDown, ChevronRight } from 'reicon-react'
-import { useJsonCode } from '../../../hooks/useJsonCode/useJsonCode'
-import type { JsonCodeProps } from '../../../types/jsonCode'
+import { useJsonCode } from '../../../hooks'
+import type { JsonCodeProps } from '../../../types'
 import { JSON_CODE_BASE_CLASSES, JSON_MUTED_CLASS } from './JsonCode.constants'
 import { renderTokens } from './JsonCode.utils'
 

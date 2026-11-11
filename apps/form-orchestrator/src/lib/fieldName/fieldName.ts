@@ -1,5 +1,5 @@
-import type { CanvasRow } from '../../types/formStructure'
-import type { FieldRename } from '../../types/persistenceTypes'
+import type { CanvasRow } from '../../types'
+import type { FieldRename } from '../../types'
 import { FALLBACK_NAME } from './fieldName.constants'
 
 // El nombre tecnico es la identidad del campo hacia afuera: con el se referencian las formulas,

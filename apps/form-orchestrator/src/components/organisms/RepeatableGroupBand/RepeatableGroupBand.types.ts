@@ -1,5 +1,5 @@
-import type { CanvasField } from '../../../types/field'
-import type { CanvasRow, RepeatableGroup } from '../../../types/formStructure'
+import type { CanvasField } from '../../../types'
+import type { CanvasRow, RepeatableGroup } from '../../../types'
 
 export interface RepeatableGroupBandProps {
   group: RepeatableGroup

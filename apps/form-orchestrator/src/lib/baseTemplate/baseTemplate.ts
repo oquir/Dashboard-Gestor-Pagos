@@ -8,13 +8,9 @@ import {
   CATALOG_TIPOS_DOCUMENTO,
   CATALOG_TIPOS_PERSONA,
   CATALOG_TIPOS_SANCION,
-} from '../../constants/catalog'
-import { GRID_BASE_COLUMNS } from '../../constants/grid'
-import type {
-  FormStepTemplate,
-  IntroStepTemplate,
-  RepeatableGroup,
-} from '../../types/formStructure'
+} from '../../constants'
+import { GRID_BASE_COLUMNS } from '../../constants'
+import type { FormStepTemplate, IntroStepTemplate, RepeatableGroup } from '../../types'
 import {
   CALCULATED_WITHOUT_NEGATIVE,
   CORREO_MESSAGE,

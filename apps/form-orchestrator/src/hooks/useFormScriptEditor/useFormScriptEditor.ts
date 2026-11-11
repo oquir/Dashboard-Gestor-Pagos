@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { validatePrelude } from '../../lib/fieldScript/fieldScript'
 import { getAllFields, useFormStore } from '../../store/formStore'
-import type { PreludeValidation } from '../../types/fieldScript'
+import type { PreludeValidation } from '../../types'
 import type { UseFormScriptEditorResult } from './useFormScriptEditor.types'
 
 export function useFormScriptEditor(): UseFormScriptEditorResult {

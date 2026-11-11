@@ -1,9 +1,5 @@
 import type { z } from 'zod'
-import type {
-  ExportedField,
-  ExportedGroupCheck,
-  ExportedRepeatableGroup,
-} from '../../types/exportForm'
+import type { ExportedField, ExportedGroupCheck, ExportedRepeatableGroup } from '../../types'
 import type {
   RuntimeContext,
   RuntimeIssue,
@@ -12,9 +8,9 @@ import type {
   RuntimeSnapshot,
   RuntimeValues,
   ValidationResult,
-} from '../../types/formRuntime'
-import type { GroupCheckResult } from '../../types/groupCheck'
-import type { ScriptRunResult } from '../../types/scriptRuntime'
+} from '../../types'
+import type { GroupCheckResult } from '../../types'
+import type { ScriptRunResult } from '../../types'
 import { isPresentationalField } from '../fieldKind/fieldKind'
 import { groupColumns } from '../formRuntime/formRuntime.utils'
 import { coerceValues, runFieldScript } from '../scriptRuntime/scriptRuntime'

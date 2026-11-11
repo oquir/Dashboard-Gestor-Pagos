@@ -1,5 +1,5 @@
-import type { CanvasField } from '../../types/field'
-import type { ScriptValidation } from '../../types/fieldScript'
+import type { CanvasField } from '../../types'
+import type { ScriptValidation } from '../../types'
 
 export interface UseFieldScriptEditorParams {
   field: CanvasField

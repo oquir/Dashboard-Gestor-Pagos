@@ -3,8 +3,8 @@ import type {
   FieldOption,
   FieldValidationOverride,
   FieldValidationRules,
-} from '../../types/field'
-import type { RepeatableGroup } from '../../types/formStructure'
+} from '../../types'
+import type { RepeatableGroup } from '../../types'
 import { isPresentationalField } from '../fieldKind/fieldKind'
 import { effectiveMaxLength } from '../fieldLength/fieldLength'
 import {

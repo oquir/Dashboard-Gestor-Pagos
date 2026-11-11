@@ -1,10 +1,5 @@
-import type { ExportedField, ExportedStep } from '../../types/exportForm'
-import type {
-  RuntimeModel,
-  RuntimeScope,
-  RuntimeSnapshot,
-  RuntimeValues,
-} from '../../types/formRuntime'
+import type { ExportedField, ExportedStep } from '../../types'
+import type { RuntimeModel, RuntimeScope, RuntimeSnapshot, RuntimeValues } from '../../types'
 import { evaluateCondition } from '../runtimeCondition/runtimeCondition'
 import { checkKey, fieldKey } from '../runtimeValidation/runtimeValidation.utils'
 

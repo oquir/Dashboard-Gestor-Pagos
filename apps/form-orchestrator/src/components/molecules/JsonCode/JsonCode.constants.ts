@@ -1,4 +1,4 @@
-import type { JsonTokenKind } from '../../../types/jsonCode'
+import type { JsonTokenKind } from '../../../types'
 
 export const JSON_TOKEN_CLASSES: Record<JsonTokenKind, string> = {
   key: 'text-sky-600 dark:text-sky-400',

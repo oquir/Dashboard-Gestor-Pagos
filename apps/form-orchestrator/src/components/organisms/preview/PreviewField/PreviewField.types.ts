@@ -1,6 +1,6 @@
-import type { CatalogBank } from '../../../../types/catalog'
-import type { ExportedField, ExportedTooltip } from '../../../../types/exportForm'
-import type { RuntimeScope } from '../../../../types/formRuntime'
+import type { CatalogBank } from '../../../../types'
+import type { ExportedField, ExportedTooltip } from '../../../../types'
+import type { RuntimeScope } from '../../../../types'
 
 export interface PreviewFieldProps {
   field: ExportedField

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { AngleDown2, Check } from 'reicon-react'
-import { useClickOutside } from '../../../hooks/useClickOutside/useClickOutside'
+import { useClickOutside } from '../../../hooks'
 import {
   canZoomIn,
   canZoomOut,

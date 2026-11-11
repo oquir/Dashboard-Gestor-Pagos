@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { saveDraft } from '../../lib/persistence/persistence'
 import { readProjectFile, summarizeProjectFile } from '../../lib/projectFile/projectFile'
 import { useFormStore } from '../../store/formStore'
-import type { ProjectFileLoad, ProjectFileSummary } from '../../types/projectFile'
+import type { ProjectFileLoad, ProjectFileSummary } from '../../types'
 import { UNREADABLE_FILE_MESSAGE } from './useProjectImport.constants'
 import type { UseProjectImportResult } from './useProjectImport.types'
 

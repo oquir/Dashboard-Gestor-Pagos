@@ -1,9 +1,5 @@
 import { useState } from 'react'
-import {
-  DEFAULT_ANIO_KEY,
-  DEFAULT_SMMLV_KEY,
-  DEFAULT_UVT_KEY,
-} from '../../../../constants/valoresBank'
+import { DEFAULT_ANIO_KEY, DEFAULT_SMMLV_KEY, DEFAULT_UVT_KEY } from '../../../../constants'
 import { formatNumber } from '../../../../lib/numberFormat/numberFormat'
 import { buscarValores } from '../../../../lib/valoresAnuales/valoresAnuales'
 import {
@@ -12,7 +8,7 @@ import {
   valoresEnUso,
 } from '../../../../lib/valoresBank/valoresBank'
 import { useFormStore } from '../../../../store/formStore'
-import type { ValorAnual, ValoresParseResult } from '../../../../types/valores'
+import type { ValorAnual, ValoresParseResult } from '../../../../types'
 import { Button } from '../../../atoms'
 import { BinaryChoiceToggle } from '../../../molecules'
 import { PanelSection } from '../../../molecules'

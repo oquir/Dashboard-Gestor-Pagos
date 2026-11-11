@@ -4,7 +4,7 @@ import type {
   CatalogParseResult,
   CatalogPasteKeys,
   StoredCatalog,
-} from '../../types/catalog'
+} from '../../types'
 import { CATALOG_BANK_KEY } from './catalogBank.constants'
 import { catalogBankSchema } from './catalogBank.schema'
 import { findArray, readKey } from './catalogBank.utils'

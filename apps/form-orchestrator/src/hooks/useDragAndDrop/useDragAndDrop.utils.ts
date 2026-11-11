@@ -1,7 +1,7 @@
 import type { CollisionDetection, Modifier } from '@dnd-kit/core'
 import { pointerWithin, rectIntersection } from '@dnd-kit/core'
 import { getEventCoordinates } from '@dnd-kit/utilities'
-import { GRID_GAP_PX } from '../../constants/grid'
+import { GRID_GAP_PX } from '../../constants'
 import { getRowElement } from '../../lib/canvasDom/canvasDom'
 import { getCanvasScale } from '../../lib/canvasZoom/canvasZoom'
 import type {
@@ -10,7 +10,7 @@ import type {
   RowDragState,
   RowDropEdge,
   RowDropTarget,
-} from '../../types/placement'
+} from '../../types'
 
 // Medidas del arrastre contra el DOM real. La grilla la dibuja CSS, asi que la unica forma de
 // saber sobre que columna esta el puntero es medir la fila.

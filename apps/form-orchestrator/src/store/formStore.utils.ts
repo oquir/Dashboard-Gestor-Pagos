@@ -1,22 +1,22 @@
 import { v4 as uuidv4 } from 'uuid'
-import { INDUSTRIA_COMERCIO_FORM_STEPS } from '../constants/baseTemplate'
-import { GRID_BASE_COLUMNS } from '../constants/grid'
+import { INDUSTRIA_COMERCIO_FORM_STEPS } from '../constants'
+import { GRID_BASE_COLUMNS } from '../constants'
 import {
   getIndustriaComercioFormTemplate,
   getIndustriaComercioIntroTemplate,
 } from '../lib/baseTemplate/baseTemplate'
 import { collectFieldNames, slugifyFieldName, uniqueFieldName } from '../lib/fieldName/fieldName'
-import type { CanvasField, FieldOption } from '../types/field'
+import type { CanvasField, FieldOption } from '../types'
 import type {
   CanvasRow,
   FormStep,
   FormStepTemplate,
   IntroModalStep,
   IntroStepTemplate,
-} from '../types/formStructure'
-import type { CanvasTarget, FieldPlacement } from '../types/placement'
-import type { FormType } from '../types/setup'
-import type { StateSlice } from '../types/store'
+} from '../types'
+import type { CanvasTarget, FieldPlacement } from '../types'
+import type { FormType } from '../types'
+import type { StateSlice } from '../types'
 // Constructores, recorridos de todo el lienzo y arranque desde la plantilla.
 
 import { THEME_STORAGE_KEY } from './formStore.constants'

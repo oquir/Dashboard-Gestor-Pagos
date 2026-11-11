@@ -1,11 +1,11 @@
 import { Xmark } from 'reicon-react'
-import { OPERATOR_LABELS } from '../../../constants/conditions'
+import { OPERATOR_LABELS } from '../../../constants'
 import {
   operatorNeedsValue,
   operatorsForFieldType,
 } from '../../../lib/fieldCondition/fieldCondition'
 import { useFormStore } from '../../../store/formStore'
-import type { CanvasField, ConditionOperator, FieldValidationOverride } from '../../../types/field'
+import type { CanvasField, ConditionOperator, FieldValidationOverride } from '../../../types'
 import { TwoColumnFieldGroup } from '../../atoms'
 import { ConditionFieldSelect } from '../ConditionFieldSelect'
 import { ConditionOperatorSelect } from '../ConditionOperatorSelect'

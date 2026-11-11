@@ -1,7 +1,7 @@
-import type { CatalogColumn, CatalogOption } from '../../types/catalog'
-import type { ExportedField } from '../../types/exportForm'
-import type { CatalogFill } from '../../types/field'
-import type { RuntimeValues } from '../../types/formRuntime'
+import type { CatalogColumn, CatalogOption } from '../../types'
+import type { ExportedField } from '../../types'
+import type { CatalogFill } from '../../types'
+import type { RuntimeValues } from '../../types'
 
 // Copia columnas de la opcion elegida a otros campos. Es lo que hace que al elegir una actividad
 // se llenen solos su codigo CIIU y su tarifa: campos de solo lectura que muestran datos del

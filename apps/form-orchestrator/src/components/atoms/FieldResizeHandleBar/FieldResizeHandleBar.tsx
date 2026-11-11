@@ -1,5 +1,5 @@
-import { CHROME_ON_FIELD_CLASSES, CHROME_PINNED_CLASSES } from '../../../constants/uiClasses'
-import type { FieldResizeHandleVariantProps } from '../../../types/fieldResize'
+import { CHROME_ON_FIELD_CLASSES, CHROME_PINNED_CLASSES } from '../../../constants'
+import type { FieldResizeHandleVariantProps } from '../../../types'
 
 export function FieldResizeHandleBar({
   isResizing,

@@ -1,4 +1,4 @@
-import type { CanvasTarget } from '../../../types/placement'
+import type { CanvasTarget } from '../../../types'
 
 export interface MoveToStepMenuProps {
   onSelect: (target: CanvasTarget) => void

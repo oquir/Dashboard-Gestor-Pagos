@@ -1,4 +1,4 @@
-import type { InputProps } from '../../../types/input'
+import type { InputProps } from '../../../types'
 
 export function Input({ className = '', disabled, tone = 'default', ...rest }: InputProps) {
   const toneClasses: string = disabled

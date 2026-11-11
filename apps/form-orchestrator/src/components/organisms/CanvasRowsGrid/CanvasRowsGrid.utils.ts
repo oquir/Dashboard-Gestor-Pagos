@@ -1,6 +1,6 @@
-import { GRID_GAP_PX } from '../../../constants/grid'
-import type { CanvasRow } from '../../../types/formStructure'
-import type { RowDragState, RowDropTarget } from '../../../types/placement'
+import { GRID_GAP_PX } from '../../../constants'
+import type { CanvasRow } from '../../../types'
+import type { RowDragState, RowDropTarget } from '../../../types'
 import { NO_DISPLACEMENT } from './CanvasRowsGrid.constants'
 import type { CanvasBlock, RowDisplacement } from './CanvasRowsGrid.types'
 

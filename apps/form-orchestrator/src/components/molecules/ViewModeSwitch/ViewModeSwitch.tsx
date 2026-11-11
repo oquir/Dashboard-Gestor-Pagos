@@ -1,4 +1,4 @@
-import { VIEW_MODE_TABS } from '../../../constants/canvasView'
+import { VIEW_MODE_TABS } from '../../../constants'
 import {
   SWITCH_ITEM_ACTIVE_CLASSES,
   SWITCH_ITEM_BASE_CLASSES,

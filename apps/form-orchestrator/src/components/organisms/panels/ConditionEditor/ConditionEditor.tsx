@@ -1,5 +1,5 @@
-import { OPERATOR_LABELS } from '../../../../constants/conditions'
-import { useConditionEditor } from '../../../../hooks/useConditionEditor/useConditionEditor'
+import { OPERATOR_LABELS } from '../../../../constants'
+import { useConditionEditor } from '../../../../hooks'
 import { ToggleSwitch } from '../../../atoms'
 import { ConditionFieldSelect } from '../../../molecules'
 import { ConditionOperatorSelect } from '../../../molecules'

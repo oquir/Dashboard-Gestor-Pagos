@@ -1,5 +1,5 @@
-import type { CanvasField } from '../../../types/field'
-import type { CanvasRow } from '../../../types/formStructure'
+import type { CanvasField } from '../../../types'
+import type { CanvasRow } from '../../../types'
 
 export interface CanvasRowProps {
   row: CanvasRow

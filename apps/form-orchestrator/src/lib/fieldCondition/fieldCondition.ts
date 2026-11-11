@@ -1,4 +1,4 @@
-import type { ConditionOperator } from '../../types/field'
+import type { ConditionOperator } from '../../types'
 import {
   LIST_OPERATORS,
   OPERATORS_WITHOUT_VALUE,

@@ -1,4 +1,4 @@
-import type { CatalogFill, FieldDataSource } from '../../types/field'
+import type { CatalogFill, FieldDataSource } from '../../types'
 
 // Al borrar el campo padre se pierde el filtro, no el catalogo: municipio sigue siendo municipio
 // aunque ya no haya departamento que lo parametrice. Lo mismo con un destino de relleno: se cae

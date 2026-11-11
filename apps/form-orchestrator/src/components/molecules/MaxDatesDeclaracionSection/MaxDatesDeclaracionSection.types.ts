@@ -1,4 +1,4 @@
-import type { DeclaracionKind, ReglaAnio } from '../../../types/maxDates'
+import type { DeclaracionKind, ReglaAnio } from '../../../types'
 
 export interface MaxDatesDeclaracionSectionProps {
   kind: DeclaracionKind

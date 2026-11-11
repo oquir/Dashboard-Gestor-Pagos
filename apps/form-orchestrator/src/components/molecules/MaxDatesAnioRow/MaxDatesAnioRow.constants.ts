@@ -1,4 +1,4 @@
-export { BADGE_LOADED_CLASSES, HINT_CLASSES } from '../../../constants/uiClasses'
+export { BADGE_LOADED_CLASSES, HINT_CLASSES } from '../../../constants'
 
 export const DATE_INPUT_CLASSES: string =
   'w-28 shrink-0 rounded-md border border-border bg-field px-2 py-1 text-right text-xs tabular-nums text-fg outline-none focus:border-brand-border'

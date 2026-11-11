@@ -1,4 +1,4 @@
-import type { OrphanBinding } from '../../types/payloadMapping'
+import type { OrphanBinding } from '../../types'
 
 export interface UsePayloadPreviewCanvasResult {
   summaryJson: string

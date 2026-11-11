@@ -1,4 +1,4 @@
-import type { CanvasTool } from '../../../types/ui'
+import type { CanvasTool } from '../../../types'
 
 // El cursor anuncia la herramienta. select-none porque con la mano o el marco arrastrar sobre el
 // lienzo no debe seleccionar texto. active:cursor-grabbing cierra la mano sin estado: la raiz queda

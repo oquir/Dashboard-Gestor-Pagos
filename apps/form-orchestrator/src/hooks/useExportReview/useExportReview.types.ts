@@ -1,4 +1,4 @@
-import type { FormProblem } from '../../types/formDiagnostics'
+import type { FormProblem } from '../../types'
 
 export interface UseExportReviewResult {
   problems: FormProblem[] | null

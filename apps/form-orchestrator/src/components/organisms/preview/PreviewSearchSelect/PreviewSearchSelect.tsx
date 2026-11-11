@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/refs -- falso positivo: el hook devuelve refs junto a valores comunes */
 import { Magnifier } from 'reicon-react'
-import { usePreviewSearchSelect } from '../../../../hooks/usePreviewSearchSelect/usePreviewSearchSelect'
+import { usePreviewSearchSelect } from '../../../../hooks/usePreviewSearchSelect'
 import {
   FOOTER_BUTTON_CLASSES,
   OPTION_BUTTON_CLASSES,

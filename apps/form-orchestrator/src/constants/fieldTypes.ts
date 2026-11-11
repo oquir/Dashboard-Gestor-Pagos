@@ -1,4 +1,4 @@
-import type { FieldTypeDef } from '../types/fieldTypes'
+import type { FieldTypeDef } from '../types'
 
 export const OPTION_BASED_FIELD_TYPES: string[] = [
   'select',

@@ -2,11 +2,11 @@ import type { StoreApi } from 'zustand'
 import { loadCatalogBank, saveCatalogBank } from '../lib/catalogBank/catalogBank'
 import { loadMaxDates, saveMaxDates } from '../lib/maxDatesBank/maxDatesBank'
 import { loadValores, saveValores } from '../lib/valoresBank/valoresBank'
-import type { BanksSlice } from '../types/banksSlice'
-import type { CatalogBank } from '../types/catalog'
-import type { FormState } from '../types/formStoreTypes'
-import type { StoredMaxDates } from '../types/maxDates'
-import type { StoredValores } from '../types/valores'
+import type { BanksSlice } from '../types'
+import type { CatalogBank } from '../types'
+import type { FormState } from '../types'
+import type { StoredMaxDates } from '../types'
+import type { StoredValores } from '../types'
 
 // Los tres bancos de datos que alimentan al simulador. Se separan del resto del store porque no
 // comparten nada con el: no tocan formSteps ni introModal, no entran al borrador y no viajan en el

@@ -1,11 +1,11 @@
 import { useEffect } from 'react'
-import { CANVAS_TOOLS } from '../../constants/canvasTool'
-import { ZOOM_DEFAULT } from '../../constants/canvasZoom'
+import { CANVAS_TOOLS } from '../../constants'
+import { ZOOM_DEFAULT } from '../../constants'
 import { zoomIn, zoomOut } from '../../lib/canvasZoom/canvasZoom'
 import { saveDraft } from '../../lib/persistence/persistence'
 import { getActiveRows, getAllFields, useFormStore } from '../../store/formStore'
-import type { FormState } from '../../types/formStoreTypes'
-import type { CanvasTool, CanvasToolItem } from '../../types/ui'
+import type { FormState } from '../../types'
+import type { CanvasTool, CanvasToolItem } from '../../types'
 import { isEditableTarget, isPointerOverCanvas } from './useKeyboardShortcuts.utils'
 
 // Atajos globales del constructor. Ctrl/Cmd+S guarda el mismo borrador que el autoguardado; se monta

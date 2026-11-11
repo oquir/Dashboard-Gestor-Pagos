@@ -1,4 +1,4 @@
-import type { FormPreviewApi } from '../../../../types/formPreview'
+import type { FormPreviewApi } from '../../../../types'
 
 export interface PreviewFormProps {
   preview: FormPreviewApi

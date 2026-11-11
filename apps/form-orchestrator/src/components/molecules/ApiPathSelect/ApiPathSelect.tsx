@@ -1,4 +1,4 @@
-import type { SchemaLeaf } from '../../../types/payloadSchema'
+import type { SchemaLeaf } from '../../../types'
 import type { ApiPathSelectProps } from './ApiPathSelect.types'
 import { groupLeavesByRoot } from './ApiPathSelect.utils'
 

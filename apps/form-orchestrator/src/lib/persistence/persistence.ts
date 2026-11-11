@@ -1,4 +1,4 @@
-import type { DraftLoad, DraftPayload, FieldRename } from '../../types/persistenceTypes'
+import type { DraftLoad, DraftPayload, FieldRename } from '../../types'
 import { migrateFieldNames } from '../fieldName/fieldName'
 import { migrateRows } from '../rowLayout/rowLayout'
 import { DRAFT_KEY, DRAFT_SCHEMA_VERSION } from './persistence.constants'

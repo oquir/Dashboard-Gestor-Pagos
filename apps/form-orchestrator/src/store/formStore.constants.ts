@@ -1,4 +1,4 @@
-import type { CanvasRow, RepeatableGroup } from '../types/formStructure'
+import type { CanvasRow, RepeatableGroup } from '../types'
 
 // Zustand lee los selectores con useSyncExternalStore, que compara por identidad. Un selector que
 // devuelva un [] nuevo en cada llamada se ve siempre como un valor distinto y dispara un bucle de

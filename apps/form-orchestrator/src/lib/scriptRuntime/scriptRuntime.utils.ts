@@ -1,7 +1,7 @@
-import { toScriptNumber } from '../../constants/fieldScript'
-import { NUMERIC_FIELD_TYPES } from '../../constants/fieldTypes'
-import type { ScriptFunction, ScriptFunctionResult } from '../../types/fieldScript'
-import type { RuntimeContext } from '../../types/formRuntime'
+import { toScriptNumber } from '../../constants'
+import { NUMERIC_FIELD_TYPES } from '../../constants'
+import type { ScriptFunction, ScriptFunctionResult } from '../../types'
+import type { RuntimeContext } from '../../types'
 import { buildScriptFunction, composeScriptBody } from '../fieldScript/fieldScript'
 
 // Sin tabla de vencimientos los helpers de fecha no encuentran nada y devuelven null y 0. Es lo que

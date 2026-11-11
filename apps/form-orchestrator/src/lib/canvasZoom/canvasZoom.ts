@@ -1,4 +1,4 @@
-import { ZOOM_MAX, ZOOM_MIN, ZOOM_STEP, ZOOM_WHEEL_FACTOR } from '../../constants/canvasZoom'
+import { ZOOM_MAX, ZOOM_MIN, ZOOM_STEP, ZOOM_WHEEL_FACTOR } from '../../constants'
 
 // Aritmetica del zoom del lienzo. Todo es puro salvo getCanvasScale, que lee el DOM a proposito:
 // el zoom se aplica en CSS, asi que el DOM es la unica fuente de verdad de cuanto vale.

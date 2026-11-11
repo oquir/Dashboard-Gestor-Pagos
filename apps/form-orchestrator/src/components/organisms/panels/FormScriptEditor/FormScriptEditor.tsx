@@ -1,4 +1,4 @@
-import { useFormScriptEditor } from '../../../../hooks/useFormScriptEditor/useFormScriptEditor'
+import { useFormScriptEditor } from '../../../../hooks'
 import { PanelSection } from '../../../molecules'
 import { ScriptInput } from '../../../molecules'
 import {

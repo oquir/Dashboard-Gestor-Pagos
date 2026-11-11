@@ -1,6 +1,6 @@
-import { TOOLTIP_POSITIONS } from '../../../../constants/fieldTooltip'
+import { TOOLTIP_POSITIONS } from '../../../../constants'
 import { useFormStore } from '../../../../store/formStore'
-import type { FieldTooltip } from '../../../../types/field'
+import type { FieldTooltip } from '../../../../types'
 import { Label } from '../../../atoms'
 import { Textarea } from '../../../atoms'
 import { ToggleSwitch } from '../../../atoms'

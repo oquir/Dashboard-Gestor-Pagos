@@ -1,6 +1,6 @@
-import type { ExportedRow } from '../../../../types/exportForm'
-import type { FormPreviewApi } from '../../../../types/formPreview'
-import type { RuntimeScope } from '../../../../types/formRuntime'
+import type { ExportedRow } from '../../../../types'
+import type { FormPreviewApi } from '../../../../types'
+import type { RuntimeScope } from '../../../../types'
 
 export interface PreviewRowsGridProps {
   rows: ExportedRow[]

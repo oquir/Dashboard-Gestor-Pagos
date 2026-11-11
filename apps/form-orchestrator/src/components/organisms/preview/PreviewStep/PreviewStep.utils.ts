@@ -1,4 +1,4 @@
-import type { ExportedRow } from '../../../../types/exportForm'
+import type { ExportedRow } from '../../../../types'
 import type { PreviewBlock } from './PreviewStep.types'
 
 export function toPreviewBlocks(rows: ExportedRow[]): PreviewBlock[] {

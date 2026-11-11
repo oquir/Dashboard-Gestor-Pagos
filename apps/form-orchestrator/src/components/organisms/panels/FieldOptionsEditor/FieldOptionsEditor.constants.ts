@@ -1,4 +1,4 @@
-export { COUNT_CLASSES } from '../../../../constants/uiClasses'
+export { COUNT_CLASSES } from '../../../../constants'
 
 export const OPTION_INPUT_CLASSES: string =
   'w-full rounded-md border border-border bg-field px-2 py-1.5 text-sm text-fg outline-none focus:border-brand-border'

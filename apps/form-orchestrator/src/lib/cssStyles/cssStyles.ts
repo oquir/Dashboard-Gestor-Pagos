@@ -1,5 +1,5 @@
-import type { CssStyleMap, FieldStyles, FieldTooltip } from '../../types/field'
-import type { RowStyles } from '../../types/formStructure'
+import type { CssStyleMap, FieldStyles, FieldTooltip } from '../../types'
+import type { RowStyles } from '../../types'
 import { splitDeclarations, toCamelCase } from './cssStyles.utils'
 
 // Traduce el CSS que el autor escribe a mano (el modelo) al objeto plano que el `style` de React

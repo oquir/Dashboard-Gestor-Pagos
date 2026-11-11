@@ -2,9 +2,9 @@ import { useMemo } from 'react'
 import { buildFieldGraph, describeCycle, topologicalOrder } from '../../lib/fieldGraph/fieldGraph'
 import { validateFieldScript } from '../../lib/fieldScript/fieldScript'
 import { useFormStore } from '../../store/formStore'
-import type { CanvasField } from '../../types/field'
-import type { FieldGraph } from '../../types/fieldGraph'
-import type { ScriptValidation } from '../../types/fieldScript'
+import type { CanvasField } from '../../types'
+import type { FieldGraph } from '../../types'
+import type { ScriptValidation } from '../../types'
 import type {
   UseFieldScriptEditorParams,
   UseFieldScriptEditorResult,

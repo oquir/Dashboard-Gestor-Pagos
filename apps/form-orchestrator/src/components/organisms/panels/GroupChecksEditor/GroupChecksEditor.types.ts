@@ -1,4 +1,4 @@
-import type { RepeatableGroup } from '../../../../types/formStructure'
+import type { RepeatableGroup } from '../../../../types'
 
 export interface GroupChecksEditorProps {
   group: RepeatableGroup

@@ -1,4 +1,4 @@
-import type { ConditionOperator } from '../types/field'
+import type { ConditionOperator } from '../types'
 
 export const OPERATOR_LABELS: Record<ConditionOperator, string> = {
   equals: 'es igual a',

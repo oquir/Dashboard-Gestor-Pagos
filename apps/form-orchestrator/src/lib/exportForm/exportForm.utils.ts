@@ -8,9 +8,9 @@ import type {
   ExportedStep,
   ExportedValidations,
   ExportedValidationVariant,
-} from '../../types/exportForm'
-import type { CanvasField, CatalogFill, FieldCondition, FieldDataSource } from '../../types/field'
-import type { CanvasRow, FormStep, RepeatableGroup } from '../../types/formStructure'
+} from '../../types'
+import type { CanvasField, CatalogFill, FieldCondition, FieldDataSource } from '../../types'
+import type { CanvasRow, FormStep, RepeatableGroup } from '../../types'
 import { resolveFieldStyles, resolveRowStyles } from '../cssStyles/cssStyles'
 import { operatorTakesList, parseConditionList } from '../fieldCondition/fieldCondition'
 import { isPresentationalField } from '../fieldKind/fieldKind'

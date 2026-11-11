@@ -1,6 +1,6 @@
 import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
 import { getAllFields, useFormStore } from '../../../../store/formStore'
-import type { CanvasField } from '../../../../types/field'
+import type { CanvasField } from '../../../../types'
 import { ToggleSwitch } from '../../../atoms'
 import { PanelSection } from '../../../molecules'
 import { ConditionEditor } from '../ConditionEditor'

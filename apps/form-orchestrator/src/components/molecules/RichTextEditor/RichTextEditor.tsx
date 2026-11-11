@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/refs -- falso positivo: el hook devuelve refs junto a valores comunes */
-import { useRichTextEditor } from '../../../hooks/useRichTextEditor/useRichTextEditor'
+import { useRichTextEditor } from '../../../hooks'
 import {
   EDITOR_CLASSES,
   ERROR_CLASSES,

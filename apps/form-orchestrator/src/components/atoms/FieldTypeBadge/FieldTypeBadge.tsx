@@ -1,5 +1,5 @@
-import { FIELD_TYPE_ICONS } from '../../../constants/fieldTypeIcons'
-import { FIELD_TYPES } from '../../../constants/fieldTypes'
+import { FIELD_TYPE_ICONS } from '../../../constants'
+import { FIELD_TYPES } from '../../../constants'
 import type { FieldTypeBadgeProps } from './FieldTypeBadge.types'
 
 // Icono y no el tipo crudo en mayusculas: el mismo lenguaje que ya usan la paleta y el panel de

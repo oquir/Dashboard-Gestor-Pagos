@@ -1,5 +1,5 @@
-import { FIELD_TYPES } from '../../../constants/fieldTypes'
-import type { FieldTypeCategory } from '../../../types/fieldTypes'
+import { FIELD_TYPES } from '../../../constants'
+import type { FieldTypeCategory } from '../../../types'
 import type { PaletteSection } from './FieldPalette.types'
 
 const SECTION_ORDER: FieldTypeCategory[] = ['basico', 'complejo', 'contenido']

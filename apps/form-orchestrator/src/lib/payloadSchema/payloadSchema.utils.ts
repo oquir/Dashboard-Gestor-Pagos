@@ -1,4 +1,4 @@
-import type { SchemaLeaf, SchemaNode } from '../../types/payloadSchema'
+import type { SchemaLeaf, SchemaNode } from '../../types'
 
 // Aplana el contrato en hojas con su ruta completa. Al entrar en un array cada hoja queda marcada
 // con su arrayPath: es lo que permite ofrecer rutas de item solo a los campos de un grupo atado a

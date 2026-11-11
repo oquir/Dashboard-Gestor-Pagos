@@ -1,5 +1,5 @@
 import { AngleDown2, AngleLeft2, AngleRight2, AngleUp2 } from 'reicon-react'
-import type { TooltipPosition } from '../../../../types/field'
+import type { TooltipPosition } from '../../../../types'
 import type { TooltipPositionOption } from './FieldTooltipEditor.types'
 
 export const TOOLTIP_POSITION_OPTIONS: Record<TooltipPosition, TooltipPositionOption> = {

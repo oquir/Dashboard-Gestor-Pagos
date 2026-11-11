@@ -1,7 +1,4 @@
-export {
-  HINT_CLASSES,
-  WARNING_BANNER_CLASSES as WARNING_CLASSES,
-} from '../../../../constants/uiClasses'
+export { HINT_CLASSES, WARNING_BANNER_CLASSES as WARNING_CLASSES } from '../../../../constants'
 
 // Informativo, no un problema: el campo esta dentro de un grupo repetible y conviene decirlo.
 export const NOTE_CLASSES: string =

@@ -1,6 +1,6 @@
-import type { CanvasField } from '../../types/field'
-import type { CanvasRow } from '../../types/formStructure'
-import type { FieldPlacement } from '../../types/placement'
+import type { CanvasField } from '../../types'
+import type { CanvasRow } from '../../types'
+import type { FieldPlacement } from '../../types'
 import type { FreeRun } from './rowLayout.types'
 
 // Reglas de colocacion dentro de una fila, como funciones puras: sin React y sin el store, para

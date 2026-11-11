@@ -1,4 +1,4 @@
-import type { RichTextContent, RichTextLeaf, RichTextParagraph } from '../../types/richText'
+import type { RichTextContent, RichTextLeaf, RichTextParagraph } from '../../types'
 import {
   BLOCK_TAGS,
   BREAK_TAG,

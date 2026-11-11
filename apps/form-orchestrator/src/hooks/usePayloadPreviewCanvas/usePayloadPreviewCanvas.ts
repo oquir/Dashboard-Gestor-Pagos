@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { PAYLOAD_SCHEMA } from '../../constants/payloadSchema'
+import { PAYLOAD_SCHEMA } from '../../constants'
 import { isPresentationalField } from '../../lib/fieldKind/fieldKind'
 import {
   buildMappingTree,
@@ -7,9 +7,9 @@ import {
   toPlainSummary,
 } from '../../lib/payloadMapping/payloadMapping'
 import { getAllFields, useFormStore } from '../../store/formStore'
-import type { CanvasField } from '../../types/field'
-import type { CanvasRow } from '../../types/formStructure'
-import type { MappingNode, OrphanBinding } from '../../types/payloadMapping'
+import type { CanvasField } from '../../types'
+import type { CanvasRow } from '../../types'
+import type { MappingNode, OrphanBinding } from '../../types'
 import type { UsePayloadPreviewCanvasResult } from './usePayloadPreviewCanvas.types'
 
 export function usePayloadPreviewCanvas(): UsePayloadPreviewCanvasResult {

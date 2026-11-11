@@ -1,6 +1,6 @@
 import type { IconComponent } from 'reicon-react'
 import { Code12, Grid, Hierarchy22 } from 'reicon-react'
-import type { CanvasViewMode } from '../../../types/ui'
+import type { CanvasViewMode } from '../../../types'
 
 // El icono es cosa del control, no del modo: VIEW_MODE_TABS sigue siendo la lista canonica de
 // modos y etiquetas, y aca solo se le pone cara a cada uno.

@@ -1,4 +1,4 @@
-import type { FormProblem } from '../../../types/formDiagnostics'
+import type { FormProblem } from '../../../types'
 
 export function summaryLabel(problems: FormProblem[]): string {
   const errors: number = problems.filter((problem) => problem.severity === 'error').length

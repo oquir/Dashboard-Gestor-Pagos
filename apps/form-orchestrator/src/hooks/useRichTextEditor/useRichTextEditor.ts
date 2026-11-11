@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { serializeRichText } from '../../lib/richText/richText'
 import { safeHref } from '../../lib/richText/richText.utils'
-import type { RichTextCommand, RichTextContent } from '../../types/richText'
+import type { RichTextCommand, RichTextContent } from '../../types'
 import { INVALID_URL_MESSAGE, NO_SELECTION_MESSAGE } from './useRichTextEditor.constants'
 import type { UseRichTextEditorParams, UseRichTextEditorResult } from './useRichTextEditor.types'
 import {

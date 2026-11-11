@@ -1,5 +1,5 @@
 import { Calendar, CheckCircle, Code, Database, Layers, Link, Palette, Sliders } from 'reicon-react'
-import type { SidebarTab } from '../../../types/ui'
+import type { SidebarTab } from '../../../types'
 import type { SidebarTabItem } from './Sidebar.types'
 
 export const TABS: SidebarTabItem[] = [

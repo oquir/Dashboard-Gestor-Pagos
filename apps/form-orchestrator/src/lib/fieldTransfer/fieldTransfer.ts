@@ -1,6 +1,6 @@
-import type { CanvasField } from '../../types/field'
-import type { CanvasRow } from '../../types/formStructure'
-import type { TransferCheck, TransferPayload } from '../../types/transfer'
+import type { CanvasField } from '../../types'
+import type { CanvasRow } from '../../types'
+import type { TransferCheck, TransferPayload } from '../../types'
 import { findLabelFor } from '../fieldKind/fieldKind'
 import { findNearestFit, getFreeRuns, sortByColumn } from '../rowLayout/rowLayout'
 

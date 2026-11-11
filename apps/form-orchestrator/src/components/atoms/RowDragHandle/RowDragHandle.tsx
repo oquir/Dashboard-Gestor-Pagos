@@ -1,5 +1,5 @@
 import { SortV } from 'reicon-react'
-import { ROW_TOOLBAR_ICON_ITEM_CLASSES } from '../../../constants/uiClasses'
+import { ROW_TOOLBAR_ICON_ITEM_CLASSES } from '../../../constants'
 import type { RowDragHandleProps } from './RowDragHandle.types'
 
 // Ya no se posiciona ni se muestra solo: es el primer item de la barra de la fila, y quien decide

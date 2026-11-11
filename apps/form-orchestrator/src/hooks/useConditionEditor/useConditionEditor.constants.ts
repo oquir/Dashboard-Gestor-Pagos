@@ -1,4 +1,4 @@
-import type { ConditionOperator } from '../../types/field'
+import type { ConditionOperator } from '../../types'
 
 export const DEFAULT_OPERATORS: ConditionOperator[] = [
   'equals',

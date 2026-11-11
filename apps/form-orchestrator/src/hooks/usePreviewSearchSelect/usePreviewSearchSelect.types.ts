@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import type { CatalogOption } from '../../types/catalog'
+import type { CatalogOption } from '../../types'
 
 export interface UsePreviewSearchSelectParams {
   options: CatalogOption[]

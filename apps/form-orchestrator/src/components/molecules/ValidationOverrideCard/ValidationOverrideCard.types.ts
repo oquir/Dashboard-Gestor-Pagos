@@ -1,4 +1,4 @@
-import type { CanvasField, FieldValidationOverride } from '../../../types/field'
+import type { CanvasField, FieldValidationOverride } from '../../../types'
 
 export interface ValidationOverrideCardProps {
   field: CanvasField

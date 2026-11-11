@@ -1,4 +1,4 @@
-import type { ConditionOperator } from '../../../types/field'
+import type { ConditionOperator } from '../../../types'
 
 export interface ConditionOperatorSelectProps {
   // Por defecto continua la frase que arma el editor de condiciones ("Cuando X …y el valor Y").

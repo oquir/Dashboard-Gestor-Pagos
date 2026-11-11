@@ -1,5 +1,5 @@
-import { SCRIPT_VALUES_PARAM } from '../../constants/fieldScript'
-import type { ScriptRef } from '../../types/fieldScript'
+import { SCRIPT_VALUES_PARAM } from '../../constants'
+import type { ScriptRef } from '../../types'
 import { REF_PATTERN } from './fieldScript.constants'
 import type { ScanFrame, ScanResult } from './fieldScript.types'
 

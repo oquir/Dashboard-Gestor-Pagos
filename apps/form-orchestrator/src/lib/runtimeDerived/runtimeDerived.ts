@@ -1,11 +1,6 @@
-import type { ExportedField, ExportedRule } from '../../types/exportForm'
-import type {
-  RuntimeContext,
-  RuntimeIssue,
-  RuntimeModel,
-  RuntimeValues,
-} from '../../types/formRuntime'
-import type { ScriptRunResult } from '../../types/scriptRuntime'
+import type { ExportedField, ExportedRule } from '../../types'
+import type { RuntimeContext, RuntimeIssue, RuntimeModel, RuntimeValues } from '../../types'
+import type { ScriptRunResult } from '../../types'
 import { applyDecimals, applyRounding } from '../fieldRounding/fieldRounding'
 import { clampNegative } from '../fieldSign/fieldSign'
 import { evaluateConditions } from '../runtimeCondition/runtimeCondition'

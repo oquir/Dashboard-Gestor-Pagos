@@ -8,8 +8,8 @@ import {
   CATALOG_TIPOS_DOCUMENTO,
   CATALOG_TIPOS_PERSONA,
   CATALOG_TIPOS_SANCION,
-} from '../../constants/catalog'
-import type { CatalogOption } from '../../types/catalog'
+} from '../../constants'
+import type { CatalogOption } from '../../types'
 import {
   ACTIVIDADES,
   DEPARTAMENTOS,

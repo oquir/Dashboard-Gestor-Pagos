@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
 import { AngleDown2 } from 'reicon-react'
-import { CANVAS_TOOLBAR_ACTION_CLASSES } from '../../../constants/uiClasses'
-import { useClickOutside } from '../../../hooks/useClickOutside/useClickOutside'
+import { CANVAS_TOOLBAR_ACTION_CLASSES } from '../../../constants'
+import { useClickOutside } from '../../../hooks'
 import { useFormStore } from '../../../store/formStore'
-import type { CanvasTarget } from '../../../types/placement'
+import type { CanvasTarget } from '../../../types'
 import {
   MENU_CAPTION_CLASSES,
   MENU_CLASSES,

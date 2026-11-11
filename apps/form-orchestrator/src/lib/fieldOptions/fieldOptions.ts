@@ -2,8 +2,8 @@ import {
   INLINE_CAPABLE_FIELD_TYPES,
   MULTI_VALUE_FIELD_TYPES,
   OPTION_BASED_FIELD_TYPES,
-} from '../../constants/fieldTypes'
-import type { CanvasField, FieldOption } from '../../types/field'
+} from '../../constants'
+import type { CanvasField, FieldOption } from '../../types'
 import type { InlineCapableField } from './fieldOptions.types'
 
 // Quien pone las opciones de un select. Solo un campo excluido del payload las lleva escritas a

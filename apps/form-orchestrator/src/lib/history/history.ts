@@ -1,4 +1,4 @@
-import type { BurstGate, HistorySnapshot } from '../../types/history'
+import type { BurstGate, HistorySnapshot } from '../../types'
 
 // Las piezas del historial que no dependen de zundo ni del store: que se guarda en cada paso, cuando
 // dos estados son el mismo documento y como se agrupan los cambios en rafagas. El cableado con zundo

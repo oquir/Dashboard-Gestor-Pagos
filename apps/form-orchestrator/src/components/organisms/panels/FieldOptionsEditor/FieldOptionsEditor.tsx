@@ -1,6 +1,6 @@
 import { Xmark } from 'reicon-react'
 import { useFormStore } from '../../../../store/formStore'
-import type { FieldOption } from '../../../../types/field'
+import type { FieldOption } from '../../../../types'
 import { IconButton } from '../../../atoms'
 import { LabeledInput } from '../../../molecules'
 import { PanelSection } from '../../../molecules'

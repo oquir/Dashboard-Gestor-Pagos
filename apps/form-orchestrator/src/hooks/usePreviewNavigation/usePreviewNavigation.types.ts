@@ -1,4 +1,4 @@
-import type { ExportedStep } from '../../types/exportForm'
+import type { ExportedStep } from '../../types'
 
 export interface UsePreviewNavigationResult {
   step: ExportedStep | undefined

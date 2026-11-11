@@ -1,5 +1,5 @@
 import { Document2 } from 'reicon-react'
-import { FORM_TYPES } from '../../../constants/formType'
+import { FORM_TYPES } from '../../../constants'
 import { getAllFields, useFormStore } from '../../../store/formStore'
 import {
   IDENT_BADGE_CLASSES,

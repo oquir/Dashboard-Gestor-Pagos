@@ -1,7 +1,7 @@
-import { useCanvasMarquee } from '../../../hooks/useCanvasMarquee/useCanvasMarquee'
-import { useCanvasPan } from '../../../hooks/useCanvasPan/useCanvasPan'
+import { useCanvasMarquee } from '../../../hooks'
+import { useCanvasPan } from '../../../hooks'
 import { useFormStore } from '../../../store/formStore'
-import type { SelectionRect } from '../../../types/canvasSelection'
+import type { SelectionRect } from '../../../types'
 import { MARQUEE_CLASSES } from './CanvasToolLayer.constants'
 
 // Monta la mano y el marco y dibuja el rectangulo. Vive aparte de Canvas para que el marco, que

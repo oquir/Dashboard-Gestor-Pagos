@@ -1,6 +1,6 @@
-import { MULTI_VALUE_FIELD_TYPES } from '../../constants/fieldTypes'
-import type { ExportedField } from '../../types/exportForm'
-import type { RuntimeValues } from '../../types/formRuntime'
+import { MULTI_VALUE_FIELD_TYPES } from '../../constants'
+import type { ExportedField } from '../../types'
+import type { RuntimeValues } from '../../types'
 import { evaluateCondition } from '../runtimeCondition/runtimeCondition'
 
 // La clave con la que se indexa un error. Un campo suelto va por nombre; uno dentro de un grupo

@@ -1,4 +1,4 @@
-import type { CatalogFill, ConditionOperator, FieldValidationRules } from '../../types/field'
+import type { CatalogFill, ConditionOperator, FieldValidationRules } from '../../types'
 
 export interface TemplateCondition {
   field: string

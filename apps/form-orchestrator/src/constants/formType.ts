@@ -1,4 +1,4 @@
-import type { FormTypeOption } from '../types/setup'
+import type { FormTypeOption } from '../types'
 
 export const FORM_TYPES: FormTypeOption[] = [
   {

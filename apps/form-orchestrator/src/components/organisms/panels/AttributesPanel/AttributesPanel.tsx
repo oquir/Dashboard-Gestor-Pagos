@@ -1,5 +1,5 @@
-import { RICH_TEXT_FIELD_TYPE } from '../../../../constants/fieldTypes'
-import { GRID_BASE_COLUMNS } from '../../../../constants/grid'
+import { RICH_TEXT_FIELD_TYPE } from '../../../../constants'
+import { GRID_BASE_COLUMNS } from '../../../../constants'
 import {
   findLabelFor,
   isPresentationalField,
@@ -19,7 +19,7 @@ import {
   getAllFields,
   useFormStore,
 } from '../../../../store/formStore'
-import type { CanvasField } from '../../../../types/field'
+import type { CanvasField } from '../../../../types'
 import { ToggleSwitch } from '../../../atoms'
 import { FieldIdentityCard } from '../../../molecules'
 import { FieldNameInput } from '../../../molecules'

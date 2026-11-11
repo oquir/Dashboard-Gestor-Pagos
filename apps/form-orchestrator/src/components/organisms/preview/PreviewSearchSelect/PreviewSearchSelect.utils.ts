@@ -1,4 +1,4 @@
-import type { CatalogOption } from '../../../../types/catalog'
+import type { CatalogOption } from '../../../../types'
 
 export function optionText(option: CatalogOption): string {
   return option.code ? `${option.code} · ${option.label}` : option.label

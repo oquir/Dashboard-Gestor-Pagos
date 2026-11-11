@@ -1,7 +1,7 @@
-import { DEFAULT_TOOLTIP_POSITION } from '../../constants/fieldTooltip'
-import { TOOLTIP_CAPABLE_FIELD_TYPES } from '../../constants/fieldTypes'
-import type { ExportedTooltip } from '../../types/exportForm'
-import type { CanvasField, FieldTooltip } from '../../types/field'
+import { DEFAULT_TOOLTIP_POSITION } from '../../constants'
+import { TOOLTIP_CAPABLE_FIELD_TYPES } from '../../constants'
+import type { ExportedTooltip } from '../../types'
+import type { CanvasField, FieldTooltip } from '../../types'
 import { resolveTooltipStyles } from '../cssStyles/cssStyles'
 import { emptyRichText, isEmptyRichText } from '../richText/richText'
 

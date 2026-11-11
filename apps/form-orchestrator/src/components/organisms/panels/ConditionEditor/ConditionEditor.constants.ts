@@ -1,4 +1,4 @@
-import type { ConditionKind } from '../../../../types/field'
+import type { ConditionKind } from '../../../../types'
 
 export const CONDITION_COPY: Record<
   ConditionKind,

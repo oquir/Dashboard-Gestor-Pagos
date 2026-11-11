@@ -1,7 +1,7 @@
-import type { CanvasField } from '../../types/field'
-import type { FormProblem } from '../../types/formDiagnostics'
-import type { CanvasRow, RepeatableGroup } from '../../types/formStructure'
-import type { CanvasTarget } from '../../types/placement'
+import type { CanvasField } from '../../types'
+import type { FormProblem } from '../../types'
+import type { CanvasRow, RepeatableGroup } from '../../types'
+import type { CanvasTarget } from '../../types'
 
 // Un problema antes de numerarlo: el id se pone al final, cuando ya esta el orden de la lista.
 export type ProblemDraft = Omit<FormProblem, 'id'>

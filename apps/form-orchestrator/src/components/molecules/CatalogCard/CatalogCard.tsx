@@ -1,5 +1,5 @@
-import { useCatalogCard } from '../../../hooks/useCatalogCard/useCatalogCard'
-import type { CatalogEntry } from '../../../types/catalog'
+import { useCatalogCard } from '../../../hooks'
+import type { CatalogEntry } from '../../../types'
 import { Button } from '../../atoms'
 import { BinaryChoiceToggle } from '../BinaryChoiceToggle'
 import { PanelSection } from '../PanelSection'

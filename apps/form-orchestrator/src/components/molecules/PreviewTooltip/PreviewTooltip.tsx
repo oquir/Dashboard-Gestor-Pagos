@@ -4,7 +4,7 @@ import {
   TOOLTIP_ANCHOR_CLASSES,
   TOOLTIP_SURFACE_CLASSES,
   TOOLTIP_TEXT_CLASSES,
-} from '../../../constants/fieldTooltip'
+} from '../../../constants'
 import { RichTextView } from '../../atoms'
 import type { PreviewTooltipProps } from './PreviewTooltip.types'
 

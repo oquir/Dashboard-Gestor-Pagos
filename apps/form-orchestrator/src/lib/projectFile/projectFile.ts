@@ -1,6 +1,6 @@
-import { FORM_TYPES } from '../../constants/formType'
-import type { DraftLoad, DraftPayload } from '../../types/persistenceTypes'
-import type { ProjectFileLoad, ProjectFileSummary } from '../../types/projectFile'
+import { FORM_TYPES } from '../../constants'
+import type { DraftLoad, DraftPayload } from '../../types'
+import type { ProjectFileLoad, ProjectFileSummary } from '../../types'
 import { isNewerDraft, parseDraft } from '../persistence/persistence'
 import {
   DAMAGED_MESSAGE,

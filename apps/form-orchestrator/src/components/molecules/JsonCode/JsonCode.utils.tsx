@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { JsonSegment } from '../../../types/jsonCode'
+import type { JsonSegment } from '../../../types'
 import { JSON_TOKEN_CLASSES } from './JsonCode.constants'
 
 export function decodeString(quoted: string): string {

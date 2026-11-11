@@ -3,9 +3,9 @@ import type { Diagnostic } from '@codemirror/lint'
 import { RangeSetBuilder } from '@codemirror/state'
 import type { DecorationSet, EditorView, ViewUpdate } from '@codemirror/view'
 import { Decoration, ViewPlugin } from '@codemirror/view'
-import { SCRIPT_CONTEXT_PARAMS, SCRIPT_HELPER_NAMES } from '../../../constants/fieldScript'
+import { SCRIPT_CONTEXT_PARAMS, SCRIPT_HELPER_NAMES } from '../../../constants'
 import { compileScript } from '../../../lib/fieldScript/fieldScript'
-import type { ScriptRef } from '../../../types/fieldScript'
+import type { ScriptRef } from '../../../types'
 
 // Las tres extensiones que saben del lenguaje del proyecto: pintar las referencias, ofrecerlas al
 // autocompletar y avisar de las que no existen. Todas leen los nombres con un getter y no con un

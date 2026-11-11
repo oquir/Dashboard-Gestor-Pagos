@@ -1,4 +1,4 @@
-import { usePreviewNavigation } from '../../../../hooks/usePreviewNavigation/usePreviewNavigation'
+import { usePreviewNavigation } from '../../../../hooks/usePreviewNavigation'
 import { PreviewStep } from '../PreviewStep'
 import { NAV_BUTTON_CLASSES, PRIMARY_BUTTON_CLASSES } from './PreviewForm.constants'
 import type { PreviewFormProps } from './PreviewForm.types'

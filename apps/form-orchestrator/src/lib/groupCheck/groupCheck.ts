@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { GroupCheck } from '../../types/groupCheck'
+import type { GroupCheck } from '../../types'
 
 // Comprobaciones que abarcan un grupo repetible entero, en su forma declarativa: crear una y
 // decidir cuales cuentan. Nada de ejecutarlas.

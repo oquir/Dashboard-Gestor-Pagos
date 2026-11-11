@@ -1,5 +1,5 @@
-import type { CanvasTarget } from '../../../types/placement'
-import type { TransferTabState } from '../../../types/transfer'
+import type { CanvasTarget } from '../../../types'
+import type { TransferTabState } from '../../../types'
 
 export interface StepTabChipProps {
   index: number

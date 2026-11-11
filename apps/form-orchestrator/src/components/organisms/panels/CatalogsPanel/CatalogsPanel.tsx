@@ -1,5 +1,5 @@
-import { CATALOGS } from '../../../../constants/catalog'
-import { HINT_CLASSES } from '../../../../constants/uiClasses'
+import { CATALOGS } from '../../../../constants'
+import { HINT_CLASSES } from '../../../../constants'
 import { useFormStore } from '../../../../store/formStore'
 import { CatalogCard } from '../../../molecules'
 import { ValoresAnualesEditor } from '../ValoresAnualesEditor'

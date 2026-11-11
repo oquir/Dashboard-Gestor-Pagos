@@ -1,5 +1,5 @@
 import type { RefObject } from 'react'
-import type { RichTextCommand, RichTextContent } from '../../types/richText'
+import type { RichTextCommand, RichTextContent } from '../../types'
 
 export interface UseRichTextEditorParams {
   value: RichTextContent | undefined

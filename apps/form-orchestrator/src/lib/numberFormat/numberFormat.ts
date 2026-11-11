@@ -1,4 +1,4 @@
-import { NUMERIC_FIELD_TYPES } from '../../constants/fieldTypes'
+import { NUMERIC_FIELD_TYPES } from '../../constants'
 import {
   DECIMAL_SEPARATOR,
   GROUP_SEPARATOR,

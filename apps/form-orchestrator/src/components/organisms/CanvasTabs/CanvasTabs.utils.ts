@@ -1,7 +1,7 @@
 import { canTransfer } from '../../../lib/fieldTransfer/fieldTransfer'
-import type { CanvasRow } from '../../../types/formStructure'
-import type { RowDragState } from '../../../types/placement'
-import type { TransferTabState } from '../../../types/transfer'
+import type { CanvasRow } from '../../../types'
+import type { RowDragState } from '../../../types'
+import type { TransferTabState } from '../../../types'
 
 // Que estado muestran las pestanas que no son la activa. La fila manda sobre el campo porque los
 // dos arrastres nunca coexisten: cada uno anula al otro al empezar.

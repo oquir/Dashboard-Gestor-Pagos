@@ -7,7 +7,7 @@ import {
   rectsIntersect,
 } from '../../lib/canvasSelection/canvasSelection'
 import { useFormStore } from '../../store/formStore'
-import type { SelectionRect } from '../../types/canvasSelection'
+import type { SelectionRect } from '../../types'
 import { MARQUEE_ACTIVATION_PX } from './useCanvasMarquee.constants'
 import type { MarqueeGesture, ScrollPoint } from './useCanvasMarquee.types'
 import { clipToPort, scrollOffset, shiftRect } from './useCanvasMarquee.utils'

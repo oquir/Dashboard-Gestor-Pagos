@@ -1,5 +1,5 @@
-import type { FormStep, IntroModalStep } from '../../../types/formStructure'
-import type { CanvasTarget } from '../../../types/placement'
+import type { FormStep, IntroModalStep } from '../../../types'
+import type { CanvasTarget } from '../../../types'
 import type { MoveTargetOption, MoveTargetSection } from './MoveToStepMenu.types'
 
 // Los pasos a los que se puede mudar la seleccion, agrupados como en el panel de Steps. El activo no

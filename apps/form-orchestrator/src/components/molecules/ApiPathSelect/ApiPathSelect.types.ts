@@ -1,4 +1,4 @@
-import type { SchemaLeaf } from '../../../types/payloadSchema'
+import type { SchemaLeaf } from '../../../types'
 
 export interface ApiPathSelectProps {
   path: string

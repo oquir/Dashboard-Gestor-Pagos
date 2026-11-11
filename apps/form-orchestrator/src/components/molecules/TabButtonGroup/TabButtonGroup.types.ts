@@ -1,4 +1,4 @@
-import type { TabButtonGroupItem } from '../../../types/tabButtonGroup'
+import type { TabButtonGroupItem } from '../../../types'
 
 export interface TabButtonGroupProps<T extends string> {
   tabs: TabButtonGroupItem<T>[]

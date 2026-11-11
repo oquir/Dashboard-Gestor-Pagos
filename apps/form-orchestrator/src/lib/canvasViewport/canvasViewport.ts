@@ -3,8 +3,8 @@ import {
   DOCUMENT_GUTTER_PX,
   DOCUMENT_MAX_WIDTH_PX,
   DOCUMENT_VERTICAL_GUTTER_PX,
-} from '../../constants/canvasViewport'
-import type { ViewportInput, ViewportLayout } from '../../types/canvasViewport'
+} from '../../constants'
+import type { ViewportInput, ViewportLayout } from '../../types'
 
 // Geometria del lienzo libre: cuanto mide el documento, cuanto margen de paneo lo rodea y donde
 // queda la vista al volver al inicio. Solo hace cuentas; medir el puerto y aplicar el resultado es

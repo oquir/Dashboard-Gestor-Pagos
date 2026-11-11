@@ -1,5 +1,5 @@
-import type { ExportedField } from '../../types/exportForm'
-import type { RuntimeModel, RuntimeSnapshot } from '../../types/formRuntime'
+import type { ExportedField } from '../../types'
+import type { RuntimeModel, RuntimeSnapshot } from '../../types'
 import { isPresentationalField } from '../fieldKind/fieldKind'
 import { ARRAY_MARKER, setDeepValue } from './runtimePayload.utils'
 

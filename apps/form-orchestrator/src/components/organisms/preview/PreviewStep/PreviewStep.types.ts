@@ -1,5 +1,5 @@
-import type { ExportedRow, ExportedStep } from '../../../../types/exportForm'
-import type { FormPreviewApi } from '../../../../types/formPreview'
+import type { ExportedRow, ExportedStep } from '../../../../types'
+import type { FormPreviewApi } from '../../../../types'
 
 export interface PreviewStepProps {
   step: ExportedStep

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { FieldRule, RuleEffect } from '../../types/field'
+import type { FieldRule, RuleEffect } from '../../types'
 
 // Manipulacion de las reglas de un campo. El orden de la lista es semantico: al evaluar, el script
 // del campo corre primero y despues cada regla que aplique pisa el valor, en este orden.

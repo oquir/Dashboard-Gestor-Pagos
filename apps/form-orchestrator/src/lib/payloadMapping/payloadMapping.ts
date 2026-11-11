@@ -1,7 +1,7 @@
-import type { CanvasField } from '../../types/field'
-import type { JsonNode } from '../../types/jsonTree'
-import type { MappingNode, OrphanBinding } from '../../types/payloadMapping'
-import type { SchemaNode, SchemaNodeType } from '../../types/payloadSchema'
+import type { CanvasField } from '../../types'
+import type { JsonNode } from '../../types'
+import type { MappingNode, OrphanBinding } from '../../types'
+import type { SchemaNode, SchemaNodeType } from '../../types'
 import { resolveLeafType } from '../payloadSchema/payloadSchema'
 import { buildNode, buildPathIndex } from './payloadMapping.utils'
 

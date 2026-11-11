@@ -1,5 +1,5 @@
-import { PRESENTATIONAL_FIELD_TYPES } from '../../constants/fieldTypes'
-import type { CanvasField } from '../../types/field'
+import { PRESENTATIONAL_FIELD_TYPES } from '../../constants'
+import type { CanvasField } from '../../types'
 
 // Separa los campos que recogen un valor de los que solo muestran contenido. Conviene preguntarlo
 // por aca y no comparar el tipo a mano, para que los paneles, el schema y el export no se

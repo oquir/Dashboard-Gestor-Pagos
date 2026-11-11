@@ -1,9 +1,4 @@
-import type {
-  ExportedField,
-  ExportedRepeatableGroup,
-  ExportedStep,
-  FormExport,
-} from '../../types/exportForm'
+import type { ExportedField, ExportedRepeatableGroup, ExportedStep, FormExport } from '../../types'
 import type {
   PreviewState,
   RuntimeContext,
@@ -12,9 +7,9 @@ import type {
   RuntimeScope,
   RuntimeSnapshot,
   RuntimeValues,
-} from '../../types/formRuntime'
-import type { DeclaracionKind } from '../../types/maxDates'
-import type { FormType } from '../../types/setup'
+} from '../../types'
+import type { DeclaracionKind } from '../../types'
+import type { FormType } from '../../types'
 import { computeDerivedValues, type DerivedResult } from '../runtimeDerived/runtimeDerived'
 import { buildScope, emptyItem, groupColumns } from './formRuntime.utils'
 

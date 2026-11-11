@@ -13,15 +13,15 @@ import { buildPayload } from '../../lib/runtimePayload/runtimePayload'
 import { validateRuntime } from '../../lib/runtimeValidation/runtimeValidation'
 import { valoresEnUso } from '../../lib/valoresBank/valoresBank'
 import { useFormStore } from '../../store/formStore'
-import type { ExportedField } from '../../types/exportForm'
-import type { FormPreviewApi } from '../../types/formPreview'
+import type { ExportedField } from '../../types'
+import type { FormPreviewApi } from '../../types'
 import type {
   PreviewState,
   RuntimeContext,
   RuntimeModel,
   RuntimeSnapshot,
   RuntimeValues,
-} from '../../types/formRuntime'
+} from '../../types'
 import { emptyGroupItem, reconcileState } from './useFormPreview.utils'
 
 // El unico sitio donde el simulador toca el store, y solo para alimentar a buildFormExport.

@@ -2,12 +2,12 @@ import './index.css'
 import { DraftRecoveryModal } from './components/organisms'
 import { FormBuilder } from './components/organisms'
 import { SetupWizardModal } from './components/organisms'
-import { useAutosave } from './hooks/useAutosave/useAutosave'
-import { useDraftRecovery } from './hooks/useDraftRecovery/useDraftRecovery'
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts/useKeyboardShortcuts'
-import { useThemeClass } from './hooks/useThemeClass/useThemeClass'
+import { useAutosave } from './hooks'
+import { useDraftRecovery } from './hooks'
+import { useKeyboardShortcuts } from './hooks'
+import { useThemeClass } from './hooks'
 import { useFormStore } from './store/formStore'
-import type { DraftRecovery } from './types/draftRecovery'
+import type { DraftRecovery } from './types'
 
 function App() {
   const isSetupComplete = useFormStore((state) => state.setupConfig.isComplete)

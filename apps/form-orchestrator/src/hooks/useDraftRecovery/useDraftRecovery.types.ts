@@ -1,4 +1,4 @@
-import type { DraftPayload, FieldRename } from '../../types/persistenceTypes'
+import type { DraftPayload, FieldRename } from '../../types'
 
 export interface PendingDraft {
   draft: DraftPayload | null

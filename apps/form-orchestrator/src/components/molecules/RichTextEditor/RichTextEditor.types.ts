@@ -1,4 +1,4 @@
-import type { RichTextContent } from '../../../types/richText'
+import type { RichTextContent } from '../../../types'
 
 export interface RichTextEditorProps {
   value: RichTextContent | undefined

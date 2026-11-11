@@ -1,4 +1,4 @@
-import { NUMERIC_FIELD_TYPES } from '../../constants/fieldTypes'
+import { NUMERIC_FIELD_TYPES } from '../../constants'
 import { ROUNDING_MULTIPLE } from './fieldRounding.constants'
 import type { RoundableField } from './fieldRounding.types'
 

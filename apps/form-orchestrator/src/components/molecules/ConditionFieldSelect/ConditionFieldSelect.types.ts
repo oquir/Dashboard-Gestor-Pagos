@@ -1,4 +1,4 @@
-import type { CanvasField, FieldCondition } from '../../../types/field'
+import type { CanvasField, FieldCondition } from '../../../types'
 
 export interface ConditionFieldSelectProps {
   label: string

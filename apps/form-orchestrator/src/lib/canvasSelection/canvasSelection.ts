@@ -1,4 +1,4 @@
-import type { SelectionRect } from '../../types/canvasSelection'
+import type { SelectionRect } from '../../types'
 
 // Aritmetica de la seleccion multiple del lienzo: el rectangulo del marco y los conjuntos de ids.
 // Pura: sin DOM y sin el store.

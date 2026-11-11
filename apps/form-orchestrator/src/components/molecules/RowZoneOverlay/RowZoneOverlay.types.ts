@@ -1,4 +1,4 @@
-import type { DragPlacement } from '../../../types/placement'
+import type { DragPlacement } from '../../../types'
 
 export interface RowZoneOverlayProps {
   columns: number

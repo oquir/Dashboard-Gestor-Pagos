@@ -1,4 +1,4 @@
-import type { RichTextLeaf } from '../../types/richText'
+import type { RichTextLeaf } from '../../types'
 import { ALLOWED_PROTOCOLS } from './richText.constants'
 import type { MarkState, StyleLike } from './richText.types'
 

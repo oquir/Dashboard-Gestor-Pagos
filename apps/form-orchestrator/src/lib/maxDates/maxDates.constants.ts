@@ -1,4 +1,4 @@
-import type { Periodicidad } from '../../types/maxDates'
+import type { Periodicidad } from '../../types'
 
 export const ANIOS_POR_DEFECTO: number = 10
 

@@ -3,7 +3,7 @@ import {
   TOOLTIP_ANCHOR_CLASSES,
   TOOLTIP_SURFACE_CLASSES,
   TOOLTIP_TEXT_CLASSES,
-} from '../../../constants/fieldTooltip'
+} from '../../../constants'
 import { resolveTooltipStyles } from '../../../lib/cssStyles/cssStyles'
 import { RichTextView } from '../../atoms'
 import { TOOLTIP_BUBBLE_CLASSES } from './TooltipBubble.constants'

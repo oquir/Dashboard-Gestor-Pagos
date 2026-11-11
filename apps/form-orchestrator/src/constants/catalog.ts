@@ -1,4 +1,4 @@
-import type { CatalogColumn, CatalogDefinition } from '../types/catalog'
+import type { CatalogColumn, CatalogDefinition } from '../types'
 
 // Nombres de catalogo del contrato: el consumidor los traduce a su endpoint real.
 export const CATALOG_DEPARTAMENTOS: string = 'departamentos'

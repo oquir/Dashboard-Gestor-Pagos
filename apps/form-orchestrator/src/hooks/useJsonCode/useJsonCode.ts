@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { buildJsonModel, computeVisibleRows } from '../../lib/jsonCode/jsonCode'
-import type { JsonModel, JsonVisibleRow } from '../../types/jsonCode'
+import type { JsonModel, JsonVisibleRow } from '../../types'
 
 export interface UseJsonCodeResult {
   rows: JsonVisibleRow[]

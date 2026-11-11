@@ -7,7 +7,7 @@ export {
   INPUT_CLASSES,
   TEXTAREA_CLASSES,
   WARNING_CLASSES,
-} from '../../../../constants/uiClasses'
+} from '../../../../constants'
 
 export const ROW_CLASSES: string =
   'grid grid-cols-[auto_1fr_1fr] gap-x-3 border-b border-border/60 py-1 text-[11px] tabular-nums last:border-b-0'

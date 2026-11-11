@@ -1,4 +1,4 @@
-import type { JsonLine, JsonModel, JsonSegment, JsonVisibleRow } from '../../types/jsonCode'
+import type { JsonLine, JsonModel, JsonSegment, JsonVisibleRow } from '../../types'
 
 // Resaltado y plegado del JSON que se muestra en el lienzo. Es un tokenizador propio y no una
 // libreria porque solo hay que distinguir cuatro cosas sobre un JSON que ya se sabe bien formado.

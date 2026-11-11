@@ -1,4 +1,4 @@
-import type { RowStyles } from '../../../types/formStructure'
+import type { RowStyles } from '../../../types'
 
 export interface RowStylesMenuProps {
   rowId: string

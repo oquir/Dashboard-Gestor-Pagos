@@ -1,4 +1,4 @@
-import type { CanvasViewMode } from '../../../types/ui'
+import type { CanvasViewMode } from '../../../types'
 
 export interface ViewModeSwitchProps {
   activeMode: CanvasViewMode

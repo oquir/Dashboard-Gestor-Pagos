@@ -1,4 +1,4 @@
-import type { ExportedField } from '../../types/exportForm'
+import type { ExportedField } from '../../types'
 import type { DerivedPlan } from './runtimeDerived.types'
 
 // Planificacion del orden de calculo. Trabaja sobre nombres, no ids: en el export los ids ya se

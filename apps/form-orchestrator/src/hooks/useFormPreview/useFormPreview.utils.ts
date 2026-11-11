@@ -1,4 +1,4 @@
-import type { PreviewState, RuntimeModel, RuntimeValues } from '../../types/formRuntime'
+import type { PreviewState, RuntimeModel, RuntimeValues } from '../../types'
 
 export function emptyGroupItem(model: RuntimeModel, groupId: string): RuntimeValues {
   const item: RuntimeValues = {}

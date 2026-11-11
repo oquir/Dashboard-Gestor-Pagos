@@ -4,7 +4,7 @@ import type {
   Periodicidad,
   ReglaAnio,
   TipoDigitoValidacion,
-} from '../../types/maxDates'
+} from '../../types'
 import {
   ANIOS_POR_DEFECTO,
   DIGITOS,

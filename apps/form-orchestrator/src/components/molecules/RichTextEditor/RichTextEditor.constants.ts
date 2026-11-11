@@ -1,6 +1,6 @@
-import type { RichTextCommand } from '../../../types/richText'
+import type { RichTextCommand } from '../../../types'
 
-export { ERROR_CLASSES, HINT_CLASSES } from '../../../constants/uiClasses'
+export { ERROR_CLASSES, HINT_CLASSES } from '../../../constants'
 
 export const EDITOR_CLASSES: string =
   'min-h-24 w-full rounded-md border border-border bg-field px-2 py-1.5 text-xs text-fg outline-none focus:border-brand-border [&_a]:text-brand-fg [&_a]:underline'

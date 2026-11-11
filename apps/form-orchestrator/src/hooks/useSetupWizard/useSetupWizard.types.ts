@@ -1,4 +1,4 @@
-import type { FormType } from '../../types/setup'
+import type { FormType } from '../../types'
 
 // Lo que se elige en el primer paso: un tipo para empezar el proyecto, o abrir uno exportado.
 export type WizardSelection = FormType | 'import'

@@ -1,4 +1,4 @@
-import type { CatalogOption } from '../../types/catalog'
+import type { CatalogOption } from '../../types'
 
 // Sin tildes y en minusculas: las descripciones del catalogo vienen acentuadas y en mayusculas, y
 // nadie escribe "PROPAGACIÓN" en un buscador. NFD separa la tilde de la letra y \p{M} se la lleva.

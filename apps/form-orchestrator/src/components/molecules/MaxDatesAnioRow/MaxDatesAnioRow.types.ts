@@ -1,4 +1,4 @@
-import type { ReglaAnio } from '../../../types/maxDates'
+import type { ReglaAnio } from '../../../types'
 
 export interface MaxDatesAnioRowProps {
   regla: ReglaAnio

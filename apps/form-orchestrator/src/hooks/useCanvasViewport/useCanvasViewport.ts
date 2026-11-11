@@ -3,8 +3,8 @@ import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import { getViewportLayout } from '../../lib/canvasViewport/canvasViewport'
 import { wheelZoom } from '../../lib/canvasZoom/canvasZoom'
 import { useFormStore } from '../../store/formStore'
-import type { ViewportLayout } from '../../types/canvasViewport'
-import type { CanvasViewportReturn } from '../../types/canvasViewportReturn'
+import type { ViewportLayout } from '../../types'
+import type { CanvasViewportReturn } from '../../types'
 import type { HomedView, PortSize, ViewAnchor } from './useCanvasViewport.types'
 import { captureAnchor, readPortSize, restoreAnchor, samePortSize } from './useCanvasViewport.utils'
 

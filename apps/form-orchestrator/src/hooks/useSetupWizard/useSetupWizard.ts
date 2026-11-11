@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { INDUSTRIA_COMERCIO_INTRO_STEPS } from '../../constants/baseTemplate'
+import { INDUSTRIA_COMERCIO_INTRO_STEPS } from '../../constants'
 import { useFormStore } from '../../store/formStore'
 import type { UseSetupWizardResult, WizardSelection, WizardStep } from './useSetupWizard.types'
 

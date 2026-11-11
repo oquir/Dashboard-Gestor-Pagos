@@ -1,7 +1,7 @@
-import { toScriptNumber, VALUE_HELPER_NAMES } from '../../constants/fieldScript'
-import type { ScriptFunction } from '../../types/fieldScript'
-import type { RuntimeContext } from '../../types/formRuntime'
-import type { ValorAnual } from '../../types/valores'
+import { toScriptNumber, VALUE_HELPER_NAMES } from '../../constants'
+import type { ScriptFunction } from '../../types'
+import type { RuntimeContext } from '../../types'
+import type { ValorAnual } from '../../types'
 import { anioDeTexto, buscarValores } from '../valoresAnuales/valoresAnuales'
 
 // Los dos helpers que ponen la UVT y el salario minimo en el ambito de un script. Son impuros como

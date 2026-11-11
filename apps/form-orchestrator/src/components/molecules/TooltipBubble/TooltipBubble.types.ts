@@ -1,4 +1,4 @@
-import type { FieldTooltip } from '../../../types/field'
+import type { FieldTooltip } from '../../../types'
 
 export interface TooltipBubbleProps {
   tooltip: FieldTooltip

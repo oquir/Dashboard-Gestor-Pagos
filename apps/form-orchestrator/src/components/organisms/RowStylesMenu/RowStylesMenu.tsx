@@ -1,10 +1,7 @@
 import { useRef } from 'react'
 import { Palette } from 'reicon-react'
-import {
-  ROW_TOOLBAR_ICON_ITEM_CLASSES,
-  ROW_TOOLBAR_POPOVER_CLASSES,
-} from '../../../constants/uiClasses'
-import { useClickOutside } from '../../../hooks/useClickOutside/useClickOutside'
+import { ROW_TOOLBAR_ICON_ITEM_CLASSES, ROW_TOOLBAR_POPOVER_CLASSES } from '../../../constants'
+import { useClickOutside } from '../../../hooks'
 import { useFormStore } from '../../../store/formStore'
 import { Label } from '../../atoms'
 import { Textarea } from '../../atoms'

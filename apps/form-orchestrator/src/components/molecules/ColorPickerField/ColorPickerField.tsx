@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { HexColorInput, HexColorPicker } from 'react-colorful'
-import { useClickOutside } from '../../../hooks/useClickOutside/useClickOutside'
+import { useClickOutside } from '../../../hooks'
 import { Label } from '../../atoms'
 import type { ColorPickerFieldProps } from './ColorPickerField.types'
 

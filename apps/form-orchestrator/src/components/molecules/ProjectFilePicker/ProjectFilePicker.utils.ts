@@ -1,4 +1,4 @@
-import type { ProjectFileSummary } from '../../../types/projectFile'
+import type { ProjectFileSummary } from '../../../types'
 
 function countLabel(count: number, singular: string, plural: string): string {
   return `${count} ${count === 1 ? singular : plural}`

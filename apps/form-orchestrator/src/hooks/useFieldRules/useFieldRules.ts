@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from 'uuid'
 import { operatorNeedsValue, operatorsForFieldType } from '../../lib/fieldCondition/fieldCondition'
 import { buildFieldGraph, describeCycle, wouldCreateCycle } from '../../lib/fieldGraph/fieldGraph'
 import { useFormStore } from '../../store/formStore'
-import type { CanvasField, ConditionOperator, FieldRule, RuleCondition } from '../../types/field'
-import type { FieldGraph } from '../../types/fieldGraph'
-import type { UseFieldRulesResult } from '../../types/fieldRulesReturn'
+import type { CanvasField, ConditionOperator, FieldRule, RuleCondition } from '../../types'
+import type { FieldGraph } from '../../types'
+import type { UseFieldRulesResult } from '../../types'
 import type { UseFieldRulesParams } from './useFieldRules.types'
 
 // Estado del editor de calculos y reglas. Ademas de las altas y bajas, sostiene las guardas que

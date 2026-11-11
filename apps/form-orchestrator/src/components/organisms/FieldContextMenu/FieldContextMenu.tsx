@@ -1,6 +1,6 @@
 ﻿import { Trash6, Xmark } from 'reicon-react'
-import { useFieldContextMenu } from '../../../hooks/useFieldContextMenu/useFieldContextMenu'
-import type { FieldContextMenuState } from '../../../types/fieldContextMenu'
+import { useFieldContextMenu } from '../../../hooks'
+import type { FieldContextMenuState } from '../../../types'
 import { IconButton } from '../../atoms'
 import { TabButtonGroup } from '../../molecules'
 import { ApiMappingPanel } from '../panels/ApiMappingPanel'

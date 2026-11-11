@@ -1,4 +1,4 @@
-import { LENGTH_CAPABLE_FIELD_TYPES, NUMERIC_FIELD_TYPES } from '../../constants/fieldTypes'
+import { LENGTH_CAPABLE_FIELD_TYPES, NUMERIC_FIELD_TYPES } from '../../constants'
 import type { AuthoredLengthField, LengthLimitedField } from './fieldLength.types'
 
 // Cuanto se puede escribir en un campo. Una sola declaracion del autor -- validations.maxLength --

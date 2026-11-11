@@ -1,4 +1,4 @@
-import { CATALOGS, findCatalog } from '../../../../constants/catalog'
+import { CATALOGS, findCatalog } from '../../../../constants'
 import { useFormStore } from '../../../../store/formStore'
 import { ToggleSwitch } from '../../../atoms'
 import { PanelSection } from '../../../molecules'

@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import type { ExportedField } from '../../types/exportForm'
-import type { RuntimeIssue } from '../../types/formRuntime'
+import type { ExportedField } from '../../types'
+import type { RuntimeIssue } from '../../types'
 
 export interface HydratedSchema {
   schema: z.ZodType | null

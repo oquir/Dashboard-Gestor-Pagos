@@ -1,4 +1,4 @@
-import type { CatalogOption } from '../../../../types/catalog'
+import type { CatalogOption } from '../../../../types'
 
 export interface PreviewSearchSelectProps {
   inputId: string

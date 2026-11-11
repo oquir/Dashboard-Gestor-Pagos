@@ -1,4 +1,4 @@
-import type { CanvasField, ConditionKind } from '../../../../types/field'
+import type { CanvasField, ConditionKind } from '../../../../types'
 
 export interface ConditionEditorProps {
   field: CanvasField

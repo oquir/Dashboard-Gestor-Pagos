@@ -1,4 +1,4 @@
-import type { TransferTabState } from '../../../types/transfer'
+import type { TransferTabState } from '../../../types'
 
 // El anillo va por fuera del borde (ring y no border) para no pelearse con el borde que la pestana
 // ya usa para decir cual es la activa: son dos cosas distintas y se ven a la vez.

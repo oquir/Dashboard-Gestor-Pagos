@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { FieldValidationOverride, FieldValidationRules } from '../../types/field'
+import type { FieldValidationOverride, FieldValidationRules } from '../../types'
 
 // Manipulacion de las validaciones condicionales de un campo. El orden de la lista es semantico:
 // al validar gana el primer override cuya condicion se cumpla, y si ninguna se cumple queda la

@@ -1,4 +1,4 @@
-import type { SchemaLeaf, SchemaNode, SchemaNodeType } from '../../types/payloadSchema'
+import type { SchemaLeaf, SchemaNode, SchemaNodeType } from '../../types'
 import { collectLeaves } from './payloadSchema.utils'
 
 export function flattenLeaves(schema: SchemaNode): SchemaLeaf[] {

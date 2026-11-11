@@ -1,5 +1,5 @@
-import type { ExportedRow } from '../../../../types/exportForm'
-import type { FormPreviewApi } from '../../../../types/formPreview'
+import type { ExportedRow } from '../../../../types'
+import type { FormPreviewApi } from '../../../../types'
 
 export interface PreviewGroupBandProps {
   groupId: string

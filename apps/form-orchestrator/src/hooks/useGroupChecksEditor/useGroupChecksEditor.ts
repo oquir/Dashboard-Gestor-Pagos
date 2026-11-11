@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { createGroupCheck } from '../../lib/groupCheck/groupCheck'
 import { getAllFields, useFormStore } from '../../store/formStore'
-import type { CanvasField } from '../../types/field'
-import type { GroupCheck } from '../../types/groupCheck'
+import type { CanvasField } from '../../types'
+import type { GroupCheck } from '../../types'
 import type {
   UseGroupChecksEditorParams,
   UseGroupChecksEditorResult,

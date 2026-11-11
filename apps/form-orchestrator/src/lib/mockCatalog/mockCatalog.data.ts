@@ -1,4 +1,4 @@
-import type { CatalogOption } from '../../types/catalog'
+import type { CatalogOption } from '../../types'
 
 // Volcado literal de los endpoints de catalogo, sin retocar: los ids y las etiquetas son los que
 // devuelve la API de verdad, incluidas sus rarezas (CUNDINAMARCA aparece dos veces, "V ALLE DEL

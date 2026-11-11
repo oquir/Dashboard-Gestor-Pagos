@@ -1,4 +1,4 @@
-import type { SchemaLeaf } from '../../../types/payloadSchema'
+import type { SchemaLeaf } from '../../../types'
 
 export function groupLeavesByRoot(leaves: SchemaLeaf[]): Map<string, SchemaLeaf[]> {
   const groups: Map<string, SchemaLeaf[]> = new Map()

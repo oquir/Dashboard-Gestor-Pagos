@@ -1,5 +1,5 @@
 import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
-import type { CanvasField, CatalogFill } from '../../../../types/field'
+import type { CanvasField, CatalogFill } from '../../../../types'
 
 // Los candidatos a recibir una columna: cualquier campo con valor del mismo lienzo, menos el que
 // origina la seleccion. No se filtra por tipo -- el codigo CIIU es texto y la tarifa es numero --

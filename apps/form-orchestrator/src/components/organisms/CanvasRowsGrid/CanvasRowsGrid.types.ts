@@ -1,4 +1,4 @@
-import type { CanvasRow as CanvasRowData, RepeatableGroup } from '../../../types/formStructure'
+import type { CanvasRow as CanvasRowData, RepeatableGroup } from '../../../types'
 
 export interface CanvasRowsGridProps {
   rows: CanvasRowData[]

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { CatalogOption } from '../../types/catalog'
+import type { CatalogOption } from '../../types'
 import type {
   UsePreviewSearchSelectParams,
   UsePreviewSearchSelectResult,

@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { GRID_BASE_COLUMNS } from '../../constants/grid'
+import { GRID_BASE_COLUMNS } from '../../constants'
 import type {
   ApiBinding,
   CanvasField,
@@ -8,8 +8,8 @@ import type {
   FieldDataSource,
   FieldRule,
   FieldValidationOverride,
-} from '../../types/field'
-import type { CanvasRow } from '../../types/formStructure'
+} from '../../types'
+import type { CanvasRow } from '../../types'
 import { supportsRounding } from '../fieldRounding/fieldRounding'
 import type {
   FieldSpec,

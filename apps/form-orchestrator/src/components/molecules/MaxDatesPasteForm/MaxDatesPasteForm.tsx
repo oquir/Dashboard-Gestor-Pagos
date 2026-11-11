@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { parseMaxDatesPaste } from '../../../lib/maxDatesBank/maxDatesBank'
-import type { MaxDatesParseResult } from '../../../types/maxDates'
+import type { MaxDatesParseResult } from '../../../types'
 import { Button } from '../../atoms'
 import {
   ERROR_CLASSES,

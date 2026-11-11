@@ -3,7 +3,7 @@ import {
   operatorTakesList,
   parseConditionList,
 } from '../../../lib/fieldCondition/fieldCondition'
-import type { FieldOption } from '../../../types/field'
+import type { FieldOption } from '../../../types'
 import { FIELD_CLASSES, OPERATOR_VALUE_HINTS } from './ConditionValueInput.constants'
 import type { ConditionValueInputProps } from './ConditionValueInput.types'
 

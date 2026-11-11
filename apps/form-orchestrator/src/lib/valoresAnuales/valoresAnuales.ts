@@ -1,4 +1,4 @@
-import type { ValorAnual } from '../../types/valores'
+import type { ValorAnual } from '../../types'
 
 // Busqueda de la fila de un ano dentro de la tabla de valores anuales. Aritmetica pura, sin React,
 // sin store y sin localStorage: la capa que guarda es lib/valoresBank y los helpers que la exponen

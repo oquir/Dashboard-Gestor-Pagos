@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid'
 import { type TemporalState, temporal, type ZundoOptions } from 'zundo'
 import { create, type Mutate, type StateCreator, type StoreApi, type UseBoundStore } from 'zustand'
-import { ZOOM_DEFAULT } from '../constants/canvasZoom'
-import { GRID_BASE_COLUMNS, MAX_ROW_COLUMNS, MIN_ROW_COLUMNS } from '../constants/grid'
-import { HISTORY_BURST_MS, HISTORY_LIMIT } from '../constants/history'
+import { ZOOM_DEFAULT } from '../constants'
+import { GRID_BASE_COLUMNS, MAX_ROW_COLUMNS, MIN_ROW_COLUMNS } from '../constants'
+import { HISTORY_BURST_MS, HISTORY_LIMIT } from '../constants'
 import { sameIdSet, toggleId, withoutIds } from '../lib/canvasSelection/canvasSelection'
 import { clampZoom } from '../lib/canvasZoom/canvasZoom'
 import { pruneDataSourceReferencing } from '../lib/fieldDataSource/fieldDataSource'
@@ -38,18 +38,18 @@ import {
   sortByColumn,
 } from '../lib/rowLayout/rowLayout'
 import { reorderRows } from '../lib/rowOrder/rowOrder'
-import type { CanvasField } from '../types/field'
-import type { FormState } from '../types/formStoreTypes'
+import type { CanvasField } from '../types'
+import type { FormState } from '../types'
 import type {
   CanvasRow,
   FormStep,
   IntroModalState,
   IntroModalStep,
   RepeatableGroup,
-} from '../types/formStructure'
-import type { BurstGate, HistoryPastState, HistorySnapshot } from '../types/history'
-import type { CanvasTarget } from '../types/placement'
-import type { StateSlice } from '../types/store'
+} from '../types'
+import type { BurstGate, HistoryPastState, HistorySnapshot } from '../types'
+import type { CanvasTarget } from '../types'
+import type { StateSlice } from '../types'
 import { createBanksSlice } from './banksSlice'
 import { NO_GROUPS, NO_ROWS, NO_SELECTION, THEME_STORAGE_KEY } from './formStore.constants'
 import {

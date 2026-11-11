@@ -1,4 +1,4 @@
-import { HINT_CLASSES } from '../../../constants/uiClasses'
+import { HINT_CLASSES } from '../../../constants'
 import type { SelectionSummaryProps } from './SelectionSummary.types'
 
 export function SelectionSummary({ fields }: SelectionSummaryProps) {

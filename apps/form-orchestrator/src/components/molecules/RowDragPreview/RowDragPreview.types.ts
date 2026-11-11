@@ -1,4 +1,4 @@
-import type { CanvasRow } from '../../../types/formStructure'
+import type { CanvasRow } from '../../../types'
 
 export interface RowDragPreviewProps {
   row: CanvasRow

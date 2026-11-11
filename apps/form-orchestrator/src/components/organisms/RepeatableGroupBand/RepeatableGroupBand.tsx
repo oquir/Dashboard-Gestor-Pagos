@@ -1,7 +1,7 @@
 import { useDroppable } from '@dnd-kit/core'
 import { useState } from 'react'
 import { Layers, Plus } from 'reicon-react'
-import { PAYLOAD_SCHEMA } from '../../../constants/payloadSchema'
+import { PAYLOAD_SCHEMA } from '../../../constants'
 import { arrayPaths } from '../../../lib/payloadSchema/payloadSchema'
 import { useFormStore } from '../../../store/formStore'
 import { CanvasRow } from '../CanvasRow'

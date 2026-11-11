@@ -1,4 +1,4 @@
-import type { FieldTypeCategory, FieldTypeDef } from '../../../types/fieldTypes'
+import type { FieldTypeCategory, FieldTypeDef } from '../../../types'
 
 export interface PaletteSection {
   category: FieldTypeCategory

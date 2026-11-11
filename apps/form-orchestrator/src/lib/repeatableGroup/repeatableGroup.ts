@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { CanvasField } from '../../types/field'
-import type { CanvasRow, FormStep, RepeatableGroup } from '../../types/formStructure'
+import type { CanvasField } from '../../types'
+import type { CanvasRow, FormStep, RepeatableGroup } from '../../types'
 import { slugifyFieldName, uniqueFieldName } from '../fieldName/fieldName'
 import {
   DEFAULT_GROUP_MAX,

@@ -3,7 +3,7 @@ import { getBandElement, getFieldElement, getRowElement } from '../../lib/canvas
 import { downloadFormExport } from '../../lib/exportForm/exportForm'
 import { diagnoseForm } from '../../lib/formDiagnostics/formDiagnostics'
 import { useFormStore } from '../../store/formStore'
-import type { FormProblem } from '../../types/formDiagnostics'
+import type { FormProblem } from '../../types'
 import type { PendingReveal, UseExportReviewResult } from './useExportReview.types'
 
 // Revision antes de exportar. Corre al darle Exportar y no mientras se edita, para no cobrarle

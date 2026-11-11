@@ -1,6 +1,6 @@
-import { SCRIPT_HELPER_NAMES } from '../../../../constants/fieldScript'
+import { SCRIPT_HELPER_NAMES } from '../../../../constants'
 
-export { ERROR_CLASSES, HINT_CLASSES, WARNING_CLASSES } from '../../../../constants/uiClasses'
+export { ERROR_CLASSES, HINT_CLASSES, WARNING_CLASSES } from '../../../../constants'
 
 export const READS_CLASSES: string =
   'rounded-md border border-border bg-surface px-1.5 py-0.5 font-mono text-[10px] text-fg-muted'

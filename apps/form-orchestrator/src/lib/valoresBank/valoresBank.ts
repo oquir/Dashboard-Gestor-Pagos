@@ -1,10 +1,5 @@
-import { VALORES_POR_DEFECTO } from '../../constants/valoresAnuales'
-import type {
-  StoredValores,
-  ValorAnual,
-  ValoresParseKeys,
-  ValoresParseResult,
-} from '../../types/valores'
+import { VALORES_POR_DEFECTO } from '../../constants'
+import type { StoredValores, ValorAnual, ValoresParseKeys, ValoresParseResult } from '../../types'
 import { VALORES_KEY } from './valoresBank.constants'
 import { storedValoresSchema, valorAnualSchema } from './valoresBank.schema'
 import { findArray, leerNumero } from './valoresBank.utils'

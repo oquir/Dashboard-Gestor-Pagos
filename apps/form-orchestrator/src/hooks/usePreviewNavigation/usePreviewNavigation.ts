@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { stepErrorKeys } from '../../lib/formRuntime/formRuntime.utils'
-import type { ExportedStep } from '../../types/exportForm'
-import type { FormPreviewApi } from '../../types/formPreview'
+import type { ExportedStep } from '../../types'
+import type { FormPreviewApi } from '../../types'
 import type { UsePreviewNavigationResult } from './usePreviewNavigation.types'
 
 // El recorrido del simulador: en que paso esta, si el modal de entrada sigue arriba y si el

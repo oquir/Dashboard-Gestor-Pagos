@@ -1,4 +1,4 @@
-import type { TooltipPosition } from '../types/field'
+import type { TooltipPosition } from '../types'
 
 export const TOOLTIP_POSITIONS: TooltipPosition[] = ['top', 'bottom', 'left', 'right']
 
