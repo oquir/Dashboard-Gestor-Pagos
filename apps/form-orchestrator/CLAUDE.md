@@ -684,12 +684,12 @@ Package manager is **pnpm** — use `pnpm install`/`pnpm add`, not npm/yarn/bun.
 
 - `pnpm dev` — Vite dev server
 - `pnpm build` — typecheck (`tsc -b`) then production build
-- `pnpm lint` / `pnpm lint:fix` — Biome check / with auto-fix
-- `pnpm format` — Biome format, write mode
+- `pnpm lint` — ESLint + Prettier check (config shared at the monorepo root)
+- `pnpm format` — Prettier, write mode
 - `pnpm preview` — preview production build
 - `pnpm exec tsx <script>.ts` — throwaway verification script
 
-No test runner configured. **Biome is the enforced linter/formatter** (2-space indent, double quotes, semicolons, 100-char width, auto-organizes imports); `eslint.config.js` exists but isn't wired into a script. `pnpm build` occasionally exceeds a 2-minute tool timeout (harness kill, exit 143, not a build failure) — re-run with a longer timeout before reporting a problem.
+No test runner configured. **ESLint + Prettier are the enforced linter/formatter, shared with the dashboard**: one `eslint.config.js`, `.prettierrc.json` and set of versions at the monorepo root (2-space indent, single quotes, no semicolons, 100-char width). Biome was removed so both apps follow the same convention; imports are no longer auto-organized. Intentional exceptions carry an `eslint-disable` with its reason. `pnpm build` occasionally exceeds a 2-minute tool timeout (harness kill, exit 143, not a build failure) — re-run with a longer timeout before reporting a problem.
 
 ### Migrated from bun
 
@@ -697,9 +697,9 @@ bun filled two roles; pnpm only replaces package management (that swap was free 
 
 Settled:
 
-- **`pnpm-workspace.yaml` carries `allowBuilds`, not `package.json`** — pnpm 11 moved this out of `package.json`, where it's now silently ignored with only a warning. Needed for `@biomejs/biome` and `esbuild` (via tsx), which download platform binaries at install.
+- **`pnpm-workspace.yaml` carries `allowBuilds`, not `package.json`** — pnpm 11 moved this out of `package.json`, where it's now silently ignored with only a warning. Needed for `esbuild` (via tsx), which download platform binaries at install.
 - **`reicon-react` pinned to exact `1.1.2`** — `^` ranges pull `1.2.0`, which renamed 10 icon exports in a minor (`Maximize22`→`Maximize2`, etc.) and breaks the typecheck.
-- Other bumps were verified, not assumed (Biome 2.5.2→2.5.9 reformatted nothing; Vite 8.1.1→8.2.2 re-partitioned chunks but both lazy boundaries still hold, verified by grep).
+- Other bumps were verified, not assumed (Vite 8.1.1→8.2.2 re-partitioned chunks but both lazy boundaries still hold, verified by grep).
 - The 1132 extensionless imports didn't need fixing (normal for `moduleResolution: bundler`; tsx resolves them like bun did — Node's own loader is the one that can't).
 - Scratchpad needs: `package.json` with `{"type":"module"}` (top-level await), absolute imports as `file:///C:/...` URLs, and a `node_modules` junction to the project.
 - **Run scratchpad scripts from the project root** (`pnpm exec tsx <scratchpad>/x.ts`), never from inside the scratchpad: there, pnpm 11's deps-status check launches a `pnpm install`, and the only thing stopping it from wiping the junctioned `node_modules` is `ERR_PNPM_UNSAFE_MODULES_DIR`.
@@ -717,7 +717,7 @@ Atomic design: `src/components/atoms|molecules|organisms/` + `src/components/lay
 
 **A co-located `X.types.ts`/`X.constants.ts` is private to its folder.** The moment code outside that folder imports it, the declaration moves to `src/types/`/`src/constants/` (both directions audited to zero, kept that way). When the leaking declaration drags neighbours along, **move the whole file** rather than splitting it (`types/exportForm.ts`, `types/payloadMapping.ts`). Genuinely private stuff stays put (`FieldSpec` in `baseTemplate`, `TopologicalResult` in `fieldGraph`, `SALDO_NETO`, `CONDITION_COPY`, tokenizer regexes).
 
-Not tool-enforced — Biome's `noRestrictedImports` doesn't fit (matches exact specifiers only, and the same target is spelled differently from every importer); verified with throwaway audit scripts instead.
+Not tool-enforced — a restricted-imports rule doesn't fit (matches exact specifiers only, and the same target is spelled differently from every importer); verified with throwaway audit scripts instead.
 
 Both import cycles this shape produced are fixed the same way: implementation moved to `.utils.ts` (`findFieldById` → `formStore.utils.ts`, `fieldMatchesSchemaType` → `payloadMapping.utils.ts`), public file re-exports it. One remaining cycle (`types/field.ts` ↔ `types/catalog.ts`) is harmless — type-only, erases at compile.
 
@@ -773,4 +773,4 @@ Both import cycles this shape produced are fixed the same way: implementation mo
 - **`src/lib/`, `src/store/`, `src/hooks/` carry a header comment per file** stating its role/boundary, plus targeted comments only where there's a trap, an invariant the code can't express, or a discarded alternative. High bar: if deducible from the line below, don't write it.
 - `src/components/` is not commented as a matter of course — add one only when a component hides a real decision.
 - **Explicit type annotations** on local declarations, matching existing files.
-- Biome conventions win over `eslint.config.js` (not wired into a script).
+- Prettier decides formatting; run `pnpm format` rather than hand-formatting.

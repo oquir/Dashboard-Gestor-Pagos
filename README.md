@@ -2,10 +2,10 @@
 
 Dos aplicaciones de 1cero1 en un solo repositorio:
 
-| Carpeta | Qué es | Historial anterior |
-|---|---|---|
-| `apps/dashboard` | Dashboard Gestor de Pagos: RIT, declaraciones, pagos y configuración de cada municipio | Este mismo repositorio (`oquir/Dashboard-Gestor-Pagos`) |
-| `apps/form-orchestrator` | Orquestador de formularios: arma el formulario de cada municipio y exporta su JSON | `oquir/Form-Orchestrator` |
+| Carpeta                  | Qué es                                                                                 | Historial anterior                                      |
+| ------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `apps/dashboard`         | Dashboard Gestor de Pagos: RIT, declaraciones, pagos y configuración de cada municipio | Este mismo repositorio (`oquir/Dashboard-Gestor-Pagos`) |
+| `apps/form-orchestrator` | Orquestador de formularios: arma el formulario de cada municipio y exporta su JSON     | `oquir/Form-Orchestrator`                               |
 
 ## Comandos
 
@@ -17,7 +17,9 @@ pnpm dev                # arranca las dos a la vez
 pnpm dev:dashboard      # solo el dashboard
 pnpm dev:formularios    # solo el orquestador
 pnpm build              # compila las dos
-pnpm lint               # ESLint en el dashboard y Biome en el orquestador
+pnpm lint               # ESLint + chequeo de Prettier en las dos apps
+pnpm lint:fix           # ESLint con --fix + Prettier --write
+pnpm format             # Prettier --write
 ```
 
 Cada app conserva su propio `pnpm-lock.yaml` (`sharedWorkspaceLockfile: false` en `pnpm-workspace.yaml`).

@@ -15,7 +15,7 @@ El caso de uso que guía el diseño es el **autoliquidable de Industria y Comerc
 - **CodeMirror 6** (`@codemirror/*`) para el editor de scripts, cargado bajo demanda
 - **uuid** para generar ids de campos/filas/steps
 - **reicon-react** para íconos
-- **Biome** como linter/formatter (2 espacios, comillas dobles, semicolons, 100 cols, organiza imports)
+- **ESLint + Prettier** compartidos con el dashboard desde la raiz del monorepo (2 espacios, comillas simples, sin punto y coma, 100 cols)
 
 Package manager: **pnpm** (la versión va fijada en `packageManager`). No usar npm/yarn/bun.
 
@@ -25,9 +25,8 @@ Package manager: **pnpm** (la versión va fijada en `packageManager`). No usar n
 pnpm install      # instalar dependencias
 pnpm dev          # servidor de desarrollo (Vite)
 pnpm build        # typecheck (tsc -b) + build de producción
-pnpm lint         # Biome check (lint + format check)
-pnpm lint:fix     # Biome check con auto-fix
-pnpm format       # Biome format --write
+pnpm lint         # ESLint + chequeo de Prettier
+pnpm format       # Prettier --write
 pnpm preview      # preview del build de producción
 ```
 
