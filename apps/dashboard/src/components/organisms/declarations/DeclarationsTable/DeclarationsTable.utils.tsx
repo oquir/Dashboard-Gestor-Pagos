@@ -13,7 +13,7 @@ export function selectionColumn(
 ) {
   const checkedOnes = rows.filter((f) => selection.has(f.d.id)).length
   return col.display({
-    id: 'seleccion',
+    id: 'selection',
     header: () => (
       <Checkbox
         aria-label="Seleccionar todas las declaraciones filtradas"

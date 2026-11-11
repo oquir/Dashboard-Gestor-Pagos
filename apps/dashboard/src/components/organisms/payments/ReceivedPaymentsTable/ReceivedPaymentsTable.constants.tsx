@@ -6,7 +6,7 @@ const col = columnHelper<PaymentRow>()
 
 export const COLUMNS = col.columns([
   col.accessor((f) => f.p.date, {
-    id: 'fecha',
+    id: 'date',
     header: 'Fecha',
     meta: { classes: 'whitespace-nowrap text-slate-700' },
     cell: ({ getValue }) => formatDate(getValue()),
@@ -16,7 +16,7 @@ export const COLUMNS = col.columns([
     meta: { classes: 'max-w-64 truncate text-slate-900' },
   }),
   col.accessor((f) => f.d.number, {
-    id: 'declaracion',
+    id: 'declaration',
     header: 'Declaración',
     meta: { classes: 'whitespace-nowrap' },
     cell: ({
@@ -33,16 +33,16 @@ export const COLUMNS = col.columns([
     ),
   }),
   col.accessor((f) => f.d.invoiceNumber, {
-    id: 'factura',
+    id: 'invoice',
     header: 'N.º de factura',
     meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
   }),
   col.accessor((f) => f.p.value, {
-    id: 'valor',
+    id: 'value',
     header: 'Valor',
     meta: { align: 'right', classes: 'whitespace-nowrap tabular-nums text-slate-900' },
     cell: ({ getValue }) => formatPesos(getValue()),
   }),
 ])
 
-export const INITIAL_ORDER = [{ id: 'fecha', desc: true }]
+export const INITIAL_ORDER = [{ id: 'date', desc: true }]

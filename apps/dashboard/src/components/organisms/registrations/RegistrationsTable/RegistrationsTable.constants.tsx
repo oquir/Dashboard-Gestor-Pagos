@@ -47,7 +47,7 @@ export const COLUMNS = col.columns([
     meta: { classes: 'whitespace-nowrap text-slate-700' },
   }),
   col.display({
-    id: 'calidades',
+    id: 'capacities',
     header: 'Calidades',
     cell: ({ row: { original: i } }) => (
       <div className="flex flex-wrap gap-1">
@@ -61,7 +61,7 @@ export const COLUMNS = col.columns([
     ),
   }),
   col.accessor((i) => ritChangeKindLabel[lastProcedure(i).kind], {
-    id: 'tramite',
+    id: 'procedure',
     header: 'Tipo de trámite',
     meta: { classes: 'whitespace-nowrap' },
     cell: ({ row: { original: i } }) => {
@@ -79,7 +79,7 @@ export const COLUMNS = col.columns([
     },
   }),
   col.accessor((i) => registrationStatusLabel[i.status], {
-    id: 'estado',
+    id: 'status',
     header: 'Estado',
     cell: ({ row: { original: i } }) => (
       <Badge tone={registrationTone[i.status]}>{registrationStatusLabel[i.status]}</Badge>

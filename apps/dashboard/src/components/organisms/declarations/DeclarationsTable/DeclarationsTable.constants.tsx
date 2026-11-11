@@ -21,7 +21,7 @@ import { col } from './DeclarationsTable.utils'
 
 export const COLUMNS = col.columns([
   col.accessor((f) => f.d.number, {
-    id: 'numero',
+    id: 'number',
     header: 'Radicado',
     meta: { classes: 'whitespace-nowrap' },
     cell: ({
@@ -40,12 +40,12 @@ export const COLUMNS = col.columns([
     ),
   }),
   col.accessor((f) => f.d.invoiceNumber, {
-    id: 'factura',
+    id: 'invoice',
     header: 'N.º de factura',
     meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
   }),
   col.accessor((f) => declarationTypeText(f.d.kind, f.downward), {
-    id: 'tipo',
+    id: 'kind',
     header: 'Tipo de declaración',
     meta: { classes: 'whitespace-nowrap' },
     cell: ({
@@ -84,7 +84,7 @@ export const COLUMNS = col.columns([
     ),
   }),
   col.accessor((f) => `${f.d.tax}-${f.d.fiscalYear}-${f.d.period}`, {
-    id: 'periodo',
+    id: 'period',
     header: 'Impuesto y periodo',
     meta: { classes: 'whitespace-nowrap' },
     cell: ({
@@ -99,7 +99,7 @@ export const COLUMNS = col.columns([
     ),
   }),
   col.accessor((f) => f.d.filingDate, {
-    id: 'presentacion',
+    id: 'filing',
     header: 'Presentación',
     meta: { classes: 'whitespace-nowrap' },
     cell: ({
@@ -124,7 +124,7 @@ export const COLUMNS = col.columns([
     cell: ({ getValue }) => formatPesos(getValue()),
   }),
   col.accessor((f) => (f.payment ? paymentStatusLabel[f.payment] : ''), {
-    id: 'pago',
+    id: 'payment',
     header: 'Pago',
     // La solicitud de corrección que no se ha aceptado no se paga.
     cell: ({ row: { original: f } }) =>
@@ -140,7 +140,7 @@ export const COLUMNS = col.columns([
 export const APPROVAL_COLUMN = col.accessor(
   (f) => (f.approval ? approvalStatusLabel[f.approval.status] : ''),
   {
-    id: 'aprobacion',
+    id: 'approval',
     header: 'Aprobación',
     cell: ({
       row: {
@@ -162,4 +162,4 @@ export const APPROVAL_COLUMN = col.accessor(
   },
 )
 
-export const INITIAL_ORDER = [{ id: 'presentacion', desc: true }]
+export const INITIAL_ORDER = [{ id: 'filing', desc: true }]

@@ -17,7 +17,7 @@ export function municipalityName(u: User, municipalities: Municipality[]) {
 export function userColumns(municipalities: Municipality[], canSee: (id: string) => void) {
   return col.columns([
     col.display({
-      id: 'ver',
+      id: 'view',
       header: '',
       meta: { classes: 'w-px' },
       cell: ({ row: { original: u } }) => (
@@ -33,7 +33,7 @@ export function userColumns(municipalities: Municipality[], canSee: (id: string)
       ),
     }),
     col.accessor(fullName, {
-      id: 'nombre',
+      id: 'name',
       header: 'Nombre',
       cell: ({ row: { original: u } }) => (
         <>
@@ -45,19 +45,19 @@ export function userColumns(municipalities: Municipality[], canSee: (id: string)
       ),
     }),
     col.accessor((u) => roleLabel[u.role], {
-      id: 'rol',
+      id: 'role',
       header: 'Rol',
       cell: ({ row: { original: u } }) => (
         <Badge tone={u.role === '1cero1' ? 'info' : 'neutral'}>{roleLabel[u.role]}</Badge>
       ),
     }),
     col.accessor((u) => municipalityName(u, municipalities), {
-      id: 'municipio',
+      id: 'municipality',
       header: 'Municipio',
       meta: { classes: 'whitespace-nowrap text-slate-700' },
     }),
     col.accessor((u) => (u.isActive ? 'Activo' : 'Inactivo'), {
-      id: 'estado',
+      id: 'status',
       header: 'Estado',
       cell: ({ row: { original: u } }) => (
         <Badge tone={u.isActive ? 'success' : 'neutral'}>

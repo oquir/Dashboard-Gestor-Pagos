@@ -10,7 +10,7 @@ export const municipalityColumn = (municipalities: Municipality[]) =>
   col.accessor(
     (o) => municipalities.find((m) => m.id === o.registration.municipalityId)?.name ?? '',
     {
-      id: 'municipio',
+      id: 'municipality',
       header: 'Municipio',
       meta: { classes: 'whitespace-nowrap text-slate-700' },
     },
@@ -25,7 +25,7 @@ export function selectionColumn(
   const available = nonFilers.filter((o) => !nonFilerSummons(o, summonses)).map(nonFilerId)
   const checkedOnes = available.filter((id) => selection.has(id)).length
   return col.display({
-    id: 'seleccion',
+    id: 'selection',
     header: () => (
       <Checkbox
         aria-label="Seleccionar los omisos filtrados sin emplazamiento"
@@ -57,7 +57,7 @@ export function selectionColumn(
 /** El emplazamiento para declarar del omiso, si se registró. Ordena por la fecha de notificación. */
 export const summonsColumn = (summonses: Summons[]) =>
   col.accessor((o) => nonFilerSummons(o, summonses)?.notificationDate ?? '', {
-    id: 'emplazamiento',
+    id: 'summons',
     header: 'Emplazamiento',
     meta: { classes: 'min-w-52' },
     cell: ({ row: { original: o } }) => {

@@ -35,7 +35,7 @@ export function auditLogColumns(municipalities: Municipality[]) {
       ),
     }),
     col.accessor('dateTime', {
-      id: 'fecha',
+      id: 'date',
       header: 'Fecha y hora',
       meta: { classes: 'whitespace-nowrap' },
       cell: ({ row: { original: r } }) => (
@@ -49,7 +49,7 @@ export function auditLogColumns(municipalities: Municipality[]) {
       ),
     }),
     col.accessor((r) => r.user.name, {
-      id: 'usuario',
+      id: 'user',
       header: 'Usuario',
       meta: { classes: 'whitespace-nowrap' },
       cell: ({ row: { original: r } }) => (
@@ -64,7 +64,7 @@ export function auditLogColumns(municipalities: Municipality[]) {
       ),
     }),
     col.accessor((r) => municipalityName(r, municipalities), {
-      id: 'municipio',
+      id: 'municipality',
       header: 'Municipio',
       meta: { classes: 'whitespace-nowrap text-slate-700' },
     }),

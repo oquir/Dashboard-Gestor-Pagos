@@ -23,7 +23,7 @@ export const COLUMNS = col.columns([
     meta: { classes: 'max-w-64 truncate text-slate-900' },
   }),
   col.accessor((f) => f.d.number, {
-    id: 'declaracion',
+    id: 'declaration',
     header: 'Declaración',
     meta: { classes: 'whitespace-nowrap' },
     cell: ({
@@ -45,7 +45,7 @@ export const COLUMNS = col.columns([
     ),
   }),
   col.accessor((f) => f.d.invoiceNumber, {
-    id: 'factura',
+    id: 'invoice',
     header: 'N.º de factura',
     meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
   }),
@@ -61,7 +61,7 @@ export const COLUMNS = col.columns([
     cell: ({ getValue }) => formatPesos(getValue()),
   }),
   col.accessor((f) => f.d.totalToPay - f.paidAmount, {
-    id: 'saldo',
+    id: 'balance',
     header: 'Saldo',
     meta: {
       align: 'right',
@@ -70,7 +70,7 @@ export const COLUMNS = col.columns([
     cell: ({ getValue }) => formatPesos(getValue()),
   }),
   col.accessor((f) => paymentStatusLabel[f.status], {
-    id: 'estado',
+    id: 'status',
     header: 'Estado',
     cell: ({ row: { original: f } }) => (
       <Badge tone={paymentTone[f.status]}>{paymentStatusLabel[f.status]}</Badge>
@@ -78,4 +78,4 @@ export const COLUMNS = col.columns([
   }),
 ])
 
-export const INITIAL_ORDER = [{ id: 'saldo', desc: true }]
+export const INITIAL_ORDER = [{ id: 'balance', desc: true }]

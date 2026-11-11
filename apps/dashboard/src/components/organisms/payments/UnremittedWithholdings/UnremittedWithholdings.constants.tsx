@@ -21,7 +21,7 @@ export const COLUMNS = col.columns([
     meta: { classes: 'max-w-64 truncate text-slate-900' },
   }),
   col.accessor((f) => f.d.number, {
-    id: 'declaracion',
+    id: 'declaration',
     header: 'Declaración',
     meta: { classes: 'whitespace-nowrap' },
     cell: ({
@@ -43,7 +43,7 @@ export const COLUMNS = col.columns([
     ),
   }),
   col.accessor((f) => f.d.dueDate, {
-    id: 'vencimiento',
+    id: 'dueDate',
     header: 'Vencimiento',
     meta: DATE,
     cell: ({ getValue }) => formatDate(getValue()),
@@ -71,4 +71,4 @@ export const COLUMNS = col.columns([
 ])
 
 /** Primero lo que lleva más tiempo vencido; después, lo que vence antes. */
-export const INITIAL_ORDER = [{ id: 'limite', desc: false }]
+export const INITIAL_ORDER = [{ id: 'limit', desc: false }]

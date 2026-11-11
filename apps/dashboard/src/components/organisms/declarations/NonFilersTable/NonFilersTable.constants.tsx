@@ -5,7 +5,7 @@ import { col } from './NonFilersTable.utils'
 
 export const COLUMNS = col.columns([
   col.accessor((o) => o.registration.name, {
-    id: 'contribuyente',
+    id: 'taxpayer',
     header: 'Contribuyente',
     meta: { classes: 'max-w-72' },
     cell: ({
@@ -28,7 +28,7 @@ export const COLUMNS = col.columns([
     ),
   }),
   col.accessor((o) => `${o.tax}-${o.fiscalYear}-${String(o.period).padStart(2, '0')}`, {
-    id: 'periodo',
+    id: 'period',
     header: 'Impuesto y periodo',
     meta: { classes: 'whitespace-nowrap' },
     cell: ({ row: { original: o } }) => (
@@ -49,7 +49,7 @@ export const COLUMNS = col.columns([
     ),
   }),
   col.accessor((o) => o.registration.email, {
-    id: 'contacto',
+    id: 'contact',
     header: 'Contacto',
     meta: { classes: 'max-w-64' },
     cell: ({
@@ -66,4 +66,4 @@ export const COLUMNS = col.columns([
 ])
 
 /** Primero lo que lleva más tiempo vencido. */
-export const INITIAL_ORDER = [{ id: 'vencimiento', desc: false }]
+export const INITIAL_ORDER = [{ id: 'dueDateItem', desc: false }]
