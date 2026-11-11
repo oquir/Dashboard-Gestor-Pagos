@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { Badge, Card } from '../components/atoms'
 import { EmptyState } from '../components/molecules'
 import {
@@ -13,8 +13,10 @@ import {
   ApplicationReply,
 } from '../components/organisms'
 import { TemplateDetail } from '../components/templates'
+import { ROW_BUTTON_CLASS } from '../constants'
 import {
   RIT_CHANGE_FILE_NAMES,
+  statementPath,
   registrationStatusLabel,
   can,
   activitiesOf,
@@ -100,7 +102,13 @@ export default function RegistrationDetail() {
       title={registration.name}
       description={`RIT ${registration.ritNumber} · ${municipality?.name}`}
       actions={
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            to={statementPath(registration.municipalityId, registration)}
+            className={ROW_BUTTON_CLASS}
+          >
+            Estado de cuenta
+          </Link>
           {lateItem && <Badge tone="alert">Inscripción tardía</Badge>}
           <Badge tone={registrationTone[registration.status]}>
             {registrationStatusLabel[registration.status]}
