@@ -2,8 +2,8 @@
 // Los datos enviados terminan en los valores que hoy tiene la demo, para que la bitácora no contradiga lo que se ve en las pantallas.
 import { PETICIONES } from '../constants'
 import type { Peticion } from '../constants'
-import { datosEnviados } from '../lib'
-import { nombreCompleto } from '../lib'
+import { datosEnviados } from '../lib/emplazamientos'
+import { nombreCompleto } from '../lib/formato'
 import type { Datos, Emplazamiento, RegistroBitacora } from '../types'
 import { crearAzar, fechaAleatoria } from './azar'
 import type { Azar } from './azar'

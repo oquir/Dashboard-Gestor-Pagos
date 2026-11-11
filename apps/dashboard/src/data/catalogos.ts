@@ -1,7 +1,7 @@
 // Datos fijos del mock. Municipios, personas y empresas son ficticios.
 import { DIGITOS } from '../constants'
-import { nombreCompleto } from '../lib'
-import { SANCIONES_LEY } from '../lib'
+import { nombreCompleto } from '../lib/formato'
+import { SANCIONES_LEY } from '../lib/reglas'
 import type {
   ActividadesVigencia,
   ConfigMunicipio,

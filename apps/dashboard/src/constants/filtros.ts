@@ -1,4 +1,4 @@
-import { etiquetaEstadoAprobacion } from '../lib'
+import { etiquetaEstadoAprobacion } from '../lib/formato'
 import type { FiltroAprobacion, FiltroCorreccion } from '../types'
 
 /** Opciones del filtro por aprobación previa de los listados de declaraciones. */

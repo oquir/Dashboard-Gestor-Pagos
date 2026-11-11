@@ -1,4 +1,4 @@
-import type { SituacionAprobacion, SituacionCorreccion } from '../lib'
+import type { SituacionAprobacion, SituacionCorreccion } from '../lib/reglas'
 import type { Declaracion, EstadoPago } from './dominio'
 
 /** Lo que muestra la página Declaraciones: las presentadas o los omisos (lo que debía presentarse y no se presentó). */
