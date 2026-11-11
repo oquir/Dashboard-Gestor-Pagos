@@ -1,6 +1,6 @@
 import { type PointerEvent as ReactPointerEvent, useState } from 'react'
 import { GRID_GAP_PX } from '../../constants'
-import { getCanvasScale } from '../../lib/canvasZoom/canvasZoom'
+import { getCanvasScale } from '../../lib'
 import type { UseFieldResizeParams, UseFieldResizeResult } from './useFieldResize.types'
 
 // Redimensiona un campo arrastrando su borde. El ancho se mide en columnas, asi que hay que

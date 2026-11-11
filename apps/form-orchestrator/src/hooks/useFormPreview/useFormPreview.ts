@@ -1,18 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { hasFills, resolveFills } from '../../lib/catalogFill/catalogFill'
-import { buildFormExport } from '../../lib/exportForm/exportForm'
-import {
-  buildRuntimeModel,
-  createInitialState,
-  resolveRuntime,
-} from '../../lib/formRuntime/formRuntime'
-import { enTexto } from '../../lib/maxDates/maxDates'
-import { maxDatesEnUso } from '../../lib/maxDatesBank/maxDatesBank'
-import { catalogOptions } from '../../lib/mockCatalog/mockCatalog'
-import { buildPayload } from '../../lib/runtimePayload/runtimePayload'
-import { validateRuntime } from '../../lib/runtimeValidation/runtimeValidation'
-import { valoresEnUso } from '../../lib/valoresBank/valoresBank'
-import { useFormStore } from '../../store/formStore'
+import { hasFills, resolveFills } from '../../lib/catalogFill'
+import { buildFormExport } from '../../lib'
+import { buildRuntimeModel, createInitialState, resolveRuntime } from '../../lib/formRuntime'
+import { enTexto } from '../../lib'
+import { maxDatesEnUso } from '../../lib'
+import { catalogOptions } from '../../lib/mockCatalog'
+import { buildPayload } from '../../lib/runtimePayload'
+import { validateRuntime } from '../../lib/runtimeValidation'
+import { valoresEnUso } from '../../lib'
+import { useFormStore } from '../../store'
 import type { ExportedField } from '../../types'
 import type { FormPreviewApi } from '../../types'
 import type {

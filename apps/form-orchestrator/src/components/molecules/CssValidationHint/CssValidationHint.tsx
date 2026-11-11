@@ -1,4 +1,4 @@
-import { unsupportedDeclarations } from '../../../lib/cssStyles/cssStyles'
+import { unsupportedDeclarations } from '../../../lib'
 import type { CssValidationHintProps } from './CssValidationHint.types'
 
 // Aviso, no bloqueo: misma regla que un {campo} desconocido en un script. No hay sanitizador de

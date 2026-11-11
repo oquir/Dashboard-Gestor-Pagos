@@ -1,14 +1,8 @@
 import { useRef, useState } from 'react'
 import { AngleDown2, Check } from 'reicon-react'
 import { useClickOutside } from '../../../hooks'
-import {
-  canZoomIn,
-  canZoomOut,
-  formatZoom,
-  zoomIn,
-  zoomOut,
-} from '../../../lib/canvasZoom/canvasZoom'
-import { useFormStore } from '../../../store/formStore'
+import { canZoomIn, canZoomOut, formatZoom, zoomIn, zoomOut } from '../../../lib'
+import { useFormStore } from '../../../store'
 import {
   ZOOM_ITEM_CLASSES,
   ZOOM_PRESETS,

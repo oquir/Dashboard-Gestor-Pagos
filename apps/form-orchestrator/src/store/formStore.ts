@@ -4,24 +4,16 @@ import { create, type Mutate, type StateCreator, type StoreApi, type UseBoundSto
 import { ZOOM_DEFAULT } from '../constants'
 import { GRID_BASE_COLUMNS, MAX_ROW_COLUMNS, MIN_ROW_COLUMNS } from '../constants'
 import { HISTORY_BURST_MS, HISTORY_LIMIT } from '../constants'
-import { sameIdSet, toggleId, withoutIds } from '../lib/canvasSelection/canvasSelection'
-import { clampZoom } from '../lib/canvasZoom/canvasZoom'
-import { pruneDataSourceReferencing } from '../lib/fieldDataSource/fieldDataSource'
-import { slugifyFieldName, uniqueFieldName } from '../lib/fieldName/fieldName'
-import { allowsManualOptions, isOptionBasedField } from '../lib/fieldOptions/fieldOptions'
-import { createFieldRule, moveRule, pruneRulesReferencing } from '../lib/fieldRule/fieldRule'
-import { createEmptyTooltip } from '../lib/fieldTooltip/fieldTooltip'
-import {
-  canTransfer,
-  collectCrossingRefs,
-  planLanding,
-  transferGroup,
-} from '../lib/fieldTransfer/fieldTransfer'
-import {
-  createValidationOverride,
-  pruneOverridesReferencing,
-} from '../lib/fieldValidationOverride/fieldValidationOverride'
-import { createBurstGate, sameDocument, toHistorySnapshot } from '../lib/history/history'
+import { sameIdSet, toggleId, withoutIds } from '../lib'
+import { clampZoom } from '../lib'
+import { pruneDataSourceReferencing } from '../lib'
+import { slugifyFieldName, uniqueFieldName } from '../lib'
+import { allowsManualOptions, isOptionBasedField } from '../lib'
+import { createFieldRule, moveRule, pruneRulesReferencing } from '../lib'
+import { createEmptyTooltip } from '../lib'
+import { canTransfer, collectCrossingRefs, planLanding, transferGroup } from '../lib'
+import { createValidationOverride, pruneOverridesReferencing } from '../lib'
+import { createBurstGate, sameDocument, toHistorySnapshot } from '../lib'
 import {
   clampGroupBounds,
   createRepeatableGroup,
@@ -29,15 +21,9 @@ import {
   groupNamesInUse,
   normalizeGroupRows,
   pruneEmptyGroups,
-} from '../lib/repeatableGroup/repeatableGroup'
-import {
-  getFreeRuns,
-  getMaxSpanAt,
-  repackRow,
-  resolvePlacement,
-  sortByColumn,
-} from '../lib/rowLayout/rowLayout'
-import { reorderRows } from '../lib/rowOrder/rowOrder'
+} from '../lib'
+import { getFreeRuns, getMaxSpanAt, repackRow, resolvePlacement, sortByColumn } from '../lib'
+import { reorderRows } from '../lib'
 import type { CanvasField } from '../types'
 import type { FormState } from '../types'
 import type {

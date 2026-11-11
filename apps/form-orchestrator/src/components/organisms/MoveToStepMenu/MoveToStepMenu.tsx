@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { AngleDown2 } from 'reicon-react'
 import { CANVAS_TOOLBAR_ACTION_CLASSES } from '../../../constants'
 import { useClickOutside } from '../../../hooks'
-import { useFormStore } from '../../../store/formStore'
+import { useFormStore } from '../../../store'
 import type { CanvasTarget } from '../../../types'
 import {
   MENU_CAPTION_CLASSES,

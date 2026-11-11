@@ -1,5 +1,5 @@
-import { allowsNegative } from '../../../../lib/fieldSign/fieldSign'
-import { useFormStore } from '../../../../store/formStore'
+import { allowsNegative } from '../../../../lib'
+import { useFormStore } from '../../../../store'
 import { ToggleSwitch } from '../../../atoms'
 import { PanelSection } from '../../../molecules'
 import { DECIMAL_CHOICES } from './NumberOptionsEditor.constants'

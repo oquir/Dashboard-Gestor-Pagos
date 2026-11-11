@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
-import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
-import { isSimulatedCatalog } from '../../../../lib/mockCatalog/mockCatalog'
+import { isPresentationalField } from '../../../../lib'
+import { isSimulatedCatalog } from '../../../../lib/mockCatalog'
 import { isRequiredBySchema } from '../../../../lib/runtimeValidation/runtimeValidation.utils'
 import { PreviewTooltip } from '../../../molecules'
 import { PreviewFieldControl } from '../PreviewFieldControl'

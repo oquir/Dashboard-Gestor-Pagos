@@ -1,4 +1,4 @@
-import { getCanvasScrollPort } from '../../lib/canvasDom/canvasDom'
+import { getCanvasScrollPort } from '../../lib'
 
 // Un atajo de una sola tecla no puede dispararse mientras se escribe. Sin esta guarda, teclear la
 // etiqueta de un campo y pulsar Suprimir borra el campo entero en vez de un caracter.

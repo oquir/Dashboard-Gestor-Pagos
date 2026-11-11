@@ -1,6 +1,6 @@
 import type { ExportedField } from '../../types'
 import type { RuntimeModel, RuntimeSnapshot } from '../../types'
-import { isPresentationalField } from '../fieldKind/fieldKind'
+import { isPresentationalField } from '../fieldKind'
 import { ARRAY_MARKER, setDeepValue } from './runtimePayload.utils'
 
 // Arma el objeto que se le mandaria a la API a partir de lo que el usuario lleva escrito.

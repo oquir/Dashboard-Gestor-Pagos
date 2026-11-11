@@ -1,5 +1,5 @@
 import { useStore } from 'zustand'
-import { useFormStore } from '../../store/formStore'
+import { useFormStore } from '../../store'
 import type { UseFormHistoryResult } from './useFormHistory.types'
 
 // Lo que la interfaz necesita del historial: si hay algo que deshacer o rehacer, y las dos acciones.

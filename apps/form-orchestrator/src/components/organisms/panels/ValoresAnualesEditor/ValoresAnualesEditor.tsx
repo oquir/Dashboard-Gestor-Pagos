@@ -1,13 +1,9 @@
 import { useState } from 'react'
 import { DEFAULT_ANIO_KEY, DEFAULT_SMMLV_KEY, DEFAULT_UVT_KEY } from '../../../../constants'
-import { formatNumber } from '../../../../lib/numberFormat/numberFormat'
-import { buscarValores } from '../../../../lib/valoresAnuales/valoresAnuales'
-import {
-  parseValoresPaste,
-  usesCustomValores,
-  valoresEnUso,
-} from '../../../../lib/valoresBank/valoresBank'
-import { useFormStore } from '../../../../store/formStore'
+import { formatNumber } from '../../../../lib'
+import { buscarValores } from '../../../../lib'
+import { parseValoresPaste, usesCustomValores, valoresEnUso } from '../../../../lib'
+import { useFormStore } from '../../../../store'
 import type { ValorAnual, ValoresParseResult } from '../../../../types'
 import { Button } from '../../../atoms'
 import { BinaryChoiceToggle } from '../../../molecules'

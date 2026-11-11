@@ -1,14 +1,14 @@
 import { useState } from 'react'
-import { maxLengthOf } from '../../../../lib/fieldLength/fieldLength'
-import { applyDecimals, applyRounding } from '../../../../lib/fieldRounding/fieldRounding'
-import { allowsNegative, clampNegative } from '../../../../lib/fieldSign/fieldSign'
+import { maxLengthOf } from '../../../../lib'
+import { applyDecimals, applyRounding } from '../../../../lib'
+import { allowsNegative, clampNegative } from '../../../../lib'
 import {
   capIntegerDigits,
   formatForDisplay,
   parseFormattedNumber,
   sanitizeNumericInput,
   toEditableText,
-} from '../../../../lib/numberFormat/numberFormat'
+} from '../../../../lib'
 import type { PreviewNumberInputProps } from './PreviewNumberInput.types'
 
 export function PreviewNumberInput({

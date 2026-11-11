@@ -1,10 +1,7 @@
 import { ArrowDown, ArrowUp, Xmark } from 'reicon-react'
 import { OPERATOR_LABELS } from '../../../constants'
-import {
-  operatorNeedsValue,
-  operatorsForFieldType,
-} from '../../../lib/fieldCondition/fieldCondition'
-import { createConstantEffect, createScriptEffect } from '../../../lib/fieldRule/fieldRule'
+import { operatorNeedsValue, operatorsForFieldType } from '../../../lib'
+import { createConstantEffect, createScriptEffect } from '../../../lib'
 import type { CanvasField } from '../../../types'
 import { IconButton } from '../../atoms'
 import { ConditionFieldSelect } from '../ConditionFieldSelect'

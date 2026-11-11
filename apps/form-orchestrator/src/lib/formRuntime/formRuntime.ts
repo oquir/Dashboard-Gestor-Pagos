@@ -10,7 +10,7 @@ import type {
 } from '../../types'
 import type { DeclaracionKind } from '../../types'
 import type { FormType } from '../../types'
-import { computeDerivedValues, type DerivedResult } from '../runtimeDerived/runtimeDerived'
+import { computeDerivedValues, type DerivedResult } from '../runtimeDerived'
 import { buildScope, emptyItem, groupColumns } from './formRuntime.utils'
 
 // El corazon del simulador. Solo consume el JSON exportado, nunca el store: si algo no se puede

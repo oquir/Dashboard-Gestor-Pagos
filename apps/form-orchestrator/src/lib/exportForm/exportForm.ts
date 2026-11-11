@@ -2,7 +2,7 @@ import { GRID_BASE_COLUMNS } from '../../constants'
 import type { FormExport, FormExportFile } from '../../types'
 import type { CanvasRow, FormStep, IntroModalStep } from '../../types'
 import type { SetupConfig } from '../../types'
-import { buildDraftPayload } from '../persistence/persistence'
+import { buildDraftPayload } from '../persistence'
 import { buildNameIndex, mapFormStep, mapRows } from './exportForm.utils'
 
 // El JSON que se lleva el consumidor: todo lo que hace falta para dibujar y validar el formulario.

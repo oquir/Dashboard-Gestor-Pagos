@@ -1,4 +1,4 @@
-import { formulaToScript } from '../scriptMigration/scriptMigration'
+import { formulaToScript } from '../scriptMigration'
 import { DRAFT_SCHEMA_VERSION } from './persistence.constants'
 import type { DraftMigration, FieldMigration, LooseDraft } from './persistence.types'
 

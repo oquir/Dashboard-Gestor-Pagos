@@ -1,4 +1,4 @@
-import { getCanvasScale } from '../../lib/canvasZoom/canvasZoom'
+import { getCanvasScale } from '../../lib'
 import type { PortSize, ViewAnchor } from './useCanvasViewport.types'
 
 // clientWidth y clientHeight y no el rect: sin la barra de scroll, que es lo que de verdad se ve.

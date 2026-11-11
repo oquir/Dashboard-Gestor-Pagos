@@ -1,4 +1,4 @@
-import { useFormStore } from '../../../../store/formStore'
+import { useFormStore } from '../../../../store'
 import { PanelSection } from '../../../molecules'
 import { FILE_FORMAT_PRESETS } from './FileOptionsEditor.constants'
 import type { FileOptionsEditorProps } from './FileOptionsEditor.types'

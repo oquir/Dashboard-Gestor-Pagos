@@ -2,8 +2,8 @@ import type { CollisionDetection, Modifier } from '@dnd-kit/core'
 import { pointerWithin, rectIntersection } from '@dnd-kit/core'
 import { getEventCoordinates } from '@dnd-kit/utilities'
 import { GRID_GAP_PX } from '../../constants'
-import { getRowElement } from '../../lib/canvasDom/canvasDom'
-import { getCanvasScale } from '../../lib/canvasZoom/canvasZoom'
+import { getRowElement } from '../../lib'
+import { getCanvasScale } from '../../lib'
 import type {
   CanvasTarget,
   DragPlacement,

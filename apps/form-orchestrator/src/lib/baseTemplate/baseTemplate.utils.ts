@@ -10,7 +10,7 @@ import type {
   FieldValidationOverride,
 } from '../../types'
 import type { CanvasRow } from '../../types'
-import { supportsRounding } from '../fieldRounding/fieldRounding'
+import { supportsRounding } from '../fieldRounding'
 import type {
   FieldSpec,
   NumericDefaults,

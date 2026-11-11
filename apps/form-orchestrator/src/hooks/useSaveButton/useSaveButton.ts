@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { saveDraft } from '../../lib/persistence/persistence'
-import { useFormStore } from '../../store/formStore'
+import { saveDraft } from '../../lib'
+import { useFormStore } from '../../store'
 import { JUST_SAVED_DURATION_MS } from './useSaveButton.constants'
 import type { UseSaveButtonResult } from './useSaveButton.types'
 

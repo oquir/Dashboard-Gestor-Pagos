@@ -1,4 +1,4 @@
-import { fechasEsperadas } from '../../../lib/maxDates/maxDates'
+import { fechasEsperadas } from '../../../lib'
 import {
   BADGE_LOADED_CLASSES,
   BADGE_PARCIAL_CLASSES,

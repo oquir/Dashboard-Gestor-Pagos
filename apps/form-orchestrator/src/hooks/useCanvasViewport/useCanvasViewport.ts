@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/refs -- el ancla se captura en render a proposito, ver captureAnchor */
 import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { getViewportLayout } from '../../lib/canvasViewport/canvasViewport'
-import { wheelZoom } from '../../lib/canvasZoom/canvasZoom'
-import { useFormStore } from '../../store/formStore'
+import { getViewportLayout } from '../../lib'
+import { wheelZoom } from '../../lib'
+import { useFormStore } from '../../store'
 import type { ViewportLayout } from '../../types'
 import type { CanvasViewportReturn } from '../../types'
 import type { HomedView, PortSize, ViewAnchor } from './useCanvasViewport.types'

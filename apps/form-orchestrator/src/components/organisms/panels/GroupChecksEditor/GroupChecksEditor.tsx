@@ -1,6 +1,6 @@
 import { Plus, Trash } from 'reicon-react'
 import { useGroupChecksEditor } from '../../../../hooks'
-import { validateFieldScript } from '../../../../lib/fieldScript/fieldScript'
+import { validateFieldScript } from '../../../../lib'
 import { IconButton } from '../../../atoms'
 import { ToggleSwitch } from '../../../atoms'
 import { ScriptInput } from '../../../molecules'

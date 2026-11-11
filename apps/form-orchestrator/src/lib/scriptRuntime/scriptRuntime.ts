@@ -2,9 +2,9 @@ import { SCRIPT_HELPER_VALUES } from '../../constants'
 import type { ScriptFunctionResult } from '../../types'
 import type { RuntimeContext, RuntimeModel, RuntimeValues } from '../../types'
 import type { ScriptRunResult } from '../../types'
-import { normalizeScriptResult } from '../fieldScript/fieldScript'
-import { buildDateHelpers } from '../scriptDates/scriptDates'
-import { buildValueHelpers } from '../scriptValores/scriptValores'
+import { normalizeScriptResult } from '../fieldScript'
+import { buildDateHelpers } from '../scriptDates'
+import { buildValueHelpers } from '../scriptValores'
 import { coerceForScript, compileCached, EMPTY_CONTEXT } from './scriptRuntime.utils'
 
 // Ejecuta el script de un campo. Es el unico sitio del proyecto que corre codigo del autor, y lo

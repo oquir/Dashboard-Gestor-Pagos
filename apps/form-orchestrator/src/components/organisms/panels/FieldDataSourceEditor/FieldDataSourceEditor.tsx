@@ -1,5 +1,5 @@
 import { CATALOGS, findCatalog } from '../../../../constants'
-import { useFormStore } from '../../../../store/formStore'
+import { useFormStore } from '../../../../store'
 import { ToggleSwitch } from '../../../atoms'
 import { PanelSection } from '../../../molecules'
 import {

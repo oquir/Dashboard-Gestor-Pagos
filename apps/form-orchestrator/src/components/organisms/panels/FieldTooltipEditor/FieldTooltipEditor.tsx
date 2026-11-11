@@ -1,5 +1,5 @@
 import { TOOLTIP_POSITIONS } from '../../../../constants'
-import { useFormStore } from '../../../../store/formStore'
+import { useFormStore } from '../../../../store'
 import type { FieldTooltip } from '../../../../types'
 import { Label } from '../../../atoms'
 import { Textarea } from '../../../atoms'

@@ -1,4 +1,4 @@
-import { collectFieldNames } from '../../../lib/fieldName/fieldName'
+import { collectFieldNames } from '../../../lib'
 import type { FormStep, IntroModalStep } from '../../../types'
 
 // Los nombres se comparan contra los dos lienzos, no contra el activo: el export los mezcla en un

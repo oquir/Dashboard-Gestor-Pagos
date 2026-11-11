@@ -1,5 +1,5 @@
 import { Xmark } from 'reicon-react'
-import { useFormStore } from '../../../store/formStore'
+import { useFormStore } from '../../../store'
 import { IconButton } from '../../atoms'
 
 export function TransferNotice() {

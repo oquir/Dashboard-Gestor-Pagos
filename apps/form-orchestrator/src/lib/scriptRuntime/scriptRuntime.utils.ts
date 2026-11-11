@@ -2,7 +2,7 @@ import { toScriptNumber } from '../../constants'
 import { NUMERIC_FIELD_TYPES } from '../../constants'
 import type { ScriptFunction, ScriptFunctionResult } from '../../types'
 import type { RuntimeContext } from '../../types'
-import { buildScriptFunction, composeScriptBody } from '../fieldScript/fieldScript'
+import { buildScriptFunction, composeScriptBody } from '../fieldScript'
 
 // Sin tabla de vencimientos los helpers de fecha no encuentran nada y devuelven null y 0. Es lo que
 // tiene que pasar: un formulario que no depende de fechas, o uno al que no se le cargaron, corre

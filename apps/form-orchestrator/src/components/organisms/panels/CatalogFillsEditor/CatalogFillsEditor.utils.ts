@@ -1,4 +1,4 @@
-import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
+import { isPresentationalField } from '../../../../lib'
 import type { CanvasField, CatalogFill } from '../../../../types'
 
 // Los candidatos a recibir una columna: cualquier campo con valor del mismo lienzo, menos el que

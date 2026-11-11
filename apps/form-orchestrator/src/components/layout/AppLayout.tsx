@@ -1,4 +1,4 @@
-import { useFormStore } from '../../store/formStore'
+import { useFormStore } from '../../store'
 import type { AppLayoutProps } from './AppLayout.types'
 
 export function AppLayout({ sidebar, canvas, canvasOverlay, rightSidebar }: AppLayoutProps) {

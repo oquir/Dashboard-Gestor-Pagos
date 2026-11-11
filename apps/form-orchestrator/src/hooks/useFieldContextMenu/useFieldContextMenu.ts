@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { findFieldById, getActiveRows, useFormStore } from '../../store/formStore'
+import { findFieldById, getActiveRows, useFormStore } from '../../store'
 import type { ContextMenuTab } from '../../types'
 import { MENU_HEIGHT_PX, MENU_WIDTH_PX, VIEWPORT_MARGIN_PX } from './useFieldContextMenu.constants'
 import type {

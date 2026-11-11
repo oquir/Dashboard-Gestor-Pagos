@@ -2,8 +2,8 @@ import { DEFAULT_TOOLTIP_POSITION } from '../../constants'
 import { TOOLTIP_CAPABLE_FIELD_TYPES } from '../../constants'
 import type { ExportedTooltip } from '../../types'
 import type { CanvasField, FieldTooltip } from '../../types'
-import { resolveTooltipStyles } from '../cssStyles/cssStyles'
-import { emptyRichText, isEmptyRichText } from '../richText/richText'
+import { resolveTooltipStyles } from '../cssStyles'
+import { emptyRichText, isEmptyRichText } from '../richText'
 
 // La ayuda contextual de un campo. Solo ocho tipos la admiten. El contenido es RichTextContent,
 // igual que el campo rich_text, para reaprovechar el editor, la vista y el saneado de enlaces.

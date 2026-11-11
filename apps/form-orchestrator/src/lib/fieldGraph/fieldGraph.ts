@@ -1,6 +1,6 @@
 import type { CanvasField } from '../../types'
 import type { FieldGraph } from '../../types'
-import { collectRuleRefs, ruleScriptSources } from '../fieldRule/fieldRule'
+import { collectRuleRefs, ruleScriptSources } from '../fieldRule'
 import type { TopologicalResult } from './fieldGraph.types'
 import { scriptRefIds } from './fieldGraph.utils'
 

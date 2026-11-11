@@ -1,4 +1,4 @@
-import { useFormStore } from '../../../store/formStore'
+import { useFormStore } from '../../../store'
 import { RowDragPreview } from '../RowDragPreview'
 import type { DragPreviewProps } from './DragPreview.types'
 import { getDragLabel } from './DragPreview.utils'

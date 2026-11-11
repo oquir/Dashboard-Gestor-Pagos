@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { getCanvasScrollPort } from '../../lib/canvasDom/canvasDom'
+import { getCanvasScrollPort } from '../../lib'
 import type { PanGesture } from './useCanvasPan.types'
 
 // La mano: arrastrar desplaza el puerto del lienzo en los dos ejes. No puede mover nada del

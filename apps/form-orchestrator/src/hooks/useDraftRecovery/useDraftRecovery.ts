@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { clearDraft, loadDraft } from '../../lib/persistence/persistence'
-import { useFormStore } from '../../store/formStore'
+import { clearDraft, loadDraft } from '../../lib'
+import { useFormStore } from '../../store'
 import type { DraftRecovery, DraftRecoveryStatus } from '../../types'
 import type { DraftLoad } from '../../types'
 import { NOTHING_PENDING } from './useDraftRecovery.constants'

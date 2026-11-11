@@ -1,7 +1,7 @@
 import { MULTI_VALUE_FIELD_TYPES } from '../../constants'
 import type { ExportedField } from '../../types'
 import type { RuntimeValues } from '../../types'
-import { evaluateCondition } from '../runtimeCondition/runtimeCondition'
+import { evaluateCondition } from '../runtimeCondition'
 
 // La clave con la que se indexa un error. Un campo suelto va por nombre; uno dentro de un grupo
 // repetible necesita ademas el grupo y la repeticion, porque el mismo nombre aparece en cada fila.

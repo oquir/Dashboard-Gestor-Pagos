@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { MAX_ROW_COLUMNS, MIN_ROW_COLUMNS } from '../../../constants'
 import { ROW_TOOLBAR_ITEM_CLASSES, ROW_TOOLBAR_POPOVER_CLASSES } from '../../../constants'
 import { useClickOutside } from '../../../hooks'
-import { useFormStore } from '../../../store/formStore'
+import { useFormStore } from '../../../store'
 import type { RowColumnsMenuProps } from './RowColumnsMenu.types'
 
 // El abierto/cerrado lo lleva la barra que lo contiene, no este componente: asi los dos menus son

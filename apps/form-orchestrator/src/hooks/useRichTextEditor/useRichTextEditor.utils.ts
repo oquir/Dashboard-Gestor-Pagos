@@ -1,4 +1,4 @@
-import { emptyRichText } from '../../lib/richText/richText'
+import { emptyRichText } from '../../lib'
 import { safeHref } from '../../lib/richText/richText.utils'
 import type { RichTextContent, RichTextLeaf } from '../../types'
 

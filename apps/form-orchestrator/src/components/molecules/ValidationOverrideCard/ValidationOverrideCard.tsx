@@ -1,10 +1,7 @@
 import { Xmark } from 'reicon-react'
 import { OPERATOR_LABELS } from '../../../constants'
-import {
-  operatorNeedsValue,
-  operatorsForFieldType,
-} from '../../../lib/fieldCondition/fieldCondition'
-import { useFormStore } from '../../../store/formStore'
+import { operatorNeedsValue, operatorsForFieldType } from '../../../lib'
+import { useFormStore } from '../../../store'
 import type { CanvasField, ConditionOperator, FieldValidationOverride } from '../../../types'
 import { TwoColumnFieldGroup } from '../../atoms'
 import { ConditionFieldSelect } from '../ConditionFieldSelect'

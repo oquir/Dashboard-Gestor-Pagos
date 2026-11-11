@@ -6,7 +6,7 @@ import { useAutosave } from './hooks'
 import { useDraftRecovery } from './hooks'
 import { useKeyboardShortcuts } from './hooks'
 import { useThemeClass } from './hooks'
-import { useFormStore } from './store/formStore'
+import { useFormStore } from './store'
 import type { DraftRecovery } from './types'
 
 function App() {

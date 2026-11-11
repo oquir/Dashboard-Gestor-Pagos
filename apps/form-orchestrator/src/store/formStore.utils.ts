@@ -1,11 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import { INDUSTRIA_COMERCIO_FORM_STEPS } from '../constants'
 import { GRID_BASE_COLUMNS } from '../constants'
-import {
-  getIndustriaComercioFormTemplate,
-  getIndustriaComercioIntroTemplate,
-} from '../lib/baseTemplate/baseTemplate'
-import { collectFieldNames, slugifyFieldName, uniqueFieldName } from '../lib/fieldName/fieldName'
+import { getIndustriaComercioFormTemplate, getIndustriaComercioIntroTemplate } from '../lib'
+import { collectFieldNames, slugifyFieldName, uniqueFieldName } from '../lib'
 import type { CanvasField, FieldOption } from '../types'
 import type {
   CanvasRow,

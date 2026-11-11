@@ -1,6 +1,6 @@
 import type { DraftLoad, DraftPayload, FieldRename } from '../../types'
-import { migrateFieldNames } from '../fieldName/fieldName'
-import { migrateRows } from '../rowLayout/rowLayout'
+import { migrateFieldNames } from '../fieldName'
+import { migrateRows } from '../rowLayout'
 import { DRAFT_KEY, DRAFT_SCHEMA_VERSION } from './persistence.constants'
 import { migrateDraft } from './persistence.migrations'
 import { draftPayloadSchema } from './persistence.schema'

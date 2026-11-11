@@ -1,4 +1,4 @@
-import { canTransfer } from '../../../lib/fieldTransfer/fieldTransfer'
+import { canTransfer } from '../../../lib'
 import type { CanvasRow } from '../../../types'
 import type { RowDragState } from '../../../types'
 import type { TransferTabState } from '../../../types'

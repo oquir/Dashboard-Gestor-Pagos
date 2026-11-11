@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { DEFAULT_ID_KEY, DEFAULT_LABEL_KEY } from '../../constants'
-import { parseCatalogPaste } from '../../lib/catalogBank/catalogBank'
-import { useFormStore } from '../../store/formStore'
+import { parseCatalogPaste } from '../../lib'
+import { useFormStore } from '../../store'
 import type { CatalogEntry, CatalogParseResult } from '../../types'
 import type { UseCatalogCardParams, UseCatalogCardResult } from './useCatalogCard.types'
 

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { buildLinkedLabelIndex } from '../../../lib/fieldKind/fieldKind'
-import { getAllFields, useFormStore } from '../../../store/formStore'
+import { buildLinkedLabelIndex } from '../../../lib'
+import { getAllFields, useFormStore } from '../../../store'
 import type { CanvasField } from '../../../types'
 import type { RepeatableGroup } from '../../../types'
 import { CanvasRow } from '../CanvasRow'

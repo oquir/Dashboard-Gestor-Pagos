@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react'
-import { getCanvasScrollPort, getFieldElements } from '../../lib/canvasDom/canvasDom'
-import {
-  mergeIds,
-  normalizeRect,
-  pointInRect,
-  rectsIntersect,
-} from '../../lib/canvasSelection/canvasSelection'
-import { useFormStore } from '../../store/formStore'
+import { getCanvasScrollPort, getFieldElements } from '../../lib'
+import { mergeIds, normalizeRect, pointInRect, rectsIntersect } from '../../lib'
+import { useFormStore } from '../../store'
 import type { SelectionRect } from '../../types'
 import { MARQUEE_ACTIVATION_PX } from './useCanvasMarquee.constants'
 import type { MarqueeGesture, ScrollPoint } from './useCanvasMarquee.types'

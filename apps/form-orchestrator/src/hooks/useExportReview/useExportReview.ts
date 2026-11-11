@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { getBandElement, getFieldElement, getRowElement } from '../../lib/canvasDom/canvasDom'
-import { downloadFormExport } from '../../lib/exportForm/exportForm'
-import { diagnoseForm } from '../../lib/formDiagnostics/formDiagnostics'
-import { useFormStore } from '../../store/formStore'
+import { getBandElement, getFieldElement, getRowElement } from '../../lib'
+import { downloadFormExport } from '../../lib'
+import { diagnoseForm } from '../../lib'
+import { useFormStore } from '../../store'
 import type { FormProblem } from '../../types'
 import type { PendingReveal, UseExportReviewResult } from './useExportReview.types'
 

@@ -1,5 +1,5 @@
-import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
-import { getAllFields, useFormStore } from '../../../../store/formStore'
+import { isPresentationalField } from '../../../../lib'
+import { getAllFields, useFormStore } from '../../../../store'
 import type { CanvasField } from '../../../../types'
 import { ToggleSwitch } from '../../../atoms'
 import { PanelSection } from '../../../molecules'

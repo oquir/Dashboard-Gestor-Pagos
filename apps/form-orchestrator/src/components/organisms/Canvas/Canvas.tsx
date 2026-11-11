@@ -1,6 +1,6 @@
 import { type PointerEvent, useState } from 'react'
 import { useCanvasViewport } from '../../../hooks'
-import { getActiveGroups, getActiveRows, useFormStore } from '../../../store/formStore'
+import { getActiveGroups, getActiveRows, useFormStore } from '../../../store'
 import type { FieldContextMenuState } from '../../../types'
 import { CanvasRowsGrid } from '../CanvasRowsGrid'
 import { CanvasToolLayer } from '../CanvasToolLayer'

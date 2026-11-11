@@ -2,8 +2,8 @@ import type { CatalogBank, CatalogOption } from '../../types'
 import type { ExportedField } from '../../types'
 import type { FieldDataSource } from '../../types'
 import type { RuntimeValues } from '../../types'
-import { catalogEntriesFor, usesCustomCatalog } from '../catalogBank/catalogBank'
-import { isOptionBasedField } from '../fieldOptions/fieldOptions'
+import { catalogEntriesFor, usesCustomCatalog } from '../catalogBank'
+import { isOptionBasedField } from '../fieldOptions'
 import { MOCK_BY_LEAF, MOCK_CATALOGS, MOCK_OPTION_COUNT } from './mockCatalog.constants'
 
 // Un campo mapeado no lleva opciones: las inyecta el consumidor consultando el catalogo.

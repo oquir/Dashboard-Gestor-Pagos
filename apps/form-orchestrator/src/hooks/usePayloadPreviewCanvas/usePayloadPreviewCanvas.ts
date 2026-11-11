@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { PAYLOAD_SCHEMA } from '../../constants'
-import { isPresentationalField } from '../../lib/fieldKind/fieldKind'
-import {
-  buildMappingTree,
-  findOrphanBindings,
-  toPlainSummary,
-} from '../../lib/payloadMapping/payloadMapping'
-import { getAllFields, useFormStore } from '../../store/formStore'
+import { isPresentationalField } from '../../lib'
+import { buildMappingTree, findOrphanBindings, toPlainSummary } from '../../lib'
+import { getAllFields, useFormStore } from '../../store'
 import type { CanvasField } from '../../types'
 import type { CanvasRow } from '../../types'
 import type { MappingNode, OrphanBinding } from '../../types'

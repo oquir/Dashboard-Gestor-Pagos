@@ -1,6 +1,6 @@
 import type { CanvasRow } from '../../types'
 import type { RowDropEdge, RowDropTarget } from '../../types'
-import { normalizeGroupRows } from '../repeatableGroup/repeatableGroup'
+import { normalizeGroupRows } from '../repeatableGroup'
 
 // Reordenar filas enteras dentro de un lienzo, como funciones puras: sin React y sin el store,
 // igual que rowLayout, que hace lo mismo con los campos dentro de una fila.

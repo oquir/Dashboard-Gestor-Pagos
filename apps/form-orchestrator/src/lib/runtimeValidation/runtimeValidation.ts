@@ -11,10 +11,10 @@ import type {
 } from '../../types'
 import type { GroupCheckResult } from '../../types'
 import type { ScriptRunResult } from '../../types'
-import { isPresentationalField } from '../fieldKind/fieldKind'
+import { isPresentationalField } from '../fieldKind'
 import { groupColumns } from '../formRuntime/formRuntime.utils'
-import { coerceValues, runFieldScript } from '../scriptRuntime/scriptRuntime'
-import { firstZodMessage, hydrateFieldSchemas } from '../zodHydrate/zodHydrate'
+import { coerceValues, runFieldScript } from '../scriptRuntime'
+import { firstZodMessage, hydrateFieldSchemas } from '../zodHydrate'
 import { checkKey, coerceValue, effectiveSchemaSource, fieldKey } from './runtimeValidation.utils'
 
 // Valida todo el formulario contra los schemas de Zod hidratados desde el export.

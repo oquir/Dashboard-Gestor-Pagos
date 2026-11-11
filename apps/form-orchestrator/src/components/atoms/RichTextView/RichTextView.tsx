@@ -1,4 +1,4 @@
-import { isEmptyRichText } from '../../../lib/richText/richText'
+import { isEmptyRichText } from '../../../lib'
 import type { RichTextViewProps } from './RichTextView.types'
 import { renderLeaf } from './RichTextView.utils'
 

@@ -4,7 +4,7 @@ import {
   getAllFields,
   getSelectedFieldId,
   useFormStore,
-} from '../../../store/formStore'
+} from '../../../store'
 import { PanelHeader } from '../../atoms'
 import { SelectionSummary } from '../../molecules'
 import { SidebarTabRail } from '../../molecules'

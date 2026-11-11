@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { saveDraft } from '../../lib/persistence/persistence'
-import { useFormStore } from '../../store/formStore'
+import { saveDraft } from '../../lib'
+import { useFormStore } from '../../store'
 import { AUTOSAVE_INTERVAL_MS } from './useAutosave.constants'
 
 // Guarda el borrador cada cierto tiempo. Vive en App, por encima de FormBuilder, para que siga

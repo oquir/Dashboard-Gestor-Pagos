@@ -2,7 +2,7 @@ import type { CanvasField } from '../../types'
 import type { JsonNode } from '../../types'
 import type { MappingNode, OrphanBinding } from '../../types'
 import type { SchemaNode, SchemaNodeType } from '../../types'
-import { resolveLeafType } from '../payloadSchema/payloadSchema'
+import { resolveLeafType } from '../payloadSchema'
 import { buildNode, buildPathIndex } from './payloadMapping.utils'
 
 // Cruza el contrato de la API con lo que el usuario mapeo, para poder mostrar la cobertura y

@@ -1,8 +1,8 @@
 import type { CanvasField } from '../../types'
 import type { CanvasRow } from '../../types'
 import type { TransferCheck, TransferPayload } from '../../types'
-import { findLabelFor } from '../fieldKind/fieldKind'
-import { findNearestFit, getFreeRuns, sortByColumn } from '../rowLayout/rowLayout'
+import { findLabelFor } from '../fieldKind'
+import { findNearestFit, getFreeRuns, sortByColumn } from '../rowLayout'
 
 // Mudanzas entre pasos, como funciones puras: sin React y sin el store. Es el nucleo compartido por
 // las dos cargas -un campo o una fila entera- para que las reglas no se dupliquen. Cuando aparezca

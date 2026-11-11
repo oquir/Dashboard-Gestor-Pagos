@@ -1,9 +1,5 @@
 import { ArrowDown2, Calculator, Check, Import, Magnifier } from 'reicon-react'
-import {
-  allowsManualOptions,
-  isOptionBasedField,
-  showsOptionsInline,
-} from '../../../lib/fieldOptions/fieldOptions'
+import { allowsManualOptions, isOptionBasedField, showsOptionsInline } from '../../../lib'
 import { RichTextView } from '../../atoms'
 import {
   CATALOG_HINT_CLASSES,

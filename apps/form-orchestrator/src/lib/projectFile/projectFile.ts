@@ -1,7 +1,7 @@
 import { FORM_TYPES } from '../../constants'
 import type { DraftLoad, DraftPayload } from '../../types'
 import type { ProjectFileLoad, ProjectFileSummary } from '../../types'
-import { isNewerDraft, parseDraft } from '../persistence/persistence'
+import { isNewerDraft, parseDraft } from '../persistence'
 import {
   DAMAGED_MESSAGE,
   LEGACY_EXPORT_MESSAGE,

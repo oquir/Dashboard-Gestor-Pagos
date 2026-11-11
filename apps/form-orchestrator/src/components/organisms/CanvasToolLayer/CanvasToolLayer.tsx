@@ -1,6 +1,6 @@
 import { useCanvasMarquee } from '../../../hooks'
 import { useCanvasPan } from '../../../hooks'
-import { useFormStore } from '../../../store/formStore'
+import { useFormStore } from '../../../store'
 import type { SelectionRect } from '../../../types'
 import { MARQUEE_CLASSES } from './CanvasToolLayer.constants'
 

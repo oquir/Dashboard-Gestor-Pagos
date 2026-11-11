@@ -1,6 +1,6 @@
 import { ArrowRight, Plus, Xmark } from 'reicon-react'
 import { CATALOG_COLUMNS } from '../../../../constants'
-import { getActiveRows, getAllFields, useFormStore } from '../../../../store/formStore'
+import { getActiveRows, getAllFields, useFormStore } from '../../../../store'
 import type { CatalogColumn } from '../../../../types'
 import type { CanvasField, CatalogFill } from '../../../../types'
 import { IconButton } from '../../../atoms'

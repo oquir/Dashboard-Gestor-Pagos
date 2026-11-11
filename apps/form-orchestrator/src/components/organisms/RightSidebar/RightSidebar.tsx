@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Play } from 'reicon-react'
 import { useExportReview } from '../../../hooks'
-import { useFormStore } from '../../../store/formStore'
+import { useFormStore } from '../../../store'
 import type { RightSidebarTab } from '../../../types'
 import { CanvasZoomControl } from '../../molecules'
 import { FormSummary } from '../../molecules'

@@ -1,4 +1,4 @@
-import { useFormStore } from '../../../../store/formStore'
+import { useFormStore } from '../../../../store'
 import type { CanvasField, FieldStyles } from '../../../../types'
 import { Textarea } from '../../../atoms'
 import { TwoColumnFieldGroup } from '../../../atoms'

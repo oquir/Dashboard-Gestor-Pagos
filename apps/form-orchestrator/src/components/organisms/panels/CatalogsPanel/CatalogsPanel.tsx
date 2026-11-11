@@ -1,6 +1,6 @@
 import { CATALOGS } from '../../../../constants'
 import { HINT_CLASSES } from '../../../../constants'
-import { useFormStore } from '../../../../store/formStore'
+import { useFormStore } from '../../../../store'
 import { CatalogCard } from '../../../molecules'
 import { ValoresAnualesEditor } from '../ValoresAnualesEditor'
 

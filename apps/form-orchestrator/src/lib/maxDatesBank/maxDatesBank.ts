@@ -1,5 +1,5 @@
 import type { FechasMaximasPresentacion, MaxDatesParseResult, StoredMaxDates } from '../../types'
-import { generarFechasPorDefecto } from '../maxDates/maxDates'
+import { generarFechasPorDefecto } from '../maxDates'
 import { MAX_DATES_KEY } from './maxDatesBank.constants'
 import { fechasMaximasSchema, storedMaxDatesSchema } from './maxDatesBank.schema'
 import { candidateObjects } from './maxDatesBank.utils'

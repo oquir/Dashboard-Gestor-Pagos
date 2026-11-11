@@ -4,7 +4,7 @@ import { RangeSetBuilder } from '@codemirror/state'
 import type { DecorationSet, EditorView, ViewUpdate } from '@codemirror/view'
 import { Decoration, ViewPlugin } from '@codemirror/view'
 import { SCRIPT_CONTEXT_PARAMS, SCRIPT_HELPER_NAMES } from '../../../constants'
-import { compileScript } from '../../../lib/fieldScript/fieldScript'
+import { compileScript } from '../../../lib'
 import type { ScriptRef } from '../../../types'
 
 // Las tres extensiones que saben del lenguaje del proyecto: pintar las referencias, ofrecerlas al

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { createGroupCheck } from '../../lib/groupCheck/groupCheck'
-import { getAllFields, useFormStore } from '../../store/formStore'
+import { createGroupCheck } from '../../lib'
+import { getAllFields, useFormStore } from '../../store'
 import type { CanvasField } from '../../types'
 import type { GroupCheck } from '../../types'
 import type {

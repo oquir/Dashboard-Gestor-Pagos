@@ -1,5 +1,5 @@
 import { InfoCircle } from 'reicon-react'
-import { useFormStore } from '../../../../store/formStore'
+import { useFormStore } from '../../../../store'
 import type { FieldValidationOverride } from '../../../../types'
 import { DashedAddButton } from '../../../atoms'
 import { PanelSection } from '../../../molecules'

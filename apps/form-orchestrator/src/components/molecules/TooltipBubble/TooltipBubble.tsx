@@ -4,7 +4,7 @@ import {
   TOOLTIP_SURFACE_CLASSES,
   TOOLTIP_TEXT_CLASSES,
 } from '../../../constants'
-import { resolveTooltipStyles } from '../../../lib/cssStyles/cssStyles'
+import { resolveTooltipStyles } from '../../../lib'
 import { RichTextView } from '../../atoms'
 import { TOOLTIP_BUBBLE_CLASSES } from './TooltipBubble.constants'
 import type { TooltipBubbleProps } from './TooltipBubble.types'

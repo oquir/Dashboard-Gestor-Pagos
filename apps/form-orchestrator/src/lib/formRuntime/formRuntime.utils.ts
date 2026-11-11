@@ -1,6 +1,6 @@
 import type { ExportedField, ExportedStep } from '../../types'
 import type { RuntimeModel, RuntimeScope, RuntimeSnapshot, RuntimeValues } from '../../types'
-import { evaluateCondition } from '../runtimeCondition/runtimeCondition'
+import { evaluateCondition } from '../runtimeCondition'
 import { checkKey, fieldKey } from '../runtimeValidation/runtimeValidation.utils'
 
 // Piezas de apoyo del runtime: recorridos del export y armado de los ambitos.

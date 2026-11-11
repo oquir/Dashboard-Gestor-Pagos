@@ -1,24 +1,16 @@
 import { RICH_TEXT_FIELD_TYPE } from '../../../../constants'
 import { GRID_BASE_COLUMNS } from '../../../../constants'
-import {
-  findLabelFor,
-  isPresentationalField,
-  labelTargetCandidates,
-} from '../../../../lib/fieldKind/fieldKind'
-import {
-  allowsManualOptions,
-  isOptionBasedField,
-  supportsInlineOptions,
-} from '../../../../lib/fieldOptions/fieldOptions'
-import { supportsRounding } from '../../../../lib/fieldRounding/fieldRounding'
-import { supportsTooltip } from '../../../../lib/fieldTooltip/fieldTooltip'
-import { getFreeRuns, getMaxSpanAt } from '../../../../lib/rowLayout/rowLayout'
+import { findLabelFor, isPresentationalField, labelTargetCandidates } from '../../../../lib'
+import { allowsManualOptions, isOptionBasedField, supportsInlineOptions } from '../../../../lib'
+import { supportsRounding } from '../../../../lib'
+import { supportsTooltip } from '../../../../lib'
+import { getFreeRuns, getMaxSpanAt } from '../../../../lib'
 import {
   findRowContainingField,
   getActiveRows,
   getAllFields,
   useFormStore,
-} from '../../../../store/formStore'
+} from '../../../../store'
 import type { CanvasField } from '../../../../types'
 import { ToggleSwitch } from '../../../atoms'
 import { FieldIdentityCard } from '../../../molecules'

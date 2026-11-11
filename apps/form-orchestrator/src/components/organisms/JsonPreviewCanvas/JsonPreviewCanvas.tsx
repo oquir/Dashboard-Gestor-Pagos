@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { CheckCircle, Copy } from 'reicon-react'
-import { buildFormExport } from '../../../lib/exportForm/exportForm'
-import { useFormStore } from '../../../store/formStore'
+import { buildFormExport } from '../../../lib'
+import { useFormStore } from '../../../store'
 import { JsonCode } from '../../molecules'
 
 export function JsonPreviewCanvas() {

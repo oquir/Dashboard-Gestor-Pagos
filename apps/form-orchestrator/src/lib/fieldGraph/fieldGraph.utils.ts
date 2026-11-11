@@ -1,4 +1,4 @@
-import { compileScript } from '../fieldScript/fieldScript'
+import { compileScript } from '../fieldScript'
 
 // Puente entre los dos espacios de nombres: los scripts hablan de campos por su nombre tecnico y
 // el grafo trabaja con ids. Un nombre que no resuelve se descarta en silencio, porque el usuario

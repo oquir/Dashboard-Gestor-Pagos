@@ -7,18 +7,18 @@ import type { CanvasRow } from '../../types'
 import type { SchemaLeaf } from '../../types'
 import type { CanvasTarget } from '../../types'
 import type { SidebarTab } from '../../types'
-import { unsupportedDeclarations } from '../cssStyles/cssStyles'
-import { buildFieldGraph, describeCycle, topologicalOrder } from '../fieldGraph/fieldGraph'
-import { isPresentationalField } from '../fieldKind/fieldKind'
-import { isOptionBasedField } from '../fieldOptions/fieldOptions'
+import { unsupportedDeclarations } from '../cssStyles'
+import { buildFieldGraph, describeCycle, topologicalOrder } from '../fieldGraph'
+import { isPresentationalField } from '../fieldKind'
+import { isOptionBasedField } from '../fieldOptions'
 import {
   checkScriptSyntax,
   compileScript,
   composeScriptBody,
   validatePrelude,
-} from '../fieldScript/fieldScript'
-import { enabledChecks } from '../groupCheck/groupCheck'
-import { resolveLeaf } from '../payloadSchema/payloadSchema'
+} from '../fieldScript'
+import { enabledChecks } from '../groupCheck'
+import { resolveLeaf } from '../payloadSchema'
 import {
   CYCLE_MESSAGE,
   HOST_MAPPING_MESSAGE,

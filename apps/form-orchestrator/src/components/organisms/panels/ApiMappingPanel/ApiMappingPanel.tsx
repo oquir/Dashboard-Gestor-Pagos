@@ -1,6 +1,6 @@
 import { useApiMappingPanel } from '../../../../hooks'
-import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
-import { allowsManualOptions, isOptionBasedField } from '../../../../lib/fieldOptions/fieldOptions'
+import { isPresentationalField } from '../../../../lib'
+import { allowsManualOptions, isOptionBasedField } from '../../../../lib'
 import type { CanvasField } from '../../../../types'
 import { ToggleSwitch } from '../../../atoms'
 import { ApiPathSelect } from '../../../molecules'

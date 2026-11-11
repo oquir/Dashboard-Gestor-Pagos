@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { mappedFieldCount } from '../../../../lib/runtimePayload/runtimePayload'
+import { mappedFieldCount } from '../../../../lib/runtimePayload'
 import type { RuntimeIssue } from '../../../../types'
 import { JsonCode } from '../../../molecules'
 import { TabButtonGroup } from '../../../molecules'

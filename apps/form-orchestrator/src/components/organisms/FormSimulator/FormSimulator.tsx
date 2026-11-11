@@ -1,6 +1,6 @@
 import { ArrowLeft, Moon, Sun } from 'reicon-react'
 import { useFormPreview } from '../../../hooks/useFormPreview'
-import { useFormStore } from '../../../store/formStore'
+import { useFormStore } from '../../../store'
 import type { FormPreviewApi } from '../../../types'
 import { PreviewForm } from '../preview/PreviewForm'
 import { PreviewResults } from '../preview/PreviewResults'

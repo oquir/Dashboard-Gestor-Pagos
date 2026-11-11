@@ -1,7 +1,7 @@
 import { DATE_HELPER_NAMES, toScriptNumber } from '../../constants'
 import type { ScriptFunction } from '../../types'
 import type { RuntimeContext } from '../../types'
-import { buscarFechaLimite, diasEntre, mesesOFraccion } from '../maxDates/maxDates'
+import { buscarFechaLimite, diasEntre, mesesOFraccion } from '../maxDates'
 
 // Los dos helpers de fecha que un script tiene en ambito. Son los unicos que no son puros: el resto
 // vive en constants/fieldScript porque le alcanza con sus argumentos, y estos necesitan la tabla de

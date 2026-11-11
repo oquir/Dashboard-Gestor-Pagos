@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { INDUSTRIA_COMERCIO_INTRO_STEPS } from '../../constants'
-import { useFormStore } from '../../store/formStore'
+import { useFormStore } from '../../store'
 import type { UseSetupWizardResult, WizardSelection, WizardStep } from './useSetupWizard.types'
 
 // Asistente de dos pasos que se muestra mientras setupConfig.isComplete sea falso.
