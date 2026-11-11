@@ -6,7 +6,14 @@ import type { ModalProps } from './Modal.types'
  * Ventana sobre la página, hecha con el `<dialog>` del navegador: se abre al montarse, atrapa el foco y se cierra
  * con la X, con Esc o al hacer clic en el fondo. Al abrirse enfoca el control marcado con `data-autofocus`, si hay uno.
  */
-export default function Modal({ title, description, close, footer, children }: ModalProps) {
+export default function Modal({
+  title,
+  description,
+  close,
+  footer,
+  size = 'md',
+  children,
+}: ModalProps) {
   const window = useRef<HTMLDialogElement>(null)
   const titleId = useId()
 
@@ -28,7 +35,7 @@ export default function Modal({ title, description, close, footer, children }: M
       }}
       // El clic en el fondo llega al propio <dialog>; el de adentro, a sus hijos.
       onClick={(e) => e.target === e.currentTarget && close()}
-      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-xl bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/40"
+      className={`m-auto w-[calc(100%-2rem)] ${size === 'xl' ? 'max-w-4xl' : 'max-w-lg'} rounded-xl bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/40`}
     >
       <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
         <div>

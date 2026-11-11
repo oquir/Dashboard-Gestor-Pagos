@@ -7,5 +7,7 @@ export interface ModalProps {
   close: () => void
   /** Botones al pie de la ventana. */
   footer?: ReactNode
+  /** Ancho máximo de la ventana: `xl` para contenido grande, como un PDF. Por defecto, `md`. */
+  size?: 'md' | 'xl'
   children: ReactNode
 }
