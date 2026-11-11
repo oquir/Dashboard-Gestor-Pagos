@@ -17,9 +17,9 @@ import {
   TablaDeclaraciones,
 } from '../../components/organisms'
 import { OPCIONES_APROBACION, OPCIONES_CORRECCION } from '../../constants'
-import { presentadaSinCalendario } from '../../lib/calendario'
-import { formatoDocumento } from '../../lib/formato'
-import { correccionVigente, esCorreccionABaja } from '../../lib/reglas'
+import { presentadaSinCalendario } from '../../lib'
+import { formatoDocumento } from '../../lib'
+import { correccionVigente, esCorreccionABaja } from '../../lib'
 import {
   conRit,
   impuestosVisibles,
@@ -30,7 +30,7 @@ import {
   useOmisos,
   useSesion,
   useSolicitudCorreccion,
-} from '../../lib/sesion'
+} from '../../lib'
 import { useDatos } from '../../store'
 import type {
   EstadoPago,

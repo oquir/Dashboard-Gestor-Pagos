@@ -19,8 +19,8 @@ import {
   RecaudoAnual,
   SolicitudesPendientes,
 } from '../../components/organisms'
-import { formatoCompacto, formatoFecha } from '../../lib/formato'
-import { puede } from '../../lib/permisos'
+import { formatoCompacto, formatoFecha } from '../../lib'
+import { puede } from '../../lib'
 import {
   correccionPorResolver,
   correccionVigente,
@@ -28,7 +28,7 @@ import {
   reemplazadas,
   sePuedePagar,
   totalPagado,
-} from '../../lib/reglas'
+} from '../../lib'
 import {
   aprobacionVisible,
   conRit,
@@ -44,7 +44,7 @@ import {
   useSinConsignar,
   useSolicitudCorreccion,
   useVerRecaudo,
-} from '../../lib/sesion'
+} from '../../lib'
 import { useDatos } from '../../store'
 import type { Deuda } from '../../types'
 import { diferenciaDias, hoy } from '../../utils'

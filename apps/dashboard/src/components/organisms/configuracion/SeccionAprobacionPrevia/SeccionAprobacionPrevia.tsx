@@ -1,5 +1,5 @@
-import { numero } from '../../../../lib/configuracion'
-import { etiquetaImpuesto } from '../../../../lib/formato'
+import { numero } from '../../../../lib'
+import { etiquetaImpuesto } from '../../../../lib'
 import type { ConfigMunicipio } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Campo, Seccion } from '../../../molecules'

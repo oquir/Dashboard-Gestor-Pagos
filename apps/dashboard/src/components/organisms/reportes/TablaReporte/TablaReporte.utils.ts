@@ -1,6 +1,6 @@
-import { formatoFecha, formatoPesos } from '../../../../lib/formato'
-import type { Columna, Fila } from '../../../../lib/reportes'
-import { ayudanteColumnas } from '../../../../lib/tabla'
+import { formatoFecha, formatoPesos } from '../../../../lib'
+import type { Columna, Fila } from '../../../../lib'
+import { ayudanteColumnas } from '../../../../lib'
 
 const col = ayudanteColumnas<Fila>()
 

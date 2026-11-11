@@ -1,7 +1,7 @@
 import { Plus, Xmark } from 'reicon-react'
 import { useState } from 'react'
 import { ANIO_EN_CURSO } from '../../../../constants'
-import { numero, tramoNuevo } from '../../../../lib/configuracion'
+import { numero, tramoNuevo } from '../../../../lib'
 import type { EdicionConfiguracion, TramoProntoPago } from '../../../../types'
 import { moverAnios } from '../../../../utils'
 import { Boton, Input, Select } from '../../../atoms'

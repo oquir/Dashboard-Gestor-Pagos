@@ -1,6 +1,6 @@
 import type { IconComponent } from 'reicon-react'
 import type { ReactNode } from 'react'
-import type { Tono } from '../../../lib/tonos'
+import type { Tono } from '../../../lib'
 
 export interface AvisoProps {
   tono: Tono

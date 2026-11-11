@@ -1,4 +1,4 @@
-import { etiquetaCargoContable, formatoDocumento } from '../../../../lib/formato'
+import { etiquetaCargoContable, formatoDocumento } from '../../../../lib'
 import { Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import type { FirmasDeclaracionProps } from './FirmasDeclaracion.types'

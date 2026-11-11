@@ -1,4 +1,4 @@
-import { etiquetaCalidad, formatoFecha } from '../../../../lib/formato'
+import { etiquetaCalidad, formatoFecha } from '../../../../lib'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import { HABILITA } from './FichaRit.constants'

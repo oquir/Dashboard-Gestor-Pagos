@@ -1,4 +1,4 @@
-import type { Tono } from '../../../lib/tonos'
+import type { Tono } from '../../../lib'
 
 export const CLASES_TONO: Record<Tono, string> = {
   neutral: 'bg-slate-50 text-slate-700',

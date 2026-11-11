@@ -4,9 +4,9 @@ import {
   etiquetaImpuesto,
   etiquetaPeriodo,
   formatoPesos,
-} from '../../../../lib/formato'
-import { ayudanteColumnas } from '../../../../lib/tabla'
-import { tonoPago } from '../../../../lib/tonos'
+} from '../../../../lib'
+import { ayudanteColumnas } from '../../../../lib'
+import { tonoPago } from '../../../../lib'
 import type { FilaCartera } from '../../../../types'
 import { Badge } from '../../../atoms'
 

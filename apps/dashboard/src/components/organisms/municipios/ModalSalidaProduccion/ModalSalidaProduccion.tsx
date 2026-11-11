@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { etiquetaFormulario } from '../../../../lib/formato'
+import { etiquetaFormulario } from '../../../../lib'
 import { hoy } from '../../../../utils'
 import { Boton, Input } from '../../../atoms'
 import { Campo, Modal } from '../../../molecules'

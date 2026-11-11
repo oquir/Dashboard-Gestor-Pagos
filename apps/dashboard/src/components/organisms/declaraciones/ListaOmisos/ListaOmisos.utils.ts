@@ -1,4 +1,4 @@
-import { emplazamientoDelOmiso, situacionEmplazamiento } from '../../../../lib/emplazamientos'
+import { emplazamientoDelOmiso, situacionEmplazamiento } from '../../../../lib'
 import {
   etiquetaEstadoEmplazamiento,
   etiquetaEstadoInscripcion,
@@ -8,8 +8,8 @@ import {
   formatoFecha,
   normalizar,
   textoEnProduccion,
-} from '../../../../lib/formato'
-import { idOmiso } from '../../../../lib/omisos'
+} from '../../../../lib'
+import { idOmiso } from '../../../../lib'
 import type {
   Declaracion,
   Emplazamiento,

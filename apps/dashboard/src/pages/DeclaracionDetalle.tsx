@@ -17,8 +17,8 @@ import {
   ValidacionesDeclaracion,
 } from '../components/organisms'
 import { PlantillaDetalle } from '../components/templates'
-import { cargaCalendario, presentadaSinCalendario } from '../lib/calendario'
-import { emplazamientoPrevio } from '../lib/emplazamientos'
+import { cargaCalendario, presentadaSinCalendario } from '../lib'
+import { emplazamientoPrevio } from '../lib'
 import {
   etiquetaEstadoCorreccion,
   etiquetaEstadoPago,
@@ -27,8 +27,8 @@ import {
   formatoFecha,
   formatoPesos,
   textoTipoDeclaracion,
-} from '../lib/formato'
-import { puede } from '../lib/permisos'
+} from '../lib'
+import { puede } from '../lib'
 import {
   correccionPorResolver,
   correccionVigente,
@@ -37,7 +37,7 @@ import {
   sePuedePagar,
   totalEnCanje,
   totalPagado,
-} from '../lib/reglas'
+} from '../lib'
 import {
   conRit,
   impuestoActivo,
@@ -48,8 +48,8 @@ import {
   useSinConsignar,
   useSolicitudCorreccion,
   ventanillaDe,
-} from '../lib/sesion'
-import { tonoCorreccion, tonoPago } from '../lib/tonos'
+} from '../lib'
+import { tonoCorreccion, tonoPago } from '../lib'
 import { useDatos } from '../store'
 
 export default function DeclaracionDetalle() {

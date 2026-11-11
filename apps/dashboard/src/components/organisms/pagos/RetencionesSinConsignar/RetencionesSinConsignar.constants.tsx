@@ -5,9 +5,9 @@ import {
   formatoFecha,
   formatoPesos,
   plazoConsignacion,
-} from '../../../../lib/formato'
-import { ayudanteColumnas } from '../../../../lib/tabla'
-import { tonoConsignacion } from '../../../../lib/tonos'
+} from '../../../../lib'
+import { ayudanteColumnas } from '../../../../lib'
+import { tonoConsignacion } from '../../../../lib'
 import type { FilaSinConsignar } from '../../../../types'
 import { Badge } from '../../../atoms'
 

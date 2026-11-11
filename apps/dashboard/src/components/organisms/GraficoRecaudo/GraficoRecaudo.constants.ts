@@ -1,5 +1,5 @@
 import { CLASE_SERIE } from '../../../constants'
-import { IMPUESTOS } from '../../../lib/sesion'
+import { IMPUESTOS } from '../../../lib'
 import type { Serie } from './GraficoRecaudo.types'
 
 export const SERIES: Serie[] = IMPUESTOS.map((impuesto) => ({

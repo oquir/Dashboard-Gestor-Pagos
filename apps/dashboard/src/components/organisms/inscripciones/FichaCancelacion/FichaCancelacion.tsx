@@ -1,4 +1,4 @@
-import { formatoDocumento, formatoFecha } from '../../../../lib/formato'
+import { formatoDocumento, formatoFecha } from '../../../../lib'
 import { Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import type { FichaCancelacionProps } from './FichaCancelacion.types'

@@ -1,8 +1,8 @@
 import { Calendar } from 'reicon-react'
 import { Link } from 'react-router'
-import { formatoLista } from '../../../../lib/formato'
-import { puede } from '../../../../lib/permisos'
-import { useSesion } from '../../../../lib/sesion'
+import { formatoLista } from '../../../../lib'
+import { puede } from '../../../../lib'
+import { useSesion } from '../../../../lib'
 import { Aviso } from '../../../molecules'
 import type { AlertaCalendarioProps } from './AlertaCalendario.types'
 

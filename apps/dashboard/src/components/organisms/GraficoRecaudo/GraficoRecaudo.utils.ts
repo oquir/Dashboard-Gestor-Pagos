@@ -1,5 +1,5 @@
-import { etiquetaImpuesto, formatoPesos } from '../../../lib/formato'
-import { ayudanteColumnas } from '../../../lib/tabla'
+import { etiquetaImpuesto, formatoPesos } from '../../../lib'
+import { ayudanteColumnas } from '../../../lib'
 import type { FilaRecaudo } from '../../../types'
 import { totalRecaudo } from '../../../utils'
 import { VALOR } from './GraficoRecaudo.constants'

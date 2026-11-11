@@ -1,4 +1,4 @@
-import { etiquetaEstadoPago, etiquetaTipoDeclaracion } from '../../lib/formato'
+import { etiquetaEstadoPago, etiquetaTipoDeclaracion } from '../../lib'
 import type {
   EstadoPago,
   Impuesto,

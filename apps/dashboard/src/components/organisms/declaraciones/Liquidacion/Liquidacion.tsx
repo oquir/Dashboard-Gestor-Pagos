@@ -1,6 +1,6 @@
 import { Download } from 'reicon-react'
-import { descargarDeclaracion } from '../../../../lib/pdfDeclaracion'
-import { RENGLONES_TOTALES } from '../../../../lib/reglas'
+import { descargarDeclaracion } from '../../../../lib'
+import { RENGLONES_TOTALES } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { Boton, Card } from '../../../atoms'
 import { CardHeader } from '../../../molecules'

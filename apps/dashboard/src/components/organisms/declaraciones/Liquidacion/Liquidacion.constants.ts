@@ -1,5 +1,5 @@
-import { formatoPesos } from '../../../../lib/formato'
-import { ayudanteColumnas } from '../../../../lib/tabla'
+import { formatoPesos } from '../../../../lib'
+import { ayudanteColumnas } from '../../../../lib'
 import type { Renglon } from '../../../../types'
 
 const col = ayudanteColumnas<Renglon>()

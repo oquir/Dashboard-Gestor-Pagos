@@ -1,4 +1,4 @@
-import type { Columna } from '../../../../lib/reportes'
+import type { Columna } from '../../../../lib'
 import type { FiltroEmplazamiento } from './ListaOmisos.types'
 
 /** Opciones del filtro por emplazamiento: un omiso emplazado sigue en plazo o ya lo venció. */

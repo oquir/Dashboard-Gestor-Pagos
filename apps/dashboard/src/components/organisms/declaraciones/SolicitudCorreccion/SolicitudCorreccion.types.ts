@@ -1,4 +1,4 @@
-import type { SituacionCorreccion } from '../../../../lib/reglas'
+import type { SituacionCorreccion } from '../../../../lib'
 import type { Declaracion } from '../../../../types'
 
 export interface SolicitudCorreccionProps {

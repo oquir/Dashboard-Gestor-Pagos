@@ -1,5 +1,5 @@
 import { Danger } from 'reicon-react'
-import { formatoFecha, plazoConsignacion } from '../../../../lib/formato'
+import { formatoFecha, plazoConsignacion } from '../../../../lib'
 import { Aviso } from '../../../molecules'
 import type { AvisoSinConsignarProps } from './AvisoSinConsignar.types'
 

@@ -1,4 +1,4 @@
-import { ayudanteColumnas } from '../../../../lib/tabla'
+import { ayudanteColumnas } from '../../../../lib'
 import type { Inscripcion, Municipio } from '../../../../types'
 
 export const col = ayudanteColumnas<Inscripcion>()

@@ -1,5 +1,5 @@
-import { etiquetaEstadoNovedad, etiquetaTipoNovedad, formatoFecha } from '../../../../lib/formato'
-import { tonoNovedad } from '../../../../lib/tonos'
+import { etiquetaEstadoNovedad, etiquetaTipoNovedad, formatoFecha } from '../../../../lib'
+import { tonoNovedad } from '../../../../lib'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, ItemSeleccionable } from '../../../molecules'
 import RespuestaEnviada from '../RespuestaEnviada'

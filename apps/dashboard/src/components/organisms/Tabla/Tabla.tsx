@@ -1,7 +1,7 @@
 import { useTable } from '@tanstack/react-table'
 import type { RowData } from '@tanstack/react-table'
 import { ArrowDown, ArrowUp, Sort, ChevronLeft, ChevronRight } from 'reicon-react'
-import { caracteristicas } from '../../../lib/tabla'
+import { caracteristicas } from '../../../lib'
 import { Boton } from '../../atoms'
 import { Vacio } from '../../molecules'
 import type { TablaProps } from './Tabla.types'

@@ -9,9 +9,9 @@ import {
   etiquetaTipoPersona,
   formatoDocumento,
   formatoFecha,
-} from '../../../../lib/formato'
-import { ultimoTramite } from '../../../../lib/reglas'
-import { tonoInscripcion } from '../../../../lib/tonos'
+} from '../../../../lib'
+import { ultimoTramite } from '../../../../lib'
+import { tonoInscripcion } from '../../../../lib'
 import { Badge } from '../../../atoms'
 import { col } from './TablaInscripciones.utils'
 

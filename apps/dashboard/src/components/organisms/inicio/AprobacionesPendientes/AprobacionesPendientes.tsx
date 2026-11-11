@@ -4,9 +4,9 @@ import {
   etiquetaImpuesto,
   etiquetaPeriodo,
   formatoFecha,
-} from '../../../../lib/formato'
-import { esperaAprobacion } from '../../../../lib/reglas'
-import { tonoAprobacion } from '../../../../lib/tonos'
+} from '../../../../lib'
+import { esperaAprobacion } from '../../../../lib'
+import { tonoAprobacion } from '../../../../lib'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Filtro, ItemEnlace, Vacio } from '../../../molecules'
 import { OPCIONES_FILTRO } from './AprobacionesPendientes.constants'

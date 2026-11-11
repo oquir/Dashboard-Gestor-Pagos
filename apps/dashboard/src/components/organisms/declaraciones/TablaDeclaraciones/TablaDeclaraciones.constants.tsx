@@ -10,9 +10,9 @@ import {
   formatoFecha,
   formatoPesos,
   textoTipoDeclaracion,
-} from '../../../../lib/formato'
-import { correccionPorResolver, esperaAprobacion } from '../../../../lib/reglas'
-import { tonoAprobacion, tonoCorreccion, tonoPago } from '../../../../lib/tonos'
+} from '../../../../lib'
+import { correccionPorResolver, esperaAprobacion } from '../../../../lib'
+import { tonoAprobacion, tonoCorreccion, tonoPago } from '../../../../lib'
 import { Badge } from '../../../atoms'
 import { col } from './TablaDeclaraciones.utils'
 

@@ -5,7 +5,7 @@ import {
   formatoDocumento,
   formatoFecha,
   formatoHaceDias,
-} from '../../../../lib/formato'
+} from '../../../../lib'
 import { diferenciaDias, hoy } from '../../../../utils'
 import { col } from './TablaOmisos.utils'
 

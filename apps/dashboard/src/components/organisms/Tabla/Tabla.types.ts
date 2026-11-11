@@ -1,5 +1,5 @@
 import type { RowData } from '@tanstack/react-table'
-import type { Columnas } from '../../../lib/tabla'
+import type { Columnas } from '../../../lib'
 
 export interface TablaProps<T extends RowData> {
   datos: T[]

@@ -3,7 +3,7 @@ import {
   etiquetaEstadoInscripcion,
   etiquetaTipoNovedad,
   etiquetaTipoPersona,
-} from '../../lib/formato'
+} from '../../lib'
 import type { Calidad, EstadoInscripcion, TipoNovedad, TipoPersona, ValorFiltro } from '../../types'
 
 /** Las calidades, en el orden de los indicadores. */

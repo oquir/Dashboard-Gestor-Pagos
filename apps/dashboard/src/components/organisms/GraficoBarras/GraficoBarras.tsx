@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { formatoCompacto, formatoPesos } from '../../../lib/formato'
+import { formatoCompacto, formatoPesos } from '../../../lib'
 import { Card } from '../../atoms'
 import { CardHeader, Vacio } from '../../molecules'
 import { porcentaje } from './GraficoBarras.constants'

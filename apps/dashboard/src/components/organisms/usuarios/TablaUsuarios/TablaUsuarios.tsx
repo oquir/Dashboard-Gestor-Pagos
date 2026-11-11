@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { useSesion } from '../../../../lib/sesion'
+import { useSesion } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { Card } from '../../../atoms'
 import Tabla from '../../Tabla'

@@ -3,7 +3,7 @@ import {
   etiquetaTipoPersona,
   formatoDocumento,
   formatoFecha,
-} from '../../../../lib/formato'
+} from '../../../../lib'
 import type { DatosRit, FirmanteContable } from '../../../../types'
 import type { CampoFicha } from './FichaRit.types'
 

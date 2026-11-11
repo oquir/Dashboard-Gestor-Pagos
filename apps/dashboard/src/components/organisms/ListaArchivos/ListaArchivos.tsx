@@ -1,6 +1,6 @@
 import { Download, Zip, Document } from 'reicon-react'
-import { descargarArchivo, descargarZip, formatoTamano } from '../../../lib/archivos'
-import { formatoFecha } from '../../../lib/formato'
+import { descargarArchivo, descargarZip, formatoTamano } from '../../../lib'
+import { formatoFecha } from '../../../lib'
 import { Boton } from '../../atoms'
 import { CardHeader } from '../../molecules'
 import type { ListaArchivosProps } from './ListaArchivos.types'

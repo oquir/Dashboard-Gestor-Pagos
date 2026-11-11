@@ -3,9 +3,9 @@ import { Navigate } from 'react-router'
 import { Campo, Filtro, PageHeader, RangoFechas, Segmentado } from '../components/molecules'
 import { BuscadorMunicipios, GraficoBarras, TablaReporte } from '../components/organisms'
 import { OPCIONES_APROBACION } from '../constants'
-import { puede } from '../lib/permisos'
-import { armarReportes, REPORTES } from '../lib/reportes'
-import type { IdReporte } from '../lib/reportes'
+import { puede } from '../lib'
+import { armarReportes, REPORTES } from '../lib'
+import type { IdReporte } from '../lib'
 import {
   ritVisible,
   useAprobacion,
@@ -13,7 +13,7 @@ import {
   useEstadoPago,
   useSesion,
   useSolicitudCorreccion,
-} from '../lib/sesion'
+} from '../lib'
 import { useDatos } from '../store'
 import type { FiltroAprobacion } from '../types'
 import { hoy } from '../utils'

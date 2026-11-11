@@ -1,6 +1,6 @@
 import { DIGITOS, NOMBRES_PERIODOS } from '../../../../constants'
-import { conFecha, conPeriodicidad, conPorDigito } from '../../../../lib/calendario'
-import { etiquetaPeriodicidad } from '../../../../lib/formato'
+import { conFecha, conPeriodicidad, conPorDigito } from '../../../../lib'
+import { etiquetaPeriodicidad } from '../../../../lib'
 import type { Periodicidad } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Aviso, Campo, Interruptor } from '../../../molecules'

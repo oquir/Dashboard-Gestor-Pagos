@@ -2,7 +2,7 @@ import { Document, Paperclip, Xmark } from 'reicon-react'
 import { useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { FORMATOS_DOCUMENTO, TAMANO_MAXIMO_ARCHIVO } from '../../../constants'
-import { formatoTamano } from '../../../lib/archivos'
+import { formatoTamano } from '../../../lib'
 import SelectorArchivo from '../SelectorArchivo'
 import type { AdjuntarDocumentosProps } from './AdjuntarDocumentos.types'
 

@@ -4,9 +4,9 @@ import { persist } from 'zustand/middleware'
 import { PETICIONES } from './constants'
 import type { Peticion } from './constants'
 import { generarDatos } from './data/generar'
-import { datosEnviados, sePuedeQuitar } from './lib/emplazamientos'
-import { nombreCompleto } from './lib/formato'
-import { correccionPorResolver, situacionCorreccion } from './lib/reglas'
+import { datosEnviados, sePuedeQuitar } from './lib'
+import { nombreCompleto } from './lib'
+import { correccionPorResolver, situacionCorreccion } from './lib'
 import type {
   Aprobacion,
   Archivo,

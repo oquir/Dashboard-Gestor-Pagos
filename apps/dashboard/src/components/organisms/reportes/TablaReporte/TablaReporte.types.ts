@@ -1,4 +1,4 @@
-import type { Fila, Reporte } from '../../../../lib/reportes'
+import type { Fila, Reporte } from '../../../../lib'
 
 export interface TablaReporteProps {
   reporte: Reporte

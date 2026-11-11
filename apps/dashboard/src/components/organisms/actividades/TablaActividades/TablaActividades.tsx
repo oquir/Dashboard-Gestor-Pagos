@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { formatoFecha, normalizar } from '../../../../lib/formato'
-import { fueraDeTope } from '../../../../lib/reglas'
+import { formatoFecha, normalizar } from '../../../../lib'
+import { fueraDeTope } from '../../../../lib'
 import { Badge, Card } from '../../../atoms'
 import { BarraFiltros, Buscador, CardHeader, Vacio } from '../../../molecules'
 import Tabla from '../../Tabla'

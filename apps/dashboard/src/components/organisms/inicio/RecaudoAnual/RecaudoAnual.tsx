@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { MESES } from '../../../../lib/formato'
+import { MESES } from '../../../../lib'
 import {
   delMunicipio,
   IMPUESTOS,
@@ -7,7 +7,7 @@ import {
   impuestosVisibles,
   useDeclaraciones,
   useSesion,
-} from '../../../../lib/sesion'
+} from '../../../../lib'
 import { useDatos } from '../../../../store'
 import type { FilaRecaudo } from '../../../../types'
 import { totalRecaudo } from '../../../../utils'

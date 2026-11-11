@@ -1,4 +1,4 @@
-import { ayudanteColumnas } from '../../../../lib/tabla'
+import { ayudanteColumnas } from '../../../../lib'
 import type { FilaDeclaracion } from '../../../../types'
 import { Casilla } from '../../../atoms'
 import type { Marcar } from './TablaDeclaraciones.types'

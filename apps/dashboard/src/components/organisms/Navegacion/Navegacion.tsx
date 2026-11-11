@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router'
-import { puede } from '../../../lib/permisos'
-import { ritVisible, useSesion } from '../../../lib/sesion'
+import { puede } from '../../../lib'
+import { ritVisible, useSesion } from '../../../lib'
 import { useDatos } from '../../../store'
 import { NAVEGACION } from './Navegacion.constants'
 import type { NavegacionProps } from './Navegacion.types'

@@ -1,4 +1,4 @@
-import { etiquetaTipoNovedad, formatoFecha } from '../../../../lib/formato'
+import { etiquetaTipoNovedad, formatoFecha } from '../../../../lib'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, ItemEnlace, Vacio } from '../../../molecules'
 import type { SolicitudesPendientesProps } from './SolicitudesPendientes.types'

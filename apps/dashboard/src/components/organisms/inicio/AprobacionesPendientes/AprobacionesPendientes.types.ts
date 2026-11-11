@@ -1,4 +1,4 @@
-import type { SituacionAprobacion } from '../../../../lib/reglas'
+import type { SituacionAprobacion } from '../../../../lib'
 import type { Declaracion, EstadoAprobacion, ValorFiltro } from '../../../../types'
 
 /** Una declaración con su aprobación previa. */

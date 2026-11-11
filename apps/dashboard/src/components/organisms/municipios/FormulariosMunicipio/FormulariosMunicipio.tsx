@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { etiquetaImpuesto, textoDesactivado, textoSalidaProduccion } from '../../../../lib/formato'
-import { IMPUESTOS } from '../../../../lib/sesion'
+import { etiquetaImpuesto, textoDesactivado, textoSalidaProduccion } from '../../../../lib'
+import { IMPUESTOS } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import type { Impuesto } from '../../../../types'
 import { Badge, Card, Conmutador } from '../../../atoms'

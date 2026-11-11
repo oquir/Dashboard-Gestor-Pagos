@@ -1,4 +1,4 @@
-import type { SituacionAprobacion } from '../../../../lib/reglas'
+import type { SituacionAprobacion } from '../../../../lib'
 import type { Declaracion, MediosVentanilla } from '../../../../types'
 
 export interface AprobacionPreviaProps {

@@ -1,6 +1,6 @@
 import { MoneyReceive, TickCircle } from 'reicon-react'
 import { useState } from 'react'
-import { formatoPesos } from '../../../../lib/formato'
+import { formatoPesos } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { Boton, Card, Input, Select } from '../../../atoms'
 import { Aviso, Campo, CardHeader, Segmentado } from '../../../molecules'

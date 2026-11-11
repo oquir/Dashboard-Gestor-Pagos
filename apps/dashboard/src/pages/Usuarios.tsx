@@ -4,8 +4,8 @@ import { Navigate } from 'react-router'
 import { Boton } from '../components/atoms'
 import { PageHeader } from '../components/molecules'
 import { BuscadorMunicipios, NuevoUsuario, TablaUsuarios } from '../components/organisms'
-import { puede } from '../lib/permisos'
-import { delMunicipio, useSesion } from '../lib/sesion'
+import { puede } from '../lib'
+import { delMunicipio, useSesion } from '../lib'
 import { useDatos } from '../store'
 
 export default function Usuarios() {

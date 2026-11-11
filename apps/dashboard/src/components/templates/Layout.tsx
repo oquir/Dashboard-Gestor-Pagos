@@ -1,7 +1,7 @@
 import { Xmark } from 'reicon-react'
 import { useState } from 'react'
 import { Navigate, Outlet } from 'react-router'
-import { useSesion } from '../../lib/sesion'
+import { useSesion } from '../../lib'
 import { Boton } from '../atoms'
 import { Marca } from '../molecules'
 import { BarraSuperior, Navegacion } from '../organisms'

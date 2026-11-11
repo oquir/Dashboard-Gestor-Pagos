@@ -1,11 +1,11 @@
-import { formatoFecha, formatoPesos } from '../../../../lib/formato'
+import { formatoFecha, formatoPesos } from '../../../../lib'
 import {
   esCorreccionABaja,
   impuestoACargo,
   limiteCorreccionABaja,
   sancionExtemporaneidad,
   sancionLiquidada,
-} from '../../../../lib/reglas'
+} from '../../../../lib'
 import type { Declaracion, Inscripcion } from '../../../../types'
 import { diferenciaDias } from '../../../../utils'
 import type { ContextoSancion, Validacion } from './ValidacionesDeclaracion.types'

@@ -1,5 +1,5 @@
-import { numero } from '../../../../lib/configuracion'
-import { SANCIONES_LEY } from '../../../../lib/reglas'
+import { numero } from '../../../../lib'
+import { SANCIONES_LEY } from '../../../../lib'
 import type { EdicionConfiguracion } from '../../../../types'
 import { Input } from '../../../atoms'
 import { Campo, Seccion } from '../../../molecules'

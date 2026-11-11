@@ -10,8 +10,8 @@ import {
   PageHeader,
 } from '../../components/molecules'
 import { BuscadorMunicipios, TablaInscripciones } from '../../components/organisms'
-import { ultimoTramite } from '../../lib/reglas'
-import { conRit, delMunicipio, ritVisible, useSesion } from '../../lib/sesion'
+import { ultimoTramite } from '../../lib'
+import { conRit, delMunicipio, ritVisible, useSesion } from '../../lib'
 import { useDatos } from '../../store'
 import type { Calidad, EstadoInscripcion, TipoNovedad, TipoPersona, ValorFiltro } from '../../types'
 import {

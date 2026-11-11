@@ -1,9 +1,9 @@
 import { Link } from 'react-router'
 import { DocumentText } from 'reicon-react'
 import { CLASE_BOTON_FILA } from '../../../../constants'
-import { fueraDeHorario } from '../../../../lib/bitacora'
-import { etiquetaRol, formatoFecha, formatoHora } from '../../../../lib/formato'
-import { ayudanteColumnas } from '../../../../lib/tabla'
+import { fueraDeHorario } from '../../../../lib'
+import { etiquetaRol, formatoFecha, formatoHora } from '../../../../lib'
+import { ayudanteColumnas } from '../../../../lib'
 import type { Municipio, RegistroBitacora } from '../../../../types'
 import { Badge } from '../../../atoms'
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { etiquetaTipoDocumento, numeroDocumento } from '../../../../lib/formato'
+import { etiquetaTipoDocumento, numeroDocumento } from '../../../../lib'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import { CLASE_LISTA } from './ContribuyenteDeclaracion.constants'

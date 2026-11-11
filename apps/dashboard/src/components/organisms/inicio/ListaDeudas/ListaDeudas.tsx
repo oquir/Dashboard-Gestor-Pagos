@@ -4,8 +4,8 @@ import {
   etiquetaImpuesto,
   etiquetaPeriodo,
   formatoPesos,
-} from '../../../../lib/formato'
-import { tonoPago } from '../../../../lib/tonos'
+} from '../../../../lib'
+import { tonoPago } from '../../../../lib'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, ItemEnlace, Vacio } from '../../../molecules'
 import type { ListaDeudasProps } from './ListaDeudas.types'

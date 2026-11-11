@@ -1,5 +1,5 @@
-import { numero } from '../../../lib/configuracion'
-import { ANTICIPO_MAXIMO } from '../../../lib/reglas'
+import { numero } from '../../../lib'
+import { ANTICIPO_MAXIMO } from '../../../lib'
 import type { EdicionConfiguracion } from '../../../types'
 import { Input } from '../../atoms'
 import { Campo, Interruptor, Seccion } from '../../molecules'

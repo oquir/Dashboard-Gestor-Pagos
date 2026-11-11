@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { idOmiso } from '../../../../lib/omisos'
-import { useSesion } from '../../../../lib/sesion'
+import { idOmiso } from '../../../../lib'
+import { useSesion } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import Tabla from '../../Tabla'
 import { COLUMNAS, ORDEN_INICIAL } from './TablaOmisos.constants'

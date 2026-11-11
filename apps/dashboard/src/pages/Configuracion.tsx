@@ -1,7 +1,7 @@
 import { ElegirMunicipio, PageHeader } from '../components/molecules'
 import { BuscadorMunicipios, FormularioConfiguracion } from '../components/organisms'
-import { puede } from '../lib/permisos'
-import { useSesion } from '../lib/sesion'
+import { puede } from '../lib'
+import { useSesion } from '../lib'
 import { useDatos } from '../store'
 
 export default function Configuracion() {

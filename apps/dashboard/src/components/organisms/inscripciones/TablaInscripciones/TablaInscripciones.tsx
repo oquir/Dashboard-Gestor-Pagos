@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useSesion } from '../../../../lib/sesion'
+import { useSesion } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import Tabla from '../../Tabla'
 import { COLUMNAS } from './TablaInscripciones.constants'

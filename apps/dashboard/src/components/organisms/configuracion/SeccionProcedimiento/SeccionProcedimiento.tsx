@@ -1,4 +1,4 @@
-import { numero } from '../../../../lib/configuracion'
+import { numero } from '../../../../lib'
 import type { ConfigMunicipio } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Campo, Interruptor, Seccion } from '../../../molecules'

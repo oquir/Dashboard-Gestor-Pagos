@@ -1,4 +1,4 @@
-import type { ItemArchivo } from '../../../lib/archivos'
+import type { ItemArchivo } from '../../../lib'
 
 export interface ListaArchivosProps {
   titulo: string

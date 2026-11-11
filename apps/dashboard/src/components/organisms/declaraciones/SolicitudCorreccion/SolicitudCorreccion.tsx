@@ -1,13 +1,13 @@
 import { Envelope, TickCircle } from 'reicon-react'
 import { useState } from 'react'
-import { etiquetaEstadoCorreccion, formatoFecha, formatoPesos } from '../../../../lib/formato'
+import { etiquetaEstadoCorreccion, formatoFecha, formatoPesos } from '../../../../lib'
 import {
   correccionPorResolver,
   menorValor,
   redondearMil,
   SANCION_RECHAZO_CORRECCION,
-} from '../../../../lib/reglas'
-import { tonoCorreccion } from '../../../../lib/tonos'
+} from '../../../../lib'
+import { tonoCorreccion } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { diferenciaDias, hoy } from '../../../../utils'
 import { Badge, Boton, Card, Textarea } from '../../../atoms'

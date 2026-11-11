@@ -1,5 +1,5 @@
-import { etiquetaFormulario, normalizar } from '../../../lib/formato'
-import { formulariosDe } from '../../../lib/sesion'
+import { etiquetaFormulario, normalizar } from '../../../lib'
+import { formulariosDe } from '../../../lib'
 import type { Municipio } from '../../../types'
 import { MAX_RESULTADOS } from './BuscadorMunicipios.constants'
 import type { OpcionMunicipio } from './BuscadorMunicipios.types'

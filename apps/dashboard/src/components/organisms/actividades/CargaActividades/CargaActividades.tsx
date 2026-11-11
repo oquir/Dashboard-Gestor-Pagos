@@ -1,6 +1,6 @@
 import { Document, DocumentDownload, TickCircle } from 'reicon-react'
 import { useState } from 'react'
-import { descargarPlantilla, leerPlantilla } from '../../../../lib/plantillaActividades'
+import { descargarPlantilla, leerPlantilla } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { Boton, Card } from '../../../atoms'
 import { Aviso, CardHeader, SelectorArchivo } from '../../../molecules'

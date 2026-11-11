@@ -1,6 +1,6 @@
 import { Location } from 'reicon-react'
 import { useNavigate } from 'react-router'
-import { formatoCompacto } from '../../../../lib/formato'
+import { formatoCompacto } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { Badge, Boton, Card } from '../../../atoms'
 import { Cifra } from '../../../molecules'

@@ -1,4 +1,4 @@
-import { etiquetaRol, formatoFecha, formatoHora } from '../../../../lib/formato'
+import { etiquetaRol, formatoFecha, formatoHora } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { Badge, Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'

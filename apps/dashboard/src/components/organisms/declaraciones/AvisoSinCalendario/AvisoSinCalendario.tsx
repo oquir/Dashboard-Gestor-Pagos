@@ -1,5 +1,5 @@
 import { Calendar } from 'reicon-react'
-import { formatoFecha } from '../../../../lib/formato'
+import { formatoFecha } from '../../../../lib'
 import { Aviso } from '../../../molecules'
 import type { AvisoSinCalendarioProps } from './AvisoSinCalendario.types'
 

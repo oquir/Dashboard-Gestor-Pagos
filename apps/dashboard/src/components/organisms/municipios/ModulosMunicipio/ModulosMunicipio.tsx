@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { textoDesactivado, textoSalidaProduccion } from '../../../../lib/formato'
+import { textoDesactivado, textoSalidaProduccion } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { Interruptor, Seccion } from '../../../molecules'
 import ModalSalidaProduccion from '../ModalSalidaProduccion'

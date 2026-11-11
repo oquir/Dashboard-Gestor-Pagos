@@ -1,4 +1,4 @@
-import { etiquetaRol } from '../../../../lib/formato'
+import { etiquetaRol } from '../../../../lib'
 import type { Rol } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Campo } from '../../../molecules'

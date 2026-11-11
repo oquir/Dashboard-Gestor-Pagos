@@ -3,7 +3,7 @@ import { Select } from '../components/atoms'
 import { ElegirMunicipio, PageHeader } from '../components/molecules'
 import { BuscadorMunicipios, CatalogoActividades } from '../components/organisms'
 import { ANIO_EN_CURSO } from '../constants'
-import { useSesion } from '../lib/sesion'
+import { useSesion } from '../lib'
 import { useDatos } from '../store'
 
 export default function Actividades() {

@@ -1,5 +1,5 @@
 import { ANIO_EN_CURSO } from '../../../../constants'
-import { etiquetaImpuesto, etiquetaPeriodicidad, formatoLista } from '../../../../lib/formato'
+import { etiquetaImpuesto, etiquetaPeriodicidad, formatoLista } from '../../../../lib'
 import type { CalendarioVigencia, Declaracion, Impuesto, Periodicidad } from '../../../../types'
 import { ANIOS_ATRAS } from './SeccionCalendario.constants'
 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { etiquetaRol } from '../../../../lib/formato'
-import { useSesion } from '../../../../lib/sesion'
+import { etiquetaRol } from '../../../../lib'
+import { useSesion } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import type { Usuario } from '../../../../types'
 import { Boton, Card } from '../../../atoms'

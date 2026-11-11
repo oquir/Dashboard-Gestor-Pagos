@@ -1,8 +1,8 @@
 // Genera los datos de la demo con una semilla fija: siempre salen los mismos.
 import { MESES_POR_PERIODO } from '../constants'
-import { vencimientoPara } from '../lib/calendario'
-import { calcularOmisos } from '../lib/omisos'
-import { etiquetaCalidad, formatoPesos, nombreCompleto } from '../lib/formato'
+import { vencimientoPara } from '../lib'
+import { calcularOmisos } from '../lib'
+import { etiquetaCalidad, formatoPesos, nombreCompleto } from '../lib'
 import {
   CODIGO_PAGADO_CON_LA_CORREGIDA,
   limiteConsignacion,
@@ -13,7 +13,7 @@ import {
   sumarDiasHabiles,
   UVT,
   valorLiquidado,
-} from '../lib/reglas'
+} from '../lib'
 import type {
   Archivo,
   Calidad,

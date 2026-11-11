@@ -1,6 +1,6 @@
 import { Zip } from 'reicon-react'
 import { useState } from 'react'
-import { descargarDeclaracionesZip } from '../../../../lib/pdfDeclaracion'
+import { descargarDeclaracionesZip } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { hoy } from '../../../../utils'
 import { Boton } from '../../../atoms'

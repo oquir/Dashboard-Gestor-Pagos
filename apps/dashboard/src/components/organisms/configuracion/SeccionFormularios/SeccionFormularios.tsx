@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { etiquetaFormulario, formatoFecha, nombreCompleto } from '../../../../lib/formato'
-import { useSesion } from '../../../../lib/sesion'
+import { etiquetaFormulario, formatoFecha, nombreCompleto } from '../../../../lib'
+import { useSesion } from '../../../../lib'
 import type { Formulario, FormularioDesactivado } from '../../../../types'
 import { hoy } from '../../../../utils'
 import { Interruptor, ModalMotivo, Seccion } from '../../../molecules'

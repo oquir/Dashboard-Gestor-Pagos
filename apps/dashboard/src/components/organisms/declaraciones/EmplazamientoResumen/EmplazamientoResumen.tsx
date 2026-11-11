@@ -1,17 +1,13 @@
 import { useState } from 'react'
-import {
-  sePuedeQuitar,
-  situacionEmplazamiento,
-  textoSituacion,
-} from '../../../../lib/emplazamientos'
+import { sePuedeQuitar, situacionEmplazamiento, textoSituacion } from '../../../../lib'
 import {
   etiquetaEstadoEmplazamiento,
   etiquetaTipoEmplazamiento,
   formatoFecha,
-} from '../../../../lib/formato'
-import { puede } from '../../../../lib/permisos'
-import { useSesion } from '../../../../lib/sesion'
-import { tonoEmplazamiento } from '../../../../lib/tonos'
+} from '../../../../lib'
+import { puede } from '../../../../lib'
+import { useSesion } from '../../../../lib'
+import { tonoEmplazamiento } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { hoy } from '../../../../utils'
 import { Badge, Boton } from '../../../atoms'

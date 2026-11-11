@@ -1,6 +1,6 @@
 import { DocumentDownload } from 'reicon-react'
 import { useState } from 'react'
-import { descargarAsobancaria } from '../../../../lib/asobancaria'
+import { descargarAsobancaria } from '../../../../lib'
 import { hoy } from '../../../../utils'
 import { Boton, Card, Input } from '../../../atoms'
 import { Campo, CardHeader } from '../../../molecules'

@@ -13,11 +13,11 @@ import {
   RespuestaSolicitud,
 } from '../components/organisms'
 import { PlantillaDetalle } from '../components/templates'
-import { etiquetaEstadoInscripcion } from '../lib/formato'
-import { puede } from '../lib/permisos'
-import { actividadesDe, diasInscripcionTardia } from '../lib/reglas'
-import { conRit, impuestoActivo, useSesion } from '../lib/sesion'
-import { tonoInscripcion } from '../lib/tonos'
+import { etiquetaEstadoInscripcion } from '../lib'
+import { puede } from '../lib'
+import { actividadesDe, diasInscripcionTardia } from '../lib'
+import { conRit, impuestoActivo, useSesion } from '../lib'
+import { tonoInscripcion } from '../lib'
 import { useDatos } from '../store'
 
 export default function InscripcionDetalle() {

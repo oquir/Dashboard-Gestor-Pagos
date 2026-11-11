@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
-import { formatoFecha, formatoPesos } from '../../../../lib/formato'
-import { menorValor } from '../../../../lib/reglas'
+import { formatoFecha, formatoPesos } from '../../../../lib'
+import { menorValor } from '../../../../lib'
 import { Card } from '../../../atoms'
 import { CardHeader, Dato } from '../../../molecules'
 import type { DatosDeclaracionProps } from './DatosDeclaracion.types'

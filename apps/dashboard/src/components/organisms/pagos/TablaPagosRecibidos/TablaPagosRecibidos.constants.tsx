@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
-import { etiquetaImpuesto, formatoFecha, formatoPesos } from '../../../../lib/formato'
-import { ayudanteColumnas } from '../../../../lib/tabla'
+import { etiquetaImpuesto, formatoFecha, formatoPesos } from '../../../../lib'
+import { ayudanteColumnas } from '../../../../lib'
 import type { FilaPago } from '../../../../types'
 
 const col = ayudanteColumnas<FilaPago>()

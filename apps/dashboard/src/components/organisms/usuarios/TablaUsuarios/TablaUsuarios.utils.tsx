@@ -1,6 +1,6 @@
 import { UserEdit } from 'reicon-react'
-import { etiquetaRol, nombreCompleto } from '../../../../lib/formato'
-import { ayudanteColumnas } from '../../../../lib/tabla'
+import { etiquetaRol, nombreCompleto } from '../../../../lib'
+import { ayudanteColumnas } from '../../../../lib'
 import type { Municipio, Usuario } from '../../../../types'
 import { Badge } from '../../../atoms'
 

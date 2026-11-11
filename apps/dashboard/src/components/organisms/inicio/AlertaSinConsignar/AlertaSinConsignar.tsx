@@ -1,6 +1,6 @@
 import { Danger } from 'reicon-react'
 import { Link } from 'react-router'
-import { formatoCompacto, formatoFecha, plazoConsignacion } from '../../../../lib/formato'
+import { formatoCompacto, formatoFecha, plazoConsignacion } from '../../../../lib'
 import { Aviso } from '../../../molecules'
 import type { AlertaSinConsignarProps } from './AlertaSinConsignar.types'
 import { saldoDe } from './AlertaSinConsignar.utils'

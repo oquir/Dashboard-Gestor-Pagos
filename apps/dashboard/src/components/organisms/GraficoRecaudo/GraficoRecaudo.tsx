@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { etiquetaImpuesto, formatoCompacto, formatoPesos } from '../../../lib/formato'
+import { etiquetaImpuesto, formatoCompacto, formatoPesos } from '../../../lib'
 import { totalRecaudo } from '../../../utils'
 import { Boton, Card } from '../../atoms'
 import { CardHeader } from '../../molecules'

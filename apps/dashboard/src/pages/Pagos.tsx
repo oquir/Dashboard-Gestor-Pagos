@@ -10,9 +10,9 @@ import {
   TablaCartera,
   TablaPagosRecibidos,
 } from '../components/organisms'
-import { formatoCompacto } from '../lib/formato'
-import { puede } from '../lib/permisos'
-import { correccionVigente, reemplazadas, totalPagado } from '../lib/reglas'
+import { formatoCompacto } from '../lib'
+import { puede } from '../lib'
+import { correccionVigente, reemplazadas, totalPagado } from '../lib'
 import {
   cargaAsobancariaVisible,
   chequesVisibles,
@@ -25,7 +25,7 @@ import {
   useSinConsignar,
   useSolicitudCorreccion,
   useVerRecaudo,
-} from '../lib/sesion'
+} from '../lib'
 import { useDatos } from '../store'
 import type {
   Barra,

@@ -1,5 +1,5 @@
 import type { IconComponent } from 'reicon-react'
-import type { Permiso } from '../../../lib/permisos'
+import type { Permiso } from '../../../lib'
 
 export interface EnlaceNavegacion {
   a: string

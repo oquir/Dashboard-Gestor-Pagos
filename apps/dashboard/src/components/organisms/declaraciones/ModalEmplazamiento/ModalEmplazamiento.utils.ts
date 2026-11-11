@@ -1,5 +1,5 @@
-import { numeroRepetido } from '../../../../lib/emplazamientos'
-import { formatoFecha } from '../../../../lib/formato'
+import { numeroRepetido } from '../../../../lib'
+import { formatoFecha } from '../../../../lib'
 import type { Emplazamiento } from '../../../../types'
 import type { Destinatario } from './ModalEmplazamiento.types'
 

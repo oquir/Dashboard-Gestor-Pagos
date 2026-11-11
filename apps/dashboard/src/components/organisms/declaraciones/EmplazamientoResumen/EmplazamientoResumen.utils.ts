@@ -1,5 +1,5 @@
-import type { SituacionEmplazamiento } from '../../../../lib/emplazamientos'
-import { formatoFecha } from '../../../../lib/formato'
+import type { SituacionEmplazamiento } from '../../../../lib'
+import { formatoFecha } from '../../../../lib'
 import type { Emplazamiento } from '../../../../types'
 
 /** En una línea: hasta cuándo tiene, cuándo venció o cuándo respondió. */

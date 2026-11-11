@@ -1,13 +1,13 @@
-import { emplazamientoDelOmiso } from '../../../../lib/emplazamientos'
+import { emplazamientoDelOmiso } from '../../../../lib'
 import {
   etiquetaImpuesto,
   etiquetaPeriodo,
   formatoFecha,
   formatoHaceDias,
   textoEnProduccion,
-} from '../../../../lib/formato'
-import { idOmiso } from '../../../../lib/omisos'
-import { useOmisos } from '../../../../lib/sesion'
+} from '../../../../lib'
+import { idOmiso } from '../../../../lib'
+import { useOmisos } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { diferenciaDias, hoy } from '../../../../utils'
 import { Badge, Card } from '../../../atoms'

@@ -5,12 +5,8 @@ import {
   emplazamientoPrevio,
   emplazamientosParaCorregir,
   situacionEmplazamiento,
-} from '../../../../lib/emplazamientos'
-import {
-  etiquetaImpuesto,
-  etiquetaPeriodo,
-  etiquetaTipoEmplazamiento,
-} from '../../../../lib/formato'
+} from '../../../../lib'
+import { etiquetaImpuesto, etiquetaPeriodo, etiquetaTipoEmplazamiento } from '../../../../lib'
 import { useDatos } from '../../../../store'
 import { hoy } from '../../../../utils'
 import { Boton, Card } from '../../../atoms'

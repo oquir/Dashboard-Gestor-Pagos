@@ -1,7 +1,7 @@
 import { AlertTriangle } from 'reicon-react'
-import { etiquetaSector } from '../../../../lib/formato'
-import { fueraDeTope } from '../../../../lib/reglas'
-import { ayudanteColumnas } from '../../../../lib/tabla'
+import { etiquetaSector } from '../../../../lib'
+import { fueraDeTope } from '../../../../lib'
+import { ayudanteColumnas } from '../../../../lib'
 import type { Tarifa } from '../../../../types'
 
 const col = ayudanteColumnas<Tarifa>()

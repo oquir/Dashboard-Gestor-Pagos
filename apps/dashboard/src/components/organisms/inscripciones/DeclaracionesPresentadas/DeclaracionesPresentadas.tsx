@@ -4,7 +4,7 @@ import {
   etiquetaTipoDeclaracion,
   formatoFecha,
   formatoPesos,
-} from '../../../../lib/formato'
+} from '../../../../lib'
 import { Card } from '../../../atoms'
 import { CardHeader, ItemEnlace, Vacio } from '../../../molecules'
 import type { DeclaracionesPresentadasProps } from './DeclaracionesPresentadas.types'

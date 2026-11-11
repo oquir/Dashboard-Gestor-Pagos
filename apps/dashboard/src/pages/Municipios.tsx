@@ -7,8 +7,8 @@ import {
   FormulariosMunicipio,
   ModulosMunicipio,
 } from '../components/organisms'
-import { puede } from '../lib/permisos'
-import { impuestoActivo, useSesion } from '../lib/sesion'
+import { puede } from '../lib'
+import { impuestoActivo, useSesion } from '../lib'
 import { useDatos } from '../store'
 import type { CifrasMunicipio } from '../types'
 
