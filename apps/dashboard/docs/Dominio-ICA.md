@@ -41,7 +41,7 @@ El RIT (Registro de Información Tributaria) es el equivalente municipal del RUT
 
 **Regla general**: el ICA del año N se declara en el año N+1, en las fechas del calendario tributario (Medellín: Acuerdo 093 de 2023, art. 43, y guía del ICA de 2026, pregunta 4). Un negocio activo no presenta en 2026 su declaración normal del año gravable 2026: el año no ha terminado y todavía no se conocen sus ingresos.
 
-**Año gravable y vigencia no son lo mismo**. Según el Consejo de Estado (citado en el concepto 031090 de 2017 de MinHacienda), el _año gravable_ es aquel en que se causa el impuesto y sirve de base por sus ingresos, y la _vigencia fiscal_ es el año siguiente, cuando nace la obligación de pagar. Así, "ICA vigencia 2026" puede referirse a los ingresos de 2025. El uso de la palabra no es uniforme: en este dashboard `vigencia` significa año gravable, así que hay que confirmar a qué año se refiere un documento o un archivo de un municipio antes de cargarlo.
+**Año gravable y vigencia no son lo mismo**. Según el Consejo de Estado (citado en el concepto 031090 de 2017 de MinHacienda), el _año gravable_ es aquel en que se causa el impuesto y sirve de base por sus ingresos, y la _vigencia fiscal_ es el año siguiente, cuando nace la obligación de pagar. Así, "ICA vigencia 2026" puede referirse a los ingresos de 2025. El uso de la palabra no es uniforme: en este dashboard `fiscalYear` significa año gravable, así que hay que confirmar a qué año se refiere un documento o un archivo de un municipio antes de cargarlo.
 
 **Lo que parece declarar por anticipado en el ICA** son en realidad casos distintos:
 

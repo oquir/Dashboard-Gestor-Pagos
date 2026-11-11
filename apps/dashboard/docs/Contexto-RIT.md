@@ -341,7 +341,7 @@ Validado contra el Acuerdo 093 de 2023 y las resoluciones de 2026:
 
 ## 9. Cómo reflejarlo en el módulo RIT del mock (ideas, sin decidir)
 
-- **Origen de cada calidad**: hoy `CalidadInscrita.acto` es un texto libre. Se podría distinguir el origen "norma" (artículo del estatuto) del origen "resolución" (número y fecha), y agregar `hasta` con el acto de cancelación.
+- **Origen de cada calidad**: hoy `RegisteredCapacity.act` es un texto libre. Se podría distinguir el origen "norma" (artículo del estatuto) del origen "resolución" (número y fecha), y agregar `to` con el acto de cancelación.
 - **Autorretenedores**: hoy el mock los muestra como una actualización que radica el contribuyente. En Medellín los marca la administración **de oficio** a partir de una resolución anual con la lista de NIT. Se podría mostrar como una novedad "de oficio" o con una carga de esa lista, como la plantilla de actividades.
 - **Naturaleza jurídica**: el mock no distingue entidades públicas de privadas, y sin ese dato no puede mostrar quién es agente por norma.
 - **Ricaurte (Nariño), agentes**: nacen de la norma y de la categoría del RUT, no de una resolución. Para mostrar quién retiene, el mock necesitaría la categoría tributaria del inscrito: gran contribuyente, responsable o no de IVA, SIMPLE, régimen especial, entidad pública, etc.
@@ -391,7 +391,7 @@ Validado contra el Acuerdo 093 de 2023 y las resoluciones de 2026:
 
 ### Cómo leer estas fuentes
 
-- **PDF de medellin.gov.co**: WebFetch no los lee. Hay que bajarlos con `curl -sSL -A "Mozilla/5.0" -o archivo.pdf "<url>"` y extraer el texto con `pdftotext -enc UTF-8 -layout archivo.pdf salida.txt`. Los títulos de los artículos salen como `ARTÍCULO 81.`.
+- **PDF de medellin.gov.co**: WebFetch no los lee. Hay que bajarlos con `curl -sSL -A "Mozilla/5.0" -o file.pdf "<url>"` y extraer el texto con `pdftotext -enc UTF-8 -layout file.pdf salida.txt`. Los títulos de los artículos salen como `ARTÍCULO 81.`.
 - **Formulario RIT**: es un escaneo (CCITT Grupo 3, 2552×3900 píxeles), así que `pdftotext` devuelve un archivo vacío. La transcripción de §4 debería bastar. Si hay que volver a verlo:
   - con Poppler completo, `pdftoppm -png -r 100`;
   - si no, extraer el stream `/CCITTFaxDecode`, envolverlo en un TIFF (Compression=3, T4Options=0, Photometric=0, un solo strip) y convertirlo a PNG con `System.Drawing` en PowerShell.
