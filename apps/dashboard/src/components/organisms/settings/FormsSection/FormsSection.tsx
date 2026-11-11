@@ -30,7 +30,7 @@ export default function FormsSection({
     const prior = disabledOnes[f] ?? savedOnes[f]
     assign(
       f,
-      prior ? { ...prior, reason } : { reason, date: today(), por: user ? fullName(user) : '' },
+      prior ? { ...prior, reason } : { reason, date: today(), by: user ? fullName(user) : '' },
     )
     setRequesting(null)
   }
@@ -51,7 +51,7 @@ export default function FormsSection({
                 !d
                   ? HELP[f]
                   : saved
-                    ? `Desactivado el ${formatDate(saved.date)} por ${saved.por}.`
+                    ? `Desactivado el ${formatDate(saved.date)} por ${saved.by}.`
                     : 'Se desactiva al guardar los cambios.'
               }
               value={!d}

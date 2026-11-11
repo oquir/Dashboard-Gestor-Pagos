@@ -173,7 +173,6 @@ export const municipalitiesWithoutCalendar = (
 /** Al guardar, los años recién agregados quedan cargados hoy por quien guarda; los que ya estaban conservan su fecha. */
 export const withUploads = (
   calendars: FiscalYearCalendar[],
-  por: string,
+  by: string,
   date: string,
-): FiscalYearCalendar[] =>
-  calendars.map((c) => (c.uploaded ? c : { ...c, uploaded: { date, por } }))
+): FiscalYearCalendar[] => calendars.map((c) => (c.uploaded ? c : { ...c, uploaded: { date, by } }))

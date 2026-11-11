@@ -171,7 +171,7 @@ export interface ApprovalSituation {
   limit: string
   /** Día en que se resolvió; en la aprobación automática, el día límite. */
   date?: string
-  por?: string
+  by?: string
   observation?: string
   /** Solo en la rechazada: la causal del art. 580. */
   ground?: NotFiledGround
@@ -282,7 +282,7 @@ export interface CorrectionSituation {
   limit: string
   /** Día en que se resolvió; en la aceptación por silencio, el día límite. */
   date?: string
-  por?: string
+  by?: string
   observation?: string
   /** Lo que explica el contribuyente al radicarla. */
   reason: string

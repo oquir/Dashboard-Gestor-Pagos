@@ -164,7 +164,7 @@ export default function PriorApproval({
             <p className="mt-1">
               {situation.status === 'auto_approved'
                 ? `Se aprobó automáticamente al vencer el plazo, el ${formatDate(situation.limit)}.`
-                : `Aprobada por ${situation.por} el ${formatDate(situation.date!)}.`}{' '}
+                : `Aprobada por ${situation.by} el ${formatDate(situation.date!)}.`}{' '}
               {methodsText(teller)}
               El recibo vale hasta el {formatDate(situation.receiptUntil)}.
             </p>
@@ -176,7 +176,7 @@ export default function PriorApproval({
           <Notice tone="danger" icon={Envelope}>
             <p className="font-medium">Se envió un correo a {email}</p>
             <p className="mt-1">
-              Rechazada por {situation.por} el {formatDate(situation.date!)}. Causal: literal{' '}
+              Rechazada por {situation.by} el {formatDate(situation.date!)}. Causal: literal{' '}
               {GROUNDS[rejectionGround].literal}) del art. 580,{' '}
               {GROUNDS[rejectionGround].label.toLowerCase()}. {GROUNDS[rejectionGround].description}{' '}
               La declaración se tiene por no presentada. {whatToDoText(rejectionGround)}

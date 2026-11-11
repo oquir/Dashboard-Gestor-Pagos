@@ -255,7 +255,7 @@ export type Approval =
   | {
       status: 'approved'
       date: string
-      por: string
+      by: string
       observation?: string
       documents?: StoredFile[]
     }
@@ -263,7 +263,7 @@ export type Approval =
   | {
       status: 'rejected'
       date: string
-      por: string
+      by: string
       ground: NotFiledGround
       observation?: string
       documents?: StoredFile[]
@@ -297,7 +297,7 @@ export type CorrectionApplication =
       status: 'accepted' | 'rejected'
       reason: string
       date: string
-      por: string
+      by: string
       observation?: string
     }
 
@@ -452,7 +452,7 @@ export type FiscalYearCalendar = {
 export interface CalendarUpload {
   date: string
   /** Nombre de quien lo guardó, como era en ese momento. */
-  por: string
+  by: string
 }
 
 export interface MunicipalityConfig {
@@ -518,7 +518,7 @@ export interface DisabledForm {
   reason: string
   date: string
   /** Nombre de quien lo desactivó. */
-  por: string
+  by: string
 }
 
 /** Recaudo consolidado de un mes de años anteriores: la demo solo trae pagos uno a uno del año en curso. */

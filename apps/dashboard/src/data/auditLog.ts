@@ -149,7 +149,7 @@ export function generateAuditLog(data: Omit<Data, 'auditLog'>): AuditLogEntry[] 
   }
   for (const cfg of data.settingsList) {
     for (const pausa of Object.values(cfg.disabledForms)) {
-      const who = byName.get(pausa.por)
+      const who = byName.get(pausa.by)
       if (!who || !inRange(pausa.date)) continue
       calls.push(
         call(`${pausa.date}T18:32`, who.id, cfg.municipalityId, REQUESTS.saveSettings, { ...cfg }),
@@ -177,7 +177,7 @@ export function generateAuditLog(data: Omit<Data, 'auditLog'>): AuditLogEntry[] 
   const randomCorrections = createRandom(589)
   for (const d of data.declarations) {
     const s = d.correctionApplication
-    const who = s && s.status !== 'pending' && inRange(s.date) ? byName.get(s.por) : undefined
+    const who = s && s.status !== 'pending' && inRange(s.date) ? byName.get(s.by) : undefined
     if (!s || s.status === 'pending' || !who) continue
     calls.push(
       call(

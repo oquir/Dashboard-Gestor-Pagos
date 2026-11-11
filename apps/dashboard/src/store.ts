@@ -237,7 +237,7 @@ export const useData = create<StoreState>()(
           const approval: Approval = {
             ...resolution,
             date: today(),
-            por: user ? fullName(user) : '',
+            by: user ? fullName(user) : '',
             observation: observation || undefined,
             documents: documents.length > 0 ? documents : undefined,
           }
@@ -263,7 +263,7 @@ export const useData = create<StoreState>()(
               status,
               reason,
               date: today(),
-              por: user ? fullName(user) : '',
+              by: user ? fullName(user) : '',
               observation: observation || undefined,
             }
             set((s) => ({

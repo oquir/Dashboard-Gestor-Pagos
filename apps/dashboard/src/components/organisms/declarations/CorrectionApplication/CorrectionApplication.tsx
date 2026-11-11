@@ -108,7 +108,7 @@ export default function CorrectionApplication({
           <Notice tone="success" icon={Envelope}>
             <p className="font-medium">Se envió un correo a {email}</p>
             <p className="mt-1">
-              Aceptada por {situation.por} el {formatDate(situation.date!)}: reemplaza a {previous}.
+              Aceptada por {situation.by} el {formatDate(situation.date!)}: reemplaza a {previous}.
             </p>
             {situation.observation && <p className="mt-1">Observación: {situation.observation}</p>}
           </Notice>
@@ -123,8 +123,8 @@ export default function CorrectionApplication({
           <Notice tone="danger" icon={Envelope}>
             <p className="font-medium">Se envió un correo a {email}</p>
             <p className="mt-1">
-              Rechazada por {situation.por} el {formatDate(situation.date!)}:{' '}
-              {situation.observation}. Sigue vigente {previous}.
+              Rechazada por {situation.by} el {formatDate(situation.date!)}: {situation.observation}
+              . Sigue vigente {previous}.
             </p>
             <p className="mt-1">
               El rechazo lleva una sanción del 20 % del menor valor que pidió (

@@ -756,24 +756,24 @@ function calculateReteica(
       ? [
           {
             rate: cfg.reteica.flatRatePerThousand,
-            de: 'servicios y compras',
+            paymentKind: 'servicios y compras',
             minimumUvt: Math.min(minServices, minPurchases),
           },
         ]
       : [
           {
             rate: rates.find((t) => t.sector === 'services')!.perThousand,
-            de: 'servicios',
+            paymentKind: 'servicios',
             minimumUvt: minServices,
           },
           {
             rate: rates.find((t) => t.sector === 'commercial')!.perThousand,
-            de: 'compras',
+            paymentKind: 'compras',
             minimumUvt: minPurchases,
           },
         ]
   let withholdings = 0
-  for (const { rate, de, minimumUvt } of concepts) {
+  for (const { rate, paymentKind, minimumUvt } of concepts) {
     // La base es la suma de los pagos que llegan a la base mínima; los menores no se retienen. En un bimestre, de 15 a 900 millones.
     const base = az.integer(15, 900) * 500_000 * MONTHS_PER_PERIOD[frequency]
     const withholding = roundToThousand((base * rate) / 1000)
@@ -786,7 +786,7 @@ function calculateReteica(
     lines.push({
       code: '13–15',
       concept:
-        `Retención a ${rate} por mil sobre ${(base / 1_000_000).toLocaleString('es-CO')} millones en pagos de ${de}` +
+        `Retención a ${rate} por mil sobre ${(base / 1_000_000).toLocaleString('es-CO')} millones en pagos de ${paymentKind}` +
         (smallerOnes > 0
           ? `. No se retienen ${smallerOnes} ${smallerOnes === 1 ? 'pago' : 'pagos'} por ${formatPesos(belowMinimum)}, por debajo de la base mínima de ${formatPesos(minimum)} (${minimumUvt} UVT)`
           : ''),
@@ -987,7 +987,7 @@ function addDownwardCorrections({
               status: 'accepted',
               reason,
               date: randomDate(az, '2026-09-01', '2026-09-30'),
-              por: official(municipalityId),
+              by: official(municipalityId),
               observation: 'Se revisó el soporte que adjuntó: la corrección procede.',
             }
           : scenario === 'rejected'
@@ -995,7 +995,7 @@ function addDownwardCorrections({
                 status: 'rejected',
                 reason,
                 date: randomDate(az, '2026-10-01', '2026-10-20'),
-                por: official(municipalityId),
+                by: official(municipalityId),
                 observation: 'No adjuntó soportes que demuestren el menor valor que pide',
               }
             : withApplication

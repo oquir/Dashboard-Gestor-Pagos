@@ -219,7 +219,7 @@ export const ACTIVITIES_BY_FISCAL_YEAR: FiscalYearActivities[] = MUNICIPALITIES.
 /** El administrador del municipio cargó el calendario del año gravable en esa fecha. */
 const uploadedByAdmin = (municipalityId: string, date: string) => ({
   date,
-  por: fullName(
+  by: fullName(
     USERS.find((u) => u.municipalityId === municipalityId && u.role === 'municipality_admin')!,
   ),
 })
@@ -541,7 +541,7 @@ export const SETTINGS: MunicipalityConfig[] = [
         reason:
           'El concejo está tramitando el nuevo porcentaje de autorretención; se reactiva cuando se sancione el acuerdo.',
         date: '2026-10-14',
-        por: 'Jorge Pardo',
+        by: 'Jorge Pardo',
       },
     },
     partialCheck: false,

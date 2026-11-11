@@ -9,7 +9,7 @@ export default function NoCalendarNotice({ d, upload }: NoCalendarNoticeProps) {
     <Notice tone="alert" icon={Calendar}>
       <p className="font-medium">
         {upload
-          ? `Se presentó el ${formatDate(d.filingDate)}, antes de que el municipio cargara el calendario del año gravable ${d.fiscalYear} (lo cargó ${upload.por || 'el municipio'} el ${formatDate(upload.date)}).`
+          ? `Se presentó el ${formatDate(d.filingDate)}, antes de que el municipio cargara el calendario del año gravable ${d.fiscalYear} (lo cargó ${upload.by || 'el municipio'} el ${formatDate(upload.date)}).`
           : `Se presentó sin el calendario del año gravable ${d.fiscalYear}: el municipio todavía no lo ha cargado.`}
       </p>
       <p className="mt-0.5">

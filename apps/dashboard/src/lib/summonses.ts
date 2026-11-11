@@ -30,9 +30,9 @@ function isOfPeriod(d: Declaration, e: ToFile) {
     return false
   // La rechazada en la aprobación previa se tiene por no presentada (art. 580).
   if (d.approval?.status === 'rejected') return false
-  const de = periodRange(d.frequency, d.fiscalYear, d.period)
-  const summonedItem = periodRange(e.frequency, e.fiscalYear, e.period)
-  return de.start <= summonedItem.end && summonedItem.start <= de.end
+  const declarationRange = periodRange(d.frequency, d.fiscalYear, d.period)
+  const summonsRange = periodRange(e.frequency, e.fiscalYear, e.period)
+  return declarationRange.start <= summonsRange.end && summonsRange.start <= declarationRange.end
 }
 
 /** La declaración y las que la corrigieron después, una sobre otra. */

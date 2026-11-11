@@ -156,17 +156,17 @@ function draw(doc: jsPDF, d: Declaration, source: PdfFont) {
   fields(data)
 
   // Lo que se escribió en la declaración, aunque después hayan cambiado los datos en el RIT.
-  const { taxpayer: con } = d
+  const { taxpayer: filedTaxpayer } = d
   section('B. Contribuyente')
   const taxpayer: [string, string][] = [
-    ['Nombre o razón social', con.name],
-    ['Documento', documentFormat(con)],
-    ['Dirección', con.address],
-    ['Teléfono', con.phone],
-    ['Correo electrónico', con.email],
+    ['Nombre o razón social', filedTaxpayer.name],
+    ['Documento', documentFormat(filedTaxpayer)],
+    ['Dirección', filedTaxpayer.address],
+    ['Teléfono', filedTaxpayer.phone],
+    ['Correo electrónico', filedTaxpayer.email],
   ]
-  if (con.establishments !== undefined)
-    taxpayer.push(['Establecimientos en el municipio', String(con.establishments)])
+  if (filedTaxpayer.establishments !== undefined)
+    taxpayer.push(['Establecimientos en el municipio', String(filedTaxpayer.establishments)])
   if (reg && municipality?.rit) taxpayer.push(['Número de RIT', reg.ritNumber])
   fields(taxpayer)
 

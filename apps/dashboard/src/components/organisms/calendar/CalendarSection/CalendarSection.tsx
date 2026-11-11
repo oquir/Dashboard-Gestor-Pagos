@@ -136,7 +136,7 @@ export default function CalendarSection({
             </Field>
             <p className="text-xs text-slate-500">
               {cal.uploaded
-                ? `Cargado el ${formatDate(cal.uploaded.date)}${cal.uploaded.por ? ` por ${cal.uploaded.por}` : ''}. Las declaraciones de este año gravable presentadas antes quedan marcadas como presentadas sin calendario.`
+                ? `Cargado el ${formatDate(cal.uploaded.date)}${cal.uploaded.by ? ` por ${cal.uploaded.by}` : ''}. Las declaraciones de este año gravable presentadas antes quedan marcadas como presentadas sin calendario.`
                 : `Sin guardar: el año gravable ${fiscalYear} queda cargado cuando guardes.`}
             </p>
             {TAXES.filter((i) => taxes[i]).map((tax) => (

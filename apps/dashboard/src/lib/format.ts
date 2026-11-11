@@ -87,7 +87,7 @@ export const fullName = (u: Pick<User, 'firstNames' | 'lastNames'>) =>
 
 /** Cuándo, quién y por qué el municipio desactivó un formulario. */
 export const disabledText = (d: DisabledForm) =>
-  `Desactivado por el municipio el ${formatDate(d.date)} (${d.por}): ${d.reason}`
+  `Desactivado por el municipio el ${formatDate(d.date)} (${d.by}): ${d.reason}`
 
 /** Número de documento, con el dígito de verificación si lo tiene. */
 export const documentNumber = (d: Pick<Registration, 'document' | 'dv'>) =>
