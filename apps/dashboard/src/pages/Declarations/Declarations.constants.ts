@@ -29,3 +29,16 @@ export const PAYMENT_OPTIONS: Record<FilterValue<PaymentStatus>, string> = {
   '': 'Todo estado de pago',
   ...paymentStatusLabel,
 }
+
+/** Con qué fecha se filtra la consulta en cada vista. */
+export const CRITERION = {
+  filed: 'Por la fecha en que se presentó la declaración.',
+  nonFilers: 'Por la fecha de vencimiento del periodo que no se declaró.',
+}
+
+/** Lo que se muestra mientras no se ha consultado un rango de fechas. */
+export const NO_QUERY = {
+  title: 'Elige el rango de fechas',
+  filed: 'Escoge desde y hasta y presiona Consultar para ver las declaraciones.',
+  nonFilers: 'Escoge desde y hasta y presiona Consultar para ver los omisos.',
+}

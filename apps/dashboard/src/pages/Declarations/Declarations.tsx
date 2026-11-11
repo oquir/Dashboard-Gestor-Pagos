@@ -6,6 +6,8 @@ import {
   SearchBox,
   Filter,
   CheckboxFilter,
+  DateQueryBar,
+  EmptyState,
   PageHeader,
   SegmentedControl,
 } from '../../components/molecules'
@@ -19,6 +21,7 @@ import {
 import { APPROVAL_OPTIONS, CORRECTION_OPTIONS, CORRECTION_URL_VALUES } from '../../constants'
 import {
   filedWithoutCalendar,
+  inDateRange,
   documentFormat,
   currentCorrection,
   isDownwardCorrection,
@@ -29,6 +32,7 @@ import {
   useDeclarations,
   usePaymentStatus,
   useNonFilers,
+  useDateQuery,
   useSession,
   useCorrectionApplication,
 } from '../../lib'
@@ -43,7 +47,14 @@ import type {
   FilterValue,
   DeclarationsView,
 } from '../../types'
-import { PAYMENT_OPTIONS, TYPE_OPTIONS, TABS, VIEWS } from './Declarations.constants'
+import {
+  PAYMENT_OPTIONS,
+  TYPE_OPTIONS,
+  TABS,
+  VIEWS,
+  CRITERION,
+  NO_QUERY,
+} from './Declarations.constants'
 
 export default function Declarations() {
   const { municipalityId } = useSession()
@@ -53,7 +64,18 @@ export default function Declarations() {
   const statusOf = usePaymentStatus()
   const approval = useApproval()
   const correction = useCorrectionApplication()
-  const nonFilers = useNonFilers()
+  const allNonFilers = useNonFilers()
+  // Nada sale hasta consultar un rango de fechas: de presentación en las presentadas, de vencimiento en los omisos.
+  const { query, consult } = useDateQuery('declarations')
+  const nonFilers = useMemo(
+    () => ({
+      ...allNonFilers,
+      nonFilers: query
+        ? allNonFilers.nonFilers.filter((o) => inDateRange(o.dueDateItem, query))
+        : [],
+    }),
+    [allNonFilers, query],
+  )
   // La vista va en la dirección (?vista=omisos) para que Inicio pueda enlazar directo a los omisos.
   const [params, setParams] = useSearchParams()
   const withRitVisible = ritVisible(municipalities, municipalityId)
@@ -77,10 +99,13 @@ export default function Declarations() {
   })
 
   const rows = useMemo<DeclarationRow[]>(() => {
+    if (!query) return []
+    // La que se corrige puede haberse presentado antes del rango: se busca entre todas.
     const byId = new Map(declarations.map((d) => [d.id, d]))
     const configByMunicipality = new Map(settingsList.map((c) => [c.municipalityId, c]))
     const inRit = withRit(municipalities)
-    return declarations.map((d) => {
+    const inRange = declarations.filter((d) => inDateRange(d.filingDate, query))
+    return inRange.map((d) => {
       const corrected = d.correctsId ? byId.get(d.correctsId) : undefined
       const situation = correction(d)
       return {
@@ -97,7 +122,7 @@ export default function Declarations() {
         unregistered: inRit(d) && !d.registrationId,
       }
     })
-  }, [declarations, municipalities, settingsList, statusOf, approval, correction])
+  }, [declarations, municipalities, settingsList, statusOf, approval, correction, query])
 
   // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
   const withApproval = rows.some((f) => f.approval)
@@ -181,6 +206,11 @@ export default function Declarations() {
         description="ICA anual (formulario único nacional), retención (ReteICA) y autorretención (AutoReteICA). Las de ReteICA y AutoReteICA sin pago total son ineficaces."
       />
       <MunicipalitySearch />
+      <DateQueryBar
+        query={query}
+        consult={consult}
+        criterion={view === 'nonFilers' ? CRITERION.nonFilers : CRITERION.filed}
+      />
 
       <div className="mb-4 flex flex-wrap items-center gap-3">
         {withRitVisible && (
@@ -189,7 +219,12 @@ export default function Declarations() {
             className="sm:inline-flex"
             options={VIEWS.map((v) => ({
               ...v,
-              count: v.value === 'nonFilers' ? nonFilers.nonFilers.length : rows.length,
+              // Sin consulta no hay qué contar.
+              count: !query
+                ? undefined
+                : v.value === 'nonFilers'
+                  ? nonFilers.nonFilers.length
+                  : rows.length,
             }))}
             value={view}
             change={(v) =>
@@ -202,8 +237,9 @@ export default function Declarations() {
           className="sm:inline-flex"
           options={tabs.map((p) => ({
             ...p,
-            count:
-              view === 'nonFilers'
+            count: !query
+              ? undefined
+              : view === 'nonFilers'
                 ? nonFilers.nonFilers.filter((o) => !p.value || o.tax === p.value).length
                 : rows.filter((f) => !p.value || f.d.tax === p.value).length,
           }))}
@@ -212,7 +248,14 @@ export default function Declarations() {
         />
       </div>
 
-      {view === 'nonFilers' ? (
+      {!query ? (
+        <Card>
+          <EmptyState
+            title={NO_QUERY.title}
+            description={view === 'nonFilers' ? NO_QUERY.nonFilers : NO_QUERY.filed}
+          />
+        </Card>
+      ) : view === 'nonFilers' ? (
         <NonFilerList result={nonFilers} tax={tax} />
       ) : (
         <Card>
