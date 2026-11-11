@@ -1,23 +1,23 @@
-import { ArrowDown, ArrowUp, Xmark } from "reicon-react";
-import { OPERATOR_LABELS } from "../../../constants/conditions";
+import { ArrowDown, ArrowUp, Xmark } from 'reicon-react'
+import { OPERATOR_LABELS } from '../../../constants/conditions'
 import {
   operatorNeedsValue,
   operatorsForFieldType,
-} from "../../../lib/fieldCondition/fieldCondition";
-import { createConstantEffect, createScriptEffect } from "../../../lib/fieldRule/fieldRule";
-import type { CanvasField } from "../../../types/field";
-import { IconButton } from "../../atoms/IconButton/IconButton";
-import { ConditionFieldSelect } from "../ConditionFieldSelect/ConditionFieldSelect";
-import { ConditionOperatorSelect } from "../ConditionOperatorSelect/ConditionOperatorSelect";
-import { ConditionValueInput } from "../ConditionValueInput/ConditionValueInput";
-import { RuleEffectRow } from "../RuleEffectRow/RuleEffectRow";
+} from '../../../lib/fieldCondition/fieldCondition'
+import { createConstantEffect, createScriptEffect } from '../../../lib/fieldRule/fieldRule'
+import type { CanvasField } from '../../../types/field'
+import { IconButton } from '../../atoms/IconButton/IconButton'
+import { ConditionFieldSelect } from '../ConditionFieldSelect/ConditionFieldSelect'
+import { ConditionOperatorSelect } from '../ConditionOperatorSelect/ConditionOperatorSelect'
+import { ConditionValueInput } from '../ConditionValueInput/ConditionValueInput'
+import { RuleEffectRow } from '../RuleEffectRow/RuleEffectRow'
 import {
   ADD_LINK_CLASSES,
   MOVE_BUTTON_CLASSES,
   REMOVE_BUTTON_CLASSES,
   SMALL_SELECT_CLASSES,
-} from "./FieldRuleCard.constants";
-import type { FieldRuleCardProps } from "./FieldRuleCard.types";
+} from './FieldRuleCard.constants'
+import type { FieldRuleCardProps } from './FieldRuleCard.types'
 
 export function FieldRuleCard({
   rule,
@@ -33,7 +33,7 @@ export function FieldRuleCard({
         <span className="text-[11px] font-medium text-fg-muted">Regla {index + 1}</span>
         <input
           type="text"
-          value={rule.label ?? ""}
+          value={rule.label ?? ''}
           onChange={(event) => rules.setRuleLabel(rule.id, event.target.value)}
           placeholder="Nombre (opcional)"
           className="min-w-0 flex-1 rounded-md border border-border bg-field px-2 py-1 text-xs text-fg outline-none focus:border-brand-border"
@@ -66,8 +66,8 @@ export function FieldRuleCard({
       <label className="flex items-center gap-2 text-[11px] text-fg-muted">
         Se cumple si
         <select
-          value={rule.matchAll ? "todas" : "alguna"}
-          onChange={(event) => rules.setRuleMatchAll(rule.id, event.target.value === "todas")}
+          value={rule.matchAll ? 'todas' : 'alguna'}
+          onChange={(event) => rules.setRuleMatchAll(rule.id, event.target.value === 'todas')}
           className={SMALL_SELECT_CLASSES}
         >
           <option value="todas">todas las condiciones</option>
@@ -79,7 +79,7 @@ export function FieldRuleCard({
         {rule.when.map((condition) => {
           const observed: CanvasField | undefined = candidates.find(
             (candidate) => candidate.id === condition.fieldId,
-          );
+          )
 
           return (
             <li
@@ -97,7 +97,7 @@ export function FieldRuleCard({
 
                 <ConditionOperatorSelect
                   operator={condition.operator}
-                  availableOperators={operatorsForFieldType(observed?.type ?? "text")}
+                  availableOperators={operatorsForFieldType(observed?.type ?? 'text')}
                   operatorLabels={OPERATOR_LABELS}
                   onChange={(operator) =>
                     rules.updateCondition(rule.id, condition.id, {
@@ -124,7 +124,7 @@ export function FieldRuleCard({
                 <Xmark size={12} weight="Filled" />
               </IconButton>
             </li>
-          );
+          )
         })}
       </ul>
 
@@ -167,5 +167,5 @@ export function FieldRuleCard({
         </button>
       </div>
     </li>
-  );
+  )
 }

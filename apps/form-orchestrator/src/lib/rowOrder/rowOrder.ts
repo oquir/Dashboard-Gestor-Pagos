@@ -1,6 +1,6 @@
-import type { CanvasRow } from "../../types/formStructure";
-import type { RowDropEdge, RowDropTarget } from "../../types/placement";
-import { normalizeGroupRows } from "../repeatableGroup/repeatableGroup";
+import type { CanvasRow } from '../../types/formStructure'
+import type { RowDropEdge, RowDropTarget } from '../../types/placement'
+import { normalizeGroupRows } from '../repeatableGroup/repeatableGroup'
 
 // Reordenar filas enteras dentro de un lienzo, como funciones puras: sin React y sin el store,
 // igual que rowLayout, que hace lo mismo con los campos dentro de una fila.
@@ -21,27 +21,27 @@ export function resolveRowDrop(
   hoveredRowId: string,
   edge: RowDropEdge,
 ): RowDropTarget | null {
-  const dragged: CanvasRow | undefined = rows.find((row) => row.id === draggedRowId);
-  const hovered: CanvasRow | undefined = rows.find((row) => row.id === hoveredRowId);
-  if (!dragged || !hovered) return null;
+  const dragged: CanvasRow | undefined = rows.find((row) => row.id === draggedRowId)
+  const hovered: CanvasRow | undefined = rows.find((row) => row.id === hoveredRowId)
+  if (!dragged || !hovered) return null
 
   // Misma pertenencia, sea la de las filas sueltas o la de un mismo grupo: se reordena libremente.
   if (dragged.groupId === hovered.groupId) {
-    return { rowId: hovered.id, edge, isValid: true };
+    return { rowId: hovered.id, edge, isValid: true }
   }
 
   if (dragged.groupId !== undefined) {
-    return { rowId: hovered.id, edge, isValid: false };
+    return { rowId: hovered.id, edge, isValid: false }
   }
 
   // Se decide por que mitad de la banda cae el puntero y no por la fila concreta que hay debajo,
   // porque el destino real no es esa fila sino uno de los dos bordes del grupo entero.
-  const members: CanvasRow[] = rows.filter((row) => row.groupId === hovered.groupId);
-  const insertAt: number = members.indexOf(hovered) + (edge === "after" ? 1 : 0);
+  const members: CanvasRow[] = rows.filter((row) => row.groupId === hovered.groupId)
+  const insertAt: number = members.indexOf(hovered) + (edge === 'after' ? 1 : 0)
 
   return insertAt * 2 <= members.length
-    ? { rowId: members[0].id, edge: "before", isValid: true }
-    : { rowId: members[members.length - 1].id, edge: "after", isValid: true };
+    ? { rowId: members[0].id, edge: 'before', isValid: true }
+    : { rowId: members[members.length - 1].id, edge: 'after', isValid: true }
 }
 
 // La cabecera de una banda -titulo, minimo, maximo y el select de arrayPath- mide bastante mas que
@@ -53,21 +53,21 @@ export function resolveBandDrop(
   groupId: string,
   edge: RowDropEdge,
 ): RowDropTarget | null {
-  const dragged: CanvasRow | undefined = rows.find((row) => row.id === draggedRowId);
-  const members: CanvasRow[] = rows.filter((row) => row.groupId === groupId);
-  if (!dragged || members.length === 0) return null;
+  const dragged: CanvasRow | undefined = rows.find((row) => row.id === draggedRowId)
+  const members: CanvasRow[] = rows.filter((row) => row.groupId === groupId)
+  if (!dragged || members.length === 0) return null
 
   // Soltar una fila sobre la cabecera de su propio grupo no dice a que altura va: no es un error,
   // simplemente no hay nada que senalar.
-  if (dragged.groupId === groupId) return null;
+  if (dragged.groupId === groupId) return null
 
   if (dragged.groupId !== undefined) {
-    return { rowId: members[0].id, edge: "before", isValid: false };
+    return { rowId: members[0].id, edge: 'before', isValid: false }
   }
 
-  return edge === "before"
-    ? { rowId: members[0].id, edge: "before", isValid: true }
-    : { rowId: members[members.length - 1].id, edge: "after", isValid: true };
+  return edge === 'before'
+    ? { rowId: members[0].id, edge: 'before', isValid: true }
+    : { rowId: members[members.length - 1].id, edge: 'after', isValid: true }
 }
 
 export function reorderRows(
@@ -75,24 +75,24 @@ export function reorderRows(
   draggedRowId: string,
   target: RowDropTarget,
 ): CanvasRow[] {
-  if (!target.isValid) return rows;
+  if (!target.isValid) return rows
 
-  const from: number = rows.findIndex((row) => row.id === draggedRowId);
-  const anchor: number = rows.findIndex((row) => row.id === target.rowId);
+  const from: number = rows.findIndex((row) => row.id === draggedRowId)
+  const anchor: number = rows.findIndex((row) => row.id === target.rowId)
   // anchor en -1 tambien cubre el arrastre entre lienzos: la fila destino vive en otro paso y esta
   // lista no la contiene, asi que el movimiento se rechaza solo.
-  if (from === -1 || anchor === -1) return rows;
+  if (from === -1 || anchor === -1) return rows
 
-  const to: number = target.edge === "before" ? anchor : anchor + 1;
+  const to: number = target.edge === 'before' ? anchor : anchor + 1
   // Los dos bordes que rodean a la propia fila la dejan exactamente donde ya estaba.
-  if (to === from || to === from + 1) return rows;
+  if (to === from || to === from + 1) return rows
 
-  const next: CanvasRow[] = [...rows];
-  const [moved] = next.splice(from, 1);
+  const next: CanvasRow[] = [...rows]
+  const [moved] = next.splice(from, 1)
   // Sacar la fila corrio un puesto hacia atras todo lo que venia detras de ella.
-  next.splice(to > from ? to - 1 : to, 0, moved);
+  next.splice(to > from ? to - 1 : to, 0, moved)
 
   // Con la regla de arriba las filas de un grupo ya llegan contiguas, pero un borrador editado a
   // mano puede traerlas salteadas y el splice las dejaria todavia mas partidas.
-  return normalizeGroupRows(next);
+  return normalizeGroupRows(next)
 }

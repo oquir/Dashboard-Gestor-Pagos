@@ -1,4 +1,4 @@
-import type { PanelSectionProps } from "./PanelSection.types";
+import type { PanelSectionProps } from './PanelSection.types'
 
 // Agrupa los controles del panel en tarjetas con un rotulo chico. Antes era una lista plana de
 // campos separados solo por espacio, y con doce controles seguidos no habia forma de saber cual
@@ -18,5 +18,5 @@ export function PanelSection({ title, aside, children }: PanelSectionProps) {
       </div>
       <div className="flex flex-col gap-3">{children}</div>
     </section>
-  );
+  )
 }

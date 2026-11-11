@@ -1,7 +1,7 @@
-import { PreviewGroupBand } from "../PreviewGroupBand/PreviewGroupBand";
-import { PreviewRowsGrid } from "../PreviewRowsGrid/PreviewRowsGrid";
-import type { PreviewStepProps } from "./PreviewStep.types";
-import { toPreviewBlocks } from "./PreviewStep.utils";
+import { PreviewGroupBand } from '../PreviewGroupBand/PreviewGroupBand'
+import { PreviewRowsGrid } from '../PreviewRowsGrid/PreviewRowsGrid'
+import type { PreviewStepProps } from './PreviewStep.types'
+import { toPreviewBlocks } from './PreviewStep.utils'
 
 export function PreviewStep({ step, preview }: PreviewStepProps) {
   return (
@@ -12,7 +12,7 @@ export function PreviewStep({ step, preview }: PreviewStepProps) {
       </div>
 
       {toPreviewBlocks(step.rows).map((block) =>
-        block.kind === "group" ? (
+        block.kind === 'group' ? (
           <PreviewGroupBand
             key={block.groupId}
             groupId={block.groupId}
@@ -29,5 +29,5 @@ export function PreviewStep({ step, preview }: PreviewStepProps) {
         ),
       )}
     </div>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import type { DashedAddButtonProps } from "./DashedAddButton.types";
+import type { DashedAddButtonProps } from './DashedAddButton.types'
 
-export function DashedAddButton({ className = "", children, ...rest }: DashedAddButtonProps) {
+export function DashedAddButton({ className = '', children, ...rest }: DashedAddButtonProps) {
   return (
     <button
       type="button"
@@ -9,5 +9,5 @@ export function DashedAddButton({ className = "", children, ...rest }: DashedAdd
     >
       {children}
     </button>
-  );
+  )
 }

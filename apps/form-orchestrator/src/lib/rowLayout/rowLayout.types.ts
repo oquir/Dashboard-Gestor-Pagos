@@ -1,4 +1,4 @@
 export interface FreeRun {
-  start: number;
-  length: number;
+  start: number
+  length: number
 }

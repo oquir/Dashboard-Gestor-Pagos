@@ -3,7 +3,7 @@ import type {
   ExportedRepeatableGroup,
   ExportedStep,
   FormExport,
-} from "../../types/exportForm";
+} from '../../types/exportForm'
 import type {
   PreviewState,
   RuntimeContext,
@@ -12,11 +12,11 @@ import type {
   RuntimeScope,
   RuntimeSnapshot,
   RuntimeValues,
-} from "../../types/formRuntime";
-import type { DeclaracionKind } from "../../types/maxDates";
-import type { FormType } from "../../types/setup";
-import { computeDerivedValues, type DerivedResult } from "../runtimeDerived/runtimeDerived";
-import { buildScope, emptyItem, groupColumns } from "./formRuntime.utils";
+} from '../../types/formRuntime'
+import type { DeclaracionKind } from '../../types/maxDates'
+import type { FormType } from '../../types/setup'
+import { computeDerivedValues, type DerivedResult } from '../runtimeDerived/runtimeDerived'
+import { buildScope, emptyItem, groupColumns } from './formRuntime.utils'
 
 // El corazon del simulador. Solo consume el JSON exportado, nunca el store: si algo no se puede
 // hacer con lo que hay aca, el aplicativo que consuma el export tampoco podra.
@@ -25,33 +25,33 @@ import { buildScope, emptyItem, groupColumns } from "./formRuntime.utils";
 // Aplana el export en los indices que el resto del runtime necesita. Recorre el modal de intro
 // junto con los pasos: para evaluar, un campo del intro es un campo mas del formulario.
 export function buildRuntimeModel(exported: FormExport): RuntimeModel {
-  const steps: ExportedStep[] = exported.formSchema.steps;
-  const introSteps: ExportedStep[] = exported.setupConfig.introModal?.steps ?? [];
-  const fieldsByName: Map<string, ExportedField> = new Map();
-  const groupsById: Map<string, ExportedRepeatableGroup> = new Map();
-  const groupIdByFieldName: Map<string, string> = new Map();
-  const groupFields: Map<string, ExportedField[]> = new Map();
-  const externalLabels: Map<string, string> = new Map();
-  const rootFields: ExportedField[] = [];
+  const steps: ExportedStep[] = exported.formSchema.steps
+  const introSteps: ExportedStep[] = exported.setupConfig.introModal?.steps ?? []
+  const fieldsByName: Map<string, ExportedField> = new Map()
+  const groupsById: Map<string, ExportedRepeatableGroup> = new Map()
+  const groupIdByFieldName: Map<string, string> = new Map()
+  const groupFields: Map<string, ExportedField[]> = new Map()
+  const externalLabels: Map<string, string> = new Map()
+  const rootFields: ExportedField[] = []
 
   for (const step of [...introSteps, ...steps]) {
     for (const group of step.groups ?? []) {
-      groupsById.set(group.groupId, group);
-      if (!groupFields.has(group.groupId)) groupFields.set(group.groupId, []);
+      groupsById.set(group.groupId, group)
+      if (!groupFields.has(group.groupId)) groupFields.set(group.groupId, [])
     }
 
     for (const row of step.rows) {
       for (const field of row.fields) {
-        fieldsByName.set(field.name, field);
-        if (field.labelFor) externalLabels.set(field.labelFor, field.label);
+        fieldsByName.set(field.name, field)
+        if (field.labelFor) externalLabels.set(field.labelFor, field.label)
 
         if (row.groupId) {
-          groupIdByFieldName.set(field.name, row.groupId);
-          groupFields.set(row.groupId, [...(groupFields.get(row.groupId) ?? []), field]);
-          continue;
+          groupIdByFieldName.set(field.name, row.groupId)
+          groupFields.set(row.groupId, [...(groupFields.get(row.groupId) ?? []), field])
+          continue
         }
 
-        rootFields.push(field);
+        rootFields.push(field)
       }
     }
   }
@@ -61,7 +61,7 @@ export function buildRuntimeModel(exported: FormExport): RuntimeModel {
     introSteps,
     hasIntroModal: exported.setupConfig.hasIntroModal && introSteps.length > 0,
     gridBaseColumns: exported.formSchema.gridBaseColumns,
-    prelude: exported.formSchema.prelude ?? "",
+    prelude: exported.formSchema.prelude ?? '',
     declaracion: declaracionDe(exported.projectMeta.formType),
     fieldsByName,
     groupsById,
@@ -69,29 +69,29 @@ export function buildRuntimeModel(exported: FormExport): RuntimeModel {
     rootFields,
     groupFields,
     externalLabels,
-  };
+  }
 }
 
 // Cual de las tres listas de vencimientos aplica. Sale del export y no de la configuracion del
 // builder: el simulador solo consume el JSON, y el consumidor tampoco tiene otra cosa. Sin tipo
 // declarado se asume ICA, que es el unico con plantilla.
 function declaracionDe(formType: FormType | null): DeclaracionKind {
-  if (formType === "retencion_industria_comercio") return "reteica";
-  if (formType === "autorretencion") return "autoretencionIca";
+  if (formType === 'retencion_industria_comercio') return 'reteica'
+  if (formType === 'autorretencion') return 'autoretencionIca'
 
-  return "ica";
+  return 'ica'
 }
 
 export function createInitialState(model: RuntimeModel): PreviewState {
-  const groups: Record<string, RuntimeValues[]> = {};
+  const groups: Record<string, RuntimeValues[]> = {}
 
   for (const [groupId, fields] of model.groupFields) {
-    const min: number = model.groupsById.get(groupId)?.min ?? 1;
-    const count: number = Math.max(1, min);
-    groups[groupId] = Array.from({ length: count }, () => emptyItem(fields));
+    const min: number = model.groupsById.get(groupId)?.min ?? 1
+    const count: number = Math.max(1, min)
+    groups[groupId] = Array.from({ length: count }, () => emptyItem(fields))
   }
 
-  return { values: {}, groups };
+  return { values: {}, groups }
 }
 
 // Tres pasadas, y el orden no es negociable: dentro de un grupo {campo} es el escalar de esa fila,
@@ -109,17 +109,17 @@ export function resolveRuntime(
     state,
     state.values,
     context,
-  );
+  )
 
   // Pasada 2: el root ya ve las columnas del grupo como arrays (sumOf/countOf).
-  const rootBase: RuntimeValues = { ...state.values, ...groupColumns(model, firstPass) };
+  const rootBase: RuntimeValues = { ...state.values, ...groupColumns(model, firstPass) }
   const rootDerived: DerivedResult = computeDerivedValues(
     model.rootFields,
     rootBase,
     model,
     0,
     context,
-  );
+  )
 
   // Pasada 3: los grupos se recalculan con el root ya resuelto.
   const finalGroups: Record<string, RuntimeValues[]> = resolveGroupValues(
@@ -127,24 +127,24 @@ export function resolveRuntime(
     state,
     rootDerived.values,
     context,
-  );
+  )
 
-  const groups: Record<string, RuntimeScope[]> = {};
-  const cycles: string[] = [...(rootDerived.cycle ?? [])];
-  const issues: RuntimeIssue[] = [...rootDerived.issues];
+  const groups: Record<string, RuntimeScope[]> = {}
+  const cycles: string[] = [...(rootDerived.cycle ?? [])]
+  const issues: RuntimeIssue[] = [...rootDerived.issues]
 
   for (const [groupId, fields] of model.groupFields) {
     groups[groupId] = (state.groups[groupId] ?? []).map((_, index) => {
       const base: RuntimeValues = {
         ...rootDerived.values,
         ...(finalGroups[groupId]?.[index] ?? {}),
-      };
-      const derived: DerivedResult = computeDerivedValues(fields, base, model, index, context);
-      if (derived.cycle) cycles.push(...derived.cycle);
-      issues.push(...derived.issues);
+      }
+      const derived: DerivedResult = computeDerivedValues(fields, base, model, index, context)
+      if (derived.cycle) cycles.push(...derived.cycle)
+      issues.push(...derived.issues)
 
-      return buildScope(fields, derived.values, derived.computed, derived.clamped);
-    });
+      return buildScope(fields, derived.values, derived.computed, derived.clamped)
+    })
   }
 
   return {
@@ -157,24 +157,24 @@ export function resolveRuntime(
     groups,
     cycle: cycles.length > 0 ? [...new Set(cycles)] : null,
     issues: dedupeIssues(issues),
-  };
+  }
 }
 
 // Un script roto dentro de un grupo falla una vez por repeticion, y el mismo calculo pasa por tres
 // pasadas: sin esto, un error se listaria cuarenta y cinco veces sobre quince actividades.
 function dedupeIssues(issues: RuntimeIssue[]): RuntimeIssue[] {
-  const seen = new Set<string>();
-  const unique: RuntimeIssue[] = [];
+  const seen = new Set<string>()
+  const unique: RuntimeIssue[] = []
 
   for (const issue of issues) {
-    const key: string = `${issue.kind}|${issue.field ?? ""}|${issue.message}`;
-    if (seen.has(key)) continue;
+    const key: string = `${issue.kind}|${issue.field ?? ''}|${issue.message}`
+    if (seen.has(key)) continue
 
-    seen.add(key);
-    unique.push(issue);
+    seen.add(key)
+    unique.push(issue)
   }
 
-  return unique;
+  return unique
 }
 
 // Un ambito por repeticion, no una bolsa comun: cada fila del grupo resuelve a sus hermanas de
@@ -186,7 +186,7 @@ function resolveGroupValues(
   rootValues: RuntimeValues,
   context?: RuntimeContext,
 ): Record<string, RuntimeValues[]> {
-  const resolved: Record<string, RuntimeValues[]> = {};
+  const resolved: Record<string, RuntimeValues[]> = {}
 
   for (const [groupId, fields] of model.groupFields) {
     resolved[groupId] = (state.groups[groupId] ?? []).map((item, index) => {
@@ -197,15 +197,15 @@ function resolveGroupValues(
         model,
         index,
         context,
-      );
-      const scoped: RuntimeValues = {};
+      )
+      const scoped: RuntimeValues = {}
 
       // Solo se devuelven las columnas del grupo; los valores del root vuelven por su lado.
-      for (const field of fields) scoped[field.name] = derived.values[field.name];
+      for (const field of fields) scoped[field.name] = derived.values[field.name]
 
-      return scoped;
-    });
+      return scoped
+    })
   }
 
-  return resolved;
+  return resolved
 }

@@ -1,15 +1,15 @@
-import { InfoCircle } from "reicon-react";
-import { useFormStore } from "../../../../store/formStore";
-import type { FieldValidationOverride } from "../../../../types/field";
-import { DashedAddButton } from "../../../atoms/DashedAddButton/DashedAddButton";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { ValidationOverrideCard } from "../../../molecules/ValidationOverrideCard/ValidationOverrideCard";
-import { ADD_BUTTON_CLASSES, HINT, HINT_CLASSES } from "./ValidationOverridesEditor.constants";
-import type { ValidationOverridesEditorProps } from "./ValidationOverridesEditor.types";
+import { InfoCircle } from 'reicon-react'
+import { useFormStore } from '../../../../store/formStore'
+import type { FieldValidationOverride } from '../../../../types/field'
+import { DashedAddButton } from '../../../atoms/DashedAddButton/DashedAddButton'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { ValidationOverrideCard } from '../../../molecules/ValidationOverrideCard/ValidationOverrideCard'
+import { ADD_BUTTON_CLASSES, HINT, HINT_CLASSES } from './ValidationOverridesEditor.constants'
+import type { ValidationOverridesEditorProps } from './ValidationOverridesEditor.types'
 
 export function ValidationOverridesEditor({ field, candidates }: ValidationOverridesEditorProps) {
-  const addOverride = useFormStore((state) => state.addFieldValidationOverride);
-  const overrides: FieldValidationOverride[] = field.validations.overrides ?? [];
+  const addOverride = useFormStore((state) => state.addFieldValidationOverride)
+  const overrides: FieldValidationOverride[] = field.validations.overrides ?? []
 
   return (
     <PanelSection
@@ -44,5 +44,5 @@ export function ValidationOverridesEditor({ field, candidates }: ValidationOverr
         </DashedAddButton>
       )}
     </PanelSection>
-  );
+  )
 }

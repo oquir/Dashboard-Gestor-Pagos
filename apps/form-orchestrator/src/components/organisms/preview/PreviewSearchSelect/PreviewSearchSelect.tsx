@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/refs -- falso positivo: el hook devuelve refs junto a valores comunes */
-import { Magnifier } from "reicon-react";
-import { usePreviewSearchSelect } from "../../../../hooks/usePreviewSearchSelect/usePreviewSearchSelect";
+import { Magnifier } from 'reicon-react'
+import { usePreviewSearchSelect } from '../../../../hooks/usePreviewSearchSelect/usePreviewSearchSelect'
 import {
   FOOTER_BUTTON_CLASSES,
   OPTION_BUTTON_CLASSES,
@@ -10,9 +10,9 @@ import {
   TRIGGER_BASE_CLASSES,
   TRIGGER_IDLE_CLASSES,
   TRIGGER_INVALID_CLASSES,
-} from "./PreviewSearchSelect.constants";
-import type { PreviewSearchSelectProps } from "./PreviewSearchSelect.types";
-import { formatTarifa, optionText } from "./PreviewSearchSelect.utils";
+} from './PreviewSearchSelect.constants'
+import type { PreviewSearchSelectProps } from './PreviewSearchSelect.types'
+import { formatTarifa, optionText } from './PreviewSearchSelect.utils'
 
 export function PreviewSearchSelect({
   inputId,
@@ -24,7 +24,7 @@ export function PreviewSearchSelect({
   showsTarifa,
   onChange,
 }: PreviewSearchSelectProps) {
-  const search = usePreviewSearchSelect({ options, value, onChange });
+  const search = usePreviewSearchSelect({ options, value, onChange })
 
   return (
     <>
@@ -35,8 +35,8 @@ export function PreviewSearchSelect({
         onClick={search.open}
         className={`${TRIGGER_BASE_CLASSES} ${invalid ? TRIGGER_INVALID_CLASSES : TRIGGER_IDLE_CLASSES}`}
       >
-        <span className={`truncate ${search.selected ? "text-fg" : "text-fg-muted"}`}>
-          {search.selected ? optionText(search.selected) : "Buscar…"}
+        <span className={`truncate ${search.selected ? 'text-fg' : 'text-fg-muted'}`}>
+          {search.selected ? optionText(search.selected) : 'Buscar…'}
         </span>
         <Magnifier size={14} weight="Filled" />
       </button>
@@ -77,7 +77,7 @@ export function PreviewSearchSelect({
                 {search.results.map((option) => (
                   <li
                     key={option.id}
-                    className={option.id === search.selected?.id ? "bg-brand-surface" : undefined}
+                    className={option.id === search.selected?.id ? 'bg-brand-surface' : undefined}
                   >
                     <button
                       type="button"
@@ -115,5 +115,5 @@ export function PreviewSearchSelect({
         </div>
       )}
     </>
-  );
+  )
 }

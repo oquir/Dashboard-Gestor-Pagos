@@ -1,6 +1,6 @@
-﻿import type { ModalShellProps } from "./ModalShell.types";
+﻿import type { ModalShellProps } from './ModalShell.types'
 
-export function ModalShell({ children, maxWidthClassName = "max-w-md" }: ModalShellProps) {
+export function ModalShell({ children, maxWidthClassName = 'max-w-md' }: ModalShellProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
       <div
@@ -9,5 +9,5 @@ export function ModalShell({ children, maxWidthClassName = "max-w-md" }: ModalSh
         {children}
       </div>
     </div>
-  );
+  )
 }

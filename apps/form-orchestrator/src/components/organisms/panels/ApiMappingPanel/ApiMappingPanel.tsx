@@ -1,18 +1,18 @@
-import { useApiMappingPanel } from "../../../../hooks/useApiMappingPanel/useApiMappingPanel";
-import { isPresentationalField } from "../../../../lib/fieldKind/fieldKind";
-import { allowsManualOptions, isOptionBasedField } from "../../../../lib/fieldOptions/fieldOptions";
-import type { CanvasField } from "../../../../types/field";
-import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
-import { ApiPathSelect } from "../../../molecules/ApiPathSelect/ApiPathSelect";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { FieldOptionsModal } from "../../FieldOptionsModal/FieldOptionsModal";
-import { FieldDataSourceEditor } from "../FieldDataSourceEditor/FieldDataSourceEditor";
+import { useApiMappingPanel } from '../../../../hooks/useApiMappingPanel/useApiMappingPanel'
+import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
+import { allowsManualOptions, isOptionBasedField } from '../../../../lib/fieldOptions/fieldOptions'
+import type { CanvasField } from '../../../../types/field'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { ApiPathSelect } from '../../../molecules/ApiPathSelect/ApiPathSelect'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { FieldOptionsModal } from '../../FieldOptionsModal/FieldOptionsModal'
+import { FieldDataSourceEditor } from '../FieldDataSourceEditor/FieldDataSourceEditor'
 import {
   ERROR_CLASSES,
   HINT_CLASSES,
   NOTE_CLASSES,
   WARNING_CLASSES,
-} from "./ApiMappingPanel.constants";
+} from './ApiMappingPanel.constants'
 
 export function ApiMappingPanel({ field }: { field: CanvasField }) {
   const {
@@ -31,14 +31,14 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
     handleExcludedToggle,
     handleOptionsConfirm,
     handlePathChange,
-  } = useApiMappingPanel({ field });
+  } = useApiMappingPanel({ field })
 
   if (isPresentationalField(field.type)) {
     return (
       <p className="text-xs text-fg-subtle">
         Este campo solo muestra contenido: no envía ningún valor, así que no se mapea al payload.
       </p>
-    );
+    )
   }
 
   return (
@@ -58,10 +58,10 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
             <>
               Excluido: no se enviará al objeto final aunque participe en cálculos o condiciones.
               {allowsManualOptions(field) &&
-                " Si lo volvés a incluir, las opciones que cargaste se descartan."}
+                ' Si lo volvés a incluir, las opciones que cargaste se descartan.'}
             </>
           ) : (
-            "Apagá el interruptor de la derecha solo si el campo es de uso interno del formulario y no viaja a la API."
+            'Apagá el interruptor de la derecha solo si el campo es de uso interno del formulario y no viaja a la API.'
           )}
         </p>
 
@@ -118,5 +118,5 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
         />
       )}
     </div>
-  );
+  )
 }

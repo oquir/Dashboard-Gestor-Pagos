@@ -1,5 +1,5 @@
-import type { ActiveDrag } from "../../../types/activeDrag";
+import type { ActiveDrag } from '../../../types/activeDrag'
 
 export interface DragPreviewProps {
-  activeDrag: ActiveDrag;
+  activeDrag: ActiveDrag
 }

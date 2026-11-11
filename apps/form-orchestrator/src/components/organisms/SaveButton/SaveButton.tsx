@@ -1,16 +1,16 @@
-import { Check, Save22 } from "reicon-react";
-import { useSaveButton } from "../../../hooks/useSaveButton/useSaveButton";
-import { SAVE_BUTTON_BASE_CLASSES, SAVE_BUTTON_STATE_CLASSES } from "./SaveButton.constants";
+import { Check, Save22 } from 'reicon-react'
+import { useSaveButton } from '../../../hooks/useSaveButton/useSaveButton'
+import { SAVE_BUTTON_BASE_CLASSES, SAVE_BUTTON_STATE_CLASSES } from './SaveButton.constants'
 
 export function SaveButton() {
-  const { lastSavedAt, justSaved, handleSave } = useSaveButton();
+  const { lastSavedAt, justSaved, handleSave } = useSaveButton()
 
   // El sello de hora viaja en el title y no como segunda linea: el boton vive en la fila de
   // acciones de la cabecera del panel, donde no hay lugar para dos renglones y donde un texto que
   // aparece y desaparece movería a los botones vecinos.
   const savedLabel: string = lastSavedAt
     ? `Guardado ${new Date(lastSavedAt).toLocaleTimeString()}`
-    : "Todavía sin guardar";
+    : 'Todavía sin guardar'
 
   return (
     <button
@@ -31,5 +31,5 @@ export function SaveButton() {
         </>
       )}
     </button>
-  );
+  )
 }

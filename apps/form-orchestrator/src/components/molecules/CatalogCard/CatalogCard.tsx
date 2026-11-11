@@ -1,8 +1,8 @@
-import { useCatalogCard } from "../../../hooks/useCatalogCard/useCatalogCard";
-import type { CatalogEntry } from "../../../types/catalog";
-import { Button } from "../../atoms/Button/Button";
-import { BinaryChoiceToggle } from "../BinaryChoiceToggle/BinaryChoiceToggle";
-import { PanelSection } from "../PanelSection/PanelSection";
+import { useCatalogCard } from '../../../hooks/useCatalogCard/useCatalogCard'
+import type { CatalogEntry } from '../../../types/catalog'
+import { Button } from '../../atoms/Button/Button'
+import { BinaryChoiceToggle } from '../BinaryChoiceToggle/BinaryChoiceToggle'
+import { PanelSection } from '../PanelSection/PanelSection'
 import {
   ACTION_CLASSES,
   BADGE_EMPTY_CLASSES,
@@ -12,8 +12,8 @@ import {
   INPUT_CLASSES,
   PASTE_PLACEHOLDER,
   TEXTAREA_CLASSES,
-} from "./CatalogCard.constants";
-import type { CatalogCardProps } from "./CatalogCard.types";
+} from './CatalogCard.constants'
+import type { CatalogCardProps } from './CatalogCard.types'
 
 export function CatalogCard({ catalog, stored }: CatalogCardProps) {
   const {
@@ -39,7 +39,7 @@ export function CatalogCard({ catalog, stored }: CatalogCardProps) {
     load,
     setSource,
     clear,
-  } = useCatalogCard({ catalog, stored });
+  } = useCatalogCard({ catalog, stored })
 
   return (
     <PanelSection
@@ -49,11 +49,11 @@ export function CatalogCard({ catalog, stored }: CatalogCardProps) {
       <div className="flex items-center justify-between gap-2">
         <p className={HINT_CLASSES}>
           {catalog.requiresParent
-            ? "Se consulta por un campo padre"
-            : "Se consulta completo, sin filtro"}
+            ? 'Se consulta por un campo padre'
+            : 'Se consulta completo, sin filtro'}
         </p>
         <button type="button" onClick={() => setIsOpen(!isOpen)} className={ACTION_CLASSES}>
-          {isOpen ? "Cerrar" : loaded ? "Reemplazar" : "Cargar"}
+          {isOpen ? 'Cerrar' : loaded ? 'Reemplazar' : 'Cargar'}
         </button>
       </div>
 
@@ -61,7 +61,7 @@ export function CatalogCard({ catalog, stored }: CatalogCardProps) {
         <>
           <BinaryChoiceToggle
             value={isCustom}
-            onChange={(next) => setSource(next ? "custom" : "default")}
+            onChange={(next) => setSource(next ? 'custom' : 'default')}
             yesLabel="Personalizado"
             noLabel="Por defecto"
           />
@@ -72,9 +72,9 @@ export function CatalogCard({ catalog, stored }: CatalogCardProps) {
                 ? entries
                     .slice(0, 3)
                     .map((entry: CatalogEntry) => entry.label)
-                    .join(" · ")
-                : "Usando los datos de prueba del simulador"}
-              {isCustom && entries.length > 3 && " …"}
+                    .join(' · ')
+                : 'Usando los datos de prueba del simulador'}
+              {isCustom && entries.length > 3 && ' …'}
             </p>
             <button
               type="button"
@@ -162,5 +162,5 @@ export function CatalogCard({ catalog, stored }: CatalogCardProps) {
         </>
       )}
     </PanelSection>
-  );
+  )
 }

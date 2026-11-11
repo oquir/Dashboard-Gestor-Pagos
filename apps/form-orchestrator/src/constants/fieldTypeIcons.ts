@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType } from 'react'
 import {
   AngleDownSquare,
   Bold,
@@ -13,8 +13,8 @@ import {
   Text,
   TextBlock2,
   ToggleOn2,
-} from "reicon-react";
-import type { IconProps } from "../types/icon";
+} from 'reicon-react'
+import type { IconProps } from '../types/icon'
 
 export const FIELD_TYPE_ICONS: Record<string, ComponentType<IconProps>> = {
   text: Text,
@@ -30,4 +30,4 @@ export const FIELD_TYPE_ICONS: Record<string, ComponentType<IconProps>> = {
   checkbox_group: Copy,
   label: Tag,
   rich_text: Bold,
-};
+}

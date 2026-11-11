@@ -8,8 +8,8 @@ import {
   CATALOG_TIPOS_DOCUMENTO,
   CATALOG_TIPOS_PERSONA,
   CATALOG_TIPOS_SANCION,
-} from "../../constants/catalog";
-import type { CatalogOption } from "../../types/catalog";
+} from '../../constants/catalog'
+import type { CatalogOption } from '../../types/catalog'
 import {
   ACTIVIDADES,
   DEPARTAMENTOS,
@@ -20,9 +20,9 @@ import {
   TIPOS_DOCUMENTO,
   TIPOS_PERSONA,
   TIPOS_SANCION,
-} from "./mockCatalog.data";
+} from './mockCatalog.data'
 
-export const MOCK_OPTION_COUNT = 3;
+export const MOCK_OPTION_COUNT = 3
 
 export const MOCK_CATALOGS: Record<string, (parent?: string) => CatalogOption[]> = {
   [CATALOG_DEPARTAMENTOS]: () => DEPARTAMENTOS,
@@ -34,7 +34,7 @@ export const MOCK_CATALOGS: Record<string, (parent?: string) => CatalogOption[]>
   [CATALOG_TIPOS_SANCION]: () => TIPOS_SANCION,
   [CATALOG_JUEGOS_PERMITIDOS]: () => JUEGOS_PERMITIDOS,
   [CATALOG_ACTIVIDADES]: () => ACTIVIDADES,
-};
+}
 
 // Catalogos que el JSON todavia no declara: el simulador los reconoce por la hoja del payload a la
 // que el campo esta mapeado. Vive solo aca, el contrato no cambia. Las entradas que ya tienen
@@ -50,20 +50,20 @@ export const MOCK_BY_LEAF: Record<string, CatalogOption[]> = {
   idActividad: ACTIVIDADES,
   // Estos tres son los unicos que siguen inventados: nunca vinieron en un volcado.
   periodoAnio: [
-    { id: "2026", label: "2026" },
-    { id: "2025", label: "2025" },
-    { id: "2024", label: "2024" },
-    { id: "2023", label: "2023" },
+    { id: '2026', label: '2026' },
+    { id: '2025', label: '2025' },
+    { id: '2024', label: '2024' },
+    { id: '2023', label: '2023' },
   ],
   idClasificacionMunicipio: [
-    { id: "1", label: "Régimen común" },
-    { id: "2", label: "Régimen simplificado" },
-    { id: "3", label: "Gran contribuyente" },
-    { id: "4", label: "Autorretenedor" },
+    { id: '1', label: 'Régimen común' },
+    { id: '2', label: 'Régimen simplificado' },
+    { id: '3', label: 'Gran contribuyente' },
+    { id: '4', label: 'Autorretenedor' },
   ],
   idTipoRepresentante: [
-    { id: "1", label: "Representante legal" },
-    { id: "2", label: "Apoderado" },
-    { id: "3", label: "Revisor fiscal" },
+    { id: '1', label: 'Representante legal' },
+    { id: '2', label: 'Apoderado' },
+    { id: '3', label: 'Revisor fiscal' },
   ],
-};
+}

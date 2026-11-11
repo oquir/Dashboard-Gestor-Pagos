@@ -1,12 +1,12 @@
-import { Xmark } from "reicon-react";
-import { useFormStore } from "../../../store/formStore";
-import { IconButton } from "../../atoms/IconButton/IconButton";
+import { Xmark } from 'reicon-react'
+import { useFormStore } from '../../../store/formStore'
+import { IconButton } from '../../atoms/IconButton/IconButton'
 
 export function TransferNotice() {
-  const transferNotice = useFormStore((state) => state.transferNotice);
-  const dismissTransferNotice = useFormStore((state) => state.dismissTransferNotice);
+  const transferNotice = useFormStore((state) => state.transferNotice)
+  const dismissTransferNotice = useFormStore((state) => state.dismissTransferNotice)
 
-  if (!transferNotice) return null;
+  if (!transferNotice) return null
 
   return (
     // El margen es propio y por los cuatro lados porque el cuerpo del panel derecho ya no tiene
@@ -22,5 +22,5 @@ export function TransferNotice() {
         <Xmark size={14} weight="Filled" />
       </IconButton>
     </div>
-  );
+  )
 }

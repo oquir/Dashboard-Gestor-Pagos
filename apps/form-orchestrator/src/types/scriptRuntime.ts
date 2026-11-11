@@ -2,6 +2,6 @@
 // `error` lo cuenta -- o devolvio undefined a proposito, que significa "no toques lo que escribio
 // el usuario".
 export interface ScriptRunResult {
-  value: unknown;
-  error: string | null;
+  value: unknown
+  error: string | null
 }

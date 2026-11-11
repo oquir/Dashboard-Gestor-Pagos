@@ -1,38 +1,38 @@
-import { CATALOGS, findCatalog } from "../../../../constants/catalog";
-import { useFormStore } from "../../../../store/formStore";
-import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
+import { CATALOGS, findCatalog } from '../../../../constants/catalog'
+import { useFormStore } from '../../../../store/formStore'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
 import {
   HINT_CLASSES,
   NO_PARENT_VALUE,
   SELECT_CLASSES,
   WARNING_CLASSES,
-} from "./FieldDataSourceEditor.constants";
-import type { FieldDataSourceEditorProps } from "./FieldDataSourceEditor.types";
+} from './FieldDataSourceEditor.constants'
+import type { FieldDataSourceEditorProps } from './FieldDataSourceEditor.types'
 
 export function FieldDataSourceEditor({ field, candidates }: FieldDataSourceEditorProps) {
-  const updateFieldDataSource = useFormStore((state) => state.updateFieldDataSource);
+  const updateFieldDataSource = useFormStore((state) => state.updateFieldDataSource)
 
-  const source = field.dataSource;
-  const catalog = source ? findCatalog(source.catalog) : undefined;
+  const source = field.dataSource
+  const catalog = source ? findCatalog(source.catalog) : undefined
   const parentIsDead =
-    source?.dependsOn !== undefined && !candidates.some((c) => c.id === source.dependsOn);
-  const needsParent = Boolean(catalog?.requiresParent) && source?.dependsOn === undefined;
+    source?.dependsOn !== undefined && !candidates.some((c) => c.id === source.dependsOn)
+  const needsParent = Boolean(catalog?.requiresParent) && source?.dependsOn === undefined
 
   function toggle(checked: boolean): void {
-    updateFieldDataSource(field.id, checked ? { catalog: CATALOGS[0].id } : null);
+    updateFieldDataSource(field.id, checked ? { catalog: CATALOGS[0].id } : null)
   }
 
   function changeCatalog(catalogId: string): void {
-    updateFieldDataSource(field.id, { catalog: catalogId, dependsOn: source?.dependsOn });
+    updateFieldDataSource(field.id, { catalog: catalogId, dependsOn: source?.dependsOn })
   }
 
   function changeParent(fieldId: string): void {
-    if (!source) return;
+    if (!source) return
     updateFieldDataSource(field.id, {
       catalog: source.catalog,
       dependsOn: fieldId === NO_PARENT_VALUE ? undefined : fieldId,
-    });
+    })
   }
 
   return (
@@ -104,5 +104,5 @@ export function FieldDataSourceEditor({ field, candidates }: FieldDataSourceEdit
         </>
       )}
     </PanelSection>
-  );
+  )
 }

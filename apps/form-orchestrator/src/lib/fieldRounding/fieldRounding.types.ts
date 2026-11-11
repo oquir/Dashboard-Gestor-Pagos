@@ -2,7 +2,7 @@
 // importar CanvasField o ExportedField porque los dos entran aca: el panel pregunta por uno y el
 // simulador por el otro, y ninguno necesita que esta carpeta conozca su forma completa.
 export interface RoundableField {
-  type: string;
-  rounding?: boolean;
-  decimals?: number;
+  type: string
+  rounding?: boolean
+  decimals?: number
 }

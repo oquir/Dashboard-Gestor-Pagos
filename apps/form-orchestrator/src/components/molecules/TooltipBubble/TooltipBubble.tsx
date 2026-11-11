@@ -1,13 +1,13 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties } from 'react'
 import {
   TOOLTIP_ANCHOR_CLASSES,
   TOOLTIP_SURFACE_CLASSES,
   TOOLTIP_TEXT_CLASSES,
-} from "../../../constants/fieldTooltip";
-import { resolveTooltipStyles } from "../../../lib/cssStyles/cssStyles";
-import { RichTextView } from "../../atoms/RichTextView/RichTextView";
-import { TOOLTIP_BUBBLE_CLASSES } from "./TooltipBubble.constants";
-import type { TooltipBubbleProps } from "./TooltipBubble.types";
+} from '../../../constants/fieldTooltip'
+import { resolveTooltipStyles } from '../../../lib/cssStyles/cssStyles'
+import { RichTextView } from '../../atoms/RichTextView/RichTextView'
+import { TOOLTIP_BUBBLE_CLASSES } from './TooltipBubble.constants'
+import type { TooltipBubbleProps } from './TooltipBubble.types'
 
 export function TooltipBubble({ tooltip }: TooltipBubbleProps) {
   return (
@@ -17,5 +17,5 @@ export function TooltipBubble({ tooltip }: TooltipBubbleProps) {
     >
       <RichTextView content={tooltip.content} className={TOOLTIP_TEXT_CLASSES} />
     </div>
-  );
+  )
 }

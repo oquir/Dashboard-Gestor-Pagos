@@ -1,6 +1,6 @@
-import type { FieldRename } from "../../../types/persistenceTypes";
+import type { FieldRename } from '../../../types/persistenceTypes'
 
 export interface FieldRenameNoticeProps {
-  renamed: FieldRename[];
-  className?: string;
+  renamed: FieldRename[]
+  className?: string
 }

@@ -1,45 +1,45 @@
-import type { CanvasRow } from "../../types/formStructure";
-import type { FieldRename } from "../../types/persistenceTypes";
-import { FALLBACK_NAME } from "./fieldName.constants";
+import type { CanvasRow } from '../../types/formStructure'
+import type { FieldRename } from '../../types/persistenceTypes'
+import { FALLBACK_NAME } from './fieldName.constants'
 
 // El nombre tecnico es la identidad del campo hacia afuera: con el se referencian las formulas,
 // las condiciones y todo el export. Tiene que ser unico y valido como identificador del lenguaje
 // de formulas, de ahi que se quiten acentos y no pueda empezar por un digito.
 
 export function slugifyFieldName(label: string): string {
-  const withoutAccents: string = label.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+  const withoutAccents: string = label.normalize('NFD').replace(/\p{Diacritic}/gu, '')
   const slug: string = withoutAccents
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "_")
-    .replace(/_+/g, "_")
-    .replace(/^_|_$/g, "");
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '')
 
-  if (slug.length === 0) return FALLBACK_NAME;
-  if (/^[0-9]/.test(slug)) return `${FALLBACK_NAME}_${slug}`;
+  if (slug.length === 0) return FALLBACK_NAME
+  if (/^[0-9]/.test(slug)) return `${FALLBACK_NAME}_${slug}`
 
-  return slug;
+  return slug
 }
 
 export function uniqueFieldName(candidate: string, taken: Set<string>): string {
-  if (!taken.has(candidate)) return candidate;
+  if (!taken.has(candidate)) return candidate
 
-  let suffix = 2;
-  while (taken.has(`${candidate}_${suffix}`)) suffix += 1;
+  let suffix = 2
+  while (taken.has(`${candidate}_${suffix}`)) suffix += 1
 
-  return `${candidate}_${suffix}`;
+  return `${candidate}_${suffix}`
 }
 
 export function collectFieldNames(rows: CanvasRow[], exceptFieldId?: string): Set<string> {
-  const names = new Set<string>();
+  const names = new Set<string>()
 
   for (const row of rows) {
     for (const field of row.fields) {
-      if (field.id === exceptFieldId) continue;
-      names.add(field.name);
+      if (field.id === exceptFieldId) continue
+      names.add(field.name)
     }
   }
 
-  return names;
+  return names
 }
 
 // Segunda linea de defensa del nombre unico, detras del editor. Un borrador editado a mano desde
@@ -59,17 +59,17 @@ export function migrateFieldNames(
   return rows.map((row) => ({
     ...row,
     fields: row.fields.map((field) => {
-      const candidate: string = field.name ? field.name : slugifyFieldName(field.label);
-      const name: string = uniqueFieldName(candidate, taken);
-      taken.add(name);
+      const candidate: string = field.name ? field.name : slugifyFieldName(field.label)
+      const name: string = uniqueFieldName(candidate, taken)
+      taken.add(name)
 
       // Solo es un renombre si el campo ya traia nombre: rellenar el de uno que venia sin el es
       // una migracion y no hay nada que revisar.
       if (field.name && name !== field.name) {
-        renamed.push({ from: field.name, to: name, label: field.label });
+        renamed.push({ from: field.name, to: name, label: field.label })
       }
 
-      return field.name === name ? field : { ...field, name };
+      return field.name === name ? field : { ...field, name }
     }),
-  }));
+  }))
 }

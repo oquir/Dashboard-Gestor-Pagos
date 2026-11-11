@@ -1,6 +1,6 @@
-import type { RightSidebarTab } from "../../../types/ui";
+import type { RightSidebarTab } from '../../../types/ui'
 
 export interface RightSidebarTabItem {
-  id: RightSidebarTab;
-  label: string;
+  id: RightSidebarTab
+  label: string
 }

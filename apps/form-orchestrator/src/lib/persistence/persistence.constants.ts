@@ -1,4 +1,4 @@
-export const DRAFT_KEY: string = "form-orchestrator-draft";
+export const DRAFT_KEY: string = 'form-orchestrator-draft'
 
 // Version de la forma del borrador. Sube cada vez que el store cambia de shape de manera que un
 // borrador viejo dejaria de validar, y por cada subida va un paso en persistence.migrations.
@@ -8,4 +8,4 @@ export const DRAFT_KEY: string = "form-orchestrator-draft";
 //   4: el efecto de regla deja la formula y pasa a ser un script.
 //   5: se va el almacen de partes y con el savedComponents.
 //   6: las clases de Tailwind (customClasses) pasan a ser CSS plano (customCss).
-export const DRAFT_SCHEMA_VERSION: number = 6;
+export const DRAFT_SCHEMA_VERSION: number = 6

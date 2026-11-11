@@ -1,62 +1,62 @@
-import { RICH_TEXT_FIELD_TYPE } from "../../../../constants/fieldTypes";
-import { GRID_BASE_COLUMNS } from "../../../../constants/grid";
+import { RICH_TEXT_FIELD_TYPE } from '../../../../constants/fieldTypes'
+import { GRID_BASE_COLUMNS } from '../../../../constants/grid'
 import {
   findLabelFor,
   isPresentationalField,
   labelTargetCandidates,
-} from "../../../../lib/fieldKind/fieldKind";
+} from '../../../../lib/fieldKind/fieldKind'
 import {
   allowsManualOptions,
   isOptionBasedField,
   supportsInlineOptions,
-} from "../../../../lib/fieldOptions/fieldOptions";
-import { supportsRounding } from "../../../../lib/fieldRounding/fieldRounding";
-import { supportsTooltip } from "../../../../lib/fieldTooltip/fieldTooltip";
-import { getFreeRuns, getMaxSpanAt } from "../../../../lib/rowLayout/rowLayout";
+} from '../../../../lib/fieldOptions/fieldOptions'
+import { supportsRounding } from '../../../../lib/fieldRounding/fieldRounding'
+import { supportsTooltip } from '../../../../lib/fieldTooltip/fieldTooltip'
+import { getFreeRuns, getMaxSpanAt } from '../../../../lib/rowLayout/rowLayout'
 import {
   findRowContainingField,
   getActiveRows,
   getAllFields,
   useFormStore,
-} from "../../../../store/formStore";
-import type { CanvasField } from "../../../../types/field";
-import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
-import { FieldIdentityCard } from "../../../molecules/FieldIdentityCard/FieldIdentityCard";
-import { FieldNameInput } from "../../../molecules/FieldNameInput/FieldNameInput";
-import { LabeledInput } from "../../../molecules/LabeledInput/LabeledInput";
-import { LabeledRangeSlider } from "../../../molecules/LabeledRangeSlider/LabeledRangeSlider";
-import { LabelTargetSelect } from "../../../molecules/LabelTargetSelect/LabelTargetSelect";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { RichTextEditor } from "../../../molecules/RichTextEditor/RichTextEditor";
-import { CatalogFillsEditor } from "../CatalogFillsEditor/CatalogFillsEditor";
-import { FieldOptionsEditor } from "../FieldOptionsEditor/FieldOptionsEditor";
-import { FieldTooltipEditor } from "../FieldTooltipEditor/FieldTooltipEditor";
-import { FileOptionsEditor } from "../FileOptionsEditor/FileOptionsEditor";
-import { NumberOptionsEditor } from "../NumberOptionsEditor/NumberOptionsEditor";
-import { SOURCE_BADGE_CLASSES, SOURCE_LINK_CLASSES } from "./AttributesPanel.constants";
+} from '../../../../store/formStore'
+import type { CanvasField } from '../../../../types/field'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { FieldIdentityCard } from '../../../molecules/FieldIdentityCard/FieldIdentityCard'
+import { FieldNameInput } from '../../../molecules/FieldNameInput/FieldNameInput'
+import { LabeledInput } from '../../../molecules/LabeledInput/LabeledInput'
+import { LabeledRangeSlider } from '../../../molecules/LabeledRangeSlider/LabeledRangeSlider'
+import { LabelTargetSelect } from '../../../molecules/LabelTargetSelect/LabelTargetSelect'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { RichTextEditor } from '../../../molecules/RichTextEditor/RichTextEditor'
+import { CatalogFillsEditor } from '../CatalogFillsEditor/CatalogFillsEditor'
+import { FieldOptionsEditor } from '../FieldOptionsEditor/FieldOptionsEditor'
+import { FieldTooltipEditor } from '../FieldTooltipEditor/FieldTooltipEditor'
+import { FileOptionsEditor } from '../FileOptionsEditor/FileOptionsEditor'
+import { NumberOptionsEditor } from '../NumberOptionsEditor/NumberOptionsEditor'
+import { SOURCE_BADGE_CLASSES, SOURCE_LINK_CLASSES } from './AttributesPanel.constants'
 
 export function AttributesPanel({ field }: { field: CanvasField }) {
-  const updateField = useFormStore((state) => state.updateField);
-  const setSidebarTab = useFormStore((state) => state.setSidebarTab);
-  const setFieldLabelFor = useFormStore((state) => state.setFieldLabelFor);
-  const setFieldContent = useFormStore((state) => state.setFieldContent);
-  const setFieldInlineOptions = useFormStore((state) => state.setFieldInlineOptions);
-  const activeRows = useFormStore(getActiveRows);
-  const row = useFormStore((state) => findRowContainingField(state, field.id));
-  const rowColumns = row?.columns ?? GRID_BASE_COLUMNS;
+  const updateField = useFormStore((state) => state.updateField)
+  const setSidebarTab = useFormStore((state) => state.setSidebarTab)
+  const setFieldLabelFor = useFormStore((state) => state.setFieldLabelFor)
+  const setFieldContent = useFormStore((state) => state.setFieldContent)
+  const setFieldInlineOptions = useFormStore((state) => state.setFieldInlineOptions)
+  const activeRows = useFormStore(getActiveRows)
+  const row = useFormStore((state) => findRowContainingField(state, field.id))
+  const rowColumns = row?.columns ?? GRID_BASE_COLUMNS
   const maxSpan = row
     ? getMaxSpanAt(getFreeRuns(row.fields, row.columns, field.id), field.colStart)
-    : rowColumns;
-  const isOptionBased: boolean = isOptionBasedField(field.type);
-  const canEditOptions: boolean = allowsManualOptions(field);
-  const isPresentational: boolean = isPresentationalField(field.type);
-  const isRichText: boolean = field.type === RICH_TEXT_FIELD_TYPE;
-  const linkedLabel = findLabelFor(getAllFields(activeRows), field.id);
+    : rowColumns
+  const isOptionBased: boolean = isOptionBasedField(field.type)
+  const canEditOptions: boolean = allowsManualOptions(field)
+  const isPresentational: boolean = isPresentationalField(field.type)
+  const isRichText: boolean = field.type === RICH_TEXT_FIELD_TYPE
+  const linkedLabel = findLabelFor(getAllFields(activeRows), field.id)
   const labelFieldLabel: string = isRichText
-    ? "Nombre del bloque"
+    ? 'Nombre del bloque'
     : isPresentational
-      ? "Texto"
-      : "Etiqueta";
+      ? 'Texto'
+      : 'Etiqueta'
 
   return (
     <div className="flex flex-col gap-3">
@@ -141,25 +141,25 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
           title="Origen de opciones"
           aside={
             <span className={SOURCE_BADGE_CLASSES}>
-              {field.dataSource ? "Catálogo" : "Base de datos"}
+              {field.dataSource ? 'Catálogo' : 'Base de datos'}
             </span>
           }
         >
           <p className="text-xs text-fg-muted">
             {field.dataSource ? (
               <>
-                Las carga el aplicativo consultando el catálogo{" "}
+                Las carga el aplicativo consultando el catálogo{' '}
                 <code className="font-mono text-fg">{field.dataSource.catalog}</code>. Para
                 definirlas a mano hay que quitar ese catálogo.
               </>
             ) : (
-              "Las carga el aplicativo según la ruta mapeada. Si este campo no sale de un catálogo, marcálo como excluido del payload y vas a poder definirlas a mano."
+              'Las carga el aplicativo según la ruta mapeada. Si este campo no sale de un catálogo, marcálo como excluido del payload y vas a poder definirlas a mano.'
             )}
           </p>
 
           <button
             type="button"
-            onClick={() => setSidebarTab("apiMapping")}
+            onClick={() => setSidebarTab('apiMapping')}
             className={SOURCE_LINK_CLASSES}
           >
             Ir a Mapeo API →
@@ -169,11 +169,11 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
         </PanelSection>
       )}
 
-      {field.type === "file" && <FileOptionsEditor field={field} />}
+      {field.type === 'file' && <FileOptionsEditor field={field} />}
 
       {supportsRounding(field.type) && <NumberOptionsEditor field={field} />}
 
       {supportsTooltip(field.type) && <FieldTooltipEditor field={field} />}
     </div>
-  );
+  )
 }

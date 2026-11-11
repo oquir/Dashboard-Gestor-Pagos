@@ -1,9 +1,9 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react'
 
 export interface AppLayoutProps {
-  sidebar: ReactNode;
-  canvas: ReactNode;
+  sidebar: ReactNode
+  canvas: ReactNode
   // Lo que flota sobre el lienzo sin desplazarse ni escalarse con el: la barra de herramientas.
-  canvasOverlay?: ReactNode;
-  rightSidebar: ReactNode;
+  canvasOverlay?: ReactNode
+  rightSidebar: ReactNode
 }

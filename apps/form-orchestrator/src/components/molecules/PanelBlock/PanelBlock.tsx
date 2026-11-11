@@ -1,4 +1,4 @@
-import type { PanelBlockProps } from "./PanelBlock.types";
+import type { PanelBlockProps } from './PanelBlock.types'
 
 // Bloque plano separado por una linea que cruza todo el panel, al estilo del panel derecho de
 // Figma. Convive a proposito con PanelSection, que es la tarjeta redondeada con velo: aquella
@@ -14,5 +14,5 @@ export function PanelBlock({ title, action, children }: PanelBlockProps) {
       </div>
       <div className="flex flex-col gap-2">{children}</div>
     </section>
-  );
+  )
 }

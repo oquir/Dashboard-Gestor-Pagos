@@ -1,3 +1,3 @@
-import type { InputHTMLAttributes } from "react";
+import type { InputHTMLAttributes } from 'react'
 
-export type CheckboxProps = InputHTMLAttributes<HTMLInputElement>;
+export type CheckboxProps = InputHTMLAttributes<HTMLInputElement>

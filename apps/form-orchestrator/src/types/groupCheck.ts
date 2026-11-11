@@ -8,21 +8,21 @@
 // renglon 16 -- que vive un paso antes -- frenaria al contribuyente antes de que exista una sola
 // actividad que corregir.
 export interface GroupCheck {
-  id: string;
+  id: string
   // Como se llama la comprobacion en el panel y en la lista de errores. No es el mensaje.
-  label: string;
+  label: string
   // Apagada no viaja en el export: el consumidor no se entera de que existio. Existe porque hay
   // municipios que prefieren dejar pasar el error y cobrar la multa despues.
-  enabled: boolean;
+  enabled: boolean
   // Script con {campo}, evaluado en el ambito raiz, donde la columna del grupo es el array entero
   // y `sum` lo aplana. Verdadero pasa, falso falla.
-  script: string;
-  message: string;
+  script: string
+  message: string
 }
 
 // `failed` es lo que el contribuyente hizo mal; `error` es lo que esta mal en la comprobacion en
 // si. Nunca son las dos: una comprobacion rota no reprueba a nadie.
 export interface GroupCheckResult {
-  failed: boolean;
-  error: string | null;
+  failed: boolean
+  error: string | null
 }

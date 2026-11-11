@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react'
 
 export interface WizardFooterActionsProps {
-  children: ReactNode;
-  justify?: "end" | "between";
-  className?: string;
+  children: ReactNode
+  justify?: 'end' | 'between'
+  className?: string
 }

@@ -1,1 +1,1 @@
-export const FALLBACK_NAME = "campo";
+export const FALLBACK_NAME = 'campo'

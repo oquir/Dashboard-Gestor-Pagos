@@ -1,15 +1,15 @@
-import { allowsNegative } from "../../../../lib/fieldSign/fieldSign";
-import { useFormStore } from "../../../../store/formStore";
-import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { DECIMAL_CHOICES } from "./NumberOptionsEditor.constants";
-import type { NumberOptionsEditorProps } from "./NumberOptionsEditor.types";
+import { allowsNegative } from '../../../../lib/fieldSign/fieldSign'
+import { useFormStore } from '../../../../store/formStore'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { DECIMAL_CHOICES } from './NumberOptionsEditor.constants'
+import type { NumberOptionsEditorProps } from './NumberOptionsEditor.types'
 
 export function NumberOptionsEditor({ field }: NumberOptionsEditorProps) {
-  const setFieldRounding = useFormStore((state) => state.setFieldRounding);
-  const setFieldFormatted = useFormStore((state) => state.setFieldFormatted);
-  const setFieldAllowsNegative = useFormStore((state) => state.setFieldAllowsNegative);
-  const setFieldDecimals = useFormStore((state) => state.setFieldDecimals);
+  const setFieldRounding = useFormStore((state) => state.setFieldRounding)
+  const setFieldFormatted = useFormStore((state) => state.setFieldFormatted)
+  const setFieldAllowsNegative = useFormStore((state) => state.setFieldAllowsNegative)
+  const setFieldDecimals = useFormStore((state) => state.setFieldDecimals)
 
   return (
     <PanelSection title="Número">
@@ -48,11 +48,11 @@ export function NumberOptionsEditor({ field }: NumberOptionsEditorProps) {
         </label>
         <select
           id="field-decimals"
-          value={field.decimals ?? ""}
+          value={field.decimals ?? ''}
           onChange={(event) =>
             setFieldDecimals(
               field.id,
-              event.target.value === "" ? null : Number(event.target.value),
+              event.target.value === '' ? null : Number(event.target.value),
             )
           }
           className="rounded-md border border-border bg-field px-2 py-1 text-xs text-fg outline-none focus:border-brand-border"
@@ -85,5 +85,5 @@ export function NumberOptionsEditor({ field }: NumberOptionsEditorProps) {
         se guarda como 0 y así lo lee el campo de abajo.
       </p>
     </PanelSection>
-  );
+  )
 }

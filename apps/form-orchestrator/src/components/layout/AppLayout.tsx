@@ -1,14 +1,14 @@
-import { useFormStore } from "../../store/formStore";
-import type { AppLayoutProps } from "./AppLayout.types";
+import { useFormStore } from '../../store/formStore'
+import type { AppLayoutProps } from './AppLayout.types'
 
 export function AppLayout({ sidebar, canvas, canvasOverlay, rightSidebar }: AppLayoutProps) {
-  const isSidebarOpen: boolean = useFormStore((state) => state.isSidebarOpen);
+  const isSidebarOpen: boolean = useFormStore((state) => state.isSidebarOpen)
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-50 text-slate-900 dark:bg-neutral-950 dark:text-neutral-100">
       <aside
         className={`relative flex shrink-0 flex-col h-full overflow-hidden bg-white transition-all ease-in-out border-r border-slate-200 dark:bg-neutral-900 dark:border-neutral-800 ${
-          isSidebarOpen ? "w-80 shadow-sm" : "w-14"
+          isSidebarOpen ? 'w-80 shadow-sm' : 'w-14'
         }`}
       >
         <div className="w-80 h-full flex flex-col">
@@ -35,5 +35,5 @@ export function AppLayout({ sidebar, canvas, canvasOverlay, rightSidebar }: AppL
         {rightSidebar}
       </aside>
     </div>
-  );
+  )
 }

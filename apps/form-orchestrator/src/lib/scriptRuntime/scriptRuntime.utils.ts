@@ -1,13 +1,13 @@
-import { toScriptNumber } from "../../constants/fieldScript";
-import { NUMERIC_FIELD_TYPES } from "../../constants/fieldTypes";
-import type { ScriptFunction, ScriptFunctionResult } from "../../types/fieldScript";
-import type { RuntimeContext } from "../../types/formRuntime";
-import { buildScriptFunction, composeScriptBody } from "../fieldScript/fieldScript";
+import { toScriptNumber } from '../../constants/fieldScript'
+import { NUMERIC_FIELD_TYPES } from '../../constants/fieldTypes'
+import type { ScriptFunction, ScriptFunctionResult } from '../../types/fieldScript'
+import type { RuntimeContext } from '../../types/formRuntime'
+import { buildScriptFunction, composeScriptBody } from '../fieldScript/fieldScript'
 
 // Sin tabla de vencimientos los helpers de fecha no encuentran nada y devuelven null y 0. Es lo que
 // tiene que pasar: un formulario que no depende de fechas, o uno al que no se le cargaron, corre
 // igual. `hoy` queda vacio porque sin fecha limite nunca se llega a compararlo.
-export const EMPTY_CONTEXT: RuntimeContext = { reglas: [], hoy: "", valores: [] };
+export const EMPTY_CONTEXT: RuntimeContext = { reglas: [], hoy: '', valores: [] }
 
 // Cache de compilacion, indexada por el cuerpo ya compuesto -- preludio incluido -- y no por el
 // nombre del campo, igual que hydrateFieldSchemas se indexa por el texto del schema. Dos campos
@@ -17,25 +17,24 @@ export const EMPTY_CONTEXT: RuntimeContext = { reglas: [], hoy: "", valores: [] 
 // Vive a nivel de modulo a proposito. Es lo unico que sobrevive entre llamadas, que es justo lo
 // que hace falta; crece con la cantidad de textos distintos que se escriban en la sesion, que en
 // la practica son unas pocas decenas de cadenas cortas.
-const CACHE: Map<string, ScriptFunction | null> = new Map();
+const CACHE: Map<string, ScriptFunction | null> = new Map()
 
 // El error de compilacion se guarda aparte porque en la cache un fallo es null, y sin esto habria
 // que recompilar en cada tecla justo el script que esta roto -- que es el caso mas frecuente
 // mientras alguien escribe.
-const ERRORS: Map<string, string> = new Map();
+const ERRORS: Map<string, string> = new Map()
 
 export function compileCached(compiled: string, prelude: string): ScriptFunctionResult {
-  const body: string = composeScriptBody(compiled, prelude);
-  const cached: ScriptFunction | null | undefined = CACHE.get(body);
+  const body: string = composeScriptBody(compiled, prelude)
+  const cached: ScriptFunction | null | undefined = CACHE.get(body)
 
-  if (cached !== undefined)
-    return { fn: cached, error: cached ? null : (ERRORS.get(body) ?? null) };
+  if (cached !== undefined) return { fn: cached, error: cached ? null : (ERRORS.get(body) ?? null) }
 
-  const built: ScriptFunctionResult = buildScriptFunction(body);
-  CACHE.set(body, built.fn);
-  if (built.error) ERRORS.set(body, built.error);
+  const built: ScriptFunctionResult = buildScriptFunction(body)
+  CACHE.set(body, built.fn)
+  if (built.error) ERRORS.set(body, built.error)
 
-  return built;
+  return built
 }
 
 // Lo que ve el script bajo {campo}, coaccionado por el tipo del campo que lo declara. Sin esto
@@ -44,9 +43,9 @@ export function compileCached(compiled: string, prelude: string): ScriptFunction
 export function coerceForScript(value: unknown, type: string): unknown {
   // La columna de un grupo repetible llega como array; se coacciona elemento por elemento con el
   // tipo de la columna, no del array.
-  if (Array.isArray(value)) return value.map((item) => coerceForScript(item, type));
-  if (NUMERIC_FIELD_TYPES.includes(type)) return toScriptNumber(value);
-  if (type === "checkbox") return Boolean(value);
+  if (Array.isArray(value)) return value.map((item) => coerceForScript(item, type))
+  if (NUMERIC_FIELD_TYPES.includes(type)) return toScriptNumber(value)
+  if (type === 'checkbox') return Boolean(value)
 
-  return value;
+  return value
 }

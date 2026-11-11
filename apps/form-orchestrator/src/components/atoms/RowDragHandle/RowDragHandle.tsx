@@ -1,6 +1,6 @@
-import { SortV } from "reicon-react";
-import { ROW_TOOLBAR_ICON_ITEM_CLASSES } from "../../../constants/uiClasses";
-import type { RowDragHandleProps } from "./RowDragHandle.types";
+import { SortV } from 'reicon-react'
+import { ROW_TOOLBAR_ICON_ITEM_CLASSES } from '../../../constants/uiClasses'
+import type { RowDragHandleProps } from './RowDragHandle.types'
 
 // Ya no se posiciona ni se muestra solo: es el primer item de la barra de la fila, y quien decide
 // cuando aparece es la barra. Aca solo queda el nodo que dnd-kit escucha.
@@ -14,5 +14,5 @@ export function RowDragHandle({ listeners, attributes }: RowDragHandleProps) {
     >
       <SortV size={12} />
     </div>
-  );
+  )
 }

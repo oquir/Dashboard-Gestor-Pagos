@@ -1,7 +1,7 @@
-import type { DraftPayload, FieldRename } from "../../types/persistenceTypes";
+import type { DraftPayload, FieldRename } from '../../types/persistenceTypes'
 
 export interface PendingDraft {
-  draft: DraftPayload | null;
-  renamed: FieldRename[];
-  wasInvalid: boolean;
+  draft: DraftPayload | null
+  renamed: FieldRename[]
+  wasInvalid: boolean
 }

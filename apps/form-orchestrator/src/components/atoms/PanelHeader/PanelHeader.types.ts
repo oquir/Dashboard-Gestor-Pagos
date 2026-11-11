@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react'
 
 export interface PanelHeaderProps {
-  title: string;
-  subtitle?: ReactNode;
+  title: string
+  subtitle?: ReactNode
 }

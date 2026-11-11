@@ -1,15 +1,15 @@
-import { useState } from "react";
-import { maxLengthOf } from "../../../../lib/fieldLength/fieldLength";
-import { applyDecimals, applyRounding } from "../../../../lib/fieldRounding/fieldRounding";
-import { allowsNegative, clampNegative } from "../../../../lib/fieldSign/fieldSign";
+import { useState } from 'react'
+import { maxLengthOf } from '../../../../lib/fieldLength/fieldLength'
+import { applyDecimals, applyRounding } from '../../../../lib/fieldRounding/fieldRounding'
+import { allowsNegative, clampNegative } from '../../../../lib/fieldSign/fieldSign'
 import {
   capIntegerDigits,
   formatForDisplay,
   parseFormattedNumber,
   sanitizeNumericInput,
   toEditableText,
-} from "../../../../lib/numberFormat/numberFormat";
-import type { PreviewNumberInputProps } from "./PreviewNumberInput.types";
+} from '../../../../lib/numberFormat/numberFormat'
+import type { PreviewNumberInputProps } from './PreviewNumberInput.types'
 
 export function PreviewNumberInput({
   field,
@@ -22,7 +22,7 @@ export function PreviewNumberInput({
   // El texto tipeado vive aca mientras el campo esta enfocado, y solo mientras lo esta. Sin el,
   // escribir "1," redibuja desde el estado -- que ya vale 1 -- y la coma recien tecleada
   // desaparece bajo los dedos. En reposo el texto se deriva del valor, que es la unica verdad.
-  const [draft, setDraft] = useState<string | null>(null);
+  const [draft, setDraft] = useState<string | null>(null)
 
   return (
     <input
@@ -45,16 +45,16 @@ export function PreviewNumberInput({
         const clean: string = capIntegerDigits(
           sanitizeNumericInput(event.target.value, allowsNegative(field), field.decimals),
           maxLengthOf(field),
-        );
-        setDraft(clean);
+        )
+        setDraft(clean)
         // Lo que sale al estado es siempre un numero, nunca el texto: un "1.000" filtrado hasta
         // aca viajaria al payload como string y los scripts lo leerian como 1.
-        onChange(parseFormattedNumber(clean) ?? "");
+        onChange(parseFormattedNumber(clean) ?? '')
       }}
       onBlur={() => {
         // draft en null significa que nunca hubo foco, asi que no hay nada que confirmar. Sin
         // esta guarda un blur programatico vaciaria el campo.
-        if (draft === null) return;
+        if (draft === null) return
 
         // Las tres reglas de valor en fila: millar, decimales y signo, en el mismo orden que en
         // runtimeDerived. Entre las dos primeras el orden da igual -- un multiplo de mil ya no
@@ -65,13 +65,13 @@ export function PreviewNumberInput({
         // se saltaria la regla y el min: 0 recien lo cazaria al validar.
         const rounded: unknown = applyDecimals(
           field,
-          applyRounding(field, parseFormattedNumber(draft) ?? ""),
-        );
-        const next: unknown = clampNegative(field, rounded).value;
-        setDraft(null);
-        if (next !== value) onChange(next);
+          applyRounding(field, parseFormattedNumber(draft) ?? ''),
+        )
+        const next: unknown = clampNegative(field, rounded).value
+        setDraft(null)
+        if (next !== value) onChange(next)
       }}
       className={className}
     />
-  );
+  )
 }

@@ -1,9 +1,9 @@
-import { Plus, Trash } from "reicon-react";
-import { useGroupChecksEditor } from "../../../../hooks/useGroupChecksEditor/useGroupChecksEditor";
-import { validateFieldScript } from "../../../../lib/fieldScript/fieldScript";
-import { IconButton } from "../../../atoms/IconButton/IconButton";
-import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
-import { ScriptInput } from "../../../molecules/ScriptInput/ScriptInput";
+import { Plus, Trash } from 'reicon-react'
+import { useGroupChecksEditor } from '../../../../hooks/useGroupChecksEditor/useGroupChecksEditor'
+import { validateFieldScript } from '../../../../lib/fieldScript/fieldScript'
+import { IconButton } from '../../../atoms/IconButton/IconButton'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { ScriptInput } from '../../../molecules/ScriptInput/ScriptInput'
 import {
   CHECK_CARD_CLASSES,
   CHECK_HINT,
@@ -12,8 +12,8 @@ import {
   HINT_CLASSES,
   INPUT_CLASSES,
   MESSAGE_HINT,
-} from "./GroupChecksEditor.constants";
-import type { GroupChecksEditorProps } from "./GroupChecksEditor.types";
+} from './GroupChecksEditor.constants'
+import type { GroupChecksEditorProps } from './GroupChecksEditor.types'
 
 export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
   const {
@@ -27,7 +27,7 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
     addCheck,
     removeCheck,
     patchCheck,
-  } = useGroupChecksEditor({ group });
+  } = useGroupChecksEditor({ group })
 
   return (
     <div className="flex flex-col gap-2 border-t border-border pt-2">
@@ -37,7 +37,7 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
           onClick={toggleOpen}
           className="text-[11px] font-medium text-brand-fg hover:cursor-pointer hover:text-brand-hover"
         >
-          {isOpen ? "▾" : "▸"} Comprobaciones del grupo
+          {isOpen ? '▾' : '▸'} Comprobaciones del grupo
           {checks.length > 0 && ` (${activeCount} de ${checks.length} activas)`}
         </button>
 
@@ -62,7 +62,7 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
 
       {isOpen &&
         checks.map((check) => {
-          const validation = validateFieldScript(check.script, knownNames, formScript);
+          const validation = validateFieldScript(check.script, knownNames, formScript)
 
           return (
             <div key={check.id} className={CHECK_CARD_CLASSES}>
@@ -103,7 +103,7 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
 
               {validation.unknown.length > 0 && (
                 <p className={ERROR_CLASSES}>
-                  {validation.unknown.map((name) => `{${name}}`).join(", ")} no coincide con ningún
+                  {validation.unknown.map((name) => `{${name}}`).join(', ')} no coincide con ningún
                   campo.
                 </p>
               )}
@@ -119,8 +119,8 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
               <p className={HINT_CLASSES}>{MESSAGE_HINT}</p>
               <p className={HINT_CLASSES}>{CHECK_HINT}</p>
             </div>
-          );
+          )
         })}
     </div>
-  );
+  )
 }

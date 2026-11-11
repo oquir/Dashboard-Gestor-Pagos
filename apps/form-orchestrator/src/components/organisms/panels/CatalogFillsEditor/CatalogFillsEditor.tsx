@@ -1,29 +1,29 @@
-import { ArrowRight, Plus, Xmark } from "reicon-react";
-import { CATALOG_COLUMNS } from "../../../../constants/catalog";
-import { getActiveRows, getAllFields, useFormStore } from "../../../../store/formStore";
-import type { CatalogColumn } from "../../../../types/catalog";
-import type { CanvasField, CatalogFill } from "../../../../types/field";
-import { IconButton } from "../../../atoms/IconButton/IconButton";
-import { SELECT_CLASSES } from "./CatalogFillsEditor.constants";
-import type { CatalogFillsEditorProps } from "./CatalogFillsEditor.types";
-import { fillTargetCandidates, removeFill, replaceFill } from "./CatalogFillsEditor.utils";
+import { ArrowRight, Plus, Xmark } from 'reicon-react'
+import { CATALOG_COLUMNS } from '../../../../constants/catalog'
+import { getActiveRows, getAllFields, useFormStore } from '../../../../store/formStore'
+import type { CatalogColumn } from '../../../../types/catalog'
+import type { CanvasField, CatalogFill } from '../../../../types/field'
+import { IconButton } from '../../../atoms/IconButton/IconButton'
+import { SELECT_CLASSES } from './CatalogFillsEditor.constants'
+import type { CatalogFillsEditorProps } from './CatalogFillsEditor.types'
+import { fillTargetCandidates, removeFill, replaceFill } from './CatalogFillsEditor.utils'
 
 export function CatalogFillsEditor({ field }: CatalogFillsEditorProps) {
-  const updateFieldDataSource = useFormStore((state) => state.updateFieldDataSource);
-  const activeRows = useFormStore(getActiveRows);
+  const updateFieldDataSource = useFormStore((state) => state.updateFieldDataSource)
+  const activeRows = useFormStore(getActiveRows)
 
-  if (!field.dataSource) return null;
+  if (!field.dataSource) return null
 
-  const fills: CatalogFill[] = field.dataSource.fills ?? [];
-  const candidates: CanvasField[] = fillTargetCandidates(getAllFields(activeRows), field.id);
+  const fills: CatalogFill[] = field.dataSource.fills ?? []
+  const candidates: CanvasField[] = fillTargetCandidates(getAllFields(activeRows), field.id)
 
   function commit(next: CatalogFill[]): void {
-    if (!field.dataSource) return;
+    if (!field.dataSource) return
 
     updateFieldDataSource(field.id, {
       ...field.dataSource,
       fills: next.length > 0 ? next : undefined,
-    });
+    })
   }
 
   return (
@@ -33,7 +33,7 @@ export function CatalogFillsEditor({ field }: CatalogFillsEditorProps) {
         <button
           type="button"
           disabled={candidates.length === 0}
-          onClick={() => commit([...fills, { column: "code", field: candidates[0].id }])}
+          onClick={() => commit([...fills, { column: 'code', field: candidates[0].id }])}
           className="flex items-center gap-1 text-[11px] text-brand-fg hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Plus size={11} weight="Filled" />
@@ -99,5 +99,5 @@ export function CatalogFillsEditor({ field }: CatalogFillsEditorProps) {
         ))}
       </ul>
     </div>
-  );
+  )
 }

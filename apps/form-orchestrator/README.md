@@ -222,13 +222,13 @@ En la plantilla de ICA está prendido en los 38 campos numéricos, incluidos los
 
 `decimals` dice **cuántos decimales muestra y deja teclear** un campo numérico. Sin declarar, muestra los que traiga (hasta 4). Con `0`, la coma no se puede escribir. Con `1`, una tarifa de 6 se muestra `6,0`.
 
-| valor | `decimals` | se ve |
-|---|---|---|
-| `1000` | 0 | `1.000` |
-| `1000` | 2 | `1.000,00` |
-| `6` | 1 | `6,0` |
-| `7.5` | 1 | `7,5` |
-| `6` | *sin declarar* | `6` |
+| valor  | `decimals`     | se ve      |
+| ------ | -------------- | ---------- |
+| `1000` | 0              | `1.000`    |
+| `1000` | 2              | `1.000,00` |
+| `6`    | 1              | `6,0`      |
+| `7.5`  | 1              | `7,5`      |
+| `6`    | _sin declarar_ | `6`        |
 
 **Rellenar con ceros es presentación; recortar cambia el valor.** Mostrar `6` como `6,0` no puede mentir, porque son el mismo número. Mostrar `1234,56` como `1.235` guardando `1234,56` sí mentiría, así que el recorte redondea el valor de verdad, igual que el redondeo al millar.
 
@@ -272,7 +272,7 @@ Cada grupo lleva `min`, `max` y un `arrayPath` que lo ata a un arreglo del contr
 Un grupo puede llevar **comprobaciones sobre el grupo entero**: un script que se evalúa una sola vez, en el ámbito raíz, donde la columna del grupo es el arreglo completo. **Verdadero pasa; falso muestra el mensaje** y no deja avanzar de paso.
 
 ```js
-return abs(sum({ingresos_gravados}) - {total_ingresos_gravables}) < 1;
+return abs(sum({ ingresos_gravados }) - { total_ingresos_gravables }) < 1
 ```
 
 Es la regla que trae la plantilla de ICA: lo declarado por actividad tiene que sumar lo mismo que el renglón 16. Viene prendida, porque olvidarse de activarla dejaría pasar la evasión sin aviso. Compara con tolerancia de un peso y no con `===`, por la coma flotante.
@@ -287,7 +287,7 @@ Es la regla que trae la plantilla de ICA: lo declarado por actividad tiene que s
 **El valor de un campo se calcula en un solo lugar: `logic.script`**, JavaScript con `{campo}` para leer otros campos.
 
 ```js
-return {total_ingresos_nacionales} - {ingresos_fuera_municipio};
+return { total_ingresos_nacionales } - { ingresos_fuera_municipio }
 ```
 
 Antes había tres mecanismos compitiendo por la misma pregunta: un lenguaje aritmético propio, un editor de reglas y un textarea de "script TypeScript" que se exportaba y nunca se ejecutaba. Ahora hay uno.
@@ -389,11 +389,11 @@ La pestaña **Fechas** guarda la tabla de vencimientos del municipio: `{municipi
 
 Los scripts la leen con tres helpers, que reciben el año, el período dentro del año y el documento. Según el municipio y el año, la periodicidad es anual, bimestral, trimestral o mensual, y el vencimiento puede depender del primer o del último dígito del documento:
 
-| helper | devuelve |
-|---|---|
-| `fechaLimite(año, periodo, documento)` | la fecha límite, o `null` si no la encuentra |
-| `diasDeMora(año, periodo, documento)` | los días de atraso; `0` si está a tiempo **o si no hay tabla** |
-| `mesesDeMora(año, periodo, documento)` | los meses o fracción de atraso, contados por calendario |
+| helper                                 | devuelve                                                       |
+| -------------------------------------- | -------------------------------------------------------------- |
+| `fechaLimite(año, periodo, documento)` | la fecha límite, o `null` si no la encuentra                   |
+| `diasDeMora(año, periodo, documento)`  | los días de atraso; `0` si está a tiempo **o si no hay tabla** |
+| `mesesDeMora(año, periodo, documento)` | los meses o fracción de atraso, contados por calendario        |
 
 `mesesDeMora` **no es `diasDeMora / 30`**: solo cuatro meses tienen 30 días, y dividir termina cobrando un mes de más, que en la sanción es un 5% de la base. Como `diasDeMora` da `0` tanto a tiempo como sin tabla, un script que necesita distinguir los dos casos pregunta primero por `fechaLimite`.
 
@@ -406,7 +406,7 @@ La primera sección de la pestaña Catálogos (`ValoresAnualesEditor`) guarda la
 Los scripts la leen con `uvt(año)` y `smmlv(año)`; sin argumento toman el año actual. **Devuelven `null`, no `0`, cuando el año no está cargado**: un `0` anularía en silencio cualquier mínimo escrito en UVT, y el `null` obliga a escribir un respaldo visible:
 
 ```js
-const UVT = uvt() ?? 52374;
+const UVT = uvt() ?? 52374
 ```
 
 ### Sanción por extemporaneidad (renglón 31)

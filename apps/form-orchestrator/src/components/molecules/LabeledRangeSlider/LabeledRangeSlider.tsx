@@ -1,5 +1,5 @@
-import { Label } from "../../atoms/Label/Label";
-import type { LabeledRangeSliderProps } from "./LabeledRangeSlider.types";
+import { Label } from '../../atoms/Label/Label'
+import type { LabeledRangeSliderProps } from './LabeledRangeSlider.types'
 
 export function LabeledRangeSlider({
   id,
@@ -30,5 +30,5 @@ export function LabeledRangeSlider({
         </div>
       )}
     </div>
-  );
+  )
 }

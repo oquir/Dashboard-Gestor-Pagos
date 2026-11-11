@@ -1,30 +1,30 @@
-import { Plus, Trash } from "reicon-react";
-import { checkKey } from "../../../../lib/runtimeValidation/runtimeValidation.utils";
-import type { ExportedRepeatableGroup } from "../../../../types/exportForm";
-import type { RuntimeScope } from "../../../../types/formRuntime";
-import { PreviewRowsGrid } from "../PreviewRowsGrid/PreviewRowsGrid";
-import type { PreviewGroupBandProps } from "./PreviewGroupBand.types";
+import { Plus, Trash } from 'reicon-react'
+import { checkKey } from '../../../../lib/runtimeValidation/runtimeValidation.utils'
+import type { ExportedRepeatableGroup } from '../../../../types/exportForm'
+import type { RuntimeScope } from '../../../../types/formRuntime'
+import { PreviewRowsGrid } from '../PreviewRowsGrid/PreviewRowsGrid'
+import type { PreviewGroupBandProps } from './PreviewGroupBand.types'
 
 export function PreviewGroupBand({ groupId, rows, preview }: PreviewGroupBandProps) {
-  const group: ExportedRepeatableGroup | undefined = preview.model.groupsById.get(groupId);
-  const scopes: RuntimeScope[] = preview.snapshot.groups[groupId] ?? [];
-  const canAdd = scopes.length < (group?.max ?? 15);
-  const canRemove = scopes.length > (group?.min ?? 1);
+  const group: ExportedRepeatableGroup | undefined = preview.model.groupsById.get(groupId)
+  const scopes: RuntimeScope[] = preview.snapshot.groups[groupId] ?? []
+  const canAdd = scopes.length < (group?.max ?? 15)
+  const canRemove = scopes.length > (group?.min ?? 1)
 
   // El error de una comprobacion es del grupo entero, no de una fila, asi que se dibuja arriba de
   // las repeticiones. Como cualquier otro error, solo aparece una vez revelado: nadie ve rojo en
   // una pantalla a la que todavia no llego.
   const checkErrors: string[] = (group?.checks ?? []).flatMap((check) => {
-    const key: string = checkKey(groupId, check.id);
+    const key: string = checkKey(groupId, check.id)
 
-    return preview.revealed[key] && preview.errors[key] ? [preview.errors[key]] : [];
-  });
+    return preview.revealed[key] && preview.errors[key] ? [preview.errors[key]] : []
+  })
 
   return (
     <section className="rounded-lg border border-border bg-surface-sunken p-3">
       <header className="mb-3 flex items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold text-fg-strong">{group?.title ?? "Grupo"}</p>
+          <p className="text-sm font-semibold text-fg-strong">{group?.title ?? 'Grupo'}</p>
           <p className="text-[11px] text-fg-subtle">
             {scopes.length} de {group?.max ?? 15} · mínimo {group?.min ?? 1}
           </p>
@@ -65,7 +65,7 @@ export function PreviewGroupBand({ groupId, rows, preview }: PreviewGroupBandPro
                 type="button"
                 disabled={!canRemove}
                 onClick={() => preview.removeGroupItem(groupId, index)}
-                title={canRemove ? "Eliminar" : `Debe haber al menos ${group?.min ?? 1}`}
+                title={canRemove ? 'Eliminar' : `Debe haber al menos ${group?.min ?? 1}`}
                 className="text-fg-subtle hover:cursor-pointer hover:text-danger disabled:cursor-not-allowed disabled:opacity-30"
               >
                 <Trash size={13} />
@@ -83,5 +83,5 @@ export function PreviewGroupBand({ groupId, rows, preview }: PreviewGroupBandPro
         ))}
       </ul>
     </section>
-  );
+  )
 }

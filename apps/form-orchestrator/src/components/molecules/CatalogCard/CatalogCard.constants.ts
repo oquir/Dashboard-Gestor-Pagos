@@ -6,6 +6,6 @@ export {
   HINT_CLASSES,
   INPUT_CLASSES,
   TEXTAREA_CLASSES,
-} from "../../../constants/uiClasses";
+} from '../../../constants/uiClasses'
 
-export const PASTE_PLACEHOLDER: string = '[{ "id": "05", "nombre": "Antioquia" }, ...]';
+export const PASTE_PLACEHOLDER: string = '[{ "id": "05", "nombre": "Antioquia" }, ...]'

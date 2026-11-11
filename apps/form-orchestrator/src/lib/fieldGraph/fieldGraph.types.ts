@@ -1,5 +1,5 @@
 export interface TopologicalResult {
-  order: string[];
-  unresolved: string[];
-  cycle: string[] | null;
+  order: string[]
+  unresolved: string[]
+  cycle: string[] | null
 }

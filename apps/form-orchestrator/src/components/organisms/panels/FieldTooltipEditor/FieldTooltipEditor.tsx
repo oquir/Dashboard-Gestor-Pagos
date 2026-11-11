@@ -1,23 +1,23 @@
-import { TOOLTIP_POSITIONS } from "../../../../constants/fieldTooltip";
-import { useFormStore } from "../../../../store/formStore";
-import type { FieldTooltip } from "../../../../types/field";
-import { Label } from "../../../atoms/Label/Label";
-import { Textarea } from "../../../atoms/TextArea/Textarea";
-import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
-import { CssValidationHint } from "../../../molecules/CssValidationHint/CssValidationHint";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { RichTextEditor } from "../../../molecules/RichTextEditor/RichTextEditor";
+import { TOOLTIP_POSITIONS } from '../../../../constants/fieldTooltip'
+import { useFormStore } from '../../../../store/formStore'
+import type { FieldTooltip } from '../../../../types/field'
+import { Label } from '../../../atoms/Label/Label'
+import { Textarea } from '../../../atoms/TextArea/Textarea'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { CssValidationHint } from '../../../molecules/CssValidationHint/CssValidationHint'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { RichTextEditor } from '../../../molecules/RichTextEditor/RichTextEditor'
 import {
   POSITION_ACTIVE_CLASSES,
   POSITION_BUTTON_CLASSES,
   POSITION_IDLE_CLASSES,
   TOOLTIP_POSITION_OPTIONS,
-} from "./FieldTooltipEditor.constants";
-import type { FieldTooltipEditorProps } from "./FieldTooltipEditor.types";
+} from './FieldTooltipEditor.constants'
+import type { FieldTooltipEditorProps } from './FieldTooltipEditor.types'
 
 export function FieldTooltipEditor({ field }: FieldTooltipEditorProps) {
-  const updateFieldTooltip = useFormStore((state) => state.updateFieldTooltip);
-  const tooltip: FieldTooltip | undefined = field.tooltip;
+  const updateFieldTooltip = useFormStore((state) => state.updateFieldTooltip)
+  const tooltip: FieldTooltip | undefined = field.tooltip
 
   return (
     <PanelSection
@@ -49,9 +49,9 @@ export function FieldTooltipEditor({ field }: FieldTooltipEditorProps) {
             <legend className="mb-1.5 p-0 text-xs font-medium text-fg-soft">Posición</legend>
             <ul className="grid list-none grid-cols-4 gap-1.5">
               {TOOLTIP_POSITIONS.map((position) => {
-                const option = TOOLTIP_POSITION_OPTIONS[position];
-                const Icon = option.icon;
-                const isActive: boolean = tooltip.position === position;
+                const option = TOOLTIP_POSITION_OPTIONS[position]
+                const Icon = option.icon
+                const isActive: boolean = tooltip.position === position
 
                 return (
                   <li key={position}>
@@ -67,7 +67,7 @@ export function FieldTooltipEditor({ field }: FieldTooltipEditorProps) {
                       {option.label}
                     </button>
                   </li>
-                );
+                )
               })}
             </ul>
           </fieldset>
@@ -77,17 +77,17 @@ export function FieldTooltipEditor({ field }: FieldTooltipEditorProps) {
             <Textarea
               id="tooltip-css"
               aria-label="CSS personalizado del tooltip"
-              value={tooltip.customCss ?? ""}
+              value={tooltip.customCss ?? ''}
               onChange={(event) => updateFieldTooltip(field.id, { customCss: event.target.value })}
-              placeholder={"background: #1e293b;\ncolor: #fff;"}
+              placeholder={'background: #1e293b;\ncolor: #fff;'}
               spellCheck={false}
               rows={3}
               variant="code"
             />
-            <CssValidationHint text={tooltip.customCss ?? ""} />
+            <CssValidationHint text={tooltip.customCss ?? ''} />
           </div>
         </>
       )}
     </PanelSection>
-  );
+  )
 }

@@ -1,6 +1,6 @@
-import type { FormStep, IntroModalState } from "./formStructure";
+import type { FormStep, IntroModalState } from './formStructure'
 
 export interface StateSlice {
-  formSteps: FormStep[];
-  introModal: IntroModalState;
+  formSteps: FormStep[]
+  introModal: IntroModalState
 }

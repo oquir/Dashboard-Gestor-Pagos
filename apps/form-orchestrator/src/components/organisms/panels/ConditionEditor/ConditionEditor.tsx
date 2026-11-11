@@ -1,12 +1,12 @@
-import { OPERATOR_LABELS } from "../../../../constants/conditions";
-import { useConditionEditor } from "../../../../hooks/useConditionEditor/useConditionEditor";
-import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
-import { ConditionFieldSelect } from "../../../molecules/ConditionFieldSelect/ConditionFieldSelect";
-import { ConditionOperatorSelect } from "../../../molecules/ConditionOperatorSelect/ConditionOperatorSelect";
-import { ConditionValueInput } from "../../../molecules/ConditionValueInput/ConditionValueInput";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { CONDITION_COPY } from "./ConditionEditor.constants";
-import type { ConditionEditorProps } from "./ConditionEditor.types";
+import { OPERATOR_LABELS } from '../../../../constants/conditions'
+import { useConditionEditor } from '../../../../hooks/useConditionEditor/useConditionEditor'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { ConditionFieldSelect } from '../../../molecules/ConditionFieldSelect/ConditionFieldSelect'
+import { ConditionOperatorSelect } from '../../../molecules/ConditionOperatorSelect/ConditionOperatorSelect'
+import { ConditionValueInput } from '../../../molecules/ConditionValueInput/ConditionValueInput'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { CONDITION_COPY } from './ConditionEditor.constants'
+import type { ConditionEditorProps } from './ConditionEditor.types'
 
 export function ConditionEditor({ field, otherFields, kind }: ConditionEditorProps) {
   const {
@@ -19,7 +19,7 @@ export function ConditionEditor({ field, otherFields, kind }: ConditionEditorPro
     handleActivationChange,
     handleObservedFieldChange,
     handleOperatorChange,
-  } = useConditionEditor({ field, otherFields, kind });
+  } = useConditionEditor({ field, otherFields, kind })
 
   return (
     <PanelSection
@@ -70,5 +70,5 @@ export function ConditionEditor({ field, otherFields, kind }: ConditionEditorPro
         </>
       )}
     </PanelSection>
-  );
+  )
 }

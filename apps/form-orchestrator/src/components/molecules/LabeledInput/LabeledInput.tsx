@@ -1,6 +1,6 @@
-import { Input } from "../../atoms/Input/Input";
-import { Label } from "../../atoms/Label/Label";
-import type { LabeledInputProps } from "./LabeledInput.types";
+import { Input } from '../../atoms/Input/Input'
+import { Label } from '../../atoms/Label/Label'
+import type { LabeledInputProps } from './LabeledInput.types'
 
 export function LabeledInput({ id, label, ...rest }: LabeledInputProps) {
   return (
@@ -8,5 +8,5 @@ export function LabeledInput({ id, label, ...rest }: LabeledInputProps) {
       <Label htmlFor={id}>{label}</Label>
       <Input id={id} {...rest} />
     </div>
-  );
+  )
 }

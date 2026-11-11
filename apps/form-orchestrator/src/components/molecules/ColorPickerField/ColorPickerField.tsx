@@ -1,8 +1,8 @@
-import { useRef, useState } from "react";
-import { HexColorInput, HexColorPicker } from "react-colorful";
-import { useClickOutside } from "../../../hooks/useClickOutside/useClickOutside";
-import { Label } from "../../atoms/Label/Label";
-import type { ColorPickerFieldProps } from "./ColorPickerField.types";
+import { useRef, useState } from 'react'
+import { HexColorInput, HexColorPicker } from 'react-colorful'
+import { useClickOutside } from '../../../hooks/useClickOutside/useClickOutside'
+import { Label } from '../../atoms/Label/Label'
+import type { ColorPickerFieldProps } from './ColorPickerField.types'
 
 // La muestra va dentro del mismo marco que el hex y no al lado: son dos formas de escribir el mismo
 // dato, y separadas se leian como dos controles distintos.
@@ -12,13 +12,13 @@ export function ColorPickerField({
   value,
   defaultColor,
   placeholder,
-  align = "left",
+  align = 'left',
   onChange,
 }: ColorPickerFieldProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const containerRef = useRef<HTMLDivElement | null>(null)
+  const [isOpen, setIsOpen] = useState<boolean>(false)
 
-  useClickOutside(containerRef, () => setIsOpen(false), isOpen);
+  useClickOutside(containerRef, () => setIsOpen(false), isOpen)
 
   return (
     <div ref={containerRef} className="relative">
@@ -48,12 +48,12 @@ export function ColorPickerField({
       {isOpen && (
         <div
           className={`absolute z-50 mt-1 rounded-md border border-slate-200 bg-white p-2 shadow-lg dark:border-neutral-700 dark:bg-neutral-800 ${
-            align === "right" ? "right-0" : "left-0"
+            align === 'right' ? 'right-0' : 'left-0'
           }`}
         >
           <HexColorPicker color={value || defaultColor} onChange={onChange} />
         </div>
       )}
     </div>
-  );
+  )
 }

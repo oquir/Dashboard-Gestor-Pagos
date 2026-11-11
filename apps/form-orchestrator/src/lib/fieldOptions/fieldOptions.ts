@@ -2,20 +2,20 @@ import {
   INLINE_CAPABLE_FIELD_TYPES,
   MULTI_VALUE_FIELD_TYPES,
   OPTION_BASED_FIELD_TYPES,
-} from "../../constants/fieldTypes";
-import type { CanvasField, FieldOption } from "../../types/field";
-import type { InlineCapableField } from "./fieldOptions.types";
+} from '../../constants/fieldTypes'
+import type { CanvasField, FieldOption } from '../../types/field'
+import type { InlineCapableField } from './fieldOptions.types'
 
 // Quien pone las opciones de un select. Solo un campo excluido del payload las lleva escritas a
 // mano; uno mapeado -o uno sin decidir todavia- las recibe del consumidor, que consulta el
 // catalogo por su apiBinding.path. Salir del estado excluido descarta las opciones a proposito.
 
 export function isOptionBasedField(type: string): boolean {
-  return OPTION_BASED_FIELD_TYPES.includes(type);
+  return OPTION_BASED_FIELD_TYPES.includes(type)
 }
 
 export function isMultiValueField(type: string): boolean {
-  return MULTI_VALUE_FIELD_TYPES.includes(type);
+  return MULTI_VALUE_FIELD_TYPES.includes(type)
 }
 
 // Un dataSource declara que las opciones las trae un catalogo. Permitir ademas opciones a mano
@@ -23,13 +23,13 @@ export function isMultiValueField(type: string): boolean {
 export function allowsManualOptions(field: CanvasField): boolean {
   return (
     isOptionBasedField(field.type) &&
-    field.apiBinding?.kind === "excluded" &&
+    field.apiBinding?.kind === 'excluded' &&
     field.dataSource === undefined
-  );
+  )
 }
 
 export function exportableOptions(field: CanvasField): FieldOption[] | undefined {
-  return allowsManualOptions(field) ? field.options : undefined;
+  return allowsManualOptions(field) ? field.options : undefined
 }
 
 // Si las opciones van en una sola linea. Ausente es como siempre -- una debajo de otra --, asi que
@@ -38,13 +38,13 @@ export function exportableOptions(field: CanvasField): FieldOption[] | undefined
 // Es solo presentacion: no toca el valor, ni el schema, ni cuantas opciones se pueden elegir. Un
 // radio_group elige una sola por construccion, en linea o en columna.
 export function supportsInlineOptions(type: string): boolean {
-  return INLINE_CAPABLE_FIELD_TYPES.includes(type);
+  return INLINE_CAPABLE_FIELD_TYPES.includes(type)
 }
 
 export function showsOptionsInline(field: InlineCapableField): boolean {
-  return Boolean(field.inlineOptions) && supportsInlineOptions(field.type);
+  return Boolean(field.inlineOptions) && supportsInlineOptions(field.type)
 }
 
 export function exportableInlineOptions(field: InlineCapableField): true | undefined {
-  return showsOptionsInline(field) ? true : undefined;
+  return showsOptionsInline(field) ? true : undefined
 }

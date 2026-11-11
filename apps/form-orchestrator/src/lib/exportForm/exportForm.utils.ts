@@ -8,47 +8,43 @@ import type {
   ExportedStep,
   ExportedValidations,
   ExportedValidationVariant,
-} from "../../types/exportForm";
-import type { CanvasField, CatalogFill, FieldCondition, FieldDataSource } from "../../types/field";
-import type { CanvasRow, FormStep, RepeatableGroup } from "../../types/formStructure";
-import { resolveFieldStyles, resolveRowStyles } from "../cssStyles/cssStyles";
-import { operatorTakesList, parseConditionList } from "../fieldCondition/fieldCondition";
-import { isPresentationalField } from "../fieldKind/fieldKind";
-import { exportableMaxLength } from "../fieldLength/fieldLength";
-import { exportableInlineOptions, exportableOptions } from "../fieldOptions/fieldOptions";
-import { exportableDecimals, exportableRounding } from "../fieldRounding/fieldRounding";
-import { compileScript } from "../fieldScript/fieldScript";
-import { exportableAllowsNegative } from "../fieldSign/fieldSign";
-import { exportableTooltip } from "../fieldTooltip/fieldTooltip";
-import { enabledChecks } from "../groupCheck/groupCheck";
-import { exportableFormatting } from "../numberFormat/numberFormat";
-import { groupFields } from "../repeatableGroup/repeatableGroup";
-import {
-  buildGroupZodSchema,
-  buildOverrideZodSchema,
-  buildZodSchema,
-} from "../zodSchema/zodSchema";
+} from '../../types/exportForm'
+import type { CanvasField, CatalogFill, FieldCondition, FieldDataSource } from '../../types/field'
+import type { CanvasRow, FormStep, RepeatableGroup } from '../../types/formStructure'
+import { resolveFieldStyles, resolveRowStyles } from '../cssStyles/cssStyles'
+import { operatorTakesList, parseConditionList } from '../fieldCondition/fieldCondition'
+import { isPresentationalField } from '../fieldKind/fieldKind'
+import { exportableMaxLength } from '../fieldLength/fieldLength'
+import { exportableInlineOptions, exportableOptions } from '../fieldOptions/fieldOptions'
+import { exportableDecimals, exportableRounding } from '../fieldRounding/fieldRounding'
+import { compileScript } from '../fieldScript/fieldScript'
+import { exportableAllowsNegative } from '../fieldSign/fieldSign'
+import { exportableTooltip } from '../fieldTooltip/fieldTooltip'
+import { enabledChecks } from '../groupCheck/groupCheck'
+import { exportableFormatting } from '../numberFormat/numberFormat'
+import { groupFields } from '../repeatableGroup/repeatableGroup'
+import { buildGroupZodSchema, buildOverrideZodSchema, buildZodSchema } from '../zodSchema/zodSchema'
 
 // Traduccion del modelo interno al contrato de salida. La regla que gobierna todo el archivo:
 // hacia afuera no viaja ningun uuid, cada referencia a un campo se convierte en su nombre.
 
 export function buildNameIndex(rows: CanvasRow[]): Map<string, string> {
-  const index: Map<string, string> = new Map();
+  const index: Map<string, string> = new Map()
 
   for (const row of rows) {
     for (const field of row.fields) {
-      index.set(field.id, field.name);
+      index.set(field.id, field.name)
     }
   }
 
-  return index;
+  return index
 }
 
 export function resolveCondition(
   condition: FieldCondition | undefined,
   names: Map<string, string>,
 ): ExportedCondition | undefined {
-  if (!condition) return undefined;
+  if (!condition) return undefined
 
   // Los operadores de lista guardan el valor como texto separado por comas mientras se edita;
   // al salir se entrega ya partido en array para que el consumidor no tenga que interpretarlo.
@@ -58,7 +54,7 @@ export function resolveCondition(
     value: operatorTakesList(condition.operator)
       ? parseConditionList(condition.value)
       : condition.value,
-  };
+  }
 }
 
 // Un override cuya condicion apunta a un campo que ya no existe se descarta entero, igual que
@@ -68,30 +64,30 @@ export function resolveValidations(
   field: CanvasField,
   names: Map<string, string>,
 ): ExportedValidations {
-  if (isPresentationalField(field.type)) return {};
+  if (isPresentationalField(field.type)) return {}
 
   const variants: ExportedValidationVariant[] = (field.validations.overrides ?? []).flatMap(
     (override) => {
-      const when: ExportedCondition | undefined = resolveCondition(override.when, names);
-      if (!when || !names.has(override.when.fieldId)) return [];
+      const when: ExportedCondition | undefined = resolveCondition(override.when, names)
+      if (!when || !names.has(override.when.fieldId)) return []
 
-      return [{ when, zodSchema: buildOverrideZodSchema(field, override) }];
+      return [{ when, zodSchema: buildOverrideZodSchema(field, override) }]
     },
-  );
+  )
 
   return {
     zodSchema: buildZodSchema(field),
     ...(variants.length > 0 ? { zodSchemaWhen: variants } : {}),
-  };
+  }
 }
 
 // El script se compila aca y no del lado del consumidor: {campo} no es JS, y hacer que cada
 // consumidor implemente el recorrido que distingue codigo de texto seria repartir la parte
 // delicada. Sale ya en JS, con las dependencias que declara al leerlas.
 function compileSource(source: string, knownNames: Set<string>): ExportedScript {
-  const { code, reads } = compileScript(source, knownNames);
+  const { code, reads } = compileScript(source, knownNames)
 
-  return { source, compiled: code, reads };
+  return { source, compiled: code, reads }
 }
 
 export function resolveScript(
@@ -99,12 +95,12 @@ export function resolveScript(
   knownNames: Set<string>,
 ): ExportedScript | undefined {
   // Un campo presentacional no tiene valor que calcular, igual que no tiene validaciones.
-  if (isPresentationalField(field.type)) return undefined;
+  if (isPresentationalField(field.type)) return undefined
 
-  const source: string = field.logic.script ?? "";
-  if (source.trim().length === 0) return undefined;
+  const source: string = field.logic.script ?? ''
+  if (source.trim().length === 0) return undefined
 
-  return compileSource(source, knownNames);
+  return compileSource(source, knownNames)
 }
 
 export function resolveRules(
@@ -112,7 +108,7 @@ export function resolveRules(
   names: Map<string, string>,
   knownNames: Set<string>,
 ): ExportedRule[] | undefined {
-  if (!field.logic.rules || field.logic.rules.length === 0) return undefined;
+  if (!field.logic.rules || field.logic.rules.length === 0) return undefined
 
   return field.logic.rules.map((rule) => ({
     id: rule.id,
@@ -126,37 +122,37 @@ export function resolveRules(
         : condition.value,
     })),
     effects: rule.effects.map((effect) =>
-      effect.kind === "constant"
+      effect.kind === 'constant'
         ? effect
         : {
             id: effect.id,
-            kind: "script" as const,
+            kind: 'script' as const,
             script: compileSource(effect.source, knownNames),
           },
     ),
-  }));
+  }))
 }
 
 export function resolveDataSource(
   field: CanvasField,
   names: Map<string, string>,
 ): FieldDataSource | undefined {
-  const source: FieldDataSource | undefined = field.dataSource;
-  if (!source) return undefined;
+  const source: FieldDataSource | undefined = field.dataSource
+  if (!source) return undefined
 
   // Un relleno cuyo destino ya no existe se descarta entero, igual que un override que apunta a
   // un campo borrado: dejarlo seria mandarle al consumidor una instruccion de copiar a la nada.
   const fills: CatalogFill[] | undefined = source.fills?.flatMap((fill) => {
-    const name: string | undefined = names.get(fill.field);
+    const name: string | undefined = names.get(fill.field)
 
-    return name ? [{ column: fill.column, field: name }] : [];
-  });
+    return name ? [{ column: fill.column, field: name }] : []
+  })
 
   return {
     catalog: source.catalog,
     dependsOn: source.dependsOn ? (names.get(source.dependsOn) ?? source.dependsOn) : undefined,
     fills: fills && fills.length > 0 ? fills : undefined,
-  };
+  }
 }
 
 export function mapRows(
@@ -202,7 +198,7 @@ export function mapRows(
       inlineOptions: exportableInlineOptions(field),
       maxLength: exportableMaxLength(field),
     })),
-  }));
+  }))
 }
 
 // Solo salen las encendidas, y sin bandera: apagar una comprobacion la borra del contrato en vez
@@ -217,16 +213,16 @@ function resolveChecks(
     label: check.label,
     script: compileSource(check.script, knownNames),
     message: check.message,
-  }));
+  }))
 
-  return checks.length > 0 ? checks : undefined;
+  return checks.length > 0 ? checks : undefined
 }
 
 export function mapGroups(
   step: FormStep,
   knownNames: Set<string>,
 ): ExportedRepeatableGroup[] | undefined {
-  if (!step.groups || step.groups.length === 0) return undefined;
+  if (!step.groups || step.groups.length === 0) return undefined
 
   return step.groups.map((group) => ({
     groupId: group.id,
@@ -237,7 +233,7 @@ export function mapGroups(
     arrayPath: group.arrayPath,
     zodSchema: buildGroupZodSchema(group, groupFields(step.rows, group.id)),
     checks: resolveChecks(group, knownNames),
-  }));
+  }))
 }
 
 export function mapFormStep(
@@ -251,5 +247,5 @@ export function mapFormStep(
     subtitle: step.subtitle || undefined,
     rows: mapRows(step.rows, names, knownNames),
     groups: mapGroups(step, knownNames),
-  };
+  }
 }

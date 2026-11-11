@@ -1,10 +1,10 @@
-import { Input } from "../../atoms/Input/Input";
-import { Label } from "../../atoms/Label/Label";
-import type { PxInputProps } from "./PxInput.types";
-import { toPxAmount } from "./PxInput.utils";
+import { Input } from '../../atoms/Input/Input'
+import { Label } from '../../atoms/Label/Label'
+import type { PxInputProps } from './PxInput.types'
+import { toPxAmount } from './PxInput.utils'
 
 export function PxInput({ id, label, value, onChange }: PxInputProps) {
-  const amount: string | null = toPxAmount(value);
+  const amount: string | null = toPxAmount(value)
 
   // Con otra unidad se edita como texto libre: el sufijo fijo diria "px" al lado de un "1rem" y el
   // numero de al lado seria mentira.
@@ -14,7 +14,7 @@ export function PxInput({ id, label, value, onChange }: PxInputProps) {
         <Label htmlFor={id}>{label}</Label>
         <Input id={id} value={value} onChange={(event) => onChange(event.target.value)} />
       </div>
-    );
+    )
   }
 
   return (
@@ -26,11 +26,11 @@ export function PxInput({ id, label, value, onChange }: PxInputProps) {
           type="number"
           min={0}
           value={amount}
-          onChange={(event) => onChange(event.target.value === "" ? "" : `${event.target.value}px`)}
+          onChange={(event) => onChange(event.target.value === '' ? '' : `${event.target.value}px`)}
           className="w-full min-w-0 rounded-md bg-transparent px-2.5 py-1.5 text-sm text-slate-700 outline-none dark:text-neutral-200"
         />
         <span className="shrink-0 text-xs text-fg-subtle">px</span>
       </div>
     </div>
-  );
+  )
 }

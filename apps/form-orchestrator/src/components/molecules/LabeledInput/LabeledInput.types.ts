@@ -1,6 +1,6 @@
-import type { InputProps } from "../../../types/input";
+import type { InputProps } from '../../../types/input'
 
 export interface LabeledInputProps extends InputProps {
-  id: string;
-  label: string;
+  id: string
+  label: string
 }

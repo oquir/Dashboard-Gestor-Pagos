@@ -1,3 +1,3 @@
 export interface CssValidationHintProps {
-  text: string;
+  text: string
 }

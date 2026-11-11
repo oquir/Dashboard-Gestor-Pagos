@@ -1,8 +1,8 @@
-import { toScriptNumber, VALUE_HELPER_NAMES } from "../../constants/fieldScript";
-import type { ScriptFunction } from "../../types/fieldScript";
-import type { RuntimeContext } from "../../types/formRuntime";
-import type { ValorAnual } from "../../types/valores";
-import { anioDeTexto, buscarValores } from "../valoresAnuales/valoresAnuales";
+import { toScriptNumber, VALUE_HELPER_NAMES } from '../../constants/fieldScript'
+import type { ScriptFunction } from '../../types/fieldScript'
+import type { RuntimeContext } from '../../types/formRuntime'
+import type { ValorAnual } from '../../types/valores'
+import { anioDeTexto, buscarValores } from '../valoresAnuales/valoresAnuales'
 
 // Los dos helpers que ponen la UVT y el salario minimo en el ambito de un script. Son impuros como
 // los de fecha y por el mismo motivo: necesitan una tabla que no viaja en el export, asi que se
@@ -14,9 +14,9 @@ import { anioDeTexto, buscarValores } from "../valoresAnuales/valoresAnuales";
 // Sin ano se usa el del dia de hoy. Es lo que se quiere casi siempre: la sancion se liquida con la
 // UVT del ano en que se liquida, no con la del ano gravable que se esta declarando.
 function anioPedido(context: RuntimeContext, args: unknown[]): number {
-  const pedido: number = toScriptNumber(args[0]);
+  const pedido: number = toScriptNumber(args[0])
 
-  return pedido > 0 ? pedido : anioDeTexto(context.hoy);
+  return pedido > 0 ? pedido : anioDeTexto(context.hoy)
 }
 
 // Devuelve null y no 0 cuando el ano no esta cargado, y esa es la diferencia que importa. Un 0
@@ -26,15 +26,15 @@ function anioPedido(context: RuntimeContext, args: unknown[]): number {
 function resolver(
   context: RuntimeContext,
   args: unknown[],
-  columna: "uvt" | "smmlv",
+  columna: 'uvt' | 'smmlv',
 ): number | null {
   // El contexto lo arma a mano quien consume el export, y una version suya anterior a este campo
   // no lo trae. Sin esta guarda seria un TypeError adentro del script del contribuyente en vez de
   // un "no hay dato", que es lo que realmente pasa.
-  const tabla: ValorAnual[] = Array.isArray(context.valores) ? context.valores : [];
-  const fila: ValorAnual | null = buscarValores(tabla, anioPedido(context, args));
+  const tabla: ValorAnual[] = Array.isArray(context.valores) ? context.valores : []
+  const fila: ValorAnual | null = buscarValores(tabla, anioPedido(context, args))
 
-  return fila === null ? null : fila[columna];
+  return fila === null ? null : fila[columna]
 }
 
 // El orden sale de VALUE_HELPER_NAMES y no de escribirlo dos veces, la misma disciplina que
@@ -43,11 +43,11 @@ function resolver(
 export function buildValueHelpers(context: RuntimeContext): ScriptFunction[] {
   const porNombre: Record<string, ScriptFunction> = {
     // UVT del ano pedido, o del ano en curso si no se pasa ninguno.
-    uvt: (...args: unknown[]) => resolver(context, args, "uvt"),
+    uvt: (...args: unknown[]) => resolver(context, args, 'uvt'),
 
     // Salario minimo mensual legal vigente, con la misma regla.
-    smmlv: (...args: unknown[]) => resolver(context, args, "smmlv"),
-  };
+    smmlv: (...args: unknown[]) => resolver(context, args, 'smmlv'),
+  }
 
-  return VALUE_HELPER_NAMES.map((name) => porNombre[name]);
+  return VALUE_HELPER_NAMES.map((name) => porNombre[name])
 }

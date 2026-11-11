@@ -1,13 +1,13 @@
-import { Label } from "../../atoms/Label/Label";
+import { Label } from '../../atoms/Label/Label'
 import {
   LABEL_TARGET_HINT_CLASSES,
   LABEL_TARGET_SELECT_CLASSES,
   UNLINKED_VALUE,
-} from "./LabelTargetSelect.constants";
-import type { LabelTargetSelectProps } from "./LabelTargetSelect.types";
+} from './LabelTargetSelect.constants'
+import type { LabelTargetSelectProps } from './LabelTargetSelect.types'
 
 export function LabelTargetSelect({ value, candidates, onChange }: LabelTargetSelectProps) {
-  const targetIsGone: boolean = value !== undefined && !candidates.some((c) => c.id === value);
+  const targetIsGone: boolean = value !== undefined && !candidates.some((c) => c.id === value)
 
   return (
     <div className="flex flex-col gap-1">
@@ -32,5 +32,5 @@ export function LabelTargetSelect({ value, candidates, onChange }: LabelTargetSe
         El campo ligado deja de mostrar su propia etiqueta.
       </span>
     </div>
-  );
+  )
 }

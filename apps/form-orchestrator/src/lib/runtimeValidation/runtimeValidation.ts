@@ -1,9 +1,9 @@
-import type { z } from "zod";
+import type { z } from 'zod'
 import type {
   ExportedField,
   ExportedGroupCheck,
   ExportedRepeatableGroup,
-} from "../../types/exportForm";
+} from '../../types/exportForm'
 import type {
   RuntimeContext,
   RuntimeIssue,
@@ -12,14 +12,14 @@ import type {
   RuntimeSnapshot,
   RuntimeValues,
   ValidationResult,
-} from "../../types/formRuntime";
-import type { GroupCheckResult } from "../../types/groupCheck";
-import type { ScriptRunResult } from "../../types/scriptRuntime";
-import { isPresentationalField } from "../fieldKind/fieldKind";
-import { groupColumns } from "../formRuntime/formRuntime.utils";
-import { coerceValues, runFieldScript } from "../scriptRuntime/scriptRuntime";
-import { firstZodMessage, hydrateFieldSchemas } from "../zodHydrate/zodHydrate";
-import { checkKey, coerceValue, effectiveSchemaSource, fieldKey } from "./runtimeValidation.utils";
+} from '../../types/formRuntime'
+import type { GroupCheckResult } from '../../types/groupCheck'
+import type { ScriptRunResult } from '../../types/scriptRuntime'
+import { isPresentationalField } from '../fieldKind/fieldKind'
+import { groupColumns } from '../formRuntime/formRuntime.utils'
+import { coerceValues, runFieldScript } from '../scriptRuntime/scriptRuntime'
+import { firstZodMessage, hydrateFieldSchemas } from '../zodHydrate/zodHydrate'
+import { checkKey, coerceValue, effectiveSchemaSource, fieldKey } from './runtimeValidation.utils'
 
 // Valida todo el formulario contra los schemas de Zod hidratados desde el export.
 // Devuelve dos cosas distintas: `errors` es lo que el usuario hizo mal llenando el formulario,
@@ -29,24 +29,24 @@ export function validateRuntime(
   snapshot: RuntimeSnapshot,
   context?: RuntimeContext,
 ): ValidationResult {
-  const groupFields: ExportedField[] = [...model.groupFields.values()].flat();
-  const { schemas, issues } = hydrateFieldSchemas([...model.rootFields, ...groupFields]);
-  const errors: Record<string, string> = {};
+  const groupFields: ExportedField[] = [...model.groupFields.values()].flat()
+  const { schemas, issues } = hydrateFieldSchemas([...model.rootFields, ...groupFields])
+  const errors: Record<string, string> = {}
 
-  collectErrors(model.rootFields, snapshot.root, schemas, errors);
+  collectErrors(model.rootFields, snapshot.root, schemas, errors)
 
   for (const [groupId, fields] of model.groupFields) {
-    (snapshot.groups[groupId] ?? []).forEach((scope, index) => {
-      collectErrors(fields, scope, schemas, errors, groupId, index);
-    });
+    ;(snapshot.groups[groupId] ?? []).forEach((scope, index) => {
+      collectErrors(fields, scope, schemas, errors, groupId, index)
+    })
   }
 
-  const checkIssues: RuntimeIssue[] = collectCheckErrors(model, snapshot, errors, context);
+  const checkIssues: RuntimeIssue[] = collectCheckErrors(model, snapshot, errors, context)
 
   return {
     errors,
     issues: [...issues, ...snapshot.issues, ...cycleIssues(snapshot), ...checkIssues],
-  };
+  }
 }
 
 // El ambito en el que corre una comprobacion: el root con las columnas del grupo aplanadas a
@@ -61,13 +61,13 @@ function buildCheckScope(
   root: RuntimeValues,
   groups: Record<string, RuntimeScope[]>,
 ): RuntimeValues {
-  const values: Record<string, RuntimeValues[]> = {};
+  const values: Record<string, RuntimeValues[]> = {}
 
   for (const [groupId, scopes] of Object.entries(groups)) {
-    values[groupId] = scopes.map((scope) => scope.values);
+    values[groupId] = scopes.map((scope) => scope.values)
   }
 
-  return coerceValues({ ...root, ...groupColumns(model, values) }, model);
+  return coerceValues({ ...root, ...groupColumns(model, values) }, model)
 }
 
 // Falso reprueba, verdadero pasa. Los dos casos raros -- que el script reviente o que no devuelva
@@ -87,14 +87,14 @@ function runGroupCheck(
     undefined,
     0,
     context,
-  );
+  )
 
-  if (run.error) return { failed: false, error: run.error };
+  if (run.error) return { failed: false, error: run.error }
   if (run.value === undefined) {
-    return { failed: false, error: "La comprobación no devolvió ningún valor." };
+    return { failed: false, error: 'La comprobación no devolvió ningún valor.' }
   }
 
-  return { failed: !run.value, error: null };
+  return { failed: !run.value, error: null }
 }
 
 // Las comprobaciones de grupo van aparte del recorrido de campos porque no miran un valor: comparan
@@ -108,31 +108,31 @@ function collectCheckErrors(
 ): RuntimeIssue[] {
   const groups: ExportedRepeatableGroup[] = [...model.groupsById.values()].filter(
     (group) => (group.checks?.length ?? 0) > 0,
-  );
-  if (groups.length === 0) return [];
+  )
+  if (groups.length === 0) return []
 
-  const values: RuntimeValues = buildCheckScope(model, snapshot.root.values, snapshot.groups);
-  const issues: RuntimeIssue[] = [];
+  const values: RuntimeValues = buildCheckScope(model, snapshot.root.values, snapshot.groups)
+  const issues: RuntimeIssue[] = []
 
   for (const group of groups) {
     // Lo que llega en el export ya viene filtrado: una comprobacion apagada no se exporta.
     for (const check of group.checks ?? []) {
-      const result: GroupCheckResult = runGroupCheck(check, model.prelude, values, context);
+      const result: GroupCheckResult = runGroupCheck(check, model.prelude, values, context)
 
       if (result.error) {
         issues.push({
-          kind: "script",
+          kind: 'script',
           field: check.label || group.title,
           message: `La comprobación «${check.label || group.title}» no se pudo evaluar: ${result.error}`,
-        });
-        continue;
+        })
+        continue
       }
 
-      if (result.failed) errors[checkKey(group.groupId, check.id)] = check.message;
+      if (result.failed) errors[checkKey(group.groupId, check.id)] = check.message
     }
   }
 
-  return issues;
+  return issues
 }
 
 function collectErrors(
@@ -145,32 +145,32 @@ function collectErrors(
 ): void {
   for (const field of fields) {
     // Un campo presentacional no tiene valor que validar, y el export ni siquiera le pone schema.
-    if (isPresentationalField(field.type)) continue;
+    if (isPresentationalField(field.type)) continue
     // Un campo oculto no se renderiza ni se valida: es la precedencia del contrato.
-    if (!scope.visible[field.name]) continue;
+    if (!scope.visible[field.name]) continue
 
     // El schema se elige con los valores del scope, no con el nombre del campo: uno con variantes
     // condicionales valida distinto segun lo que haya en el campo que observa.
-    const source: string | undefined = effectiveSchemaSource(field, scope.values);
-    if (source === undefined) continue;
+    const source: string | undefined = effectiveSchemaSource(field, scope.values)
+    if (source === undefined) continue
 
-    const schema: z.ZodType | undefined = schemas.get(source);
-    if (!schema) continue;
+    const schema: z.ZodType | undefined = schemas.get(source)
+    if (!schema) continue
 
-    const result = schema.safeParse(coerceValue(field, scope.values[field.name]));
+    const result = schema.safeParse(coerceValue(field, scope.values[field.name]))
     if (!result.success) {
-      errors[fieldKey(field.name, groupId, index)] = firstZodMessage(result.error);
+      errors[fieldKey(field.name, groupId, index)] = firstZodMessage(result.error)
     }
   }
 }
 
 function cycleIssues(snapshot: RuntimeSnapshot): RuntimeIssue[] {
-  if (!snapshot.cycle) return [];
+  if (!snapshot.cycle) return []
 
   return [
     {
-      kind: "cycle",
-      message: `Dependencia circular entre: ${snapshot.cycle.join(", ")}. Esos campos no se calculan.`,
+      kind: 'cycle',
+      message: `Dependencia circular entre: ${snapshot.cycle.join(', ')}. Esos campos no se calculan.`,
     },
-  ];
+  ]
 }

@@ -9,32 +9,32 @@
 // y ademas los ofreceria como origen de opciones de un campo, que no significa nada.
 
 export interface ValorAnual {
-  anio: number;
+  anio: number
   // Unidad de Valor Tributario, en pesos.
-  uvt: number;
+  uvt: number
   // Salario minimo mensual legal vigente, en pesos.
-  smmlv: number;
+  smmlv: number
 }
 
-export type ValoresSource = "default" | "custom";
+export type ValoresSource = 'default' | 'custom'
 
 // Mismo trato que StoredCatalog y StoredMaxDates: volver a "default" no borra lo cargado, solo lo
 // ignora. Por eso la tabla pegada vive aparte de la de fabrica en vez de reemplazarla.
 export interface StoredValores {
-  source: ValoresSource;
-  custom: ValorAnual[] | null;
+  source: ValoresSource
+  custom: ValorAnual[] | null
 }
 
 // Como se llaman las columnas en la respuesta del endpoint. Se piden igual que en un catalogo y al
 // reves que en la tabla de fechas: esto es una lista plana, asi que hay que decir cual clave es
 // cual. La tabla de fechas ya viene con la forma que se necesita y solo hay que comprobarla.
 export interface ValoresParseKeys {
-  anio: string;
-  uvt: string;
-  smmlv: string;
+  anio: string
+  uvt: string
+  smmlv: string
 }
 
 export interface ValoresParseResult {
-  valores: ValorAnual[] | null;
-  error: string | null;
+  valores: ValorAnual[] | null
+  error: string | null
 }

@@ -1,9 +1,9 @@
-import { GRID_BASE_COLUMNS } from "../../constants/grid";
-import type { FormExport, FormExportFile } from "../../types/exportForm";
-import type { CanvasRow, FormStep, IntroModalStep } from "../../types/formStructure";
-import type { SetupConfig } from "../../types/setup";
-import { buildDraftPayload } from "../persistence/persistence";
-import { buildNameIndex, mapFormStep, mapRows } from "./exportForm.utils";
+import { GRID_BASE_COLUMNS } from '../../constants/grid'
+import type { FormExport, FormExportFile } from '../../types/exportForm'
+import type { CanvasRow, FormStep, IntroModalStep } from '../../types/formStructure'
+import type { SetupConfig } from '../../types/setup'
+import { buildDraftPayload } from '../persistence/persistence'
+import { buildNameIndex, mapFormStep, mapRows } from './exportForm.utils'
 
 // El JSON que se lleva el consumidor: todo lo que hace falta para dibujar y validar el formulario.
 // Es la frontera del proyecto, asi que lo que no salga de aca no existe para el aplicativo.
@@ -19,18 +19,18 @@ export function buildFormExport(
   const allRows: CanvasRow[] = [
     ...formSteps.flatMap((step) => step.rows),
     ...introModalSteps.flatMap((step) => step.rows),
-  ];
-  const names: Map<string, string> = buildNameIndex(allRows);
+  ]
+  const names: Map<string, string> = buildNameIndex(allRows)
   // El compilador del script necesita saber que nombres existen para decidir que {x} es un campo
   // y que {x} es JS del autor. Se arma una vez y baja a cada paso.
-  const knownNames: Set<string> = new Set(names.values());
-  const prelude: string = formScript.trim();
+  const knownNames: Set<string> = new Set(names.values())
+  const prelude: string = formScript.trim()
 
   return {
     projectMeta: {
       formId: `frm_${Date.now()}`,
       formType: setupConfig.formType,
-      version: "1.0.0",
+      version: '1.0.0',
       createdAt: new Date().toISOString(),
     },
     setupConfig: {
@@ -51,7 +51,7 @@ export function buildFormExport(
       prelude: prelude.length > 0 ? prelude : undefined,
       steps: formSteps.map((step) => mapFormStep(step, names, knownNames)),
     },
-  };
+  }
 }
 
 export function downloadFormExport(
@@ -72,12 +72,12 @@ export function downloadFormExport(
       formScript,
       setupConfig,
     }),
-  };
-  const blob: Blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const anchor: HTMLAnchorElement = document.createElement("a");
-  anchor.href = url;
-  anchor.download = `${data.projectMeta.formId}.json`;
-  anchor.click();
-  URL.revokeObjectURL(url);
+  }
+  const blob: Blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const anchor: HTMLAnchorElement = document.createElement('a')
+  anchor.href = url
+  anchor.download = `${data.projectMeta.formId}.json`
+  anchor.click()
+  URL.revokeObjectURL(url)
 }

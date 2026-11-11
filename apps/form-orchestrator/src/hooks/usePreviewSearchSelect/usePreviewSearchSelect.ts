@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { CatalogOption } from "../../types/catalog";
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { CatalogOption } from '../../types/catalog'
 import type {
   UsePreviewSearchSelectParams,
   UsePreviewSearchSelectResult,
-} from "./usePreviewSearchSelect.types";
-import { filterOptions, findSelected } from "./usePreviewSearchSelect.utils";
+} from './usePreviewSearchSelect.types'
+import { filterOptions, findSelected } from './usePreviewSearchSelect.utils'
 
 // El modal del search_select: que esta escrito, que opciones sobreviven al filtro y cual quedo
 // elegida. Existe separado del select nativo porque son 425 actividades por 15 repeticiones, asi
@@ -14,31 +14,31 @@ export function usePreviewSearchSelect({
   value,
   onChange,
 }: UsePreviewSearchSelectParams): UsePreviewSearchSelectResult {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [query, setQuery] = useState<string>("");
-  const searchRef = useRef<HTMLInputElement>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [query, setQuery] = useState<string>('')
+  const searchRef = useRef<HTMLInputElement>(null)
 
-  const selected = findSelected(options, value);
+  const selected = findSelected(options, value)
   // Cerrado no se filtra nada: es justamente lo que evita las 6.375 opciones montadas de golpe.
   const results: CatalogOption[] = useMemo(
     () => (isOpen ? filterOptions(options, query) : []),
     [isOpen, options, query],
-  );
+  )
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return
 
     // Por ref y no con autoFocus, que Biome prohibe sin distinguir este caso del que le preocupa.
-    searchRef.current?.focus();
+    searchRef.current?.focus()
 
     function onKeyDown(event: KeyboardEvent): void {
-      if (event.key === "Escape") setIsOpen(false);
+      if (event.key === 'Escape') setIsOpen(false)
     }
 
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown)
 
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isOpen]);
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [isOpen])
 
   return {
     isOpen,
@@ -48,8 +48,8 @@ export function usePreviewSearchSelect({
     results,
     // Cada apertura arranca con el buscador limpio, no con lo que se tipeo la vez anterior.
     open: () => {
-      setQuery("");
-      setIsOpen(true);
+      setQuery('')
+      setIsOpen(true)
     },
     close: () => setIsOpen(false),
     setQuery,
@@ -57,8 +57,8 @@ export function usePreviewSearchSelect({
     // Cambiar de actividad es elegir otra, y si de verdad sobra se borra la fila entera del grupo.
     // La primera no se puede borrar -- min: 1 -- porque una empresa sin ninguna actividad no existe.
     choose: (option) => {
-      onChange(option.id);
-      setIsOpen(false);
+      onChange(option.id)
+      setIsOpen(false)
     },
-  };
+  }
 }

@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { useState } from 'react'
 import {
   DEFAULT_ANIO_KEY,
   DEFAULT_SMMLV_KEY,
   DEFAULT_UVT_KEY,
-} from "../../../../constants/valoresBank";
-import { formatNumber } from "../../../../lib/numberFormat/numberFormat";
-import { buscarValores } from "../../../../lib/valoresAnuales/valoresAnuales";
+} from '../../../../constants/valoresBank'
+import { formatNumber } from '../../../../lib/numberFormat/numberFormat'
+import { buscarValores } from '../../../../lib/valoresAnuales/valoresAnuales'
 import {
   parseValoresPaste,
   usesCustomValores,
   valoresEnUso,
-} from "../../../../lib/valoresBank/valoresBank";
-import { useFormStore } from "../../../../store/formStore";
-import type { ValorAnual, ValoresParseResult } from "../../../../types/valores";
-import { Button } from "../../../atoms/Button/Button";
-import { BinaryChoiceToggle } from "../../../molecules/BinaryChoiceToggle/BinaryChoiceToggle";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
+} from '../../../../lib/valoresBank/valoresBank'
+import { useFormStore } from '../../../../store/formStore'
+import type { ValorAnual, ValoresParseResult } from '../../../../types/valores'
+import { Button } from '../../../atoms/Button/Button'
+import { BinaryChoiceToggle } from '../../../molecules/BinaryChoiceToggle/BinaryChoiceToggle'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
 import {
   ACTION_CLASSES,
   BADGE_EMPTY_CLASSES,
@@ -27,45 +27,45 @@ import {
   ROW_CLASSES,
   TEXTAREA_CLASSES,
   WARNING_CLASSES,
-} from "./ValoresAnualesEditor.constants";
+} from './ValoresAnualesEditor.constants'
 
 export function ValoresAnualesEditor() {
-  const valores = useFormStore((state) => state.valores);
-  const setValores = useFormStore((state) => state.setValores);
-  const setValoresSource = useFormStore((state) => state.setValoresSource);
+  const valores = useFormStore((state) => state.valores)
+  const setValores = useFormStore((state) => state.setValores)
+  const setValoresSource = useFormStore((state) => state.setValoresSource)
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [raw, setRaw] = useState<string>("");
-  const [anioKey, setAnioKey] = useState<string>(DEFAULT_ANIO_KEY);
-  const [uvtKey, setUvtKey] = useState<string>(DEFAULT_UVT_KEY);
-  const [smmlvKey, setSmmlvKey] = useState<string>(DEFAULT_SMMLV_KEY);
-  const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const [raw, setRaw] = useState<string>('')
+  const [anioKey, setAnioKey] = useState<string>(DEFAULT_ANIO_KEY)
+  const [uvtKey, setUvtKey] = useState<string>(DEFAULT_UVT_KEY)
+  const [smmlvKey, setSmmlvKey] = useState<string>(DEFAULT_SMMLV_KEY)
+  const [error, setError] = useState<string | null>(null)
 
-  const enUso: ValorAnual[] = valoresEnUso(valores);
-  const isCustom: boolean = usesCustomValores(valores);
-  const cargadas: number = valores.custom?.length ?? 0;
+  const enUso: ValorAnual[] = valoresEnUso(valores)
+  const isCustom: boolean = usesCustomValores(valores)
+  const cargadas: number = valores.custom?.length ?? 0
 
   // El ano en curso es el que usan uvt() y smmlv() cuando no se les pasa ninguno, asi que es el
   // unico que merece un aviso propio si falta.
-  const anioActual: number = new Date().getFullYear();
-  const actual: ValorAnual | null = buscarValores(enUso, anioActual);
+  const anioActual: number = new Date().getFullYear()
+  const actual: ValorAnual | null = buscarValores(enUso, anioActual)
 
   function load(): void {
     const result: ValoresParseResult = parseValoresPaste(raw, {
       anio: anioKey.trim() || DEFAULT_ANIO_KEY,
       uvt: uvtKey.trim() || DEFAULT_UVT_KEY,
       smmlv: smmlvKey.trim() || DEFAULT_SMMLV_KEY,
-    });
+    })
 
     if (result.error || !result.valores) {
-      setError(result.error);
-      return;
+      setError(result.error)
+      return
     }
 
-    setValores(result.valores);
-    setError(null);
-    setRaw("");
-    setIsOpen(false);
+    setValores(result.valores)
+    setError(null)
+    setRaw('')
+    setIsOpen(false)
   }
 
   return (
@@ -73,14 +73,14 @@ export function ValoresAnualesEditor() {
       title="UVT y salario mínimo"
       aside={
         <span className={cargadas > 0 ? BADGE_LOADED_CLASSES : BADGE_EMPTY_CLASSES}>
-          {cargadas > 0 ? `${cargadas} años` : "Por defecto"}
+          {cargadas > 0 ? `${cargadas} años` : 'Por defecto'}
         </span>
       }
     >
       <div className="flex items-center justify-between gap-2">
         <p className={HINT_CLASSES}>Un valor por año, para uvt() y smmlv()</p>
         <button type="button" onClick={() => setIsOpen(!isOpen)} className={ACTION_CLASSES}>
-          {isOpen ? "Cerrar" : cargadas > 0 ? "Reemplazar" : "Cargar"}
+          {isOpen ? 'Cerrar' : cargadas > 0 ? 'Reemplazar' : 'Cargar'}
         </button>
       </div>
 
@@ -89,7 +89,7 @@ export function ValoresAnualesEditor() {
           {cargadas > 0 && (
             <BinaryChoiceToggle
               value={isCustom}
-              onChange={(next) => setValoresSource(next ? "custom" : "default")}
+              onChange={(next) => setValoresSource(next ? 'custom' : 'default')}
               yesLabel="Personalizado"
               noLabel="Por defecto"
             />
@@ -102,8 +102,8 @@ export function ValoresAnualesEditor() {
             </p>
           ) : (
             <p className={HINT_CLASSES}>
-              Año en curso: <span className="tabular-nums">{actual.anio}</span> · UVT{" "}
-              <span className="tabular-nums">{formatNumber(actual.uvt)}</span> · SMMLV{" "}
+              Año en curso: <span className="tabular-nums">{actual.anio}</span> · UVT{' '}
+              <span className="tabular-nums">{formatNumber(actual.uvt)}</span> · SMMLV{' '}
               <span className="tabular-nums">{formatNumber(actual.smmlv)}</span>
             </p>
           )}
@@ -175,5 +175,5 @@ export function ValoresAnualesEditor() {
         </>
       )}
     </PanelSection>
-  );
+  )
 }

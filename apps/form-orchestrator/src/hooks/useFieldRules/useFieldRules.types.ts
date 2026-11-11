@@ -1,6 +1,6 @@
-import type { CanvasField } from "../../types/field";
+import type { CanvasField } from '../../types/field'
 
 export interface UseFieldRulesParams {
-  field: CanvasField;
-  candidates: CanvasField[];
+  field: CanvasField
+  candidates: CanvasField[]
 }

@@ -1,7 +1,7 @@
-import type { ConditionOperatorSelectProps } from "./ConditionOperatorSelect.types";
+import type { ConditionOperatorSelectProps } from './ConditionOperatorSelect.types'
 
 export function ConditionOperatorSelect({
-  label = "…y el valor",
+  label = '…y el valor',
   operator,
   availableOperators,
   operatorLabels,
@@ -22,5 +22,5 @@ export function ConditionOperatorSelect({
         ))}
       </select>
     </div>
-  );
+  )
 }

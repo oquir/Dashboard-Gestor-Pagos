@@ -1,11 +1,11 @@
-import { CATALOGS } from "../../../../constants/catalog";
-import { HINT_CLASSES } from "../../../../constants/uiClasses";
-import { useFormStore } from "../../../../store/formStore";
-import { CatalogCard } from "../../../molecules/CatalogCard/CatalogCard";
-import { ValoresAnualesEditor } from "../ValoresAnualesEditor/ValoresAnualesEditor";
+import { CATALOGS } from '../../../../constants/catalog'
+import { HINT_CLASSES } from '../../../../constants/uiClasses'
+import { useFormStore } from '../../../../store/formStore'
+import { CatalogCard } from '../../../molecules/CatalogCard/CatalogCard'
+import { ValoresAnualesEditor } from '../ValoresAnualesEditor/ValoresAnualesEditor'
 
 export function CatalogsPanel() {
-  const catalogBank = useFormStore((state) => state.catalogBank);
+  const catalogBank = useFormStore((state) => state.catalogBank)
 
   return (
     <div className="flex flex-col gap-3">
@@ -23,5 +23,5 @@ export function CatalogsPanel() {
         <CatalogCard key={catalog.id} catalog={catalog} stored={catalogBank[catalog.id]} />
       ))}
     </div>
-  );
+  )
 }

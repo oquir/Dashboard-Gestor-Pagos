@@ -1,6 +1,6 @@
-import type { DragPlacement } from "../../../types/placement";
+import type { DragPlacement } from '../../../types/placement'
 
 export interface RowZoneOverlayProps {
-  columns: number;
-  placement: DragPlacement;
+  columns: number
+  placement: DragPlacement
 }

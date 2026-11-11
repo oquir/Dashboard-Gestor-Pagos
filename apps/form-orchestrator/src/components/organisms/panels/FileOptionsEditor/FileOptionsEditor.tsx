@@ -1,13 +1,13 @@
-import { useFormStore } from "../../../../store/formStore";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { FILE_FORMAT_PRESETS } from "./FileOptionsEditor.constants";
-import type { FileOptionsEditorProps } from "./FileOptionsEditor.types";
-import { togglePreset } from "./FileOptionsEditor.utils";
+import { useFormStore } from '../../../../store/formStore'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { FILE_FORMAT_PRESETS } from './FileOptionsEditor.constants'
+import type { FileOptionsEditorProps } from './FileOptionsEditor.types'
+import { togglePreset } from './FileOptionsEditor.utils'
 
 export function FileOptionsEditor({ field }: FileOptionsEditorProps) {
-  const updateFieldFileConfig = useFormStore((state) => state.updateFieldFileConfig);
-  const config = field.fileConfig ?? { acceptedFormats: [], maxSizeMB: 10 };
-  const formatsText = config.acceptedFormats.join(", ");
+  const updateFieldFileConfig = useFormStore((state) => state.updateFieldFileConfig)
+  const config = field.fileConfig ?? { acceptedFormats: [], maxSizeMB: 10 }
+  const formatsText = config.acceptedFormats.join(', ')
 
   return (
     <PanelSection title="Archivo">
@@ -21,7 +21,7 @@ export function FileOptionsEditor({ field }: FileOptionsEditorProps) {
 
         <ul className="flex list-none flex-wrap gap-1.5">
           {FILE_FORMAT_PRESETS.map((preset) => {
-            const isActive = preset.tokens.every((token) => config.acceptedFormats.includes(token));
+            const isActive = preset.tokens.every((token) => config.acceptedFormats.includes(token))
             return (
               <li key={preset.id}>
                 <button
@@ -31,17 +31,17 @@ export function FileOptionsEditor({ field }: FileOptionsEditorProps) {
                       acceptedFormats: togglePreset(config.acceptedFormats, preset.tokens),
                     })
                   }
-                  title={preset.tokens.join(", ")}
+                  title={preset.tokens.join(', ')}
                   className={`rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors hover:cursor-pointer ${
                     isActive
-                      ? "border-orange-500 bg-orange-50 text-orange-700 dark:border-orange-500 dark:bg-orange-500/10 dark:text-orange-400"
-                      : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600"
+                      ? 'border-orange-500 bg-orange-50 text-orange-700 dark:border-orange-500 dark:bg-orange-500/10 dark:text-orange-400'
+                      : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600'
                   }`}
                 >
                   {preset.label}
                 </button>
               </li>
-            );
+            )
           })}
         </ul>
 
@@ -52,10 +52,10 @@ export function FileOptionsEditor({ field }: FileOptionsEditorProps) {
           value={formatsText}
           onChange={(event) => {
             const next = event.target.value
-              .split(",")
+              .split(',')
               .map((token) => token.trim())
-              .filter(Boolean);
-            updateFieldFileConfig(field.id, { acceptedFormats: next });
+              .filter(Boolean)
+            updateFieldFileConfig(field.id, { acceptedFormats: next })
           }}
           className="rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700 outline-none focus:border-orange-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
         />
@@ -77,13 +77,13 @@ export function FileOptionsEditor({ field }: FileOptionsEditorProps) {
           min={1}
           value={config.maxSizeMB}
           onChange={(event) => {
-            const parsed = Number.parseFloat(event.target.value);
-            if (Number.isNaN(parsed) || parsed <= 0) return;
-            updateFieldFileConfig(field.id, { maxSizeMB: parsed });
+            const parsed = Number.parseFloat(event.target.value)
+            if (Number.isNaN(parsed) || parsed <= 0) return
+            updateFieldFileConfig(field.id, { maxSizeMB: parsed })
           }}
           className="w-24 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700 outline-none focus:border-orange-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
         />
       </div>
     </PanelSection>
-  );
+  )
 }

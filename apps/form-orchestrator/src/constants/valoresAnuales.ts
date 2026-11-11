@@ -1,4 +1,4 @@
-import type { ValorAnual } from "../types/valores";
+import type { ValorAnual } from '../types/valores'
 
 // Los valores publicados, para que el simulador arranque calculando algo real. No son inventados
 // como podrian serlo unas tarifas: la UVT sale de una resolucion de la DIAN y el SMMLV de un
@@ -19,4 +19,4 @@ export const VALORES_POR_DEFECTO: ValorAnual[] = [
   { anio: 2022, uvt: 38004, smmlv: 1000000 },
   { anio: 2021, uvt: 36308, smmlv: 908526 },
   { anio: 2020, uvt: 35607, smmlv: 877803 },
-];
+]

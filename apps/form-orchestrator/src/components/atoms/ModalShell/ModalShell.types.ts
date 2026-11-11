@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react'
 
 export interface ModalShellProps {
-  children: ReactNode;
-  maxWidthClassName?: string;
+  children: ReactNode
+  maxWidthClassName?: string
 }

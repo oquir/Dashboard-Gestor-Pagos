@@ -1,9 +1,9 @@
-import type { TabButtonGroupItem } from "../../../types/tabButtonGroup";
+import type { TabButtonGroupItem } from '../../../types/tabButtonGroup'
 
 export interface TabButtonGroupProps<T extends string> {
-  tabs: TabButtonGroupItem<T>[];
-  activeTab: T;
-  onSelect: (tab: T) => void;
+  tabs: TabButtonGroupItem<T>[]
+  activeTab: T
+  onSelect: (tab: T) => void
 }
 
-export type TabVariant = NonNullable<TabButtonGroupItem<string>["variant"]>;
+export type TabVariant = NonNullable<TabButtonGroupItem<string>['variant']>

@@ -9,15 +9,17 @@ The core builder is implemented: the eight-step Industria y Comercio template, r
 **Tax domain: read `docs/Dominio-ICA.md` before working on the `industria_comercio`, `retencion_industria_comercio` or `autorretencion` templates, their renglones, scripts, sanctions or deadlines.** It explains how the three declarations work (the national FUN renglón by renglón, ReteICA and autorretención with their per-municipality variations) and marks with ⏳ the data that expires (UVT, minimum bases, deadlines, rates): re-verify only those, not the whole document.
 
 Known gaps:
+
 - No test runner, none planned (project too volatile per the user). Verification uses throwaway `pnpm exec tsx` scripts in the scratchpad.
 - `logic.script` exports **compiled JS**, run by the consumer with `new Function` — this is the file's trust boundary (anyone handing the consumer a JSON gets code execution there). Coordinated decision since the user builds both ends.
-- `persistence.ts` versions and migrates drafts (`DRAFT_SCHEMA_VERSION`) before validating. Zod validates *shape*, not coherence (`colSpan: -999`, a `dataSource` on a `text` field, a dangling `labelFor` all pass).
+- `persistence.ts` versions and migrates drafts (`DRAFT_SCHEMA_VERSION`) before validating. Zod validates _shape_, not coherence (`colSpan: -999`, a `dataSource` on a `text` field, a dangling `labelFor` all pass).
 - `validations.pattern` isn't validated while typing (a `try { new RegExp(value) }` guard in `ValidationsPanel` was offered, not built), but the export review blocks an invalid regex from shipping.
 - **Renglón 31 hardcodes two catalog ids**: `TIPO_SANCION_OTRA = "4"` and `TIPO_SANCION_EXTEMPORANEIDAD = "1"` in `baseTemplate.constants.ts`. Reordering `tipos_sancion` breaks both in silence. Fix (read the catalog bank, not `lib/mockCatalog`) is scoped and deferred.
 - **Two catalog-fed selects still use path-inference instead of `dataSource`**: `periodo_anio`, `clasificacion_contribuyente` (+ the `tipo_representante` toggle). `CATALOGS` declares 9 names, only 8 are wired. `juegos_permitidos` has no field pointing at it yet. Catalog ids are unconfirmed contract names with the consumer.
 - **Renglones 31 and 37 need the intro modal** (`{periodo_anio}` lives there). The wizard always creates it for `industria_comercio` (step 2 is skipped), but nothing stops deleting those intro steps afterwards. Without them the field stays typeable but silently uncalculated.
 - Selects mapped to `number` leaves show a permanent `⚠ tipo` warning (a two-line fix in `fieldMatchesSchemaType` has been offered, not approved).
 - **Moving a field out of a repeatable group to another step keeps its `apiBinding`** — `moveFieldsToStep` → `planLanding` copies the field as is, contrary to the rule in "Repeatable groups". Shared by drag-to-tab and "Mover a paso". One-line fix, not applied: it changes single-field transfers too.
+
 ## The right panel (`RightSidebar`)
 
 Header, `CanvasTabs`, `TransferNotice` and `StepTitleEditor` moved off the canvas into a right-hand panel (`organisms/RightSidebar/`). `AppLayout` takes four slots (`sidebar`, `canvas`, `canvasOverlay`, `rightSidebar`) — the overlay is the floating tool bar, see "Canvas tools and floating toolbar".
@@ -25,7 +27,8 @@ Header, `CanvasTabs`, `TransferNotice` and `StepTitleEditor` moved off the canva
 **It is modelled on Figma's right panel, by explicit user reference**, in three stacked rows: an **action row** (Guardar left; Simulador and Exportar right, mapping Figma's ▷ and Share), a **text tab strip** with the zoom on its right (Figma's `Design | Prototype … 7% ˅`), and a **body of flat blocks**. The two tabs are `RightSidebarTab` in `types/ui.ts` (`TABS` in `RightSidebar.constants.ts`): **Proyecto** — blocks "Vista" (`ViewModeSwitch`) and "Formulario" (`FormSummary`) — and **Steps** — "Pasos" (the chip grid) and "Paso activo" (título/subtítulo).
 
 Settled:
-- **The right panel does not collapse.** Fixed `w-80`, no `isRightSidebarOpen`, no chevron strip — the tabs switch content instead of hiding it. The left sidebar keeps its own collapse (clicking the active tab), so the two are deliberately *not* symmetric on this point.
+
+- **The right panel does not collapse.** Fixed `w-80`, no `isRightSidebarOpen`, no chevron strip — the tabs switch content instead of hiding it. The left sidebar keeps its own collapse (clicking the active tab), so the two are deliberately _not_ symmetric on this point.
 - **The active tab is underlined, not filled.** A grey `bg-surface-raised` pill was the first version and read as a fourth button of the action row right above it — an elevated surface on an elevated surface. It is now plain text, semibold when active, with a 2 px brand rule (`after:` pseudo-element) sitting on the strip's own `border-b`: no new surface, and the only orange is a 2 px sliver that doesn't compete with Exportar. During a drag the forced Steps tab grows a small brand dot (`PANEL_TAB_DROP_DOT_CLASSES`) — the only thing that explains why the tab switched by itself.
 - **Text tabs, not an icon rail.** An icon rail was built first (mirroring the left sidebar) and rejected in favour of the Figma reference. `SidebarTabRail` was made generic for that version and **reverted** once only the left sidebar used it again — an unused generic is the kind of leftover nobody later knows whether they can touch.
 - **`molecules/PanelBlock/` is the flat section, and it coexists with `PanelSection` on purpose.** `PanelSection` is the rounded card with a black veil, for panels that already have margins (the left sidebar's eight). `PanelBlock` is a full-bleed block closed by a `border-b`, for a panel that runs to its own edge. Unifying them would repaint all eight left panels, which is not what was asked.
@@ -51,6 +54,7 @@ Settled:
 `CanvasField.colStart` (1-based, CSS grid line numbers) **ships in the export**. Rules live in `src/lib/rowLayout/` (`getFreeRuns`, `findNearestFit`, `resolvePlacement`, `getMaxSpanAt`, `repackRow`, `migrateRows`) — pure, no React/store imports. `loadDraft` migrates pre-`colStart` drafts by turning overflowing visual lines into real rows.
 
 Settled — do not re-litigate without asking:
+
 - **`dragPlacement` is written only when it changes** (`samePlacement` value-compare) — cuts ~100 writes/drag down to the handful that matter.
 - **Collision resolves by magnetic snap, never by pushing.** No fit → red, drop rejected.
 - **Holes are preserved** everywhere except `updateRowColumns`, which re-packs deliberately.
@@ -63,6 +67,7 @@ Canvas body scales via `transform: scale()`, 50–150%, from a header control, C
 **Only the canvas body scales** — header/tabs/notices live in `RightSidebar` now, at 1×. `FieldContextMenu` also stays outside the scale so `clientX/clientY` positioning stays correct.
 
 Settled:
+
 - dnd-kit applies no `transform` inside the scaled container — dragged elements go `opacity-0`, the `DragOverlay` is a sibling of `<AppLayout>` outside the scale. Moving either breaks the classic "travels k× too far" bug.
 - Collision detection needs no changes — `pointerWithin`/`rectIntersection` compare visual-space rects, so the ratio is scale-invariant.
 - **Scale is read from the DOM**: `getCanvasScale(el) = rect.width / el.offsetWidth`, not from the store — returns exactly 1 with no zoom and can't go stale like a threaded store value. ~0.05% error from `offsetWidth` rounding; breaks under a rotated ancestor (none exist here).
@@ -74,7 +79,7 @@ Settled:
 - Wheel zoom is continuous; buttons/shortcuts step 10% (Figma-like).
 - **Not persisted** — view state only, resets to 100% on reload.
 - One zoom for both canvases (form steps + intro modal).
-- **Anchors on viewport middle, not the cursor, in both axes** — zoom also arrives from the keyboard and the menu, where the cursor isn't over the canvas. The content-space point under the center is captured with the *old* rects (hook body for zoom, `ResizeObserver` callback for port resizes) and restored in a layout effect with the new ones (`captureAnchor`/`restoreAnchor`, dividing by the DOM-read scale). X needs it since the free canvas: the root's width changes with zoom and with the port, and the document is centered in it. The old Y-only `offset·ratio − offset` assumed the content edge never moves, which is false in X.
+- **Anchors on viewport middle, not the cursor, in both axes** — zoom also arrives from the keyboard and the menu, where the cursor isn't over the canvas. The content-space point under the center is captured with the _old_ rects (hook body for zoom, `ResizeObserver` callback for port resizes) and restored in a layout effect with the new ones (`captureAnchor`/`restoreAnchor`, dividing by the DOM-read scale). X needs it since the free canvas: the root's width changes with zoom and with the port, and the document is centered in it. The old Y-only `offset·ratio − offset` assumed the content edge never moves, which is false in X.
 - Known cosmetic limit: `min-h-[60vh]`/`70vh` resolve against the real viewport regardless of scale, so at 50% the empty canvas reads shorter than intended. Left as is.
 
 ### The free canvas (pan room)
@@ -82,6 +87,7 @@ Settled:
 **The user chose a free canvas with margin over scrolling within the document's bounds**: `getViewportLayout` wraps the document in half a port of pan room per side (`CANVAS_PAN_ROOM_RATIO = 0.5`, `constants/canvasViewport.ts`), so the hand and the scrollbars move it in any direction even at 100%.
 
 Settled:
+
 - **Native scroll with margin, not a `translate`** — keeps the wheel, trackpad, scrollbars and dnd-kit's autoscroll, and dnd-kit never has to re-measure. The hand tool is just drag-to-scroll.
 - **It also fixed a latent zoom bug.** With `transformOrigin: top center`, half of the zoom overflow landed left of the scroll origin — negative scroll space, unreachable (~145 px at 150% on a 1366 px screen with both panels open). The margin always covers it — `(W·k − W)/2 ≤ (port − 48)/4 < port/2` — verified by a tsx sweep over port widths 320–2600 × every zoom, so `top center` stays.
 - The document is still `min(976, port − 48)` wide — what `max-w-5xl` + `px-6` gave — now as an explicit `width` measured from the port's `clientWidth` (the scrollbar doesn't count).
@@ -95,7 +101,8 @@ Settled:
 A floating bar centered at the bottom of the canvas (`organisms/CanvasToolbar/`, Figma UI3's placement): pointer tools **Mover (V) / Selección múltiple (M) / Mano (H)**, **+ Fila / + Grupo repetible**, **Deshacer / Rehacer**, and — with 2+ fields selected — **N seleccionados · Mover a paso ▾ · Eliminar · Deseleccionar**. It lives in `AppLayout`'s `canvasOverlay` slot, a sibling of `main`, so it neither scrolls nor scales, and renders only in `canvas` view mode. Tools in `constants/canvasTool.ts` (`CANVAS_TOOLS`: tool, label, shortcut — read by both the keyboard hook and the buttons' `title`); icons are the bar's business (`TOOL_ICONS`).
 
 Settled:
-- **Selection is `selectedFieldIds: string[]`**; "exactly one" is derived by `getSelectedFieldId` (a primitive, stable for `useSyncExternalStore`), never stored. Panels still edit one field: with 2+ the field tabs show `SelectionSummary`, and Lógica does *not* fall back to the prelude as if nothing were selected. The selection always lives in the active step (`setActiveCanvas` clears it) and is pruned by `removeFields` and `removeRow` (which used to leave a dangling id — harmless with one, a lying counter with a set). `NO_SELECTION` sentinel for the same identity reason as `NO_ROWS`.
+
+- **Selection is `selectedFieldIds: string[]`**; "exactly one" is derived by `getSelectedFieldId` (a primitive, stable for `useSyncExternalStore`), never stored. Panels still edit one field: with 2+ the field tabs show `SelectionSummary`, and Lógica does _not_ fall back to the prelude as if nothing were selected. The selection always lives in the active step (`setActiveCanvas` clears it) and is pruned by `removeFields` and `removeRow` (which used to leave a dangling id — harmless with one, a lying counter with a set). `NO_SELECTION` sentinel for the same identity reason as `NO_ROWS`.
 - `selectField` replaces (and skips the write when nothing changes); Shift/Ctrl/Cmd+click toggles (`toggleFieldSelection`); `setFieldSelection` skips the write when the set is equal (`sameIdSet`) — the marquee calls it on every pointermove.
 - **`select` and `hand` make the document inert** (`pointer-events-none` on the scaled content, `select-none` + the tool's cursor on the root): no dnd-kit activation, resize, context menu or hover chrome. Native listeners on the port do the work, mounted by `CanvasToolLayer` (`useCanvasPan`, `useCanvasMarquee`) — a separate leaf so the marquee re-renders only itself. **Palette drops still land in any tool**: dnd-kit resolves collisions by rects, not pointer events.
 - **In `select` everything adds**: a click toggles a field, the marquee adds what it touches (intersection, like Figma), a click on empty space clears. Escape mid-marquee restores the starting selection (capture-phase listener that stops the global Escape). Hit-testing uses `getBoundingClientRect` of `[data-field-id]` — scale-invariant, and `elementsFromPoint` would skip `pointer-events-none` nodes. Marquee coordinates live in the port's scroll space, so wheeling mid-gesture keeps the origin glued to the document; the drawn rectangle is `fixed` and clipped to the port.
@@ -115,10 +122,11 @@ Settled:
 Ctrl/Cmd+Z undoes; Ctrl+Y and Ctrl/Cmd+Shift+Z redo; Deshacer/Rehacer sit in the floating bar. The store is wrapped in **`zundo`'s `temporal` middleware** — the one dependency added outside the original stack, chosen over a hand-rolled history (~200–250 lines) because the stacks, limit, pause and clear are generic; the project-specific parts below would exist either way. History lives in a separate store, `useFormStore.temporal`, which `useFormHistory` reads for `canUndo`/`canRedo`. Pure pieces in `src/lib/history/` (`toHistorySnapshot`, `sameDocument`, `createBurstGate`); wiring at the bottom of `formStore.ts` (`HISTORY_OPTIONS`, `travelHistory`, `clearHistory`).
 
 Settled:
-- **A step is the document plus the view of that moment** (`HistorySnapshot`: `formSteps`, `introModal`, `formScript`, `setupConfig`, `activeCanvas`, `selectedFieldIds`). Undo brings back the step and the selection where the change happened — undoing "Mover a paso" returns the fields *and* the view to the source step. `setupConfig` travels because adding/removing intro steps rewrites `hasIntroModal`/`introModalSteps`; without it, undoing the removal of the last intro step would bring the step back with its tabs hidden.
+
+- **A step is the document plus the view of that moment** (`HistorySnapshot`: `formSteps`, `introModal`, `formScript`, `setupConfig`, `activeCanvas`, `selectedFieldIds`). Undo brings back the step and the selection where the change happened — undoing "Mover a paso" returns the fields _and_ the view to the source step. `setupConfig` travels because adding/removing intro steps rewrites `hasIntroModal`/`introModalSteps`; without it, undoing the removal of the last intro step would bring the step back with its tabs hidden.
 - **Only the document decides whether there was a step** (`sameDocument`): selection, active step, zoom, tool and drag state never create one. **`equality` is mandatory with zundo** — without it every `set`, the ~100 `dragPlacement` writes per drag included, records a step.
 - **Equality is by content with a reference short-circuit** (`sameValue`), not by reference alone. Several actions rebuild steps and rows without changing anything — dropping a field where it was, a blur that confirms the same text — and each would leave an empty step that Ctrl+Z "undoes" with nothing visible. Structural sharing keeps the walk down to what was rebuilt.
-- **Keystroke bursts coalesce** (`createBurstGate`, `HISTORY_BURST_MS = 500`): the leading change of a sliding window records, so the saved past state is the one *before* the burst. A slow column-by-column resize (more than 500 ms between columns) still leaves one step per column — accepted.
+- **Keystroke bursts coalesce** (`createBurstGate`, `HISTORY_BURST_MS = 500`): the leading change of a sliding window records, so the saved past state is the one _before_ the burst. A slow column-by-column resize (more than 500 ms between columns) still leaves one step per column — accepted.
 - **The gate resets on every undo/redo.** zundo only clears the redo stack when it records, so a change swallowed right after an undo would leave redo alive, ready to overwrite what was just typed.
 - Undo/redo write through zundo's raw `set`, so they never record themselves. `reconcileViewAfterHistory` then repairs an `activeCanvas`/selection pointing at something gone and clears `transferNotice` — a view-only write the equality discards.
 - **`completeSetup` and `restoreDraft` clear the history** — a new document must not undo into the blank canvas it replaced.
@@ -134,6 +142,7 @@ A whole `CanvasRow` can be dragged to a new position. Row order **is** `step.row
 Rules in `src/lib/rowOrder/rowOrder.ts` (`resolveRowDrop`, `resolveBandDrop`, `reorderRows`), pure, mirrors `rowLayout`. Store action `moveRow(rowId, target: RowDropTarget)`.
 
 Settled:
+
 - **A row drag never crosses into/out of a repeatable group** (would silently clear `apiBinding` on every field in it). Joining/leaving stays a separate explicit action; reordering within a group works normally.
 - A loose row over a band snaps to the band's nearest edge; a row inside a group pointing outside it goes red and is rejected.
 - `rowDropTarget` written only on change; `recompute` skips column placement entirely during a row drag.
@@ -157,6 +166,7 @@ Rejected an earlier "drag a small chip, draw a line" version — had to feel lik
 `RowStyles`: `customCss`, `marginTop`, `marginBottom` — **narrower than `FieldStyles`** (no `backgroundColor`/`textColor`, on purpose: a row is layout, not something read like a field). Authored via `RowStylesMenu` (popover at the row's right edge). Store action `updateRowStyles`.
 
 Settled:
+
 - **Optional, absent by default** (same as `groupId`) — purely additive, no `DRAFT_SCHEMA_VERSION` bump, just a `persistence.schema.ts` line (`rowStylesSchema`).
 - Export carries it resolved: `styles: resolveRowStyles(row.styles)`, optional key, omitted when empty.
 - Reaches the simulator too (`PreviewRowsGrid` spreads it, structural props last).
@@ -169,6 +179,7 @@ Settled:
 `src/lib/cssStyles/` (no React/store imports): `parseCssText` → `CssStyleMap` (camelCase, ready for React `style`); `resolveFieldStyles`/`resolveRowStyles`/`resolveTooltipStyles` merge named properties with parsed `customCss` on top; `unsupportedDeclarations` runs `CSS.supports()` for a non-blocking warning (guarded for `typeof CSS === "undefined"` in tsx scripts).
 
 Settled:
+
 - **Export carries one flat `CssStyleMap`** per field/row/tooltip, not named properties + a class string. `textColor` → `color` only on export; internal name stays `textColor`.
 - **The free text wins** (`{...namedProperties, ...parseCssText(customCss)}`, ordinary cascade) — canvas paints what the consumer will paint.
 - **No sanitizer** — CSS via React `style` executes nothing; `unsupportedDeclarations` is informational, not blocking, same treatment as an unrecognized `{campo}`.
@@ -183,9 +194,10 @@ Drag a field or row onto another step's tab to move it — same id, same name, r
 
 ### The Almacén de Partes is gone — do not rebuild it
 
-It "moved" a field by copying it (new id/name) into a `SavedComponent`, then required manual cleanup. Dragging onto a step tab does the real move properly, so the Almacén (store, panel, tab, draft key, all four `library`-typed call sites) was deleted. `DRAFT_SCHEMA_VERSION` went to **5** with a migration step that *deletes* `savedComponents` from `localStorage` (dropping it from the schema alone would have left it there invisibly). If genuine reuse is needed later, that's a different feature (a template library), not this one.
+It "moved" a field by copying it (new id/name) into a `SavedComponent`, then required manual cleanup. Dragging onto a step tab does the real move properly, so the Almacén (store, panel, tab, draft key, all four `library`-typed call sites) was deleted. `DRAFT_SCHEMA_VERSION` went to **5** with a migration step that _deletes_ `savedComponents` from `localStorage` (dropping it from the schema alone would have left it there invisibly). If genuine reuse is needed later, that's a different feature (a template library), not this one.
 
 Settled:
+
 - A linked `label` travels with its field in both directions (label ordered first, so it lands to the left).
 - A row belonging to a repeatable group cannot change step (same rule as reordering) — tabs render rejected/red for it.
 - **`planLanding` deliberately skips `resolvePlacement`** (which truncates `colSpan` as a last resort) — a field lands whole, in a new row if needed, never narrowed where you can't see it.
@@ -204,6 +216,7 @@ A repeatable group is a **marker on the row**, not a nested container: `CanvasRo
 Helpers in `src/lib/repeatableGroup/repeatableGroup.ts`. Bounds default `DEFAULT_GROUP_MIN = 1` / `MAX = 15` (ICA rule), clamped to `MIN_GROUP_ITEMS = 0`…`MAX_GROUP_ITEMS = 99`.
 
 Settled:
+
 - **`arrayPath` is absolute** (`actividades[].idActividad`), not group-relative — one namespace, no special cases in `resolveLeaf`/mapping.
 - Moving a field out of a group clears its `apiBinding` (path is meaningless outside the array item). Changing a group's `arrayPath` clears all members' bindings for the same reason.
 - Deleting a group's last row deletes the group (`pruneEmptyGroups`); `removeGroup` instead keeps the rows and strips `groupId`.
@@ -217,6 +230,7 @@ UI: `RepeatableGroupBand` (title, min/max, `arrayPath` select, +Fila, dissolve, 
 **First non-per-field validation in the project** — Zod's `safeParse` works on one scalar at a time and can't see the root.
 
 Settled:
+
 - Owner is the group, not the field it compares against — the activities step has no root field to hang an error on, and hanging it on renglón 16 (one step earlier) would block navigation before any activity exists.
 - A script, not a typed rule — reuses `compileScript`, the scanner, the prelude, `reads`, the compile cache, and the consumer already runs compiled scripts with `new Function`. A typed rule would need an interpreter.
 - **A broken check never blocks** — throw or `undefined` both report a `RuntimeIssue` and pass (author's bug, not the taxpayer's).
@@ -236,6 +250,7 @@ Settled:
 `src/lib/fieldScript/fieldScript.ts`: `compileScript`, `validateFieldScript`, `validatePrelude`, `buildScriptFunction`, `composeScriptBody`, `preludeLineOffset`, `normalizeScriptResult`. **No function throws** — errors travel in the result since the editor calls them on every keystroke.
 
 Contract (identical for a script and a rule effect):
+
 - `return` gives the value; **`return undefined` means "leave what the user typed"** (not `computed`, stays editable).
 - Scope: `value`, `index` (repetition inside a group), and helpers from `src/constants/fieldScript.ts` — `num`, `sum`, `count`, `abs`, `min`, `max`, `round`, `floor`, `ceil`, `dvNit` — passed as **named parameters**, not a container object.
 - Inside a group `{sibling}` is that row's scalar; from root `{column}` is the whole array (`sum` flattens it).
@@ -252,7 +267,8 @@ Contract (identical for a script and a rule effect):
 `src/lib/fieldGraph/fieldGraph.ts` unifies **four** edge sources (`visibleWhen`, `enableWhen`, `rules[].when[]`, `{campo}` refs) into one dependency graph — `buildNameToIdIndex` normalizes refs to ids, `topologicalOrder` returns `{order, unresolved, cycle}`, never throws.
 
 Settled:
-- **A script cycle is warned about, never blocked** (free text, refusing input mid-word fights the person typing); condition editors *do* block with an `alert` since those are picked from a list.
+
+- **A script cycle is warned about, never blocked** (free text, refusing input mid-word fights the person typing); condition editors _do_ block with an `alert` since those are picked from a list.
 - **Script sees values coerced by field type** (`coerceForScript`) — otherwise `"5"+"3"` = `"53"`. **Whole model is coerced**, not just touched keys — an untouched field's `undefined` becoming `NaN` in a subtraction was killing entire chains of renglones.
 - **Compile cache is module-level**, keyed by composed body (prelude included) — without it, ~31 `new Function` calls per keystroke with 15 activities. Compile errors cached separately.
 - `evaluationOrder` is **not exported** (silently appended cycle members to the end). What's exported instead is `script.reads` per field.
@@ -294,8 +310,9 @@ A working prototype of the consuming app, not a mock. **Full-screen mode** — `
 **The single rule that makes it worth anything: it consumes `buildFormExport(...)` and never touches `useFormStore`.** `useFormPreview` is the only store read, solely to feed `buildFormExport`. If the simulator can't do something, neither can the real consumer. Everything keyed by field **name** (export already resolved ids to names).
 
 Layers (React-free, ~1ms/keystroke on the full ICA form with 15 activities):
+
 - `lib/formRuntime/` — `buildRuntimeModel`/`resolveRuntime` → `RuntimeSnapshot` (root + per-repetition scopes + `issues`).
-- `lib/runtimeCondition/` — `evaluateCondition`, the 13-operator executor (didn't exist before — builder only ever *authored* conditions).
+- `lib/runtimeCondition/` — `evaluateCondition`, the 13-operator executor (didn't exist before — builder only ever _authored_ conditions).
 - `lib/runtimeDerived/` — resolves `logic.script`/`logic.rules` in topological order (script → rules override → rounding).
 - `lib/scriptRuntime/` — runs author code with `new Function`. A throw is that field's problem; an infinite loop freezes the tab (not worth a worker+timeout today).
 - `lib/runtimePayload/` — walks `apiBinding.path` into the real `DeclaracionIcaE` object.
@@ -311,10 +328,11 @@ Layers (React-free, ~1ms/keystroke on the full ICA form with 15 activities):
   - Adds ~93 kB raw but sits behind the lazy boundary.
 
 Settled:
+
 - **Three passes in `resolveRuntime`**: groups w/ raw root values → root w/ group columns exposed as arrays → groups again w/ resolved root. Collapsing this silently zeroes the ICA totals.
 - A scope per repetition, not one bag.
 - **`eval` is the contract, not a shortcut** — `ExportedField.validations` carries only Zod strings; the consumer has no other validation path. `hydrateZodSchema` wraps in try/catch → `RuntimeIssue`.
-- `hydrateFieldSchemas` keys by schema *string* (a field can have >1 schema depending on override state; a name key can't answer).
+- `hydrateFieldSchemas` keys by schema _string_ (a field can have >1 schema depending on override state; a name key can't answer).
 - `required` is sniffed from the schema string (no trailing `.optional()`); `checkbox` excluded (never gets `.optional()` appended).
 - Runtime issues deduplicated (`dedupeIssues`) — a broken group script would otherwise report once per repetition.
 - Preview state is **local to the component tree**, never the Zustand store (answers are throwaway).
@@ -336,7 +354,8 @@ Settled:
 `FieldTooltip` = `{content: RichTextContent, position, customCss?}`. Only 8 types (`TOOLTIP_CAPABLE_FIELD_TYPES`): text, number, select, checkbox, calculated, file, toggle_group, radio_group. Predicates in `src/lib/fieldTooltip/`. Store action `updateFieldTooltip(fieldId, updates | null)`.
 
 Settled:
-- **Trigger is an ℹ icon, not the field** — hover-on-field is undiscoverable, doesn't exist on phones, and would cover `toggle_group` options. Icon sits next to the *visible* label (the linked label's text, if any).
+
+- **Trigger is an ℹ icon, not the field** — hover-on-field is undiscoverable, doesn't exist on phones, and would cover `toggle_group` options. Icon sits next to the _visible_ label (the linked label's text, if any).
 - Canvas preview is looser than the contract on purpose (reveals on hovering the whole chip, to escape `overflow-x-hidden` and ease hit-testing).
 - **Content is `RichTextContent`**, reusing all of `rich_text`'s machinery (editor, sanitizer, `safeHref`) — do not simplify to HTML/string.
 - **Empty tooltip isn't exported.**
@@ -349,9 +368,10 @@ A numeric field rounds to the **nearest thousand** — the standard rule for Col
 **Changes the value, not just presentation.**
 
 Settled:
+
 - **Boolean, not a configurable multiple** — every form built so far only ever needs the-nearest-thousand or nothing.
 - **`Math.round` is a real bug here** — breaks tie symmetry with negatives (`1500→2000` but `−1500→−1000`, `−500→−0`). `roundToMultiple` rounds the magnitude and reapplies sign, `+0` kills `−0`.
-- **Two application points**: on blur for what the user types (`PreviewFieldControl`); as-computed in `runtimeDerived` for a script/rule result (a `calculated` field is `alwaysDisabled`, so blur never fires there). Rounds *before* publishing to `scriptValues`, so the next field in the chain reads the rounded value.
+- **Two application points**: on blur for what the user types (`PreviewFieldControl`); as-computed in `runtimeDerived` for a script/rule result (a `calculated` field is `alwaysDisabled`, so blur never fires there). Rounds _before_ publishing to `scriptValues`, so the next field in the chain reads the rounded value.
 - **Only when something produced a value** — an untouched field isn't stamped with a spurious `0`.
 - Empty stays empty — `applyRounding` passes through `undefined`/`null`/blank/unparseable untouched.
 - **ICA template turns it on per-step, off by exception** (`FIELDS_WITHOUT_ROUNDING`, 4 fields: `tarifa_x_mil`, `dv`, `numero_establecimientos`, `generacion_energia_kw` — the last a judgement call, kW not pesos, user was told).
@@ -364,7 +384,8 @@ Numeric field shown with dot-thousands/comma-decimal (`1000` → `1.000`, `1.5` 
 **The formatted text never leaves the input** — state always holds a real `number`; `1.000` exists only on screen while unfocused. This is why payload/schemas/scripts needed zero changes; a leaked `"1.000"` string would put a wrong value in the payload and make every script read `1`.
 
 Settled:
-- **Control is `type="text"`**, not `type="number"` — the HTML spec's dot is a *decimal* separator (`"1.000"` there means one; `"1.000,5"` is invalid and blanks the field). `inputMode="decimal"` keeps the numeric keypad.
+
+- **Control is `type="text"`**, not `type="number"` — the HTML spec's dot is a _decimal_ separator (`"1.000"` there means one; `"1.000,5"` is invalid and blanks the field). `inputMode="decimal"` keeps the numeric keypad.
 - **Stricter typing filter than native**: `sanitizeNumericInput` whitelists digits/dot/comma/leading minus; `parseFormattedNumber` re-validates independently.
 - Local draft state while focused (otherwise typing `1,` gets stomped by a re-render from the already-parsed store value).
 - Formatting/rounding both happen on blur (mid-typing would move the caret).
@@ -381,6 +402,7 @@ How many decimals a field **shows and lets you type**. `decimals?: number`, abse
 **Padding is presentation (`formatNumber`, doesn't lie); cutting is a value change** (`applyDecimals` in `fieldRounding`, alongside `applyRounding`).
 
 Settled:
+
 - **`roundToDecimals` scales instead of `toFixed`** — both symmetric with negatives, but `toFixed` follows the double's binary tail (`0.35` stored as `.34999...` → `toFixed(1)` = `0,3`, wrong reading of what's on screen). Scaling agrees with the printed value in all but 3 of 17 tested cases, and wins the tiebreak there. Neither is exact above certain precision.
 - Above `MAX_SAFE_INTEGER`, returned untouched (precision already lost).
 - **`decimals: 0` cuts pasted text at the comma**, not by dropping it (`1234,56` → `1234`, not `123456`).
@@ -395,13 +417,14 @@ A numeric field can refuse negatives — minus key blocked on typing, script res
 Like rounding, **changes the value** (not just display).
 
 Settled:
+
 - **Polarity inverted vs. rounding/formatted**: absent means negatives ARE allowed; only `allowsNegative: false` restricts. Flipping the default would silently start clamping every existing draft. `setFieldAllowsNegative` stores `false`, deletes `true`.
 - `sanitizeNumericInput` takes a boolean, not the field — keeps `numberFormat` text-only.
 - `PreviewNumberInput` clamps on blur too, in case a route other than the keyboard sets the value.
 - **In `runtimeDerived`, clamp goes after rounding, before publishing** — same ordering reason as rounding.
 - **The clamp reports itself** (`clampNegative` returns `{value, clamped}`, shown as "El cálculo dio negativo y se recortó a 0") — **simulator-only, not exported**.
 - ICA turns it off on 27/38 numeric fields (25 plain `number` + renglones 10 and 16, the two calculated fields that can legitimately go negative). Others already self-clamp with `max(…, 0)` in-script.
-- **Script-level `max(…,0)` and `allowsNegative` are not interchangeable** — renglón 38's negative *is* the normal saldo-a-favor case, so the flag (which warns) would be wrong there; the script clamp is silent by design.
+- **Script-level `max(…,0)` and `allowsNegative` are not interchangeable** — renglón 38's negative _is_ the normal saldo-a-favor case, so the flag (which warns) would be wrong there; the script clamp is silent by design.
 - `min: 0` validations stay regardless (cover whatever a script writes).
 
 ## Length cap (`validations.maxLength`)
@@ -411,8 +434,9 @@ Offered for `text`, `textarea`, `number`, `calculated` (`LENGTH_CAPABLE_FIELD_TY
 Not a new property — `validations.maxLength` already existed and already produced `z.string().max(n)`; what was missing was enforcement on typing and any handling for numeric fields. No `DRAFT_SCHEMA_VERSION` bump; only `ExportedField.maxLength` is new (additive).
 
 Settled:
+
 - **A number's cap counts digits, not on-screen characters** — the text is unstable across `formatted`/sign/decimals; counting integer digits keeps each property independent.
-- **It never changes the value** — keyboard stops the extra digit; a `calculated` field that overflows *fails validation*, isn't silently shortened.
+- **It never changes the value** — keyboard stops the extra digit; a `calculated` field that overflows _fails validation_, isn't silently shortened.
 - **Travels twice on purpose**: inside the schema (the only thing the consumer can validate with) and as its own key (`ExportedField.maxLength`, so the keyboard can stop typing before a schema parse would).
 - **Exported key is the loosest (base) reading** — a tightening override is caught only by `zodSchemaWhen`, never by blocking a legal keystroke.
 - `z.number()` can't express it with `.max()` — uses a `.refine` on `Math.abs(Math.trunc(n)).toString().length <= n`; `capIntegerDigits` mirrors it on the text side.
@@ -422,9 +446,10 @@ Settled:
 
 ## Options and `apiBinding`
 
-Option-based types (`select`, `search_select`, `toggle_group`, `radio_group`, `checkbox_group`) get **manually authored options only when excluded from the payload *and* declares no `dataSource`**; otherwise options are injected at runtime. Predicates in `src/lib/fieldOptions/fieldOptions.ts` — use `allowsManualOptions`, not an inline `apiBinding` check (exactly 4 call sites enforce this).
+Option-based types (`select`, `search_select`, `toggle_group`, `radio_group`, `checkbox_group`) get **manually authored options only when excluded from the payload _and_ declares no `dataSource`**; otherwise options are injected at runtime. Predicates in `src/lib/fieldOptions/fieldOptions.ts` — use `allowsManualOptions`, not an inline `apiBinding` check (exactly 4 call sites enforce this).
 
 **Precedence the consumer applies:**
+
 1. `options[]` present → use them (only ever emitted for excluded, no-`dataSource` fields).
 2. `dataSource` present → query `dataSource.catalog`, gated by `dependsOn` if set.
 3. Neither, `apiBinding.kind === "mapped"` → infer catalog from `apiBinding.path` (legacy fallback, most ICA selects still here).
@@ -432,10 +457,11 @@ Option-based types (`select`, `search_select`, `toggle_group`, `radio_group`, `c
 **`options[]` and `dataSource` are mutually exclusive by construction** — `allowsManualOptions` returns false whenever `dataSource` is set, so the JSON can never carry both.
 
 Settled:
+
 - Dropping an option-field from the palette creates it with no options; `FieldOptionsModal` fires from `ApiMappingPanel` at exclusion time, skipped if the field already has a `dataSource`.
 - Leaving excluded state, or declaring a `dataSource`, **discards** `options` — deliberate, not kept hidden.
 - `buildZodSchema` only emits `z.enum` for excluded fields; mapped ones fall back to `z.string()`.
-- `ConditionValueInput` offers a dropdown only for fields with *local* options — a mapped select degrades to free-text-by-id in condition editors.
+- `ConditionValueInput` offers a dropdown only for fields with _local_ options — a mapped select degrades to free-text-by-id in condition editors.
 - `checkbox` (single boolean) and `checkbox_group` (multi-select array) are **different types on purpose** — do not merge.
 - `PAYLOAD_SCHEMA` has 75 leaves (53 number, 22 string, no boolean, no scalar arrays) — a `checkbox_group` has nowhere real to map. `fieldMatchesSchemaType` lets `checkbox` match `number` leaves (0/1) to avoid a permanent unavoidable type warning.
 - `flattenLeaves`/`flattenSelectableLeaves(schema, arrayPath?)` stamp array-item leaves and filter by array context for group mapping.
@@ -449,6 +475,7 @@ Settled:
 `CatalogFill` = `{column: keyof CatalogOption, field}` — the target's id, resolved to a name on export. `src/lib/catalogFill/` (`resolveFills`, `hasFills`), panel `CatalogFillsEditor`. Models what the consumer already did hardcoded for `codigo_actividad`/`tarifa_x_mil`.
 
 Settled:
+
 - Declaration lives on the field that **originates** the selection (one owner, like `labelFor`).
 - The fill writes into the scope of **the row it came from** — `useFormPreview.setValue` merges into that same group item, not row 1.
 - Clearing the selection clears the targets too (a stale tarifa left behind would keep computing wrong).
@@ -461,6 +488,7 @@ Settled:
 `FieldDataSource` = `{catalog, dependsOn?}`. `catalog` is a contract string the consumer maps to its own endpoint. **Orthogonal to `apiBinding`** ("where do options come from" vs. "does this value travel in the payload") — `departamento` proves it: `{kind:"excluded"}` (API only wants `idCiudad`) yet still `{catalog:"departamentos"}` for its own options.
 
 Settled:
+
 - `CATALOGS` is a closed dropdown list (`src/constants/catalog.ts`), never typed — same reasoning as `apiBinding.path` (a typo'd catalog name fails silently on the far side).
 - Identifying a catalog by field `name` was rejected — breaks on rename, doesn't generalize.
 - A `dataSource` never ships its options — export carries only the catalog name.
@@ -473,6 +501,7 @@ Settled:
 **Keyed by catalog, not by field** — one `departamentos` entry serves every form that needs it; per-field storage would have needed a "copy between forms" feature that this design makes unnecessary.
 
 Settled:
+
 - **Pasted, not typed** — `parseCatalogPaste(raw, keys)` digs the first array out of a `{data:[…]}`-style wrapper; author names the columns (`CatalogPasteKeys`). A tarifa that doesn't parse is dropped, not stored as `NaN`.
 - **The bank wins whole, or not at all** — an active catalog with no match for the current parent still doesn't fall back to mock data (would mix real/fake in one dropdown).
 - **`default`/`custom` is a per-catalog switch, not a modal prompt** — flipping to `default` keeps the pasted data. A global "which mode?" modal was rejected as either annoying or an unfindable one-time setting.
@@ -484,8 +513,9 @@ Settled:
 `FechasMaximasPresentacion` = `{municipioId, ica[], reteica[], autoretencionIca[]}`, each a `ReglaAnio` list. **Not in the export or draft** (verified by asserting neither ever mentions `municipioId`/`periodicidad`/`tipoDigito`/`autoretencionIca`). `src/lib/maxDates/` (arithmetic), `src/lib/maxDatesBank/` (`localStorage` layer, key `form-orchestrator-fechas`), `panels/MaxDatesPanel` (Fechas tab).
 
 Settled:
+
 - **Model is deliberately flat** — periodicity × digit-validation is 12 combinations, each `FechaLimite` carries its own `periodo`/`digito` rather than a discriminated union. `fechasEsperadas` derives expected count to catch half-loaded dumps early.
-- Names stay in Spanish — this object *is* the API contract.
+- Names stay in Spanish — this object _is_ the API contract.
 - **`digitoDe` returns `null`, not a number** — fixes two silent bugs: `Number("")===0` was picking the digit-0 deadline for an empty document; `NaN` from a lettered NIT matched nothing with no explanation.
 - **Generated table is recomputed from the clock and read-only** (`generarReglasAnuales`); the offset (ICA=1 previous año gravable, retención=0 current) is the only difference between the two. Editing anything **forks a copy** (`source: "custom"`) rather than silently losing edits on the next regeneration.
 - ReteICA/autorretención ship empty — inventing bimonthly/monthly deadlines nobody gave would be the same mistake as fake tarifas.
@@ -502,6 +532,7 @@ Settled:
 Helpers `uvt(año)`/`smmlv(año)` (`src/lib/scriptValores/`), impure (built per run over `RuntimeContext`, since the table isn't exported).
 
 Settled:
+
 - **Return `null`, not `0`, when unloaded** — a `0` silently zeroes any floor/cap written in UVT; `null` forces the author to write a visible fallback (`const UVT = uvt() ?? 52374;`).
 - No argument = current year, from `context.hoy` (never the real clock).
 - `CONTEXT_HELPER_NAMES = [...DATE_HELPER_NAMES, ...VALUE_HELPER_NAMES]` — order matters, both `SCRIPT_PARAM_NAMES` and `runFieldScript` derive from it.
@@ -520,6 +551,7 @@ Settled:
 **First impure helpers** — built per run, closing over `RuntimeContext = {reglas, hoy, valores}`, passed as a **second argument** to `resolveRuntime`/`validateRuntime` (never inside `RuntimeModel`, mirroring how the consumer gets the config JSON and the deadline table from different places).
 
 Settled:
+
 - Declaration kind resolved once at the top (`buildRuntimeModel` reads `projectMeta.formType`) — helpers never branch on ICA-vs-retención themselves.
 - **`diasDeMora` returns `0`, not `NaN`, with no table loaded** — a sanción must never be born from missing data.
 - Dates parsed by hand into UTC (`aUtc`) — `new Date("2025/03/31")` (local) vs `"2025-03-31"` (UTC) differ by a day depending on timezone, and a day here decides on-time vs. late. Also round-trips to catch invalid dates like 31 Feb.
@@ -537,6 +569,7 @@ The **sanción por extemporaneidad** (art. 641 ET) auto-liquidates. The rule liv
 Script declares `UVT` (`uvt() ?? 52374`), `MINIMA_UVT`, `POR_MES`, `TOPE`, `base` as named constants with a comment on each. Shipped defaults are the legal ceiling (10 UVT min, 5%/month, 100% cap) — the law is a maximum a municipality may only lower.
 
 Settled:
+
 - **Base is renglón 25** (`total_impuesto_a_cargo`) — 33/34/35/38 already sum in `valor_sancion`, so using them would close a `fieldGraph` cycle. Coincides with art. 644 §3. **Consequence: saldo-a-favor-based caps are structurally impossible here**, documented at the `const base` line.
 - **`valor_sancion` stays `type:"number"`, no `alwaysDisabled`** — the script's own `return`/`return undefined` is the only lock mechanism, since three other `tipo_sancion` values need the field to stay typeable.
 - Only EXTEMPORANEIDAD auto-liquidates — first line compares against `TIPO_SANCION_EXTEMPORANEIDAD`, returns `undefined` otherwise (including "nothing selected yet").
@@ -546,7 +579,7 @@ Settled:
 
 ### What is deliberately NOT built
 
-- **Sanción por corrección (art. 644)** — all three variants need the *prior* declaration, which doesn't exist yet (system newly deployed, no history to diff). Documentation-only by explicit instruction.
+- **Sanción por corrección (art. 644)** — all three variants need the _prior_ declaration, which doesn't exist yet (system newly deployed, no history to diff). Documentation-only by explicit instruction.
 - **Art. 642** (post-emplazamiento) — needs a flag from an intro modal that doesn't exist; defaulting to the harsher rate isn't defensible.
 - **Ingresos-brutos/patrimonio-líquido branches of art. 641** — patrimonio líquido isn't a field at all; ingresos branch is buildable but nobody's confirmed these municipalities use it.
 - **Gradualidad (art. 640)** — same missing-history blocker as corrección.
@@ -556,6 +589,7 @@ Settled:
 Same shape as the sanción: whole rule inside `logic.script` (`INTERES_MORA_SCRIPT` seed). Formula (art. 634-635 ET): **`base × (TASA_ANUAL / DIAS_ANIO) × días`**, daily/simple, rounded **up** to the thousand. Rate = tasa de usura (Superfinanciera) − 2 points, **the rate at time of payment applies to the whole delay** (why one constant is correct instead of a per-period table). Ships August 2026 value (27,66% E.A.).
 
 Settled:
+
 - **`const base = {valor_a_pagar};` is meant to be edited** per municipality — falls out of `{campo}` substitution for free. **Only renglón 38 is illegal** as a base (consumes the interest itself, would close a cycle); 33/34/35/25 were all checked against `fieldGraph` and don't.
 - **Default base is renglón 35** — inherits 33's `max(…,0)`, so a saldo a favor charges zero interest on a non-debt.
 - **Rounding is `ceil`, done in the script** (matches the municipality's `ROUNDUP(…;-3)`) — the one renglón whose rounding isn't the project's default round-to-nearest; `applyRounding` afterward is a no-op since the value is already a multiple of 1000.
@@ -576,6 +610,7 @@ Exported as `validations: {zodSchema, zodSchemaWhen?: [{when, zodSchema}]}` — 
 Motivating case: `numero_documento` needs 7–10 digits normally but 7–9 when `tipo_documento` is NIT (10th digit is the separately-modeled DV). Three fields (contribuyente/declarante/responsable) each observe their **own** `tipo_documento`.
 
 Settled:
+
 - **An override merges onto the base**, doesn't replace it (`mergeValidationRules` skips `undefined` keys) — clearing a panel input reverts to inherit, it doesn't store `0`/`""`.
 - Rejected alternative: two fields swapped by `visibleWhen` sharing a payload leaf — doubles the field count and breaks `buildPathIndex`'s one-path-one-entry assumption.
 - **Not edges in `fieldGraph`** (observes a field, no value flows through). `removeFields` still prunes overrides pointing at it (dropped whole, not partially).
@@ -586,11 +621,13 @@ Settled:
 Both share the `FieldCondition` type, operator set, store shape and the whole `ConditionEditor`/`useConditionEditor` machinery — `kind: "enable"|"visible"` is the only difference. Operator semantics in `src/lib/fieldCondition/fieldCondition.ts`: `operatorNeedsValue`, `operatorTakesList`, `operatorIsStringBased`, `parseConditionList`, `operatorsForFieldType` (narrows per type — `checkbox` only gets truthy/falsy, `file` only empty/not-empty).
 
 **Precedence, in order:**
+
 1. `visibleWhen` false → not rendered, not validated. Nothing below applies.
 2. `alwaysDisabled` → rendered, read-only.
 3. `enableWhen` false → rendered, disabled.
 
 Settled:
+
 - **A hidden field's Zod schema still exports unchanged** (`buildZodSchema` knows nothing about `visibleWhen`) — the consumer must drop hidden fields from its resolver itself. Same coordinated-consumer arrangement as `logic.script`.
 - Visibility is editable even when `alwaysDisabled` is on (hiding a read-only field is legitimate); the enable editor itself is hidden in that case.
 - `wouldCreateCycle` walks **every** edge kind (a cycle can span condition and script edges).
@@ -601,6 +638,7 @@ Settled:
 The **Exportar** file doubles as the project file: `downloadFormExport` writes `{projectMeta, setupConfig, formSchema, builderDraft}`, where `builderDraft` is exactly the `localStorage` draft payload (`buildDraftPayload`). It opens from the wizard's **Cargar formulario** or the right panel's `Abrir…` (`ProjectImportModal`, which confirms first: it replaces the current form and `restoreDraft` clears the history). Pieces: `src/lib/projectFile/` (`readProjectFile`, `summarizeProjectFile`), `useProjectImport`, `ProjectFilePicker`, `FieldRenameNotice` (extracted from `DraftRecoveryModal`).
 
 Settled:
+
 - **Rebuilt from `builderDraft`, never from `formSchema`** — the compiled export is lossy (validations only as Zod strings, styles merged into one CSS map, disabled checks dropped). `formSchema` is ignored on open and regenerated from the draft.
 - **Same pipeline as a `localStorage` draft**: `parseDraft` (migrate → Zod, which also runs `safeHref` → name dedup). No second validator and no separate export-format version — `DRAFT_SCHEMA_VERSION` covers both.
 - **Only files that carry `builderDraft` open.** Older exports get a message asking to re-export; a `schemaVersion` above ours (`isNewerDraft`) gets "update the builder". Reconstructing old files from the compiled schema was explicitly declined.
@@ -617,6 +655,7 @@ Settled:
 Errors (block the download): a field, rule-effect or enabled group-check script that doesn't compile (alone, or once composed with the prelude); a prelude that doesn't compile or reads fields; an invalid regex in `validations.pattern`, an override's `pattern` or a `matches` condition; a dependency cycle. Warnings (never block): unknown `{x}`, a binding to a path the contract lacks or to a host-provided leaf, unsupported CSS in field/row/tooltip styles.
 
 Settled:
+
 - **Runs only on Exportar**, never live — no per-keystroke cost, which matters on the user's slow work PC.
 - **Errors block, warnings don't** — only certainly-broken things are errors; an unknown `{a}` may be destructuring.
 - **`⚠ tipo` and payload coverage are left out on purpose** (user's call): the 12 known type warnings would show on every export, and the contract doesn't mark which leaves are required. Both stay in Mapeo API and the Payload view.
@@ -657,13 +696,14 @@ No test runner configured. **Biome is the enforced linter/formatter** (2-space i
 bun filled two roles; pnpm only replaces package management (that swap was free — no bun APIs/config anywhere). bun's second role, **running TypeScript directly**, is now `tsx` (a devDependency; scratchpad scripts run under `pnpm exec tsx`).
 
 Settled:
+
 - **`pnpm-workspace.yaml` carries `allowBuilds`, not `package.json`** — pnpm 11 moved this out of `package.json`, where it's now silently ignored with only a warning. Needed for `@biomejs/biome` and `esbuild` (via tsx), which download platform binaries at install.
 - **`reicon-react` pinned to exact `1.1.2`** — `^` ranges pull `1.2.0`, which renamed 10 icon exports in a minor (`Maximize22`→`Maximize2`, etc.) and breaks the typecheck.
 - Other bumps were verified, not assumed (Biome 2.5.2→2.5.9 reformatted nothing; Vite 8.1.1→8.2.2 re-partitioned chunks but both lazy boundaries still hold, verified by grep).
 - The 1132 extensionless imports didn't need fixing (normal for `moduleResolution: bundler`; tsx resolves them like bun did — Node's own loader is the one that can't).
 - Scratchpad needs: `package.json` with `{"type":"module"}` (top-level await), absolute imports as `file:///C:/...` URLs, and a `node_modules` junction to the project.
 - **Run scratchpad scripts from the project root** (`pnpm exec tsx <scratchpad>/x.ts`), never from inside the scratchpad: there, pnpm 11's deps-status check launches a `pnpm install`, and the only thing stopping it from wiping the junctioned `node_modules` is `ERR_PNPM_UNSAFE_MODULES_DIR`.
-- A script that imports the store needs a `localStorage` stub installed *before* the import (`Object.assign(globalThis, { localStorage })`, then a dynamic `await import()`): the simulator banks read it when the store is created.
+- A script that imports the store needs a `localStorage` stub installed _before_ the import (`Object.assign(globalThis, { localStorage })`, then a dynamic `await import()`): the simulator banks read it when the store is created.
 
 ## Architecture
 
@@ -689,6 +729,7 @@ Both import cycles this shape produced are fixed the same way: implementation mo
   **The 33/34→35→38→40 tail encodes an unwritten rule**: 35 is just 33 (saldo a favor → nothing to pay, no condition needed), and 38 = `max(35 − 36 + 37 − 34, 0)` — **the `− 34`** keeps intereses de mora from charging against a debt that doesn't exist; below zero it's already stated in 34, so 38 doesn't repeat it as a negative. Some municipalities want the opposite (signed 35/38/39/40) — **not built**, a per-municipality change to make when asked, not a mode to carry now.
 
   **`calculated` and `number` are behaviourally identical today** (same Zod case, same preview control, same numeric properties) — the only difference is the palette label. **`alwaysDisabled` is what actually locks a field**, applied in `formRuntime.utils.ts` (takes precedence over `enableWhen`).
+
 - **State** — single Zustand store, `src/store/formStore.ts`, typed by `formStoreTypes.ts` + domain files (`field.ts`, `formStructure.ts`, `setup.ts`, `placement.ts`, `ui.ts`, `store.ts`). Constructors/walkers in `formStore.utils.ts`; `formStore.constants.ts` holds `THEME_STORAGE_KEY` and the `NO_ROWS`/`NO_GROUPS`/`NO_SELECTION` sentinels.
 
   **`store/banksSlice.ts` lives outside `formStore.ts`** — the three simulator-only banks (`catalogBank`, `maxDates`, `valores`), spread into the store (`...createBanksSlice(set)`) so every consumer still uses ordinary `useFormStore((s) => s.setValores)`. They share nothing with the rest: never touch `formSteps`/`introModal`, never enter the draft, never reach the export. Takes only `set` (no bank action reads outside state); splitting anything else out has the same 100-column `create<FormState>(…)` trap.
@@ -702,6 +743,7 @@ Both import cycles this shape produced are fixed the same way: implementation mo
   - Row/field mutations apply uniformly via `mapRowEverywhere`/`mapFieldEverywhere`. Key actions: `addFieldToRow`, `moveField`, `removeFields`, `selectField`/`toggleFieldSelection`/`setFieldSelection`, `updateField`, `setFieldName`, `updateFieldValidations/Styles/FileConfig`, `updateFieldApiBinding`, `setFieldScript`, `setFormScript`, `setFieldRounding/Formatted/AllowsNegative/Decimals/LabelFor/Content`, `addFieldRule`/`updateFieldRule`/`removeFieldRule`/`reorderFieldRule`, `addFieldOption`/`removeFieldOption`/`updateFieldOptionLabel`, `setFieldEnableWhen`/`setFieldVisibleWhen`, `addRowToActiveCanvas`/`updateRowColumns`/`removeRow`/`moveRow`, `moveFieldsToStep`/`moveRowToStep`, `setCanvasTool`, `addGroupToActiveStep`/`addRowToGroup`/`updateGroup`/`removeGroup`, step actions, `restoreDraft`, `undo`/`redo`.
   - **Wrapped in zundo's `temporal` middleware**: history lives in `useFormStore.temporal`, read through `useFormHistory`. The creator is `createFormState`, passed to `create<FormState>()(temporal(…))` — any further middleware has to keep that curried form. See "Undo / redo".
   - **Selectors must return stable references** — Zustand's `useSyncExternalStore` compares by identity; a fresh `[]` per call causes "Maximum update depth exceeded" (hence `NO_ROWS`/`NO_GROUPS`).
+
 - **Field model** (`CanvasField`, `src/types/field.ts`): `name` (unique slug), `type`, `label`, `colStart`, `colSpan`, `validations`, `styles`, `logic`, plus optional `title`, `options[]`, `fileConfig`, `alwaysDisabled`, `apiBinding`, `labelFor`, `content`, `tooltip`, `rounding`, `formatted`, `allowsNegative`, `decimals`, `enableWhen`, `visibleWhen` (`FieldCondition = {fieldId, operator, value}`). Operators: `equals|notEquals|greaterThan|lessThan|startsWith|endsWith|contains|matches|in|isEmpty|isNotEmpty|isTruthy|isFalsy`. `logic` = `{script?, rules?}`. Types in `FIELD_TYPES` (`src/constants/fieldTypes.ts`), grouped **básicos** (text, number, select, textarea, checkbox, calculated, file), **complejos** (search_select, toggle_group, radio_group, checkbox_group), **contenido** (label, rich_text). Adding a type is just a `FIELD_TYPES` entry (`PALETTE_SECTIONS` skips empty categories).
 - **Grid**: `src/constants/grid.ts` — `GRID_BASE_COLUMNS = 16` default; rows carry their own `columns` (clamped 1–24), shrinking clamps field `colSpan`s to fit.
 - **Four-slot layout** (`AppLayout.tsx`: `sidebar`, `canvas`, `canvasOverlay`, `rightSidebar`):

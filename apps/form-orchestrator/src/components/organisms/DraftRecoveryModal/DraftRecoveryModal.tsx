@@ -1,8 +1,8 @@
-import { Button } from "../../atoms/Button/Button";
-import { ModalActions } from "../../atoms/ModalActions/ModalActions";
-import { ModalShell } from "../../atoms/ModalShell/ModalShell";
-import { FieldRenameNotice } from "../../molecules/FieldRenameNotice/FieldRenameNotice";
-import type { DraftRecoveryModalProps } from "./DraftRecoveryModal.types";
+import { Button } from '../../atoms/Button/Button'
+import { ModalActions } from '../../atoms/ModalActions/ModalActions'
+import { ModalShell } from '../../atoms/ModalShell/ModalShell'
+import { FieldRenameNotice } from '../../molecules/FieldRenameNotice/FieldRenameNotice'
+import type { DraftRecoveryModalProps } from './DraftRecoveryModal.types'
 
 export function DraftRecoveryModal({
   draft,
@@ -10,7 +10,7 @@ export function DraftRecoveryModal({
   onRestore,
   onDiscard,
 }: DraftRecoveryModalProps) {
-  const savedAtLabel = new Date(draft.savedAt).toLocaleString();
+  const savedAtLabel = new Date(draft.savedAt).toLocaleString()
 
   return (
     <ModalShell maxWidthClassName="max-w-md">
@@ -41,5 +41,5 @@ export function DraftRecoveryModal({
         </Button>
       </ModalActions>
     </ModalShell>
-  );
+  )
 }

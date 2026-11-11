@@ -1,4 +1,4 @@
-import type { ConditionFieldSelectProps } from "./ConditionFieldSelect.types";
+import type { ConditionFieldSelectProps } from './ConditionFieldSelect.types'
 
 export function ConditionFieldSelect({
   label,
@@ -23,5 +23,5 @@ export function ConditionFieldSelect({
         ))}
       </select>
     </div>
-  );
+  )
 }

@@ -2,30 +2,30 @@ import {
   operatorIsStringBased,
   operatorTakesList,
   parseConditionList,
-} from "../../../lib/fieldCondition/fieldCondition";
-import type { FieldOption } from "../../../types/field";
-import { FIELD_CLASSES, OPERATOR_VALUE_HINTS } from "./ConditionValueInput.constants";
-import type { ConditionValueInputProps } from "./ConditionValueInput.types";
+} from '../../../lib/fieldCondition/fieldCondition'
+import type { FieldOption } from '../../../types/field'
+import { FIELD_CLASSES, OPERATOR_VALUE_HINTS } from './ConditionValueInput.constants'
+import type { ConditionValueInputProps } from './ConditionValueInput.types'
 
 export function ConditionValueInput({
   condition,
   observedField,
   onChange,
 }: ConditionValueInputProps) {
-  const stringValue = condition.value === undefined ? "" : String(condition.value);
-  const options: FieldOption[] = observedField?.options ?? [];
-  const takesList = operatorTakesList(condition.operator);
-  const isStringBased = operatorIsStringBased(condition.operator);
-  const hint = OPERATOR_VALUE_HINTS[condition.operator];
-  const isNumeric = observedField?.type === "number" || observedField?.type === "calculated";
+  const stringValue = condition.value === undefined ? '' : String(condition.value)
+  const options: FieldOption[] = observedField?.options ?? []
+  const takesList = operatorTakesList(condition.operator)
+  const isStringBased = operatorIsStringBased(condition.operator)
+  const hint = OPERATOR_VALUE_HINTS[condition.operator]
+  const isNumeric = observedField?.type === 'number' || observedField?.type === 'calculated'
 
   function toggleListEntry(optionId: string): void {
-    const selected: string[] = parseConditionList(condition.value);
+    const selected: string[] = parseConditionList(condition.value)
     const next: string[] = selected.includes(optionId)
       ? selected.filter((entry) => entry !== optionId)
-      : [...selected, optionId];
+      : [...selected, optionId]
 
-    onChange(next.join(","));
+    onChange(next.join(','))
   }
 
   return (
@@ -63,8 +63,8 @@ export function ConditionValueInput({
           type="number"
           value={stringValue}
           onChange={(event) => {
-            const parsed = Number.parseFloat(event.target.value);
-            onChange(Number.isNaN(parsed) ? "" : parsed);
+            const parsed = Number.parseFloat(event.target.value)
+            onChange(Number.isNaN(parsed) ? '' : parsed)
           }}
           className={FIELD_CLASSES}
         />
@@ -80,5 +80,5 @@ export function ConditionValueInput({
 
       {hint && <p className="text-[11px] text-fg-subtle">{hint}</p>}
     </div>
-  );
+  )
 }

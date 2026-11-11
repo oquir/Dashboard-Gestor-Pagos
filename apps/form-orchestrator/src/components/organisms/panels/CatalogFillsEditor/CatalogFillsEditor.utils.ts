@@ -1,5 +1,5 @@
-import { isPresentationalField } from "../../../../lib/fieldKind/fieldKind";
-import type { CanvasField, CatalogFill } from "../../../../types/field";
+import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
+import type { CanvasField, CatalogFill } from '../../../../types/field'
 
 // Los candidatos a recibir una columna: cualquier campo con valor del mismo lienzo, menos el que
 // origina la seleccion. No se filtra por tipo -- el codigo CIIU es texto y la tarifa es numero --
@@ -8,13 +8,13 @@ import type { CanvasField, CatalogFill } from "../../../../types/field";
 export function fillTargetCandidates(fields: CanvasField[], sourceId: string): CanvasField[] {
   return fields.filter(
     (candidate) => candidate.id !== sourceId && !isPresentationalField(candidate.type),
-  );
+  )
 }
 
 export function replaceFill(fills: CatalogFill[], index: number, next: CatalogFill): CatalogFill[] {
-  return fills.map((fill, position) => (position === index ? next : fill));
+  return fills.map((fill, position) => (position === index ? next : fill))
 }
 
 export function removeFill(fills: CatalogFill[], index: number): CatalogFill[] {
-  return fills.filter((_, position) => position !== index);
+  return fills.filter((_, position) => position !== index)
 }

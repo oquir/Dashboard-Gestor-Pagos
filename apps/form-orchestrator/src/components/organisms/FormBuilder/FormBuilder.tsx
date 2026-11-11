@@ -1,22 +1,22 @@
-import { DndContext, DragOverlay } from "@dnd-kit/core";
-import { lazy, Suspense } from "react";
-import { useDragAndDrop } from "../../../hooks/useDragAndDrop/useDragAndDrop";
-import { useFormStore } from "../../../store/formStore";
-import { SimulatorLoading } from "../../atoms/SimulatorLoading/SimulatorLoading";
-import { AppLayout } from "../../layout/AppLayout";
-import { DragPreview } from "../../molecules/DragPreview/DragPreview";
-import { Canvas } from "../Canvas/Canvas";
-import { CanvasToolbar } from "../CanvasToolbar/CanvasToolbar";
-import { RightSidebar } from "../RightSidebar/RightSidebar";
-import { Sidebar } from "../Sidebar/Sidebar";
-import { OVERLAY_STYLE } from "./FormBuilder.constants";
+import { DndContext, DragOverlay } from '@dnd-kit/core'
+import { lazy, Suspense } from 'react'
+import { useDragAndDrop } from '../../../hooks/useDragAndDrop/useDragAndDrop'
+import { useFormStore } from '../../../store/formStore'
+import { SimulatorLoading } from '../../atoms/SimulatorLoading/SimulatorLoading'
+import { AppLayout } from '../../layout/AppLayout'
+import { DragPreview } from '../../molecules/DragPreview/DragPreview'
+import { Canvas } from '../Canvas/Canvas'
+import { CanvasToolbar } from '../CanvasToolbar/CanvasToolbar'
+import { RightSidebar } from '../RightSidebar/RightSidebar'
+import { Sidebar } from '../Sidebar/Sidebar'
+import { OVERLAY_STYLE } from './FormBuilder.constants'
 
 // El simulador se carga aparte: es la unica puerta a los catalogos de mentira y al zod que hidrata
 // los esquemas, que juntos pesan mas que el resto de la app y no sirven para nada hasta que alguien
 // abre el simulador. La frontera solo corta si nada del builder importa ese subarbol.
 const FormSimulator = lazy(() =>
-  import("../FormSimulator/FormSimulator").then((module) => ({ default: module.FormSimulator })),
-);
+  import('../FormSimulator/FormSimulator').then((module) => ({ default: module.FormSimulator })),
+)
 
 export function FormBuilder() {
   const {
@@ -27,8 +27,8 @@ export function FormBuilder() {
     handleDragStart,
     handleDragMove,
     handleDragEnd,
-  } = useDragAndDrop();
-  const isSimulatorOpen = useFormStore((state) => state.isSimulatorOpen);
+  } = useDragAndDrop()
+  const isSimulatorOpen = useFormStore((state) => state.isSimulatorOpen)
 
   // El simulador se lleva la pantalla entera: sin sidebar, sin lienzo y sin drag and drop.
   if (isSimulatorOpen) {
@@ -36,7 +36,7 @@ export function FormBuilder() {
       <Suspense fallback={<SimulatorLoading />}>
         <FormSimulator />
       </Suspense>
-    );
+    )
   }
 
   return (
@@ -58,10 +58,10 @@ export function FormBuilder() {
       <DragOverlay
         modifiers={overlayModifiers}
         style={OVERLAY_STYLE}
-        dropAnimation={activeDrag?.source === "canvas-row" ? null : undefined}
+        dropAnimation={activeDrag?.source === 'canvas-row' ? null : undefined}
       >
         {activeDrag ? <DragPreview activeDrag={activeDrag} /> : null}
       </DragOverlay>
     </DndContext>
-  );
+  )
 }

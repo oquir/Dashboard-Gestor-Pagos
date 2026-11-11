@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { conFechaAnual } from "../../../../lib/maxDates/maxDates";
-import { maxDatesEnUso, usesCustomMaxDates } from "../../../../lib/maxDatesBank/maxDatesBank";
-import { useFormStore } from "../../../../store/formStore";
-import type { FechasMaximasPresentacion } from "../../../../types/maxDates";
-import { BinaryChoiceToggle } from "../../../molecules/BinaryChoiceToggle/BinaryChoiceToggle";
-import { MaxDatesDeclaracionSection } from "../../../molecules/MaxDatesDeclaracionSection/MaxDatesDeclaracionSection";
-import { MaxDatesPasteForm } from "../../../molecules/MaxDatesPasteForm/MaxDatesPasteForm";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
+import { useState } from 'react'
+import { conFechaAnual } from '../../../../lib/maxDates/maxDates'
+import { maxDatesEnUso, usesCustomMaxDates } from '../../../../lib/maxDatesBank/maxDatesBank'
+import { useFormStore } from '../../../../store/formStore'
+import type { FechasMaximasPresentacion } from '../../../../types/maxDates'
+import { BinaryChoiceToggle } from '../../../molecules/BinaryChoiceToggle/BinaryChoiceToggle'
+import { MaxDatesDeclaracionSection } from '../../../molecules/MaxDatesDeclaracionSection/MaxDatesDeclaracionSection'
+import { MaxDatesPasteForm } from '../../../molecules/MaxDatesPasteForm/MaxDatesPasteForm'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
 import {
   ACTION_CLASSES,
   BADGE_EMPTY_CLASSES,
@@ -14,30 +14,30 @@ import {
   DECLARACIONES,
   HINT_CLASSES,
   INPUT_CLASSES,
-} from "./MaxDatesPanel.constants";
+} from './MaxDatesPanel.constants'
 
 export function MaxDatesPanel() {
-  const stored = useFormStore((state) => state.maxDates);
-  const setMaxDates = useFormStore((state) => state.setMaxDates);
-  const setMaxDatesSource = useFormStore((state) => state.setMaxDatesSource);
+  const stored = useFormStore((state) => state.maxDates)
+  const setMaxDates = useFormStore((state) => state.setMaxDates)
+  const setMaxDatesSource = useFormStore((state) => state.setMaxDatesSource)
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false)
 
-  const anioActual: number = new Date().getFullYear();
-  const fechas: FechasMaximasPresentacion = maxDatesEnUso(stored, anioActual);
-  const isCustom: boolean = usesCustomMaxDates(stored);
+  const anioActual: number = new Date().getFullYear()
+  const fechas: FechasMaximasPresentacion = maxDatesEnUso(stored, anioActual)
+  const isCustom: boolean = usesCustomMaxDates(stored)
 
   // Editar cualquier cosa saca una copia propia. La tabla generada se recalcula con el reloj -- en
   // enero aparece el ano nuevo sola -- asi que si aceptara cambios los perderia sin avisar.
   function edit(next: FechasMaximasPresentacion): void {
-    setMaxDates(next);
+    setMaxDates(next)
   }
 
   return (
     <div className="flex flex-col gap-3">
       <p className={HINT_CLASSES}>
         Las fechas máximas de presentación con las que el simulador prueba. Tu app las recibe de su
-        propio endpoint, así que{" "}
+        propio endpoint, así que{' '}
         <strong className="font-semibold">no viajan en el JSON exportado</strong> ni dependen del
         borrador. Por defecto se generan los últimos {fechas.ica.length} años gravables de ICA
         venciendo el 31 de marzo del año siguiente; cualquier cambio guarda una copia tuya y deja de
@@ -48,7 +48,7 @@ export function MaxDatesPanel() {
         title="Tabla en uso"
         aside={
           <span className={isCustom ? BADGE_LOADED_CLASSES : BADGE_EMPTY_CLASSES}>
-            {isCustom ? "Cargada" : "Generada"}
+            {isCustom ? 'Cargada' : 'Generada'}
           </span>
         }
       >
@@ -65,7 +65,7 @@ export function MaxDatesPanel() {
         {stored.custom !== null && (
           <BinaryChoiceToggle
             value={isCustom}
-            onChange={(next) => setMaxDatesSource(next ? "custom" : "default")}
+            onChange={(next) => setMaxDatesSource(next ? 'custom' : 'default')}
             yesLabel="Cargada"
             noLabel="Generada"
           />
@@ -73,10 +73,10 @@ export function MaxDatesPanel() {
 
         <div className="flex items-center justify-between gap-2">
           <p className={HINT_CLASSES}>
-            {isCustom ? "Usando tu tabla" : "Usando la tabla generada"}
+            {isCustom ? 'Usando tu tabla' : 'Usando la tabla generada'}
           </p>
           <button type="button" onClick={() => setIsOpen(!isOpen)} className={ACTION_CLASSES}>
-            {isOpen ? "Cerrar" : "Pegar del endpoint"}
+            {isOpen ? 'Cerrar' : 'Pegar del endpoint'}
           </button>
         </div>
 
@@ -93,5 +93,5 @@ export function MaxDatesPanel() {
         />
       ))}
     </div>
-  );
+  )
 }

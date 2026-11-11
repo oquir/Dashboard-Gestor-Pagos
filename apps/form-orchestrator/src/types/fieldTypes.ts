@@ -1,7 +1,7 @@
-export type FieldTypeCategory = "basico" | "complejo" | "contenido";
+export type FieldTypeCategory = 'basico' | 'complejo' | 'contenido'
 
 export interface FieldTypeDef {
-  type: string;
-  label: string;
-  category: FieldTypeCategory;
+  type: string
+  label: string
+  category: FieldTypeCategory
 }

@@ -1,4 +1,4 @@
 export interface FieldTypeBadgeProps {
-  type: string;
-  size?: number;
+  type: string
+  size?: number
 }

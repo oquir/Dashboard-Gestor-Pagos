@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { Button } from "../../atoms/Button/Button";
-import { ModalActions } from "../../atoms/ModalActions/ModalActions";
-import { ModalShell } from "../../atoms/ModalShell/ModalShell";
-import { LabeledInput } from "../../molecules/LabeledInput/LabeledInput";
-import type { FieldOptionsModalProps } from "./FieldOptionsModal.types";
+import { useState } from 'react'
+import { Button } from '../../atoms/Button/Button'
+import { ModalActions } from '../../atoms/ModalActions/ModalActions'
+import { ModalShell } from '../../atoms/ModalShell/ModalShell'
+import { LabeledInput } from '../../molecules/LabeledInput/LabeledInput'
+import type { FieldOptionsModalProps } from './FieldOptionsModal.types'
 
 export function FieldOptionsModal({ fieldTypeLabel, onConfirm, onCancel }: FieldOptionsModalProps) {
-  const [title, setTitle] = useState<string>("");
-  const [optionCount, setOptionCount] = useState<number>(2);
-  const isValid = optionCount >= 2;
+  const [title, setTitle] = useState<string>('')
+  const [optionCount, setOptionCount] = useState<number>(2)
+  const isValid = optionCount >= 2
 
   return (
     <ModalShell>
@@ -57,5 +57,5 @@ export function FieldOptionsModal({ fieldTypeLabel, onConfirm, onCancel }: Field
         </Button>
       </ModalActions>
     </ModalShell>
-  );
+  )
 }

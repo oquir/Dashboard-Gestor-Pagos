@@ -1,5 +1,5 @@
-import type { CanvasField } from "../../../../types/field";
+import type { CanvasField } from '../../../../types/field'
 
 export interface CatalogFillsEditorProps {
-  field: CanvasField;
+  field: CanvasField
 }

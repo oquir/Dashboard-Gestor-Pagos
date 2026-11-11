@@ -1,11 +1,11 @@
-import { useDroppable } from "@dnd-kit/core";
-import { useState } from "react";
-import { Layers, Plus } from "reicon-react";
-import { PAYLOAD_SCHEMA } from "../../../constants/payloadSchema";
-import { arrayPaths } from "../../../lib/payloadSchema/payloadSchema";
-import { useFormStore } from "../../../store/formStore";
-import { CanvasRow } from "../CanvasRow/CanvasRow";
-import { GroupChecksEditor } from "../panels/GroupChecksEditor/GroupChecksEditor";
+import { useDroppable } from '@dnd-kit/core'
+import { useState } from 'react'
+import { Layers, Plus } from 'reicon-react'
+import { PAYLOAD_SCHEMA } from '../../../constants/payloadSchema'
+import { arrayPaths } from '../../../lib/payloadSchema/payloadSchema'
+import { useFormStore } from '../../../store/formStore'
+import { CanvasRow } from '../CanvasRow/CanvasRow'
+import { GroupChecksEditor } from '../panels/GroupChecksEditor/GroupChecksEditor'
 import {
   BAND_ACTION_CLASSES,
   BAND_CLASSES,
@@ -13,9 +13,9 @@ import {
   BAND_INPUT_CLASSES,
   BAND_NUMBER_CLASSES,
   BAND_SUMMARY_CLASSES,
-} from "./RepeatableGroupBand.constants";
-import type { RepeatableGroupBandProps } from "./RepeatableGroupBand.types";
-import { buildGroupSummary } from "./RepeatableGroupBand.utils";
+} from './RepeatableGroupBand.constants'
+import type { RepeatableGroupBandProps } from './RepeatableGroupBand.types'
+import { buildGroupSummary } from './RepeatableGroupBand.utils'
 
 export function RepeatableGroupBand({
   group,
@@ -25,14 +25,14 @@ export function RepeatableGroupBand({
   rowOffsets,
   onFieldContextMenu,
 }: RepeatableGroupBandProps) {
-  const updateGroup = useFormStore((state) => state.updateGroup);
-  const addRowToGroup = useFormStore((state) => state.addRowToGroup);
-  const removeGroup = useFormStore((state) => state.removeGroup);
-  const isRowDragActive = useFormStore((state) => state.rowDrag !== null);
-  const paths: string[] = arrayPaths(PAYLOAD_SCHEMA);
+  const updateGroup = useFormStore((state) => state.updateGroup)
+  const addRowToGroup = useFormStore((state) => state.addRowToGroup)
+  const removeGroup = useFormStore((state) => state.removeGroup)
+  const isRowDragActive = useFormStore((state) => state.rowDrag !== null)
+  const paths: string[] = arrayPaths(PAYLOAD_SCHEMA)
   // Minimo, maximo, arreglo y comprobaciones eran un formulario de configuracion desplegado en
   // medio del lienzo, aunque no se toquen casi nunca. Al reposo ahora se leen en una linea.
-  const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false);
+  const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false)
 
   // La banda solo es zona de soltar mientras se arrastra una fila. Apagada el resto del tiempo,
   // no puede competir con las filas de dentro por el drop de un campo: es estructural y no depende
@@ -41,7 +41,7 @@ export function RepeatableGroupBand({
     id: `band-${group.id}`,
     data: { bandGroupId: group.id },
     disabled: !isRowDragActive,
-  });
+  })
 
   return (
     <li
@@ -50,8 +50,8 @@ export function RepeatableGroupBand({
       style={{ transform: offsetY === 0 ? undefined : `translateY(${offsetY}px)` }}
       className={`${BAND_CLASSES} ${
         isRowDragActive
-          ? "transition-transform duration-200 ease-[cubic-bezier(0.34,1.6,0.5,1)]"
-          : ""
+          ? 'transition-transform duration-200 ease-[cubic-bezier(0.34,1.6,0.5,1)]'
+          : ''
       }`}
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -86,7 +86,7 @@ export function RepeatableGroupBand({
           aria-expanded={isConfigOpen}
           className={BAND_ACTION_CLASSES}
         >
-          {isConfigOpen ? "▾" : "▸"} Configurar
+          {isConfigOpen ? '▾' : '▸'} Configurar
         </button>
       </div>
 
@@ -118,7 +118,7 @@ export function RepeatableGroupBand({
             <label className="flex items-center gap-1.5">
               Arreglo del payload
               <select
-                value={group.arrayPath ?? ""}
+                value={group.arrayPath ?? ''}
                 onChange={(event) =>
                   updateGroup(group.id, { arrayPath: event.target.value || undefined })
                 }
@@ -136,7 +136,7 @@ export function RepeatableGroupBand({
             <span className="text-slate-400 dark:text-neutral-500">
               {group.arrayPath
                 ? `Cada repetición es un ítem de ${group.arrayPath}[].`
-                : "Elegí el arreglo para poder mapear los campos de adentro."}
+                : 'Elegí el arreglo para poder mapear los campos de adentro.'}
             </span>
           </div>
 
@@ -167,5 +167,5 @@ export function RepeatableGroupBand({
         ))}
       </ul>
     </li>
-  );
+  )
 }

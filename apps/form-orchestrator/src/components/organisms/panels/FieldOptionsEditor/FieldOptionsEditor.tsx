@@ -1,32 +1,32 @@
-import { Xmark } from "reicon-react";
-import { useFormStore } from "../../../../store/formStore";
-import type { FieldOption } from "../../../../types/field";
-import { IconButton } from "../../../atoms/IconButton/IconButton";
-import { LabeledInput } from "../../../molecules/LabeledInput/LabeledInput";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
+import { Xmark } from 'reicon-react'
+import { useFormStore } from '../../../../store/formStore'
+import type { FieldOption } from '../../../../types/field'
+import { IconButton } from '../../../atoms/IconButton/IconButton'
+import { LabeledInput } from '../../../molecules/LabeledInput/LabeledInput'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
 import {
   COUNT_CLASSES,
   MIN_OPTIONS,
   OPTION_INPUT_CLASSES,
   REMOVE_OPTION_CLASSES,
-} from "./FieldOptionsEditor.constants";
-import type { FieldOptionsEditorProps } from "./FieldOptionsEditor.types";
-import { getOptionsHint } from "./FieldOptionsEditor.utils";
+} from './FieldOptionsEditor.constants'
+import type { FieldOptionsEditorProps } from './FieldOptionsEditor.types'
+import { getOptionsHint } from './FieldOptionsEditor.utils'
 
 export function FieldOptionsEditor({ field }: FieldOptionsEditorProps) {
-  const updateField = useFormStore((state) => state.updateField);
-  const addFieldOption = useFormStore((state) => state.addFieldOption);
-  const removeFieldOption = useFormStore((state) => state.removeFieldOption);
-  const updateFieldOptionLabel = useFormStore((state) => state.updateFieldOptionLabel);
-  const options: FieldOption[] = field.options ?? [];
-  const canRemove: boolean = options.length > MIN_OPTIONS;
+  const updateField = useFormStore((state) => state.updateField)
+  const addFieldOption = useFormStore((state) => state.addFieldOption)
+  const removeFieldOption = useFormStore((state) => state.removeFieldOption)
+  const updateFieldOptionLabel = useFormStore((state) => state.updateFieldOptionLabel)
+  const options: FieldOption[] = field.options ?? []
+  const canRemove: boolean = options.length > MIN_OPTIONS
 
   return (
     <PanelSection title="Opciones" aside={<span className={COUNT_CLASSES}>{options.length}</span>}>
       <LabeledInput
         id="field-options-title"
         label="Título del grupo (opcional)"
-        value={field.title ?? ""}
+        value={field.title ?? ''}
         onChange={(event) => updateField(field.id, { title: event.target.value })}
       />
 
@@ -78,5 +78,5 @@ export function FieldOptionsEditor({ field }: FieldOptionsEditorProps) {
         {getOptionsHint(field.type, Boolean(field.validations.required))}
       </p>
     </PanelSection>
-  );
+  )
 }

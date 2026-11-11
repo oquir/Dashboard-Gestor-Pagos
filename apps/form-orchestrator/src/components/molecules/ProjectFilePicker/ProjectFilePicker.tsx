@@ -1,9 +1,9 @@
-import { type ChangeEvent, useRef } from "react";
-import { Button } from "../../atoms/Button/Button";
-import { FieldRenameNotice } from "../FieldRenameNotice/FieldRenameNotice";
-import { ERROR_BOX_CLASSES, FILE_ACCEPT, SUMMARY_BOX_CLASSES } from "./ProjectFilePicker.constants";
-import type { ProjectFilePickerProps } from "./ProjectFilePicker.types";
-import { summaryLine } from "./ProjectFilePicker.utils";
+import { type ChangeEvent, useRef } from 'react'
+import { Button } from '../../atoms/Button/Button'
+import { FieldRenameNotice } from '../FieldRenameNotice/FieldRenameNotice'
+import { ERROR_BOX_CLASSES, FILE_ACCEPT, SUMMARY_BOX_CLASSES } from './ProjectFilePicker.constants'
+import type { ProjectFilePickerProps } from './ProjectFilePicker.types'
+import { summaryLine } from './ProjectFilePicker.utils'
 
 export function ProjectFilePicker({
   fileName,
@@ -12,13 +12,13 @@ export function ProjectFilePicker({
   isReading,
   onPick,
 }: ProjectFilePickerProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null)
 
   function handleChange(event: ChangeEvent<HTMLInputElement>): void {
-    const file: File | undefined = event.target.files?.[0];
+    const file: File | undefined = event.target.files?.[0]
     // Se vacia para que volver a elegir el mismo archivo, ya corregido, dispare change otra vez.
-    event.target.value = "";
-    if (file) onPick(file);
+    event.target.value = ''
+    if (file) onPick(file)
   }
 
   return (
@@ -37,7 +37,7 @@ export function ProjectFilePicker({
           Elegir archivo
         </Button>
         <span className="truncate text-xs text-slate-500 dark:text-neutral-400">
-          {isReading ? "Leyendo…" : (fileName ?? "Ningún archivo elegido")}
+          {isReading ? 'Leyendo…' : (fileName ?? 'Ningún archivo elegido')}
         </span>
         <input
           ref={inputRef}
@@ -49,7 +49,7 @@ export function ProjectFilePicker({
         />
       </div>
 
-      {result?.status === "error" && <p className={ERROR_BOX_CLASSES}>{result.message}</p>}
+      {result?.status === 'error' && <p className={ERROR_BOX_CLASSES}>{result.message}</p>}
 
       {summary && (
         <div className={SUMMARY_BOX_CLASSES}>
@@ -63,11 +63,11 @@ export function ProjectFilePicker({
         </div>
       )}
 
-      {result?.status === "ok" && <FieldRenameNotice renamed={result.renamed} />}
+      {result?.status === 'ok' && <FieldRenameNotice renamed={result.renamed} />}
 
       <p className="text-[11px] text-slate-400 dark:text-neutral-500">
         Abre solo archivos de personas de confianza: sus scripts se ejecutan en el simulador.
       </p>
     </div>
-  );
+  )
 }

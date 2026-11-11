@@ -1,6 +1,6 @@
-import type { RichTextContent } from "../../../types/richText";
+import type { RichTextContent } from '../../../types/richText'
 
 export interface RichTextViewProps {
-  content: RichTextContent | undefined;
-  className?: string;
+  content: RichTextContent | undefined
+  className?: string
 }

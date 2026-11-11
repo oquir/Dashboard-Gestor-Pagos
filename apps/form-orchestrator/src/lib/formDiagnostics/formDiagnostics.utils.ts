@@ -1,24 +1,24 @@
-import { PAYLOAD_SCHEMA } from "../../constants/payloadSchema";
-import type { CanvasField, FieldCondition } from "../../types/field";
-import type { FieldGraph } from "../../types/fieldGraph";
-import type { ScriptCompileResult } from "../../types/fieldScript";
-import type { DiagnoseFormInput, ProblemTarget } from "../../types/formDiagnostics";
-import type { CanvasRow } from "../../types/formStructure";
-import type { SchemaLeaf } from "../../types/payloadSchema";
-import type { CanvasTarget } from "../../types/placement";
-import type { SidebarTab } from "../../types/ui";
-import { unsupportedDeclarations } from "../cssStyles/cssStyles";
-import { buildFieldGraph, describeCycle, topologicalOrder } from "../fieldGraph/fieldGraph";
-import { isPresentationalField } from "../fieldKind/fieldKind";
-import { isOptionBasedField } from "../fieldOptions/fieldOptions";
+import { PAYLOAD_SCHEMA } from '../../constants/payloadSchema'
+import type { CanvasField, FieldCondition } from '../../types/field'
+import type { FieldGraph } from '../../types/fieldGraph'
+import type { ScriptCompileResult } from '../../types/fieldScript'
+import type { DiagnoseFormInput, ProblemTarget } from '../../types/formDiagnostics'
+import type { CanvasRow } from '../../types/formStructure'
+import type { SchemaLeaf } from '../../types/payloadSchema'
+import type { CanvasTarget } from '../../types/placement'
+import type { SidebarTab } from '../../types/ui'
+import { unsupportedDeclarations } from '../cssStyles/cssStyles'
+import { buildFieldGraph, describeCycle, topologicalOrder } from '../fieldGraph/fieldGraph'
+import { isPresentationalField } from '../fieldKind/fieldKind'
+import { isOptionBasedField } from '../fieldOptions/fieldOptions'
 import {
   checkScriptSyntax,
   compileScript,
   composeScriptBody,
   validatePrelude,
-} from "../fieldScript/fieldScript";
-import { enabledChecks } from "../groupCheck/groupCheck";
-import { resolveLeaf } from "../payloadSchema/payloadSchema";
+} from '../fieldScript/fieldScript'
+import { enabledChecks } from '../groupCheck/groupCheck'
+import { resolveLeaf } from '../payloadSchema/payloadSchema'
 import {
   CYCLE_MESSAGE,
   HOST_MAPPING_MESSAGE,
@@ -34,7 +34,7 @@ import {
   UNNAMED_LABEL,
   UNSUPPORTED_CSS_MESSAGE,
   UNSUPPORTED_TOOLTIP_CSS_MESSAGE,
-} from "./formDiagnostics.constants";
+} from './formDiagnostics.constants'
 import type {
   LocatedField,
   LocatedGroup,
@@ -42,25 +42,25 @@ import type {
   LocatedRow,
   PreludeCheck,
   ProblemDraft,
-} from "./formDiagnostics.types";
+} from './formDiagnostics.types'
 
 // Los detectores de la revision antes de exportar, uno por tipo de problema. Cada uno recibe la
 // cosa ya ubicada en su lienzo, porque el destino de "Ir" necesita saber en que paso vive.
 
 export function locateItems(input: DiagnoseFormInput): LocatedItems {
-  const items: LocatedItems = { fields: [], rows: [], groups: [] };
+  const items: LocatedItems = { fields: [], rows: [], groups: [] }
 
   for (const step of input.formSteps) {
-    const canvas: CanvasTarget = { type: "formStep", stepId: step.stepId };
-    addRows(items, step.rows, canvas, step.title);
-    for (const group of step.groups ?? []) items.groups.push({ group, canvas });
+    const canvas: CanvasTarget = { type: 'formStep', stepId: step.stepId }
+    addRows(items, step.rows, canvas, step.title)
+    for (const group of step.groups ?? []) items.groups.push({ group, canvas })
   }
 
   for (const step of input.introSteps) {
-    addRows(items, step.rows, { type: "introStep", stepId: step.stepId }, step.title);
+    addRows(items, step.rows, { type: 'introStep', stepId: step.stepId }, step.title)
   }
 
-  return items;
+  return items
 }
 
 function addRows(
@@ -70,64 +70,64 @@ function addRows(
   stepTitle: string,
 ): void {
   for (const [index, row] of rows.entries()) {
-    items.rows.push({ row, canvas, where: `Fila ${index + 1} · ${stepTitle}` });
-    for (const field of row.fields) items.fields.push({ field, canvas });
+    items.rows.push({ row, canvas, where: `Fila ${index + 1} · ${stepTitle}` })
+    for (const field of row.fields) items.fields.push({ field, canvas })
   }
 }
 
 function fieldWhere(field: CanvasField): string {
-  const label: string = field.label.trim();
+  const label: string = field.label.trim()
 
-  return label.length > 0 ? `${label} · ${field.name}` : field.name;
+  return label.length > 0 ? `${label} · ${field.name}` : field.name
 }
 
 function fieldTarget(located: LocatedField, tab: SidebarTab): ProblemTarget {
-  return { kind: "field", fieldId: located.field.id, canvas: located.canvas, tab };
+  return { kind: 'field', fieldId: located.field.id, canvas: located.canvas, tab }
 }
 
 function nameOrUnnamed(label: string | undefined): string {
-  const trimmed: string = label?.trim() ?? "";
+  const trimmed: string = label?.trim() ?? ''
 
-  return trimmed.length > 0 ? trimmed : UNNAMED_LABEL;
+  return trimmed.length > 0 ? trimmed : UNNAMED_LABEL
 }
 
 export function regexError(source: string): string | null {
   try {
     // Solo interesa si el constructor lanza; el patron no se usa aca.
-    new RegExp(source);
-    return null;
+    new RegExp(source)
+    return null
   } catch (error) {
-    return error instanceof Error ? error.message : "Expresión inválida.";
+    return error instanceof Error ? error.message : 'Expresión inválida.'
   }
 }
 
 export function checkPrelude(formScript: string, knownNames: Set<string>): PreludeCheck {
-  const validation = validatePrelude(formScript, knownNames);
-  const target: ProblemTarget = { kind: "prelude" };
-  const problems: ProblemDraft[] = [];
+  const validation = validatePrelude(formScript, knownNames)
+  const target: ProblemTarget = { kind: 'prelude' }
+  const problems: ProblemDraft[] = []
 
   if (validation.error) {
     problems.push({
-      severity: "error",
+      severity: 'error',
       where: PRELUDE_WHERE,
       message: `${SCRIPT_SUBJECT} no compila: ${validation.error}`,
       target,
-    });
+    })
   }
 
   if (validation.refs.length > 0) {
-    const names: string[] = [...new Set(validation.refs.map((ref) => `{${ref.name}}`))];
+    const names: string[] = [...new Set(validation.refs.map((ref) => `{${ref.name}}`))]
     problems.push({
-      severity: "error",
+      severity: 'error',
       where: PRELUDE_WHERE,
-      message: `${PRELUDE_READS_FIELDS_MESSAGE} ${names.join(", ")}`,
+      message: `${PRELUDE_READS_FIELDS_MESSAGE} ${names.join(', ')}`,
       target,
-    });
+    })
   }
 
   // Con el preludio roto los scripts se validan sin el: si no, su error se repetiria en cada campo
   // del formulario en vez de reportarse una sola vez.
-  return { problems, prelude: validation.error === null ? formScript : undefined };
+  return { problems, prelude: validation.error === null ? formScript : undefined }
 }
 
 // Mismo criterio que validateFieldScript, pero separando de quien es el error: el del script solo
@@ -141,43 +141,43 @@ function scriptDrafts(
   target: ProblemTarget,
   subject: string,
 ): ProblemDraft[] {
-  if (source.trim().length === 0) return [];
+  if (source.trim().length === 0) return []
 
-  const compiled: ScriptCompileResult = compileScript(source, knownNames);
-  const drafts: ProblemDraft[] = [];
-  const ownError: string | null = checkScriptSyntax(compiled.code);
-  const body: string = composeScriptBody(compiled.code, prelude);
+  const compiled: ScriptCompileResult = compileScript(source, knownNames)
+  const drafts: ProblemDraft[] = []
+  const ownError: string | null = checkScriptSyntax(compiled.code)
+  const body: string = composeScriptBody(compiled.code, prelude)
   const sharedError: string | null =
-    ownError === null && body !== compiled.code ? checkScriptSyntax(body) : null;
+    ownError === null && body !== compiled.code ? checkScriptSyntax(body) : null
 
   if (ownError) {
     drafts.push({
-      severity: "error",
+      severity: 'error',
       where,
       message: `${subject} no compila: ${ownError}`,
       target,
-    });
+    })
   } else if (sharedError) {
     drafts.push({
-      severity: "error",
+      severity: 'error',
       where,
       message: `${subject} no compila junto con el script del formulario: ${sharedError}`,
       target,
-    });
+    })
   }
 
   if (compiled.unknown.length > 0) {
-    const refs: string = compiled.unknown.map((name) => `{${name}}`).join(", ");
-    const noun: string = compiled.unknown.length === 1 ? "que no es un campo" : "que no son campos";
+    const refs: string = compiled.unknown.map((name) => `{${name}}`).join(', ')
+    const noun: string = compiled.unknown.length === 1 ? 'que no es un campo' : 'que no son campos'
     drafts.push({
-      severity: "warning",
+      severity: 'warning',
       where,
       message: `${subject} lee ${refs}, ${noun}. ${UNKNOWN_REFS_HINT}`,
       target,
-    });
+    })
   }
 
-  return drafts;
+  return drafts
 }
 
 export function scriptProblems(
@@ -185,18 +185,18 @@ export function scriptProblems(
   knownNames: Set<string>,
   prelude: string | undefined,
 ): ProblemDraft[] {
-  const { field } = located;
-  const where: string = fieldWhere(field);
-  const target: ProblemTarget = fieldTarget(located, "logic");
+  const { field } = located
+  const where: string = fieldWhere(field)
+  const target: ProblemTarget = fieldTarget(located, 'logic')
 
   // Igual que el export: un campo presentacional no calcula nada, pero sus reglas viajan igual.
   const own: ProblemDraft[] = isPresentationalField(field.type)
     ? []
-    : scriptDrafts(field.logic.script ?? "", knownNames, prelude, where, target, SCRIPT_SUBJECT);
+    : scriptDrafts(field.logic.script ?? '', knownNames, prelude, where, target, SCRIPT_SUBJECT)
 
   const effects: ProblemDraft[] = (field.logic.rules ?? []).flatMap((rule) =>
     rule.effects.flatMap((effect) =>
-      effect.kind === "script"
+      effect.kind === 'script'
         ? scriptDrafts(
             effect.source,
             knownNames,
@@ -207,9 +207,9 @@ export function scriptProblems(
           )
         : [],
     ),
-  );
+  )
 
-  return [...own, ...effects];
+  return [...own, ...effects]
 }
 
 function schemaEmbedsPattern(type: string): boolean {
@@ -217,53 +217,53 @@ function schemaEmbedsPattern(type: string): boolean {
     !isPresentationalField(type) &&
     !isOptionBasedField(type) &&
     !TYPES_WITHOUT_PATTERN.includes(type)
-  );
+  )
 }
 
 export function patternProblems(located: LocatedField): ProblemDraft[] {
-  const { field } = located;
-  if (!schemaEmbedsPattern(field.type)) return [];
+  const { field } = located
+  if (!schemaEmbedsPattern(field.type)) return []
 
-  const where: string = fieldWhere(field);
-  const target: ProblemTarget = fieldTarget(located, "validations");
-  const drafts: ProblemDraft[] = [];
+  const where: string = fieldWhere(field)
+  const target: ProblemTarget = fieldTarget(located, 'validations')
+  const drafts: ProblemDraft[] = []
 
   const baseError: string | null = field.validations.pattern
     ? regexError(field.validations.pattern)
-    : null;
+    : null
   if (baseError) {
     drafts.push({
-      severity: "error",
+      severity: 'error',
       where,
       message: `${INVALID_PATTERN_MESSAGE} ${baseError}`,
       target,
-    });
+    })
   }
 
   for (const override of field.validations.overrides ?? []) {
     const error: string | null = override.validations.pattern
       ? regexError(override.validations.pattern)
-      : null;
+      : null
     if (error) {
       drafts.push({
-        severity: "error",
+        severity: 'error',
         where,
         message: `${INVALID_OVERRIDE_PATTERN_MESSAGE} ${error}`,
         target,
-      });
+      })
     }
   }
 
-  return drafts;
+  return drafts
 }
 
 // El operador `matches` arma un RegExp con el valor. El simulador lo toma como "no coincide" si el
 // patron no compila, asi que un error aca no rompe nada a la vista: la condicion nunca se cumple.
 export function conditionPatternProblems(located: LocatedField): ProblemDraft[] {
-  const { field } = located;
-  const where: string = fieldWhere(field);
-  const logic: ProblemTarget = fieldTarget(located, "logic");
-  const validations: ProblemTarget = fieldTarget(located, "validations");
+  const { field } = located
+  const where: string = fieldWhere(field)
+  const logic: ProblemTarget = fieldTarget(located, 'logic')
+  const validations: ProblemTarget = fieldTarget(located, 'validations')
 
   const conditions: [FieldCondition | undefined, ProblemTarget][] = [
     [field.visibleWhen, logic],
@@ -275,51 +275,51 @@ export function conditionPatternProblems(located: LocatedField): ProblemDraft[] 
       override.when,
       validations,
     ]),
-  ];
+  ]
 
   return conditions.flatMap(([condition, target]): ProblemDraft[] => {
-    if (condition?.operator !== "matches") return [];
+    if (condition?.operator !== 'matches') return []
 
-    const source: string = String(condition.value ?? "");
-    if (source.length === 0) return [];
+    const source: string = String(condition.value ?? '')
+    if (source.length === 0) return []
 
-    const error: string | null = regexError(source);
+    const error: string | null = regexError(source)
     return error
       ? [
           {
-            severity: "error",
+            severity: 'error',
             where,
             message: `${INVALID_CONDITION_PATTERN_MESSAGE} ${error}`,
             target,
           },
         ]
-      : [];
-  });
+      : []
+  })
 }
 
 // Misma lectura que useApiMappingPanel: una ruta que el contrato no tiene es huerfana, y una hoja
 // que pone el aplicativo receptor no es de nadie en el formulario.
 export function mappingProblems(located: LocatedField): ProblemDraft[] {
-  const binding = located.field.apiBinding;
-  if (binding?.kind !== "mapped") return [];
+  const binding = located.field.apiBinding
+  if (binding?.kind !== 'mapped') return []
 
-  const leaf: SchemaLeaf | null = resolveLeaf(PAYLOAD_SCHEMA, binding.path);
-  const where: string = fieldWhere(located.field);
-  const target: ProblemTarget = fieldTarget(located, "apiMapping");
+  const leaf: SchemaLeaf | null = resolveLeaf(PAYLOAD_SCHEMA, binding.path)
+  const where: string = fieldWhere(located.field)
+  const target: ProblemTarget = fieldTarget(located, 'apiMapping')
 
   if (leaf === null) {
     return [
-      { severity: "warning", where, message: `${ORPHAN_MAPPING_MESSAGE} ${binding.path}`, target },
-    ];
+      { severity: 'warning', where, message: `${ORPHAN_MAPPING_MESSAGE} ${binding.path}`, target },
+    ]
   }
 
   if (leaf.providedByHost) {
     return [
-      { severity: "warning", where, message: `${HOST_MAPPING_MESSAGE} ${binding.path}`, target },
-    ];
+      { severity: 'warning', where, message: `${HOST_MAPPING_MESSAGE} ${binding.path}`, target },
+    ]
   }
 
-  return [];
+  return []
 }
 
 function cssDrafts(
@@ -328,40 +328,40 @@ function cssDrafts(
   where: string,
   target: ProblemTarget,
 ): ProblemDraft[] {
-  if (!text) return [];
+  if (!text) return []
 
-  const unsupported: string[] = unsupportedDeclarations(text);
+  const unsupported: string[] = unsupportedDeclarations(text)
   return unsupported.length > 0
-    ? [{ severity: "warning", where, message: `${prefix} ${unsupported.join("; ")}`, target }]
-    : [];
+    ? [{ severity: 'warning', where, message: `${prefix} ${unsupported.join('; ')}`, target }]
+    : []
 }
 
 export function fieldCssProblems(located: LocatedField): ProblemDraft[] {
-  const { field } = located;
-  const where: string = fieldWhere(field);
+  const { field } = located
+  const where: string = fieldWhere(field)
 
   return [
     ...cssDrafts(
       field.styles.customCss,
       UNSUPPORTED_CSS_MESSAGE,
       where,
-      fieldTarget(located, "styles"),
+      fieldTarget(located, 'styles'),
     ),
     ...cssDrafts(
       field.tooltip?.customCss,
       UNSUPPORTED_TOOLTIP_CSS_MESSAGE,
       where,
-      fieldTarget(located, "attributes"),
+      fieldTarget(located, 'attributes'),
     ),
-  ];
+  ]
 }
 
 export function rowCssProblems(located: LocatedRow): ProblemDraft[] {
   return cssDrafts(located.row.styles?.customCss, UNSUPPORTED_CSS_MESSAGE, located.where, {
-    kind: "row",
+    kind: 'row',
     rowId: located.row.id,
     canvas: located.canvas,
-  });
+  })
 }
 
 export function groupCheckProblems(
@@ -369,10 +369,10 @@ export function groupCheckProblems(
   knownNames: Set<string>,
   prelude: string | undefined,
 ): ProblemDraft[] {
-  const { group, canvas } = located;
-  const title: string = group.title.trim();
-  const where: string = title.length > 0 ? title : group.name;
-  const target: ProblemTarget = { kind: "group", groupId: group.id, canvas };
+  const { group, canvas } = located
+  const title: string = group.title.trim()
+  const where: string = title.length > 0 ? title : group.name
+  const target: ProblemTarget = { kind: 'group', groupId: group.id, canvas }
 
   // Las apagadas no viajan en el export, asi que tampoco se revisan.
   return enabledChecks(group.checks).flatMap((check) =>
@@ -384,25 +384,25 @@ export function groupCheckProblems(
       target,
       `La comprobación «${nameOrUnnamed(check.label)}»`,
     ),
-  );
+  )
 }
 
 // Un solo error por vez: topologicalOrder devuelve el primer ciclo que encuentra. Corregido ese, la
 // siguiente exportacion muestra el que quede.
 export function cycleProblems(fields: LocatedField[]): ProblemDraft[] {
-  const graph: FieldGraph = buildFieldGraph(fields.map((located) => located.field));
-  const cycle: string[] | null = topologicalOrder(graph).cycle;
-  if (!cycle || cycle.length === 0) return [];
+  const graph: FieldGraph = buildFieldGraph(fields.map((located) => located.field))
+  const cycle: string[] | null = topologicalOrder(graph).cycle
+  if (!cycle || cycle.length === 0) return []
 
-  const first: LocatedField | undefined = fields.find((located) => located.field.id === cycle[0]);
-  if (!first) return [];
+  const first: LocatedField | undefined = fields.find((located) => located.field.id === cycle[0])
+  if (!first) return []
 
   return [
     {
-      severity: "error",
+      severity: 'error',
       where: fieldWhere(first.field),
       message: `${CYCLE_MESSAGE} ${describeCycle(graph, cycle)}`,
-      target: fieldTarget(first, "logic"),
+      target: fieldTarget(first, 'logic'),
     },
-  ];
+  ]
 }

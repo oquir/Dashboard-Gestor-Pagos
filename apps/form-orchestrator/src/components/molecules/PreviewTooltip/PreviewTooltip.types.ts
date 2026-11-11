@@ -1,6 +1,6 @@
-import type { ExportedTooltip } from "../../../types/exportForm";
+import type { ExportedTooltip } from '../../../types/exportForm'
 
 export interface PreviewTooltipProps {
-  tooltip: ExportedTooltip;
-  label: string;
+  tooltip: ExportedTooltip
+  label: string
 }

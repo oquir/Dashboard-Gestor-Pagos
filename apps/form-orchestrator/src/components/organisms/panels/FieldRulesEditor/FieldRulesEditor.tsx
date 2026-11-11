@@ -1,12 +1,12 @@
-import { useFieldRules } from "../../../../hooks/useFieldRules/useFieldRules";
-import { FieldRuleCard } from "../../../molecules/FieldRuleCard/FieldRuleCard";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { ADD_LINK_CLASSES, COUNT_CLASSES, RULES_HINT } from "./FieldRulesEditor.constants";
-import type { FieldRulesEditorProps } from "./FieldRulesEditor.types";
+import { useFieldRules } from '../../../../hooks/useFieldRules/useFieldRules'
+import { FieldRuleCard } from '../../../molecules/FieldRuleCard/FieldRuleCard'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { ADD_LINK_CLASSES, COUNT_CLASSES, RULES_HINT } from './FieldRulesEditor.constants'
+import type { FieldRulesEditorProps } from './FieldRulesEditor.types'
 
 export function FieldRulesEditor({ field, candidates }: FieldRulesEditorProps) {
-  const rules = useFieldRules({ field, candidates });
-  const knownNames: Set<string> = new Set([field, ...candidates].map((entry) => entry.name));
+  const rules = useFieldRules({ field, candidates })
+  const knownNames: Set<string> = new Set([field, ...candidates].map((entry) => entry.name))
 
   return (
     <PanelSection
@@ -18,8 +18,8 @@ export function FieldRulesEditor({ field, candidates }: FieldRulesEditorProps) {
       {rules.rules.length === 0 ? (
         <p className="text-[11px] text-fg-subtle">
           {rules.canAddRule
-            ? "Sin reglas. El campo toma el valor que devuelva su script."
-            : "Agregá otros campos al lienzo para poder condicionar el cálculo de este."}
+            ? 'Sin reglas. El campo toma el valor que devuelva su script.'
+            : 'Agregá otros campos al lienzo para poder condicionar el cálculo de este.'}
         </p>
       ) : (
         <>
@@ -49,5 +49,5 @@ export function FieldRulesEditor({ field, candidates }: FieldRulesEditorProps) {
         + Agregar regla
       </button>
     </PanelSection>
-  );
+  )
 }

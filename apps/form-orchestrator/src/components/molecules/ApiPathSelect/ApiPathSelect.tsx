@@ -1,6 +1,6 @@
-import type { SchemaLeaf } from "../../../types/payloadSchema";
-import type { ApiPathSelectProps } from "./ApiPathSelect.types";
-import { groupLeavesByRoot } from "./ApiPathSelect.utils";
+import type { SchemaLeaf } from '../../../types/payloadSchema'
+import type { ApiPathSelectProps } from './ApiPathSelect.types'
+import { groupLeavesByRoot } from './ApiPathSelect.utils'
 
 export function ApiPathSelect({
   path,
@@ -9,7 +9,7 @@ export function ApiPathSelect({
   isHostPath,
   onChange,
 }: ApiPathSelectProps) {
-  const groups: Map<string, SchemaLeaf[]> = groupLeavesByRoot(leaves);
+  const groups: Map<string, SchemaLeaf[]> = groupLeavesByRoot(leaves)
 
   return (
     <div className="flex flex-col gap-1">
@@ -35,5 +35,5 @@ export function ApiPathSelect({
         ))}
       </select>
     </div>
-  );
+  )
 }

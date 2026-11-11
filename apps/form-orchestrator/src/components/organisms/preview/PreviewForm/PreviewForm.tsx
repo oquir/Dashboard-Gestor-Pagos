@@ -1,10 +1,10 @@
-import { usePreviewNavigation } from "../../../../hooks/usePreviewNavigation/usePreviewNavigation";
-import { PreviewStep } from "../PreviewStep/PreviewStep";
-import { NAV_BUTTON_CLASSES, PRIMARY_BUTTON_CLASSES } from "./PreviewForm.constants";
-import type { PreviewFormProps } from "./PreviewForm.types";
+import { usePreviewNavigation } from '../../../../hooks/usePreviewNavigation/usePreviewNavigation'
+import { PreviewStep } from '../PreviewStep/PreviewStep'
+import { NAV_BUTTON_CLASSES, PRIMARY_BUTTON_CLASSES } from './PreviewForm.constants'
+import type { PreviewFormProps } from './PreviewForm.types'
 
 export function PreviewForm({ preview }: PreviewFormProps) {
-  const navigation = usePreviewNavigation(preview);
+  const navigation = usePreviewNavigation(preview)
 
   return (
     <div className="relative min-w-0 rounded-lg border border-border bg-surface p-6">
@@ -39,7 +39,7 @@ export function PreviewForm({ preview }: PreviewFormProps) {
             Reiniciar
           </button>
           <button type="button" onClick={navigation.advance} className={PRIMARY_BUTTON_CLASSES}>
-            {navigation.isLastStep ? "Enviar" : "Siguiente"}
+            {navigation.isLastStep ? 'Enviar' : 'Siguiente'}
           </button>
         </div>
       </footer>
@@ -57,12 +57,12 @@ export function PreviewForm({ preview }: PreviewFormProps) {
                 onClick={navigation.advanceIntro}
                 className={PRIMARY_BUTTON_CLASSES}
               >
-                {navigation.isLastIntroStep ? "Ir al formulario" : "Continuar"}
+                {navigation.isLastIntroStep ? 'Ir al formulario' : 'Continuar'}
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }

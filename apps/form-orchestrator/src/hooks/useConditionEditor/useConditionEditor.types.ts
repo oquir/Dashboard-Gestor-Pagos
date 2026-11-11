@@ -3,22 +3,22 @@ import type {
   ConditionKind,
   ConditionOperator,
   FieldCondition,
-} from "../../types/field";
+} from '../../types/field'
 
 export interface UseConditionEditorParams {
-  field: CanvasField;
-  otherFields: CanvasField[];
-  kind: ConditionKind;
+  field: CanvasField
+  otherFields: CanvasField[]
+  kind: ConditionKind
 }
 
 export interface UseConditionEditorResult {
-  condition: FieldCondition | undefined;
-  observed: CanvasField | null;
-  observedIsDead: boolean;
-  availableOperators: ConditionOperator[];
-  needsValue: boolean;
-  updateCondition: (next: Partial<FieldCondition>) => void;
-  handleActivationChange: (checked: boolean) => void;
-  handleObservedFieldChange: (nextFieldId: string) => void;
-  handleOperatorChange: (nextOp: ConditionOperator) => void;
+  condition: FieldCondition | undefined
+  observed: CanvasField | null
+  observedIsDead: boolean
+  availableOperators: ConditionOperator[]
+  needsValue: boolean
+  updateCondition: (next: Partial<FieldCondition>) => void
+  handleActivationChange: (checked: boolean) => void
+  handleObservedFieldChange: (nextFieldId: string) => void
+  handleOperatorChange: (nextOp: ConditionOperator) => void
 }

@@ -1,9 +1,9 @@
-import type { IconButtonProps } from "./IconButton.types";
+import type { IconButtonProps } from './IconButton.types'
 
-export function IconButton({ className = "", children, ...rest }: IconButtonProps) {
+export function IconButton({ className = '', children, ...rest }: IconButtonProps) {
   return (
     <button type="button" className={className} {...rest}>
       {children}
     </button>
-  );
+  )
 }

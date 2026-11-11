@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { Play } from "reicon-react";
-import { useExportReview } from "../../../hooks/useExportReview/useExportReview";
-import { useFormStore } from "../../../store/formStore";
-import type { RightSidebarTab } from "../../../types/ui";
-import { CanvasZoomControl } from "../../molecules/CanvasZoomControl/CanvasZoomControl";
-import { FormSummary } from "../../molecules/FormSummary/FormSummary";
-import { PanelBlock } from "../../molecules/PanelBlock/PanelBlock";
-import { TransferNotice } from "../../molecules/TransferNotice/TransferNotice";
-import { ViewModeSwitch } from "../../molecules/ViewModeSwitch/ViewModeSwitch";
-import { CanvasTabs } from "../CanvasTabs/CanvasTabs";
-import { ExportReviewModal } from "../ExportReviewModal/ExportReviewModal";
-import { ProjectImportModal } from "../ProjectImportModal/ProjectImportModal";
-import { SaveButton } from "../SaveButton/SaveButton";
-import { StepTitleEditor } from "../StepTitleEditor/StepTitleEditor";
+import { useState } from 'react'
+import { Play } from 'reicon-react'
+import { useExportReview } from '../../../hooks/useExportReview/useExportReview'
+import { useFormStore } from '../../../store/formStore'
+import type { RightSidebarTab } from '../../../types/ui'
+import { CanvasZoomControl } from '../../molecules/CanvasZoomControl/CanvasZoomControl'
+import { FormSummary } from '../../molecules/FormSummary/FormSummary'
+import { PanelBlock } from '../../molecules/PanelBlock/PanelBlock'
+import { TransferNotice } from '../../molecules/TransferNotice/TransferNotice'
+import { ViewModeSwitch } from '../../molecules/ViewModeSwitch/ViewModeSwitch'
+import { CanvasTabs } from '../CanvasTabs/CanvasTabs'
+import { ExportReviewModal } from '../ExportReviewModal/ExportReviewModal'
+import { ProjectImportModal } from '../ProjectImportModal/ProjectImportModal'
+import { SaveButton } from '../SaveButton/SaveButton'
+import { StepTitleEditor } from '../StepTitleEditor/StepTitleEditor'
 import {
   EXPORT_BUTTON_CLASSES,
   OPEN_PROJECT_BUTTON_CLASSES,
@@ -22,20 +22,20 @@ import {
   PANEL_TAB_INACTIVE_CLASSES,
   SIMULATOR_BUTTON_CLASSES,
   TABS,
-} from "./RightSidebar.constants";
+} from './RightSidebar.constants'
 
 export function RightSidebar() {
-  const formSteps = useFormStore((state) => state.formSteps);
-  const introSteps = useFormStore((state) => state.introModal.steps);
-  const activeCanvas = useFormStore((state) => state.activeCanvas);
-  const setSimulatorOpen = useFormStore((state) => state.setSimulatorOpen);
-  const viewMode = useFormStore((state) => state.canvasViewMode);
-  const setViewMode = useFormStore((state) => state.setCanvasViewMode);
-  const activeTab = useFormStore((state) => state.rightSidebarTab);
-  const setActiveTab = useFormStore((state) => state.setRightSidebarTab);
-  const rowDrag = useFormStore((state) => state.rowDrag);
-  const draggingFieldId = useFormStore((state) => state.draggingFieldId);
-  const [isImportOpen, setImportOpen] = useState<boolean>(false);
+  const formSteps = useFormStore((state) => state.formSteps)
+  const introSteps = useFormStore((state) => state.introModal.steps)
+  const activeCanvas = useFormStore((state) => state.activeCanvas)
+  const setSimulatorOpen = useFormStore((state) => state.setSimulatorOpen)
+  const viewMode = useFormStore((state) => state.canvasViewMode)
+  const setViewMode = useFormStore((state) => state.setCanvasViewMode)
+  const activeTab = useFormStore((state) => state.rightSidebarTab)
+  const setActiveTab = useFormStore((state) => state.setRightSidebarTab)
+  const rowDrag = useFormStore((state) => state.rowDrag)
+  const draggingFieldId = useFormStore((state) => state.draggingFieldId)
+  const [isImportOpen, setImportOpen] = useState<boolean>(false)
   const {
     problems,
     hasErrors,
@@ -43,28 +43,28 @@ export function RightSidebar() {
     exportAnyway,
     goTo,
     close: closeReview,
-  } = useExportReview();
+  } = useExportReview()
 
-  const isIntro: boolean = activeCanvas.type === "introStep";
-  const isCanvasView: boolean = viewMode === "canvas";
-  const canvasLabel: string = isIntro ? "Modal de entrada" : "Formulario";
+  const isIntro: boolean = activeCanvas.type === 'introStep'
+  const isCanvasView: boolean = viewMode === 'canvas'
+  const canvasLabel: string = isIntro ? 'Modal de entrada' : 'Formulario'
 
   // El chip del paso activo ya no lleva su nombre, asi que el numero tiene que reaparecer aca: es
   // lo unico que ata el "3" de la grilla con el titulo que se esta editando debajo.
   const activeStepIndex: number = (isIntro ? introSteps : formSteps).findIndex(
     (step) => step.stepId === activeCanvas.stepId,
-  );
+  )
   const activeStepLabel: string =
-    activeStepIndex >= 0 ? `Paso ${activeStepIndex + 1} · ${canvasLabel}` : canvasLabel;
-  const stepCountLabel: string = `${formSteps.length} ${formSteps.length === 1 ? "paso" : "pasos"}`;
+    activeStepIndex >= 0 ? `Paso ${activeStepIndex + 1} · ${canvasLabel}` : canvasLabel
+  const stepCountLabel: string = `${formSteps.length} ${formSteps.length === 1 ? 'paso' : 'pasos'}`
 
   // Mientras hay un arrastre manda la pestaña de steps: es la unica que dibuja las pestañas de
   // paso, o sea las zonas de soltar para mudar un campo o una fila a otro step, y desde Proyecto
   // esa mudanza no tendria a donde apuntar. Es derivado y no un set: al soltar vuelve solo a la
   // pestaña que el usuario eligio. Lo que antes lo hacia inviable -- abrir el panel reacomodaba el
   // lienzo debajo del puntero, a mitad del gesto -- ya no aplica: el ancho del panel es fijo.
-  const isTransferring: boolean = rowDrag !== null || draggingFieldId !== null;
-  const visibleTab: RightSidebarTab = isTransferring ? "steps" : activeTab;
+  const isTransferring: boolean = rowDrag !== null || draggingFieldId !== null
+  const visibleTab: RightSidebarTab = isTransferring ? 'steps' : activeTab
 
   return (
     <div className="flex h-full flex-col">
@@ -106,7 +106,7 @@ export function RightSidebar() {
             }`}
           >
             {tab.label}
-            {isTransferring && tab.id === "steps" && (
+            {isTransferring && tab.id === 'steps' && (
               <span className={PANEL_TAB_DROP_DOT_CLASSES} />
             )}
           </button>
@@ -124,7 +124,7 @@ export function RightSidebar() {
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <TransferNotice />
 
-        {visibleTab === "project" && (
+        {visibleTab === 'project' && (
           <>
             <PanelBlock title="Vista">
               <ViewModeSwitch activeMode={viewMode} onSelect={setViewMode} />
@@ -148,7 +148,7 @@ export function RightSidebar() {
           </>
         )}
 
-        {visibleTab === "steps" && (
+        {visibleTab === 'steps' && (
           <>
             <PanelBlock
               title="Pasos"
@@ -179,5 +179,5 @@ export function RightSidebar() {
         />
       )}
     </div>
-  );
+  )
 }

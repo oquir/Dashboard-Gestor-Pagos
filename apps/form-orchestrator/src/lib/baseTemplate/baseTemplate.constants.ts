@@ -1,4 +1,4 @@
-export const TIPO_DOCUMENTO_NIT: string = "2";
+export const TIPO_DOCUMENTO_NIT: string = '2'
 
 // Solo digitos, con un largo entre min y max, y ademas descarta los valores de mentira que la
 // gente escribe para pasar de pantalla. Tres piezas:
@@ -17,17 +17,17 @@ export const TIPO_DOCUMENTO_NIT: string = "2";
 // diferencian en el largo, y copiarlos es la manera de que en un mes uno tenga el lookahead y
 // otro no.
 function digitosSinRellenos(min: number, max: number): string {
-  return `^(?!0)(?!([0-9])\\1+$)[0-9]{${min},${max}}$`;
+  return `^(?!0)(?!([0-9])\\1+$)[0-9]{${min},${max}}$`
 }
 
-export const DOCUMENTO_PATTERN: string = digitosSinRellenos(6, 10);
+export const DOCUMENTO_PATTERN: string = digitosSinRellenos(6, 10)
 
 // Un NIT son 9 digitos: el decimo es el digito de verificacion, y ese va en su propio campo.
-export const NIT_PATTERN: string = digitosSinRellenos(6, 9);
+export const NIT_PATTERN: string = digitosSinRellenos(6, 9)
 
 // Un celular colombiano son 10 digitos; el piso en 7 deja pasar los fijos viejos, que es lo que
 // mas de un contribuyente sigue escribiendo aca.
-export const TELEFONO_PATTERN: string = digitosSinRellenos(7, 10);
+export const TELEFONO_PATTERN: string = digitosSinRellenos(7, 10)
 
 // El patron de correo de la spec de HTML5, partido en sus dos mitades para poder leerlo. Lleva dos
 // cambios respecto del original:
@@ -38,22 +38,22 @@ export const TELEFONO_PATTERN: string = digitosSinRellenos(7, 10);
 //     sin esto "Juan@Gmail.com" quedaria rechazado.
 // La bandera /g del original tampoco viaja, y es mejor asi: un regex con /g guarda lastIndex entre
 // llamadas y con .test() daria valido y no valido alternadamente sobre el mismo texto.
-const CORREO_LOCAL: string = "[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]";
+const CORREO_LOCAL: string = "[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]"
 
-const CORREO_ETIQUETA: string = "[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?";
+const CORREO_ETIQUETA: string = '[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?'
 
-export const CORREO_PATTERN: string = `^${CORREO_LOCAL}+(?:\\.${CORREO_LOCAL}+)*@(?:${CORREO_ETIQUETA}\\.)+${CORREO_ETIQUETA}$`;
+export const CORREO_PATTERN: string = `^${CORREO_LOCAL}+(?:\\.${CORREO_LOCAL}+)*@(?:${CORREO_ETIQUETA}\\.)+${CORREO_ETIQUETA}$`
 
-export const DOCUMENTO_MESSAGE: string = "Ingrese un documento válido";
+export const DOCUMENTO_MESSAGE: string = 'Ingrese un documento válido'
 
-export const CORREO_MESSAGE: string = "Ingrese un correo válido";
+export const CORREO_MESSAGE: string = 'Ingrese un correo válido'
 
-export const TELEFONO_MESSAGE: string = "Ingrese un teléfono válido";
+export const TELEFONO_MESSAGE: string = 'Ingrese un teléfono válido'
 
 // El mensaje cuelga del .regex(), y la variante de NIT tiene un solo regex: este texto sale igual
 // si escribieron diez digitos, letras o todos iguales. Por eso nombra el DV sin afirmar que ese
 // fue el error -- "sin el digito de verificacion" es una instruccion, no un diagnostico.
-export const NIT_MESSAGE: string = "Ingrese un NIT válido, sin el dígito de verificación";
+export const NIT_MESSAGE: string = 'Ingrese un NIT válido, sin el dígito de verificación'
 
 // Los campos numericos de la declaracion que NO llevan plata. Todo renglon de valor se aproxima
 // al millar, asi que lo que se escribe a mano son las excepciones y no los treinta y pico que si
@@ -61,15 +61,15 @@ export const NIT_MESSAGE: string = "Ingrese un NIT válido, sin el dígito de ve
 // deberia hacerlo se agrega aca.
 export const FIELDS_WITHOUT_ROUNDING: string[] = [
   // Una tarifa del 4 por mil aproximada al millar es 0, y con ella todo impuesto de actividad.
-  "tarifa_x_mil",
+  'tarifa_x_mil',
   // El digito de verificacion va de 0 a 9.
-  "dv",
+  'dv',
   // Un conteo de establecimientos, no un valor.
-  "numero_establecimientos",
+  'numero_establecimientos',
   // Es un renglon numerado -- el 18 -- pero lo que lleva son kilovatios de capacidad instalada y
   // no pesos, y la regla de aproximar al millar habla de valores.
-  "generacion_energia_kw",
-];
+  'generacion_energia_kw',
+]
 
 // Los unicos calculados que pueden dar negativo, y por eso los unicos que se recortan a 0. Los
 // `number` se marcan todos sin lista: los veintiseis ya declaraban min: 0, salvo la tarifa, que
@@ -85,28 +85,28 @@ export const FIELDS_WITHOUT_ROUNDING: string[] = [
 // saldo a favor, que es un caso normal y no un error del autor.
 export const CALCULATED_WITHOUT_NEGATIVE: string[] = [
   // r10 = ingresos nacionales - ingresos fuera del municipio.
-  "total_ingresos_ordinarios",
+  'total_ingresos_ordinarios',
   // r16 = el 10 menos las cinco deducciones. Es el caso tipico: deducciones mayores al ingreso.
-  "total_ingresos_gravables",
-];
+  'total_ingresos_gravables',
+]
 
 // La declaracion no lleva decimales en ningun renglon: los de plata se aproximan al millar, el DV
 // es un digito, los establecimientos se cuentan y los kilovatios vienen enteros.
-export const TEMPLATE_DECIMALS: number = 0;
+export const TEMPLATE_DECIMALS: number = 0
 
 // La unica excepcion. Una tarifa puede ser 4, 7,5 o 6, y declarando un decimal la columna se lee
 // pareja -- 4,0 / 7,5 / 6,0 -- en vez de saltar entre enteros y decimales.
 export const DECIMALS_BY_FIELD: Record<string, number> = {
   tarifa_x_mil: 1,
-};
+}
 
 // Los ids de EXTEMPORANEIDAD y OTRA dentro del catalogo tipos_sancion, escritos a mano porque el
 // editor de condiciones todavia no ofrece las opciones de un catalogo para elegir. Son los unicos
 // literales de la plantilla atados al contenido de un catalogo: si algun dia se reordena, esto se
 // rompe en silencio.
-export const TIPO_SANCION_EXTEMPORANEIDAD: string = "1";
+export const TIPO_SANCION_EXTEMPORANEIDAD: string = '1'
 
-export const TIPO_SANCION_OTRA: string = "4";
+export const TIPO_SANCION_OTRA: string = '4'
 
 // La sancion por extemporaneidad del renglon 31, entera dentro del script del campo: los parametros
 // del municipio, la eleccion de la base y la regla del articulo 641, en ese orden y en un solo
@@ -168,7 +168,7 @@ const meses = mesesDeMora({periodo_anio}, periodo, {numero_documento});
 // es el piso de una sanción que existe, no crea una donde no la había.
 if (meses <= 0) return 0;
 
-return max(min(base * POR_MES * meses, base * TOPE), UVT * MINIMA_UVT);`;
+return max(min(base * POR_MES * meses, base * TOPE), UVT * MINIMA_UVT);`
 
 // Los intereses de mora del renglon 37, con el mismo criterio que la sancion: la regla entera
 // dentro del script del campo, parametros arriba y calculo abajo.
@@ -218,7 +218,7 @@ if (dias <= 0) return 0;
 
 // Hacia arriba al millar, que es el ROUNDUP(...;-3) con el que se liquida.
 // No es el redondeo al más cercano del resto de los renglones.
-return ceil((base * (TASA_ANUAL / DIAS_ANIO) * dias) / 1000) * 1000;`;
+return ceil((base * (TASA_ANUAL / DIAS_ANIO) * dias) / 1000) * 1000;`
 
 // Lo que el contribuyente declara por actividad tiene que sumar lo mismo que el renglon 16. Si no,
 // esta declarando ingresos que no reparte entre sus actividades, que es evadir el impuesto.
@@ -226,12 +226,12 @@ return ceil((base * (TASA_ANUAL / DIAS_ANIO) * dias) / 1000) * 1000;`;
 // Se compara con una tolerancia de un peso y no con === por la coma flotante. Hoy los dos lados se
 // aproximan al millar y darian exactos, pero la regla no tiene por que depender de eso.
 export const INGRESOS_ACTIVIDADES_SCRIPT: string =
-  "return abs(sum({ingresos_gravados}) - {total_ingresos_gravables}) < 1;";
+  'return abs(sum({ingresos_gravados}) - {total_ingresos_gravables}) < 1;'
 
 export const INGRESOS_ACTIVIDADES_MESSAGE: string =
-  "La suma de los ingresos gravados de las actividades debe ser igual al renglón 16 (Total ingresos gravables).";
+  'La suma de los ingresos gravados de las actividades debe ser igual al renglón 16 (Total ingresos gravables).'
 
 // El neto sin recortar, que comparten los renglones 33 y 34: uno lo toma en positivo y el otro
 // en negativo. Va como expresion suelta -- sin return -- porque se interpola dentro de max(...).
 export const SALDO_NETO: string =
-  "{total_impuesto_a_cargo} - {valor_exencion_exoneracion_impuesto} - {retenciones_a_favor} - {autorretenciones_a_favor} - {anticipo_liquidado_anio_anterior} + {anticipo_anio_siguiente} + {valor_sancion} - {saldo_favor_periodo_anterior}";
+  '{total_impuesto_a_cargo} - {valor_exencion_exoneracion_impuesto} - {retenciones_a_favor} - {autorretenciones_a_favor} - {anticipo_liquidado_anio_anterior} + {anticipo_anio_siguiente} + {valor_sancion} - {saldo_favor_periodo_anterior}'

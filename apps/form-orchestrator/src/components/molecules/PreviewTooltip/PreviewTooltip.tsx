@@ -1,15 +1,15 @@
-import { type CSSProperties, useState } from "react";
-import { InfoCircle } from "reicon-react";
+import { type CSSProperties, useState } from 'react'
+import { InfoCircle } from 'reicon-react'
 import {
   TOOLTIP_ANCHOR_CLASSES,
   TOOLTIP_SURFACE_CLASSES,
   TOOLTIP_TEXT_CLASSES,
-} from "../../../constants/fieldTooltip";
-import { RichTextView } from "../../atoms/RichTextView/RichTextView";
-import type { PreviewTooltipProps } from "./PreviewTooltip.types";
+} from '../../../constants/fieldTooltip'
+import { RichTextView } from '../../atoms/RichTextView/RichTextView'
+import type { PreviewTooltipProps } from './PreviewTooltip.types'
 
 export function PreviewTooltip({ tooltip, label }: PreviewTooltipProps) {
-  const [pinned, setPinned] = useState<boolean>(false);
+  const [pinned, setPinned] = useState<boolean>(false)
 
   return (
     <span className="relative inline-flex group/tip">
@@ -25,7 +25,7 @@ export function PreviewTooltip({ tooltip, label }: PreviewTooltipProps) {
       </button>
 
       <span
-        className={`absolute z-30 ${pinned ? "block" : "hidden group-hover/tip:block"} ${
+        className={`absolute z-30 ${pinned ? 'block' : 'hidden group-hover/tip:block'} ${
           TOOLTIP_ANCHOR_CLASSES[tooltip.position]
         } ${TOOLTIP_SURFACE_CLASSES}`}
         style={tooltip.styles as CSSProperties}
@@ -33,5 +33,5 @@ export function PreviewTooltip({ tooltip, label }: PreviewTooltipProps) {
         <RichTextView content={tooltip.content} className={TOOLTIP_TEXT_CLASSES} />
       </span>
     </span>
-  );
+  )
 }

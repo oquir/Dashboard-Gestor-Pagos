@@ -1,19 +1,19 @@
-import { ArrowDown2, Calculator, Check, Import, Magnifier } from "reicon-react";
+import { ArrowDown2, Calculator, Check, Import, Magnifier } from 'reicon-react'
 import {
   allowsManualOptions,
   isOptionBasedField,
   showsOptionsInline,
-} from "../../../lib/fieldOptions/fieldOptions";
-import { RichTextView } from "../../atoms/RichTextView/RichTextView";
+} from '../../../lib/fieldOptions/fieldOptions'
+import { RichTextView } from '../../atoms/RichTextView/RichTextView'
 import {
   CATALOG_HINT_CLASSES,
   CHIP_INLINE_CLASSES,
   MOCK_CONTROL_CLASSES,
-} from "./FieldPreviewControl.constants";
-import type { FieldPreviewControlProps } from "./FieldPreviewControl.types";
+} from './FieldPreviewControl.constants'
+import type { FieldPreviewControlProps } from './FieldPreviewControl.types'
 
 export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
-  if (field.type === "search_select") {
+  if (field.type === 'search_select') {
     return (
       <div className="flex flex-col gap-1.5">
         {field.title && (
@@ -24,7 +24,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
           <Magnifier size={14} weight="Filled" />
         </div>
       </div>
-    );
+    )
   }
 
   if (isOptionBasedField(field.type) && !allowsManualOptions(field)) {
@@ -38,16 +38,16 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
           <ArrowDown2 size={14} weight="Filled" />
         </div>
       </div>
-    );
+    )
   }
 
   switch (field.type) {
-    case "label":
-      return null;
-    case "rich_text":
-      return <RichTextView content={field.content} />;
-    case "toggle_group": {
-      const options = field.options ?? [];
+    case 'label':
+      return null
+    case 'rich_text':
+      return <RichTextView content={field.content} />
+    case 'toggle_group': {
+      const options = field.options ?? []
       return (
         <div className="flex flex-col gap-1.5">
           {field.title && (
@@ -61,8 +61,8 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
                 key={option.id}
                 className={`rounded-md border px-2.5 py-1 text-xs overflow-x-hidden ${
                   index === 0
-                    ? "border-orange-500 bg-orange-50 text-orange-700 dark:border-orange-500 dark:bg-orange-500/10 dark:text-orange-400"
-                    : "border-slate-200 bg-slate-50 text-slate-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400"
+                    ? 'border-orange-500 bg-orange-50 text-orange-700 dark:border-orange-500 dark:bg-orange-500/10 dark:text-orange-400'
+                    : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400'
                 }`}
               >
                 {option.label}
@@ -75,10 +75,10 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
             </p>
           )}
         </div>
-      );
+      )
     }
-    case "checkbox_group": {
-      const options = field.options ?? [];
+    case 'checkbox_group': {
+      const options = field.options ?? []
       return (
         <div className="flex flex-col gap-1.5">
           {field.title && (
@@ -86,7 +86,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
               {field.title}
             </p>
           )}
-          <div className={showsOptionsInline(field) ? CHIP_INLINE_CLASSES : "flex flex-col gap-1"}>
+          <div className={showsOptionsInline(field) ? CHIP_INLINE_CLASSES : 'flex flex-col gap-1'}>
             {options.map((option, index) => (
               <p
                 key={option.id}
@@ -95,8 +95,8 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
                 <span
                   className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-sm border ${
                     index === 0
-                      ? "border-orange-500 bg-orange-500"
-                      : "border-slate-300 dark:border-neutral-600"
+                      ? 'border-orange-500 bg-orange-500'
+                      : 'border-slate-300 dark:border-neutral-600'
                   }`}
                 >
                   {index === 0 && <Check size={9} weight="Filled" className="text-white" />}
@@ -106,10 +106,10 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
             ))}
           </div>
         </div>
-      );
+      )
     }
-    case "radio_group": {
-      const options = field.options ?? [];
+    case 'radio_group': {
+      const options = field.options ?? []
       return (
         <div className="flex flex-col gap-1.5">
           {field.title && (
@@ -117,7 +117,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
               {field.title}
             </p>
           )}
-          <div className={showsOptionsInline(field) ? CHIP_INLINE_CLASSES : "flex flex-col gap-1"}>
+          <div className={showsOptionsInline(field) ? CHIP_INLINE_CLASSES : 'flex flex-col gap-1'}>
             {options.map((option, index) => (
               <p
                 key={option.id}
@@ -125,7 +125,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
               >
                 <span
                   className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border ${
-                    index === 0 ? "border-orange-500" : "border-slate-300 dark:border-neutral-600"
+                    index === 0 ? 'border-orange-500' : 'border-slate-300 dark:border-neutral-600'
                   }`}
                 >
                   {index === 0 && <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />}
@@ -135,45 +135,45 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
             ))}
           </div>
         </div>
-      );
+      )
     }
-    case "select":
+    case 'select':
       return (
         <div className={MOCK_CONTROL_CLASSES}>
           <span>Seleccionar…</span>
           <ArrowDown2 size={14} weight="Filled" />
         </div>
-      );
-    case "textarea":
+      )
+    case 'textarea':
       return (
         <div className={`${MOCK_CONTROL_CLASSES} h-16 items-start`}>
           <span>Escribe aquí…</span>
         </div>
-      );
-    case "checkbox":
+      )
+    case 'checkbox':
       return (
         <p className="flex items-center gap-2 text-sm text-slate-500 dark:text-neutral-400 overflow-x-hidden">
           <span className="h-4 w-4 shrink-0 rounded border border-slate-300 bg-white dark:border-neutral-600 dark:bg-neutral-900" />
           Marcar opción
         </p>
-      );
-    case "calculated":
+      )
+    case 'calculated':
       return (
         <div className={MOCK_CONTROL_CLASSES}>
           <span>Valor calculado</span>
           <Calculator size={14} weight="Filled" />
         </div>
-      );
-    case "number":
+      )
+    case 'number':
       return (
         <div className={MOCK_CONTROL_CLASSES}>
           <span>0</span>
         </div>
-      );
-    case "file": {
-      const config = field.fileConfig ?? { acceptedFormats: [], maxSizeMB: 10 };
+      )
+    case 'file': {
+      const config = field.fileConfig ?? { acceptedFormats: [], maxSizeMB: 10 }
       const formatsLabel =
-        config.acceptedFormats.length > 0 ? config.acceptedFormats.join(", ") : "Cualquier formato";
+        config.acceptedFormats.length > 0 ? config.acceptedFormats.join(', ') : 'Cualquier formato'
       return (
         <div className="flex flex-col gap-1.5">
           <div className={MOCK_CONTROL_CLASSES}>
@@ -189,13 +189,13 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
             </span>
           </div>
         </div>
-      );
+      )
     }
     default:
       return (
         <div className={MOCK_CONTROL_CLASSES}>
           <span>Texto de ejemplo</span>
         </div>
-      );
+      )
   }
 }

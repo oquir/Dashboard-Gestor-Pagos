@@ -1,6 +1,6 @@
-import { formulaToScript } from "../scriptMigration/scriptMigration";
-import { DRAFT_SCHEMA_VERSION } from "./persistence.constants";
-import type { DraftMigration, FieldMigration, LooseDraft } from "./persistence.types";
+import { formulaToScript } from '../scriptMigration/scriptMigration'
+import { DRAFT_SCHEMA_VERSION } from './persistence.constants'
+import type { DraftMigration, FieldMigration, LooseDraft } from './persistence.types'
 
 // Cadena de migraciones del borrador. Existe porque el borrador vive en localStorage y la forma
 // del store cambia seguido: sin version, cada cambio de shape hace que Zod rechace lo guardado y
@@ -11,23 +11,23 @@ import type { DraftMigration, FieldMigration, LooseDraft } from "./persistence.t
 // es agregar o transformar claves y dejar que Zod juzgue el resultado.
 
 function isRecord(value: unknown): value is LooseDraft {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
 function mapStepFields(step: unknown, migrate: FieldMigration): unknown {
-  if (!isRecord(step) || !Array.isArray(step.rows)) return step;
+  if (!isRecord(step) || !Array.isArray(step.rows)) return step
 
   return {
     ...step,
     rows: step.rows.map((row) => {
-      if (!isRecord(row) || !Array.isArray(row.fields)) return row;
+      if (!isRecord(row) || !Array.isArray(row.fields)) return row
 
       return {
         ...row,
         fields: row.fields.map((field) => (isRecord(field) ? migrate(field) : field)),
-      };
+      }
     }),
-  };
+  }
 }
 
 // Los dos lienzos donde vive un campo. Hasta la version 5 habia un tercero, el almacen de partes,
@@ -35,7 +35,7 @@ function mapStepFields(step: unknown, migrate: FieldMigration): unknown {
 // sigue mapeando `savedComponents` si el borrador lo trae, porque las migraciones viejas corren
 // antes que la 4 -> 5 que lo borra, y un componente a medio migrar podria romper el paso siguiente.
 function mapDraftFields(draft: LooseDraft, migrate: FieldMigration): LooseDraft {
-  const introModal: unknown = draft.introModal;
+  const introModal: unknown = draft.introModal
 
   return {
     ...draft,
@@ -51,7 +51,7 @@ function mapDraftFields(draft: LooseDraft, migrate: FieldMigration): LooseDraft 
           isRecord(component) ? migrate(component) : component,
         )
       : draft.savedComponents,
-  };
+  }
 }
 
 // Una formula que no parsea no se tira ni se lleva puesto el borrador entero: se conserva como
@@ -64,90 +64,90 @@ function mapDraftFields(draft: LooseDraft, migrate: FieldMigration): LooseDraft 
 // en silencio -- que es lo que hace Zod ahora que el esquema ya no declara `formula` -- es peor.
 function preservedFormula(formula: string): string {
   const quoted: string = formula
-    .split("\n")
+    .split('\n')
     .map((line) => `// ${line}`)
-    .join("\n");
+    .join('\n')
 
-  return `// Esta formula no se pudo traducir al migrar. Reescribila como script:\n${quoted}\nreturn undefined;`;
+  return `// Esta formula no se pudo traducir al migrar. Reescribila como script:\n${quoted}\nreturn undefined;`
 }
 
 function formulaToScriptField(field: LooseDraft): LooseDraft {
-  const logic: unknown = field.logic;
-  if (!isRecord(logic) || typeof logic.formula !== "string") return field;
+  const logic: unknown = field.logic
+  if (!isRecord(logic) || typeof logic.formula !== 'string') return field
 
-  const { formula, ...rest } = logic;
+  const { formula, ...rest } = logic
 
   return {
     ...field,
     logic: { ...rest, script: formulaToScript(formula) ?? preservedFormula(formula) },
-  };
+  }
 }
 
 function formulaToScriptEffect(effect: unknown): unknown {
-  if (!isRecord(effect) || effect.kind !== "formula" || typeof effect.expression !== "string") {
-    return effect;
+  if (!isRecord(effect) || effect.kind !== 'formula' || typeof effect.expression !== 'string') {
+    return effect
   }
 
   return {
     id: effect.id,
-    kind: "script",
+    kind: 'script',
     source: formulaToScript(effect.expression) ?? preservedFormula(effect.expression),
-  };
+  }
 }
 
 // Tabla chica: cubre lo que alguien tipea de verdad en ese cuadro para un campo de formulario.
 // Lo que no esta ahi no se inventa -- se conserva como comentario CSS, igual que preservedFormula
 // conserva una formula que no compilaba.
 const TAILWIND_TO_CSS: Record<string, string> = {
-  "font-bold": "font-weight: 700",
-  "font-semibold": "font-weight: 600",
-  "font-medium": "font-weight: 500",
-  "font-normal": "font-weight: 400",
-  italic: "font-style: italic",
-  "not-italic": "font-style: normal",
-  underline: "text-decoration: underline",
-  uppercase: "text-transform: uppercase",
-  lowercase: "text-transform: lowercase",
-  capitalize: "text-transform: capitalize",
-  "text-left": "text-align: left",
-  "text-center": "text-align: center",
-  "text-right": "text-align: right",
-  "text-justify": "text-align: justify",
-  hidden: "display: none",
-  block: "display: block",
-  "inline-block": "display: inline-block",
-  flex: "display: flex",
-};
+  'font-bold': 'font-weight: 700',
+  'font-semibold': 'font-weight: 600',
+  'font-medium': 'font-weight: 500',
+  'font-normal': 'font-weight: 400',
+  italic: 'font-style: italic',
+  'not-italic': 'font-style: normal',
+  underline: 'text-decoration: underline',
+  uppercase: 'text-transform: uppercase',
+  lowercase: 'text-transform: lowercase',
+  capitalize: 'text-transform: capitalize',
+  'text-left': 'text-align: left',
+  'text-center': 'text-align: center',
+  'text-right': 'text-align: right',
+  'text-justify': 'text-align: justify',
+  hidden: 'display: none',
+  block: 'display: block',
+  'inline-block': 'display: inline-block',
+  flex: 'display: flex',
+}
 
 function classesToCss(classes: string): string {
-  const tokens: string[] = classes.split(/\s+/).filter((token) => token.length > 0);
-  const mapped: string[] = [];
-  const unmapped: string[] = [];
+  const tokens: string[] = classes.split(/\s+/).filter((token) => token.length > 0)
+  const mapped: string[] = []
+  const unmapped: string[] = []
 
   for (const token of tokens) {
-    const css: string | undefined = TAILWIND_TO_CSS[token];
-    if (css) mapped.push(`${css};`);
-    else unmapped.push(token);
+    const css: string | undefined = TAILWIND_TO_CSS[token]
+    if (css) mapped.push(`${css};`)
+    else unmapped.push(token)
   }
 
   if (unmapped.length > 0) {
     mapped.push(
-      `/* Estas clases de Tailwind no se pudieron traducir al migrar, reescribilas como CSS: ${unmapped.join(" ")} */`,
-    );
+      `/* Estas clases de Tailwind no se pudieron traducir al migrar, reescribilas como CSS: ${unmapped.join(' ')} */`,
+    )
   }
 
-  return mapped.join("\n");
+  return mapped.join('\n')
 }
 
 // `customClasses` en un objeto de estilos (campo, fila o tooltip) pasa a `customCss` con la
 // traduccion de arriba. `holder` es generico porque los tres casos comparten la misma forma de
 // migracion aunque vivan en claves distintas del campo (`styles`, `tooltip`).
 function migrateStyleHolder(holder: unknown): unknown {
-  if (!isRecord(holder) || typeof holder.customClasses !== "string") return holder;
+  if (!isRecord(holder) || typeof holder.customClasses !== 'string') return holder
 
-  const { customClasses, ...rest } = holder;
+  const { customClasses, ...rest } = holder
 
-  return { ...rest, customCss: classesToCss(customClasses) };
+  return { ...rest, customCss: classesToCss(customClasses) }
 }
 
 function fieldClassesToCss(field: LooseDraft): LooseDraft {
@@ -155,28 +155,28 @@ function fieldClassesToCss(field: LooseDraft): LooseDraft {
     ...field,
     styles: migrateStyleHolder(field.styles),
     tooltip: migrateStyleHolder(field.tooltip),
-  };
+  }
 }
 
 function rowClassesToCss(row: LooseDraft): LooseDraft {
-  return { ...row, styles: migrateStyleHolder(row.styles) };
+  return { ...row, styles: migrateStyleHolder(row.styles) }
 }
 
-type RowMigration = (row: LooseDraft) => LooseDraft;
+type RowMigration = (row: LooseDraft) => LooseDraft
 
 function mapStepRows(step: unknown, migrate: RowMigration): unknown {
-  if (!isRecord(step) || !Array.isArray(step.rows)) return step;
+  if (!isRecord(step) || !Array.isArray(step.rows)) return step
 
   return {
     ...step,
     rows: step.rows.map((row) => (isRecord(row) ? migrate(row) : row)),
-  };
+  }
 }
 
 // mapDraftFields ya sabe recorrer los dos lienzos, pero solo llega a `row.fields`: los estilos de
 // la fila viven un nivel mas arriba, asi que hace falta un recorrido propio para `row.styles`.
 function mapDraftRows(draft: LooseDraft, migrate: RowMigration): LooseDraft {
-  const introModal: unknown = draft.introModal;
+  const introModal: unknown = draft.introModal
 
   return {
     ...draft,
@@ -187,29 +187,29 @@ function mapDraftRows(draft: LooseDraft, migrate: RowMigration): LooseDraft {
       isRecord(introModal) && Array.isArray(introModal.steps)
         ? { ...introModal, steps: introModal.steps.map((step) => mapStepRows(step, migrate)) }
         : introModal,
-  };
+  }
 }
 
 function ruleFormulasToScripts(field: LooseDraft): LooseDraft {
-  const logic: unknown = field.logic;
-  if (!isRecord(logic) || !Array.isArray(logic.rules)) return field;
+  const logic: unknown = field.logic
+  if (!isRecord(logic) || !Array.isArray(logic.rules)) return field
 
   return {
     ...field,
     logic: {
       ...logic,
       rules: logic.rules.map((rule) => {
-        if (!isRecord(rule) || !Array.isArray(rule.effects)) return rule;
+        if (!isRecord(rule) || !Array.isArray(rule.effects)) return rule
 
-        return { ...rule, effects: rule.effects.map(formulaToScriptEffect) };
+        return { ...rule, effects: rule.effects.map(formulaToScriptEffect) }
       }),
     },
-  };
+  }
 }
 
 const MIGRATIONS: Record<number, DraftMigration> = {
   // 1 -> 2: aparece el preludio del formulario.
-  1: (draft) => ({ ...draft, formScript: "" }),
+  1: (draft) => ({ ...draft, formScript: '' }),
   // 2 -> 3: la formula pasa a ser un script.
   2: (draft) => mapDraftFields(draft, formulaToScriptField),
   // 3 -> 4: los efectos de regla dejan la formula y hablan el mismo lenguaje que el campo.
@@ -221,29 +221,29 @@ const MIGRATIONS: Record<number, DraftMigration> = {
   // los componentes en localStorage para siempre, invisibles y sin nada que los pueda leer.
   4: (draft) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- se saca de la copia a proposito
-    const { savedComponents, ...resto } = draft;
+    const { savedComponents, ...resto } = draft
 
-    return resto;
+    return resto
   },
   // 5 -> 6: las clases de Tailwind del campo, la fila y el tooltip pasan a ser CSS plano. Tailwind
   // escanea el fuente del consumidor, no el JSON exportado, asi que una clase ahi solo funcionaba
   // por casualidad.
   5: (draft) => mapDraftRows(mapDraftFields(draft, fieldClassesToCss), rowClassesToCss),
-};
+}
 
 // Un hueco en la cadena corta el recorrido y devuelve el borrador con su version vieja, que es
 // exactamente lo que el esquema rechaza despues. Preferible a estamparle una version que no tiene.
 export function migrateDraft(draft: LooseDraft): LooseDraft {
-  let current: LooseDraft = draft;
-  let version: number = typeof draft.schemaVersion === "number" ? draft.schemaVersion : 1;
+  let current: LooseDraft = draft
+  let version: number = typeof draft.schemaVersion === 'number' ? draft.schemaVersion : 1
 
   while (version < DRAFT_SCHEMA_VERSION) {
-    const step: DraftMigration | undefined = MIGRATIONS[version];
-    if (!step) return current;
+    const step: DraftMigration | undefined = MIGRATIONS[version]
+    if (!step) return current
 
-    version += 1;
-    current = { ...step(current), schemaVersion: version };
+    version += 1
+    current = { ...step(current), schemaVersion: version }
   }
 
-  return current;
+  return current
 }

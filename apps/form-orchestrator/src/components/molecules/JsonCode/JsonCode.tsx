@@ -1,24 +1,24 @@
-import type { ReactNode } from "react";
-import { ChevronDown, ChevronRight } from "reicon-react";
-import { useJsonCode } from "../../../hooks/useJsonCode/useJsonCode";
-import type { JsonCodeProps } from "../../../types/jsonCode";
-import { JSON_CODE_BASE_CLASSES, JSON_MUTED_CLASS } from "./JsonCode.constants";
-import { renderTokens } from "./JsonCode.utils";
+import type { ReactNode } from 'react'
+import { ChevronDown, ChevronRight } from 'reicon-react'
+import { useJsonCode } from '../../../hooks/useJsonCode/useJsonCode'
+import type { JsonCodeProps } from '../../../types/jsonCode'
+import { JSON_CODE_BASE_CLASSES, JSON_MUTED_CLASS } from './JsonCode.constants'
+import { renderTokens } from './JsonCode.utils'
 
 export function JsonCode({ json, valueClassName, className }: JsonCodeProps) {
-  const { rows, toggle } = useJsonCode(json);
+  const { rows, toggle } = useJsonCode(json)
 
   return (
-    <div className={`${JSON_CODE_BASE_CLASSES} ${className ?? ""}`.trim()}>
+    <div className={`${JSON_CODE_BASE_CLASSES} ${className ?? ''}`.trim()}>
       {rows.map((row) => {
-        const content: ReactNode[] = renderTokens(row.tokens, valueClassName);
+        const content: ReactNode[] = renderTokens(row.tokens, valueClassName)
 
         if (row.isCollapsed) {
           content.push(
             <span key="fold" className={JSON_MUTED_CLASS}>
-              {` … ${row.closeChar}${row.trailingComma ? "," : ""}`}
+              {` … ${row.closeChar}${row.trailingComma ? ',' : ''}`}
             </span>,
-          );
+          )
         }
 
         return (
@@ -37,8 +37,8 @@ export function JsonCode({ json, valueClassName, className }: JsonCodeProps) {
             )}
             <span className="shrink-0 whitespace-pre">{content}</span>
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

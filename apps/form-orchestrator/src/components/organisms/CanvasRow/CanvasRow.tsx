@@ -1,54 +1,54 @@
-import { useDraggable, useDroppable } from "@dnd-kit/core";
-import type { CSSProperties, MouseEvent } from "react";
-import { resolveRowStyles } from "../../../lib/cssStyles/cssStyles";
-import { getSelectedFieldId, useFormStore } from "../../../store/formStore";
-import { CanvasFieldChip } from "../../molecules/CanvasFieldChip/CanvasFieldChip";
-import { RowZoneOverlay } from "../../molecules/RowZoneOverlay/RowZoneOverlay";
-import { RowToolbar } from "../RowToolbar/RowToolbar";
-import type { CanvasRowProps } from "./CanvasRow.types";
-import { getRowBorderClasses } from "./CanvasRow.utils";
+import { useDraggable, useDroppable } from '@dnd-kit/core'
+import type { CSSProperties, MouseEvent } from 'react'
+import { resolveRowStyles } from '../../../lib/cssStyles/cssStyles'
+import { getSelectedFieldId, useFormStore } from '../../../store/formStore'
+import { CanvasFieldChip } from '../../molecules/CanvasFieldChip/CanvasFieldChip'
+import { RowZoneOverlay } from '../../molecules/RowZoneOverlay/RowZoneOverlay'
+import { RowToolbar } from '../RowToolbar/RowToolbar'
+import type { CanvasRowProps } from './CanvasRow.types'
+import { getRowBorderClasses } from './CanvasRow.utils'
 
 export function CanvasRow({ row, linkedLabels, offsetY = 0, onFieldContextMenu }: CanvasRowProps) {
-  const { setNodeRef: setDropRef, isOver } = useDroppable({ id: row.id, data: { rowId: row.id } });
+  const { setNodeRef: setDropRef, isOver } = useDroppable({ id: row.id, data: { rowId: row.id } })
   const {
     listeners,
     attributes,
     setNodeRef: setDragRef,
     isDragging,
-  } = useDraggable({ id: row.id, data: { source: "canvas-row", row } });
-  const selectedFieldIds = useFormStore((state) => state.selectedFieldIds);
-  const singleSelectedId = useFormStore(getSelectedFieldId);
-  const canvasTool = useFormStore((state) => state.canvasTool);
-  const selectField = useFormStore((state) => state.selectField);
-  const toggleFieldSelection = useFormStore((state) => state.toggleFieldSelection);
-  const dragPlacement = useFormStore((state) => state.dragPlacement);
-  const rowDropTarget = useFormStore((state) => state.rowDropTarget);
-  const isRowDragActive = useFormStore((state) => state.rowDrag !== null);
-  const zonePlacement = dragPlacement?.rowId === row.id ? dragPlacement : null;
+  } = useDraggable({ id: row.id, data: { source: 'canvas-row', row } })
+  const selectedFieldIds = useFormStore((state) => state.selectedFieldIds)
+  const singleSelectedId = useFormStore(getSelectedFieldId)
+  const canvasTool = useFormStore((state) => state.canvasTool)
+  const selectField = useFormStore((state) => state.selectField)
+  const toggleFieldSelection = useFormStore((state) => state.toggleFieldSelection)
+  const dragPlacement = useFormStore((state) => state.dragPlacement)
+  const rowDropTarget = useFormStore((state) => state.rowDropTarget)
+  const isRowDragActive = useFormStore((state) => state.rowDrag !== null)
+  const zonePlacement = dragPlacement?.rowId === row.id ? dragPlacement : null
   // El hueco que se abre ya dice donde va a caer, asi que la linea solo hace falta para avisar de
   // que ahi no puede ir: una fila de un grupo intentando salirse de el.
-  const rejected = rowDropTarget?.rowId === row.id && !rowDropTarget.isValid;
+  const rejected = rowDropTarget?.rowId === row.id && !rowDropTarget.isValid
   // La fila que contiene el campo seleccionado se queda con su marco y su barra a la vista, sin
   // hover: es el camino que le queda a quien navega con el teclado o desde una pantalla tactil. Solo
   // con una seleccion unica y con la herramienta de mover: con varios seleccionados serian N juegos
   // de tiradores fijos, y con la mano o el marco el cromo no responde.
-  const pinnedFieldId: string | null = canvasTool === "move" ? singleSelectedId : null;
-  const pinned: boolean = row.fields.some((field) => field.id === pinnedFieldId);
+  const pinnedFieldId: string | null = canvasTool === 'move' ? singleSelectedId : null
+  const pinned: boolean = row.fields.some((field) => field.id === pinnedFieldId)
 
   function setRefs(node: HTMLLIElement | null): void {
-    setDropRef(node);
-    setDragRef(node);
+    setDropRef(node)
+    setDragRef(node)
   }
 
   // Shift, Ctrl o Cmd suman sin soltar lo que ya estaba. Con la seleccion multiple todo suma; ahi
   // este clic solo llega desde el teclado, porque el del mouse lo atiende el marco.
   function handleFieldClick(event: MouseEvent<HTMLButtonElement>, fieldId: string): void {
-    if (canvasTool === "select" || event.shiftKey || event.ctrlKey || event.metaKey) {
-      toggleFieldSelection(fieldId);
-      return;
+    if (canvasTool === 'select' || event.shiftKey || event.ctrlKey || event.metaKey) {
+      toggleFieldSelection(fieldId)
+      return
     }
 
-    selectField(fieldId);
+    selectField(fieldId)
   }
 
   return (
@@ -70,12 +70,12 @@ export function CanvasRow({ row, linkedLabels, offsetY = 0, onFieldContextMenu }
       // no pega el salto de deshacer el desplazamiento que ya se convirtio en su sitio real.
       className={`group/row relative col-span-16 grid gap-3 rounded-md border-2 p-3 ${
         isRowDragActive
-          ? "transition-transform duration-200 ease-[cubic-bezier(0.34,1.6,0.5,1)]"
-          : "transition-colors"
+          ? 'transition-transform duration-200 ease-[cubic-bezier(0.34,1.6,0.5,1)]'
+          : 'transition-colors'
       } ${
         // Invisible y no atenuada: las vecinas se corren justo su alto y pasarian por encima de un
         // fantasma. El hueco que queda es la propia fila, que ahora vuela con el cursor.
-        isDragging ? "opacity-0" : ""
+        isDragging ? 'opacity-0' : ''
       } ${getRowBorderClasses({ isOver, isEmpty: row.fields.length === 0, pinned })}`}
     >
       <RowToolbar row={row} listeners={listeners} attributes={attributes} pinned={pinned} />
@@ -84,7 +84,7 @@ export function CanvasRow({ row, linkedLabels, offsetY = 0, onFieldContextMenu }
         <div
           aria-hidden
           className={`pointer-events-none absolute inset-x-0 z-20 h-1 rounded-full bg-red-500 dark:bg-red-400 ${
-            rowDropTarget.edge === "before" ? "-top-2" : "-bottom-2"
+            rowDropTarget.edge === 'before' ? '-top-2' : '-bottom-2'
           }`}
         />
       )}
@@ -110,13 +110,13 @@ export function CanvasRow({ row, linkedLabels, offsetY = 0, onFieldContextMenu }
           pinned={field.id === pinnedFieldId}
           onClick={(event) => handleFieldClick(event, field.id)}
           onContextMenu={(event) => {
-            event.preventDefault();
-            selectField(field.id);
-            onFieldContextMenu(field.id, event.clientX, event.clientY);
+            event.preventDefault()
+            selectField(field.id)
+            onFieldContextMenu(field.id, event.clientX, event.clientY)
           }}
         />
       ))}
       {zonePlacement && <RowZoneOverlay columns={row.columns} placement={zonePlacement} />}
     </li>
-  );
+  )
 }

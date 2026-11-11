@@ -1,6 +1,6 @@
-import type { ReglaAnio } from "../../../types/maxDates";
+import type { ReglaAnio } from '../../../types/maxDates'
 
 export interface MaxDatesAnioRowProps {
-  regla: ReglaAnio;
-  onEditFecha: (fecha: string) => void;
+  regla: ReglaAnio
+  onEditFecha: (fecha: string) => void
 }

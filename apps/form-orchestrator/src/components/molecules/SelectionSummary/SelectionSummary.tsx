@@ -1,5 +1,5 @@
-import { HINT_CLASSES } from "../../../constants/uiClasses";
-import type { SelectionSummaryProps } from "./SelectionSummary.types";
+import { HINT_CLASSES } from '../../../constants/uiClasses'
+import type { SelectionSummaryProps } from './SelectionSummary.types'
 
 export function SelectionSummary({ fields }: SelectionSummaryProps) {
   return (
@@ -20,5 +20,5 @@ export function SelectionSummary({ fields }: SelectionSummaryProps) {
         ))}
       </ul>
     </div>
-  );
+  )
 }

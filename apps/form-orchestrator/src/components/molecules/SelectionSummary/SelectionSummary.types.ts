@@ -1,5 +1,5 @@
-import type { CanvasField } from "../../../types/field";
+import type { CanvasField } from '../../../types/field'
 
 export interface SelectionSummaryProps {
-  fields: CanvasField[];
+  fields: CanvasField[]
 }

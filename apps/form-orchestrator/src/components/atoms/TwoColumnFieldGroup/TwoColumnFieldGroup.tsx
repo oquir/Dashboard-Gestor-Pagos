@@ -1,14 +1,14 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react'
 
 export function TwoColumnFieldGroup({
   children,
   legend,
 }: {
-  children: ReactNode;
-  legend?: string;
+  children: ReactNode
+  legend?: string
 }) {
   if (!legend) {
-    return <div className="grid grid-cols-2 gap-2">{children}</div>;
+    return <div className="grid grid-cols-2 gap-2">{children}</div>
   }
 
   return (
@@ -18,5 +18,5 @@ export function TwoColumnFieldGroup({
       </legend>
       <div className="grid grid-cols-2 gap-2">{children}</div>
     </fieldset>
-  );
+  )
 }

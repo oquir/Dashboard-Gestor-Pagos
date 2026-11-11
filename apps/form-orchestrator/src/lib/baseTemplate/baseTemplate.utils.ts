@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import { GRID_BASE_COLUMNS } from "../../constants/grid";
+import { v4 as uuidv4 } from 'uuid'
+import { GRID_BASE_COLUMNS } from '../../constants/grid'
 import type {
   ApiBinding,
   CanvasField,
@@ -8,32 +8,32 @@ import type {
   FieldDataSource,
   FieldRule,
   FieldValidationOverride,
-} from "../../types/field";
-import type { CanvasRow } from "../../types/formStructure";
-import { supportsRounding } from "../fieldRounding/fieldRounding";
+} from '../../types/field'
+import type { CanvasRow } from '../../types/formStructure'
+import { supportsRounding } from '../fieldRounding/fieldRounding'
 import type {
   FieldSpec,
   NumericDefaults,
   TemplateCondition,
   TemplateRule,
   TemplateValidationOverride,
-} from "./baseTemplate.types";
+} from './baseTemplate.types'
 
 export function bindingFor(spec: FieldSpec): ApiBinding | undefined {
-  if (spec.path !== undefined) return { kind: "mapped", path: spec.path };
-  if (spec.excluded) return { kind: "excluded" };
+  if (spec.path !== undefined) return { kind: 'mapped', path: spec.path }
+  if (spec.excluded) return { kind: 'excluded' }
 
-  return undefined;
+  return undefined
 }
 
 function pendingCondition(condition: TemplateCondition | undefined): FieldCondition | undefined {
-  if (!condition) return undefined;
+  if (!condition) return undefined
 
-  return { fieldId: condition.field, operator: condition.operator, value: condition.value };
+  return { fieldId: condition.field, operator: condition.operator, value: condition.value }
 }
 
 function pendingRules(rules: TemplateRule[] | undefined): FieldRule[] | undefined {
-  if (!rules || rules.length === 0) return undefined;
+  if (!rules || rules.length === 0) return undefined
 
   return rules.map((rule) => ({
     id: uuidv4(),
@@ -45,14 +45,14 @@ function pendingRules(rules: TemplateRule[] | undefined): FieldRule[] | undefine
       operator: condition.operator,
       value: condition.value,
     })),
-    effects: [{ id: uuidv4(), kind: "script" as const, source: rule.script }],
-  }));
+    effects: [{ id: uuidv4(), kind: 'script' as const, source: rule.script }],
+  }))
 }
 
 function pendingOverrides(
   overrides: TemplateValidationOverride[] | undefined,
 ): FieldValidationOverride[] | undefined {
-  if (!overrides || overrides.length === 0) return undefined;
+  if (!overrides || overrides.length === 0) return undefined
 
   return overrides.map((override) => ({
     id: uuidv4(),
@@ -62,79 +62,79 @@ function pendingOverrides(
       value: override.when.value,
     },
     validations: override.validations,
-  }));
+  }))
 }
 
 function resolvePointer(
   condition: FieldCondition | undefined,
   idsByName: Map<string, string>,
 ): FieldCondition | undefined {
-  if (!condition) return undefined;
+  if (!condition) return undefined
 
-  const targetId: string | undefined = idsByName.get(condition.fieldId);
+  const targetId: string | undefined = idsByName.get(condition.fieldId)
 
-  return targetId ? { ...condition, fieldId: targetId } : undefined;
+  return targetId ? { ...condition, fieldId: targetId } : undefined
 }
 
 // La plantilla apunta al campo observado por nombre; los uuid solo existen despues de buildRow.
 export function resolveTemplateConditions<T extends { rows: CanvasRow[] }>(steps: T[]): T[] {
-  const idsByName: Map<string, string> = new Map();
+  const idsByName: Map<string, string> = new Map()
 
   for (const step of steps) {
     for (const row of step.rows) {
-      for (const field of row.fields) idsByName.set(field.name, field.id);
+      for (const field of row.fields) idsByName.set(field.name, field.id)
     }
   }
 
   for (const step of steps) {
     for (const row of step.rows) {
       for (const field of row.fields) {
-        field.visibleWhen = resolvePointer(field.visibleWhen, idsByName);
-        field.enableWhen = resolvePointer(field.enableWhen, idsByName);
+        field.visibleWhen = resolvePointer(field.visibleWhen, idsByName)
+        field.enableWhen = resolvePointer(field.enableWhen, idsByName)
 
         // Una etiqueta que apunta a un campo inexistente queda suelta, no rota: se desliga.
-        if (field.labelFor) field.labelFor = idsByName.get(field.labelFor);
+        if (field.labelFor) field.labelFor = idsByName.get(field.labelFor)
 
         if (field.dataSource?.dependsOn) {
-          const parentId: string | undefined = idsByName.get(field.dataSource.dependsOn);
+          const parentId: string | undefined = idsByName.get(field.dataSource.dependsOn)
           field.dataSource = parentId
             ? { ...field.dataSource, dependsOn: parentId }
-            : { ...field.dataSource, dependsOn: undefined };
+            : { ...field.dataSource, dependsOn: undefined }
         }
 
-        const source: FieldDataSource | undefined = field.dataSource;
+        const source: FieldDataSource | undefined = field.dataSource
 
         if (source?.fills) {
           const fills: CatalogFill[] = source.fills.flatMap((fill) => {
-            const targetId: string | undefined = idsByName.get(fill.field);
+            const targetId: string | undefined = idsByName.get(fill.field)
 
-            return targetId ? [{ ...fill, field: targetId }] : [];
-          });
+            return targetId ? [{ ...fill, field: targetId }] : []
+          })
 
-          field.dataSource = { ...source, fills: fills.length > 0 ? fills : undefined };
+          field.dataSource = { ...source, fills: fills.length > 0 ? fills : undefined }
         }
 
         if (field.validations.overrides) {
           field.validations.overrides = field.validations.overrides.flatMap((override) => {
-            const targetId: string | undefined = idsByName.get(override.when.fieldId);
-            return targetId ? [{ ...override, when: { ...override.when, fieldId: targetId } }] : [];
-          });
+            const targetId: string | undefined = idsByName.get(override.when.fieldId)
+            return targetId ? [{ ...override, when: { ...override.when, fieldId: targetId } }] : []
+          })
         }
 
         if (field.logic.rules) {
           field.logic.rules = field.logic.rules.map((rule) => ({
             ...rule,
             when: rule.when.flatMap((condition) => {
-              const targetId: string | undefined = idsByName.get(condition.fieldId);
-              return targetId ? [{ ...condition, fieldId: targetId }] : [];
+              const targetId: string | undefined = idsByName.get(condition.fieldId)
+              return targetId ? [{ ...condition, fieldId: targetId }] : []
             }),
-          }));
+          }))
         }
       }
     }
   }
 
-  return steps;
+  return steps
 }
 
 // Prende las tres propiedades numericas sobre el paso entero en vez de campo por campo. Son
@@ -152,28 +152,28 @@ export function applyNumericDefaults<T extends { rows: CanvasRow[] }>(
   steps: T[],
   defaults: NumericDefaults,
 ): T[] {
-  const skipRounding: Set<string> = new Set(defaults.roundingExceptions);
-  const clamped: Set<string> = new Set(defaults.clampedCalculated);
+  const skipRounding: Set<string> = new Set(defaults.roundingExceptions)
+  const clamped: Set<string> = new Set(defaults.clampedCalculated)
 
   for (const step of steps) {
     for (const row of step.rows) {
       for (const field of row.fields) {
-        if (!supportsRounding(field.type)) continue;
+        if (!supportsRounding(field.type)) continue
 
-        field.formatted = true;
-        field.decimals = defaults.decimalsByField[field.name] ?? defaults.decimals;
-        if (!skipRounding.has(field.name)) field.rounding = true;
-        if (field.type === "number" || clamped.has(field.name)) field.allowsNegative = false;
+        field.formatted = true
+        field.decimals = defaults.decimalsByField[field.name] ?? defaults.decimals
+        if (!skipRounding.has(field.name)) field.rounding = true
+        if (field.type === 'number' || clamped.has(field.name)) field.allowsNegative = false
       }
     }
   }
 
-  return steps;
+  return steps
 }
 
 export function buildRow(specs: FieldSpec[], groupId?: string): CanvasRow {
-  const fields: CanvasField[] = [];
-  let colStart = 1;
+  const fields: CanvasField[] = []
+  let colStart = 1
 
   for (const spec of specs) {
     fields.push({
@@ -201,10 +201,10 @@ export function buildRow(specs: FieldSpec[], groupId?: string): CanvasRow {
       dataSource: spec.dataSource,
       labelFor: spec.labelFor,
       inlineOptions: spec.inlineOptions,
-    });
+    })
 
-    colStart += spec.colSpan;
+    colStart += spec.colSpan
   }
 
-  return { id: uuidv4(), columns: GRID_BASE_COLUMNS, fields, groupId };
+  return { id: uuidv4(), columns: GRID_BASE_COLUMNS, fields, groupId }
 }

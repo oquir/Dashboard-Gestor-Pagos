@@ -1,28 +1,28 @@
-﻿import { Trash6, Xmark } from "reicon-react";
-import { useFieldContextMenu } from "../../../hooks/useFieldContextMenu/useFieldContextMenu";
-import type { FieldContextMenuState } from "../../../types/fieldContextMenu";
-import { IconButton } from "../../atoms/IconButton/IconButton";
-import { TabButtonGroup } from "../../molecules/TabButtonGroup/TabButtonGroup";
-import { ApiMappingPanel } from "../panels/ApiMappingPanel/ApiMappingPanel";
-import { AttributesPanel } from "../panels/AttributesPanel/AttributesPanel";
-import { LogicPanel } from "../panels/LogicPanel/LogicPanel";
-import { StylesPanel } from "../panels/StylesPanel/StylesPanel";
-import { ValidationsPanel } from "../panels/ValidationsPanel/ValidationsPanel";
-import { CONTEXT_MENU_TABS } from "./FieldContextMenu.constants";
+﻿import { Trash6, Xmark } from 'reicon-react'
+import { useFieldContextMenu } from '../../../hooks/useFieldContextMenu/useFieldContextMenu'
+import type { FieldContextMenuState } from '../../../types/fieldContextMenu'
+import { IconButton } from '../../atoms/IconButton/IconButton'
+import { TabButtonGroup } from '../../molecules/TabButtonGroup/TabButtonGroup'
+import { ApiMappingPanel } from '../panels/ApiMappingPanel/ApiMappingPanel'
+import { AttributesPanel } from '../panels/AttributesPanel/AttributesPanel'
+import { LogicPanel } from '../panels/LogicPanel/LogicPanel'
+import { StylesPanel } from '../panels/StylesPanel/StylesPanel'
+import { ValidationsPanel } from '../panels/ValidationsPanel/ValidationsPanel'
+import { CONTEXT_MENU_TABS } from './FieldContextMenu.constants'
 
 export function FieldContextMenu({
   menu,
   onClose,
 }: {
-  menu: FieldContextMenuState;
-  onClose: () => void;
+  menu: FieldContextMenuState
+  onClose: () => void
 }) {
   const { field, activeTab, handleSelectTab, handleDelete, position } = useFieldContextMenu({
     menu,
     onClose,
-  });
+  })
 
-  if (!field) return null;
+  if (!field) return null
 
   return (
     <div
@@ -56,12 +56,12 @@ export function FieldContextMenu({
       <TabButtonGroup tabs={CONTEXT_MENU_TABS} activeTab={activeTab} onSelect={handleSelectTab} />
 
       <div className="overflow-y-auto p-3">
-        {activeTab === "attributes" && <AttributesPanel field={field} />}
-        {activeTab === "validations" && <ValidationsPanel field={field} />}
-        {activeTab === "styles" && <StylesPanel field={field} />}
-        {activeTab === "logic" && <LogicPanel field={field} />}
-        {activeTab === "apiMapping" && <ApiMappingPanel field={field} />}
+        {activeTab === 'attributes' && <AttributesPanel field={field} />}
+        {activeTab === 'validations' && <ValidationsPanel field={field} />}
+        {activeTab === 'styles' && <StylesPanel field={field} />}
+        {activeTab === 'logic' && <LogicPanel field={field} />}
+        {activeTab === 'apiMapping' && <ApiMappingPanel field={field} />}
       </div>
     </div>
-  );
+  )
 }

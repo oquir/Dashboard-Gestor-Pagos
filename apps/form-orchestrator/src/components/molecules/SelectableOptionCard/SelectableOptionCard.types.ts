@@ -1,6 +1,6 @@
 export interface SelectableOptionCardProps {
-  label: string;
-  description: string;
-  selected: boolean;
-  onClick: () => void;
+  label: string
+  description: string
+  selected: boolean
+  onClick: () => void
 }

@@ -1,10 +1,10 @@
-import type { CSSProperties } from "react";
-import { isPresentationalField } from "../../../../lib/fieldKind/fieldKind";
-import { isSimulatedCatalog } from "../../../../lib/mockCatalog/mockCatalog";
-import { isRequiredBySchema } from "../../../../lib/runtimeValidation/runtimeValidation.utils";
-import { PreviewTooltip } from "../../../molecules/PreviewTooltip/PreviewTooltip";
-import { PreviewFieldControl } from "../PreviewFieldControl/PreviewFieldControl";
-import type { PreviewFieldProps } from "./PreviewField.types";
+import type { CSSProperties } from 'react'
+import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
+import { isSimulatedCatalog } from '../../../../lib/mockCatalog/mockCatalog'
+import { isRequiredBySchema } from '../../../../lib/runtimeValidation/runtimeValidation.utils'
+import { PreviewTooltip } from '../../../molecules/PreviewTooltip/PreviewTooltip'
+import { PreviewFieldControl } from '../PreviewFieldControl/PreviewFieldControl'
+import type { PreviewFieldProps } from './PreviewField.types'
 
 export function PreviewField({
   field,
@@ -16,7 +16,7 @@ export function PreviewField({
   onChange,
 }: PreviewFieldProps) {
   // Precedencia del contrato: si visibleWhen da falso el campo no se dibuja ni se valida.
-  if (!scope.visible[field.name]) return null;
+  if (!scope.visible[field.name]) return null
 
   // Los estilos ya llegan resueltos a CSS plano desde el export (ver lib/cssStyles); aca solo se
   // completa con la posicion en el grid, y va al final para que gane sobre cualquier CSS libre
@@ -24,9 +24,9 @@ export function PreviewField({
   const style: CSSProperties = {
     ...(field.styles as CSSProperties),
     gridColumn: `${field.colStart} / span ${field.colSpan}`,
-  };
+  }
 
-  if (field.type === "label") {
+  if (field.type === 'label') {
     return (
       <div style={style} className="flex min-w-0 items-center gap-1 self-end pb-1.5">
         <label
@@ -37,7 +37,7 @@ export function PreviewField({
         </label>
         {linkedTooltip && <PreviewTooltip tooltip={linkedTooltip} label={field.label} />}
       </div>
-    );
+    )
   }
 
   if (isPresentationalField(field.type)) {
@@ -53,12 +53,12 @@ export function PreviewField({
           onChange={onChange}
         />
       </div>
-    );
+    )
   }
 
-  const computed: boolean = Boolean(scope.computed[field.name]);
-  const disabled: boolean = scope.disabled[field.name] || computed;
-  const showLabel: boolean = externalLabel === undefined;
+  const computed: boolean = Boolean(scope.computed[field.name])
+  const disabled: boolean = scope.disabled[field.name] || computed
+  const showLabel: boolean = externalLabel === undefined
 
   return (
     <div style={style} className="flex min-w-0 flex-col gap-1">
@@ -97,5 +97,5 @@ export function PreviewField({
         )}
       </div>
     </div>
-  );
+  )
 }

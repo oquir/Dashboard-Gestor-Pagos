@@ -1,16 +1,16 @@
-import { ArrowLeft, Moon, Sun } from "reicon-react";
-import { useFormPreview } from "../../../hooks/useFormPreview/useFormPreview";
-import { useFormStore } from "../../../store/formStore";
-import type { FormPreviewApi } from "../../../types/formPreview";
-import { PreviewForm } from "../preview/PreviewForm/PreviewForm";
-import { PreviewResults } from "../preview/PreviewResults/PreviewResults";
-import { EXIT_BUTTON_CLASSES, ICON_BUTTON_CLASSES } from "./FormSimulator.constants";
+import { ArrowLeft, Moon, Sun } from 'reicon-react'
+import { useFormPreview } from '../../../hooks/useFormPreview/useFormPreview'
+import { useFormStore } from '../../../store/formStore'
+import type { FormPreviewApi } from '../../../types/formPreview'
+import { PreviewForm } from '../preview/PreviewForm/PreviewForm'
+import { PreviewResults } from '../preview/PreviewResults/PreviewResults'
+import { EXIT_BUTTON_CLASSES, ICON_BUTTON_CLASSES } from './FormSimulator.constants'
 
 export function FormSimulator() {
-  const preview: FormPreviewApi = useFormPreview();
-  const setSimulatorOpen = useFormStore((state) => state.setSimulatorOpen);
-  const isDarkMode = useFormStore((state) => state.isDarkMode);
-  const toggleDarkMode = useFormStore((state) => state.toggleDarkMode);
+  const preview: FormPreviewApi = useFormPreview()
+  const setSimulatorOpen = useFormStore((state) => state.setSimulatorOpen)
+  const isDarkMode = useFormStore((state) => state.isDarkMode)
+  const toggleDarkMode = useFormStore((state) => state.toggleDarkMode)
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-surface-sunken text-fg">
@@ -26,8 +26,8 @@ export function FormSimulator() {
           <button
             type="button"
             onClick={toggleDarkMode}
-            title={isDarkMode ? "Activar modo claro" : "Activar modo oscuro"}
-            aria-label={isDarkMode ? "Activar modo claro" : "Activar modo oscuro"}
+            title={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}
+            aria-label={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}
             className={ICON_BUTTON_CLASSES}
           >
             {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
@@ -56,5 +56,5 @@ export function FormSimulator() {
         </div>
       </div>
     </div>
-  );
+  )
 }

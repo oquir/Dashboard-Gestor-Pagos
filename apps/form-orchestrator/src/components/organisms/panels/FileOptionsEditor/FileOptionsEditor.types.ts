@@ -1,11 +1,11 @@
-import type { CanvasField } from "../../../../types/field";
+import type { CanvasField } from '../../../../types/field'
 
 export interface FileOptionsEditorProps {
-  field: CanvasField;
+  field: CanvasField
 }
 
 export interface FileFormatPreset {
-  id: string;
-  label: string;
-  tokens: string[];
+  id: string
+  label: string
+  tokens: string[]
 }

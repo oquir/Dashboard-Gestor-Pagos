@@ -1,6 +1,6 @@
-import { useFieldScriptEditor } from "../../../../hooks/useFieldScriptEditor/useFieldScriptEditor";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { ScriptInput } from "../../../molecules/ScriptInput/ScriptInput";
+import { useFieldScriptEditor } from '../../../../hooks/useFieldScriptEditor/useFieldScriptEditor'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { ScriptInput } from '../../../molecules/ScriptInput/ScriptInput'
 import {
   DATE_HELPERS_HINT,
   ERROR_CLASSES,
@@ -11,12 +11,12 @@ import {
   SCRIPT_SCOPE_HINT,
   VALUE_HELPERS_HINT,
   WARNING_CLASSES,
-} from "./FieldScriptEditor.constants";
-import type { FieldScriptEditorProps } from "./FieldScriptEditor.types";
+} from './FieldScriptEditor.constants'
+import type { FieldScriptEditorProps } from './FieldScriptEditor.types'
 
 export function FieldScriptEditor({ field, candidates }: FieldScriptEditorProps) {
   const { source, knownNames, validation, cycle, readsSelf, dependencies, handleChange } =
-    useFieldScriptEditor({ field, candidates });
+    useFieldScriptEditor({ field, candidates })
 
   return (
     <PanelSection title="Cálculo del campo">
@@ -44,7 +44,7 @@ export function FieldScriptEditor({ field, candidates }: FieldScriptEditorProps)
 
       {validation.unknown.length > 0 && (
         <p className={WARNING_CLASSES}>
-          {validation.unknown.map((name) => `{${name}}`).join(", ")} no coincide con ningún campo,
+          {validation.unknown.map((name) => `{${name}}`).join(', ')} no coincide con ningún campo,
           así que se deja tal cual como JavaScript.
         </p>
       )}
@@ -67,5 +67,5 @@ export function FieldScriptEditor({ field, candidates }: FieldScriptEditorProps)
       <p className={HINT_CLASSES}>{DATE_HELPERS_HINT}</p>
       <p className={HINT_CLASSES}>{VALUE_HELPERS_HINT}</p>
     </PanelSection>
-  );
+  )
 }

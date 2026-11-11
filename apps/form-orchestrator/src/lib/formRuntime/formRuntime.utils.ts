@@ -1,34 +1,34 @@
-import type { ExportedField, ExportedStep } from "../../types/exportForm";
+import type { ExportedField, ExportedStep } from '../../types/exportForm'
 import type {
   RuntimeModel,
   RuntimeScope,
   RuntimeSnapshot,
   RuntimeValues,
-} from "../../types/formRuntime";
-import { evaluateCondition } from "../runtimeCondition/runtimeCondition";
-import { checkKey, fieldKey } from "../runtimeValidation/runtimeValidation.utils";
+} from '../../types/formRuntime'
+import { evaluateCondition } from '../runtimeCondition/runtimeCondition'
+import { checkKey, fieldKey } from '../runtimeValidation/runtimeValidation.utils'
 
 // Piezas de apoyo del runtime: recorridos del export y armado de los ambitos.
 
 export function stepFields(step: ExportedStep): ExportedField[] {
-  return step.rows.flatMap((row) => row.fields);
+  return step.rows.flatMap((row) => row.fields)
 }
 
 // Las claves de error de un paso: los campos sueltos por nombre y los de un grupo repetible
 // una vez por repeticion, que es como las indexa validateRuntime.
 export function stepErrorKeys(step: ExportedStep, snapshot: RuntimeSnapshot): string[] {
-  const keys: string[] = [];
+  const keys: string[] = []
 
   for (const row of step.rows) {
     for (const field of row.fields) {
       if (!row.groupId) {
-        keys.push(field.name);
-        continue;
+        keys.push(field.name)
+        continue
       }
 
-      const repetitions: number = (snapshot.groups[row.groupId] ?? []).length;
+      const repetitions: number = (snapshot.groups[row.groupId] ?? []).length
       for (let index = 0; index < repetitions; index += 1) {
-        keys.push(fieldKey(field.name, row.groupId, index));
+        keys.push(fieldKey(field.name, row.groupId, index))
       }
     }
   }
@@ -37,14 +37,14 @@ export function stepErrorKeys(step: ExportedStep, snapshot: RuntimeSnapshot): st
   // el error existiria en la lista pero "Siguiente" avanzaria igual, que es justo lo contrario de
   // lo que se pide de ella.
   for (const group of step.groups ?? []) {
-    for (const check of group.checks ?? []) keys.push(checkKey(group.groupId, check.id));
+    for (const check of group.checks ?? []) keys.push(checkKey(group.groupId, check.id))
   }
 
-  return keys;
+  return keys
 }
 
 export function allSteps(model: RuntimeModel): ExportedStep[] {
-  return [...model.introSteps, ...model.steps];
+  return [...model.introSteps, ...model.steps]
 }
 
 // Convierte cada columna de un grupo en un array bajo el nombre del campo. Es lo que permite que
@@ -53,17 +53,17 @@ export function groupColumns(
   model: RuntimeModel,
   groups: Record<string, RuntimeValues[]>,
 ): RuntimeValues {
-  const columns: RuntimeValues = {};
+  const columns: RuntimeValues = {}
 
   for (const [groupId, fields] of model.groupFields) {
-    const items: RuntimeValues[] = groups[groupId] ?? [];
+    const items: RuntimeValues[] = groups[groupId] ?? []
 
     for (const field of fields) {
-      columns[field.name] = items.map((item) => item[field.name]);
+      columns[field.name] = items.map((item) => item[field.name])
     }
   }
 
-  return columns;
+  return columns
 }
 
 export function buildScope(
@@ -72,15 +72,15 @@ export function buildScope(
   computed: Record<string, boolean>,
   clamped: Record<string, boolean>,
 ): RuntimeScope {
-  const visible: Record<string, boolean> = {};
-  const disabled: Record<string, boolean> = {};
+  const visible: Record<string, boolean> = {}
+  const disabled: Record<string, boolean> = {}
 
   // Precedencia del contrato: alwaysDisabled gana sobre enableWhen. La visibilidad se calcula
   // aparte porque manda sobre las dos: un campo oculto no se dibuja ni se valida.
   for (const field of fields) {
-    visible[field.name] = evaluateCondition(field.visibleWhen, values);
+    visible[field.name] = evaluateCondition(field.visibleWhen, values)
     disabled[field.name] =
-      Boolean(field.alwaysDisabled) || !evaluateCondition(field.enableWhen, values);
+      Boolean(field.alwaysDisabled) || !evaluateCondition(field.enableWhen, values)
   }
 
   // Segunda pasada, y tiene que serlo: el destino puede aparecer despues que su etiqueta en la
@@ -94,16 +94,16 @@ export function buildScope(
   // El === false es a proposito: si el destino no vive en este ambito no hay nada que heredar y la
   // etiqueta se queda como estaba.
   for (const field of fields) {
-    if (field.labelFor && visible[field.labelFor] === false) visible[field.name] = false;
+    if (field.labelFor && visible[field.labelFor] === false) visible[field.name] = false
   }
 
-  return { values, visible, disabled, computed, clamped };
+  return { values, visible, disabled, computed, clamped }
 }
 
 export function emptyItem(fields: ExportedField[]): RuntimeValues {
-  const item: RuntimeValues = {};
+  const item: RuntimeValues = {}
 
-  for (const field of fields) item[field.name] = undefined;
+  for (const field of fields) item[field.name] = undefined
 
-  return item;
+  return item
 }

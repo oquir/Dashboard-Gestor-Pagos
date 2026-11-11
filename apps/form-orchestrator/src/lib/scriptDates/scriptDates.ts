@@ -1,7 +1,7 @@
-import { DATE_HELPER_NAMES, toScriptNumber } from "../../constants/fieldScript";
-import type { ScriptFunction } from "../../types/fieldScript";
-import type { RuntimeContext } from "../../types/formRuntime";
-import { buscarFechaLimite, diasEntre, mesesOFraccion } from "../maxDates/maxDates";
+import { DATE_HELPER_NAMES, toScriptNumber } from '../../constants/fieldScript'
+import type { ScriptFunction } from '../../types/fieldScript'
+import type { RuntimeContext } from '../../types/formRuntime'
+import { buscarFechaLimite, diasEntre, mesesOFraccion } from '../maxDates/maxDates'
 
 // Los dos helpers de fecha que un script tiene en ambito. Son los unicos que no son puros: el resto
 // vive en constants/fieldScript porque le alcanza con sus argumentos, y estos necesitan la tabla de
@@ -12,24 +12,24 @@ import { buscarFechaLimite, diasEntre, mesesOFraccion } from "../maxDates/maxDat
 // tienen que existir con estas mismas reglas. Es el mismo acuerdo coordinado que ya rige para
 // logic.script -- quien escribe el formulario y quien lo consume son la misma persona.
 
-const PERIODO_POR_DEFECTO: number = 1;
+const PERIODO_POR_DEFECTO: number = 1
 
 function comoTexto(valor: unknown): string {
-  return valor === undefined || valor === null ? "" : String(valor);
+  return valor === undefined || valor === null ? '' : String(valor)
 }
 
 // El periodo cae en 1 cuando no lo pasan o llega vacio, que es el caso de toda declaracion anual.
 function comoPeriodo(valor: unknown): number {
-  const numero: number = toScriptNumber(valor);
+  const numero: number = toScriptNumber(valor)
 
-  return numero > 0 ? numero : PERIODO_POR_DEFECTO;
+  return numero > 0 ? numero : PERIODO_POR_DEFECTO
 }
 
 function resolver(context: RuntimeContext, args: unknown[]): string | null {
-  const anio: number = toScriptNumber(args[0]);
-  if (anio <= 0) return null;
+  const anio: number = toScriptNumber(args[0])
+  if (anio <= 0) return null
 
-  return buscarFechaLimite(context.reglas, anio, comoPeriodo(args[1]), comoTexto(args[2])) ?? null;
+  return buscarFechaLimite(context.reglas, anio, comoPeriodo(args[1]), comoTexto(args[2])) ?? null
 }
 
 // El orden sale de DATE_HELPER_NAMES y no de escribirlo dos veces: es la misma disciplina con la que
@@ -44,26 +44,26 @@ export function buildDateHelpers(context: RuntimeContext): ScriptFunction[] {
     // deliberado: sin tabla cargada la alternativa seria NaN, que apagaria en silencio la cadena de
     // renglones que venga detras. Y una sancion no puede nacer de un dato que falta.
     diasDeMora: (...args: unknown[]) => {
-      const limite: string | null = resolver(context, args);
-      if (limite === null) return 0;
+      const limite: string | null = resolver(context, args)
+      if (limite === null) return 0
 
-      const dias: number | null = diasEntre(limite, context.hoy);
+      const dias: number | null = diasEntre(limite, context.hoy)
 
-      return dias === null || dias <= 0 ? 0 : dias;
+      return dias === null || dias <= 0 ? 0 : dias
     },
 
     // Meses o fraccion de atraso, que es la unidad en la que crece la sancion por extemporaneidad.
     // No se deriva de diasDeMora: dividir dias entre 30 cobra un mes de mas cada medio ano.
     // Mismo fail-open que arriba -- sin tabla no hay mora, y por lo tanto no hay sancion.
     mesesDeMora: (...args: unknown[]) => {
-      const limite: string | null = resolver(context, args);
-      if (limite === null) return 0;
+      const limite: string | null = resolver(context, args)
+      if (limite === null) return 0
 
-      const meses: number | null = mesesOFraccion(limite, context.hoy);
+      const meses: number | null = mesesOFraccion(limite, context.hoy)
 
-      return meses === null || meses <= 0 ? 0 : meses;
+      return meses === null || meses <= 0 ? 0 : meses
     },
-  };
+  }
 
-  return DATE_HELPER_NAMES.map((name) => porNombre[name]);
+  return DATE_HELPER_NAMES.map((name) => porNombre[name])
 }

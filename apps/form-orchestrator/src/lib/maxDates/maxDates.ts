@@ -4,54 +4,54 @@ import type {
   Periodicidad,
   ReglaAnio,
   TipoDigitoValidacion,
-} from "../../types/maxDates";
+} from '../../types/maxDates'
 import {
   ANIOS_POR_DEFECTO,
   DIGITOS,
   MES_DIA_ICA,
   OFFSET_ICA,
   PERIODOS_POR_PERIODICIDAD,
-} from "./maxDates.constants";
+} from './maxDates.constants'
 
 // Las reglas de las fechas maximas de presentacion: cuantos periodos tiene un ano, como se arma la
 // tabla por defecto y como se busca una fecha puntual. Busqueda y aritmetica puras, sin React ni
 // store, igual que rowLayout o fieldRounding.
 
-const UN_DIGITO: RegExp = /^[0-9]$/;
+const UN_DIGITO: RegExp = /^[0-9]$/
 
-const FECHA_TEXTO: RegExp = /^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/;
+const FECHA_TEXTO: RegExp = /^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/
 
-const MS_POR_DIA: number = 86400000;
+const MS_POR_DIA: number = 86400000
 
 // "YYYY/MM/DD" a milisegundos UTC, o null si no es una fecha. Se parsea a mano en vez de pasarle el
 // texto a Date porque el formato decide el huso: "2025/03/31" se lee como medianoche LOCAL y
 // "2025-03-31" como medianoche UTC. Mezclar los dos da un dia de diferencia segun donde se corra,
 // y un dia de diferencia aca es la linea entre estar en fecha y deber una sancion.
 export function aUtc(fecha: string): number | null {
-  const match: RegExpMatchArray | null = fecha.trim().match(FECHA_TEXTO);
-  if (!match) return null;
+  const match: RegExpMatchArray | null = fecha.trim().match(FECHA_TEXTO)
+  if (!match) return null
 
-  const anio: number = Number(match[1]);
-  const mes: number = Number(match[2]);
-  const dia: number = Number(match[3]);
-  if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return null;
+  const anio: number = Number(match[1])
+  const mes: number = Number(match[2])
+  const dia: number = Number(match[3])
+  if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return null
 
-  const ms: number = Date.UTC(anio, mes - 1, dia);
+  const ms: number = Date.UTC(anio, mes - 1, dia)
 
   // Date.UTC no rechaza un 31 de febrero, lo corre al 3 de marzo. Se compara la vuelta para que una
   // fecha que no existe se reporte como invalida en vez de resolverse a otra.
-  const vuelta = new Date(ms);
+  const vuelta = new Date(ms)
 
-  return vuelta.getUTCMonth() === mes - 1 && vuelta.getUTCDate() === dia ? ms : null;
+  return vuelta.getUTCMonth() === mes - 1 && vuelta.getUTCDate() === dia ? ms : null
 }
 
 // Dias completos de `desde` a `hasta`. Positivo si `hasta` es posterior.
 export function diasEntre(desde: string, hasta: string): number | null {
-  const a: number | null = aUtc(desde);
-  const b: number | null = aUtc(hasta);
-  if (a === null || b === null) return null;
+  const a: number | null = aUtc(desde)
+  const b: number | null = aUtc(hasta)
+  if (a === null || b === null) return null
 
-  return Math.round((b - a) / MS_POR_DIA);
+  return Math.round((b - a) / MS_POR_DIA)
 }
 
 // "Mes o fraccion de mes" de `desde` a `hasta`, que es como cuenta el atraso la sancion por
@@ -62,41 +62,41 @@ export function diasEntre(desde: string, hasta: string): number | null {
 // mas aca es el 5% del impuesto. Los meses completos salen de la diferencia de anio y mes, y la
 // fraccion es haber pasado el dia del mes del vencimiento.
 export function mesesOFraccion(desde: string, hasta: string): number | null {
-  const a: number | null = aUtc(desde);
-  const b: number | null = aUtc(hasta);
-  if (a === null || b === null) return null;
+  const a: number | null = aUtc(desde)
+  const b: number | null = aUtc(hasta)
+  if (a === null || b === null) return null
 
   // En fecha o antes no hay atraso. El limite es el ultimo dia habil para presentar, asi que
   // presentar ese mismo dia no es tarde.
-  if (b <= a) return 0;
+  if (b <= a) return 0
 
-  const inicio = new Date(a);
-  const fin = new Date(b);
+  const inicio = new Date(a)
+  const fin = new Date(b)
   const completos: number =
     (fin.getUTCFullYear() - inicio.getUTCFullYear()) * 12 +
-    (fin.getUTCMonth() - inicio.getUTCMonth());
+    (fin.getUTCMonth() - inicio.getUTCMonth())
 
-  return fin.getUTCDate() > inicio.getUTCDate() ? completos + 1 : completos;
+  return fin.getUTCDate() > inicio.getUTCDate() ? completos + 1 : completos
 }
 
 // El dia de hoy en el mismo formato que usa la tabla. Recibe la fecha en vez de leer el reloj para
 // que se pueda comprobar sin tocar la hora del sistema.
 export function enTexto(fecha: Date): string {
-  const mes: string = String(fecha.getMonth() + 1).padStart(2, "0");
-  const dia: string = String(fecha.getDate()).padStart(2, "0");
+  const mes: string = String(fecha.getMonth() + 1).padStart(2, '0')
+  const dia: string = String(fecha.getDate()).padStart(2, '0')
 
-  return `${fecha.getFullYear()}/${mes}/${dia}`;
+  return `${fecha.getFullYear()}/${mes}/${dia}`
 }
 
 export function periodosDe(periodicidad: Periodicidad): number {
-  return PERIODOS_POR_PERIODICIDAD[periodicidad];
+  return PERIODOS_POR_PERIODICIDAD[periodicidad]
 }
 
 // Cuantas fechas deberia traer un ano segun lo que declara. Sirve para ver de un vistazo que un
 // volcado llego incompleto, que es la falla que de otro modo aparece recien el dia que alguien
 // consulta justo el periodo que falta.
 export function fechasEsperadas(regla: ReglaAnio): number {
-  return periodosDe(regla.periodicidad) * (regla.tipoDigito === "ninguno" ? 1 : DIGITOS);
+  return periodosDe(regla.periodicidad) * (regla.tipoDigito === 'ninguno' ? 1 : DIGITOS)
 }
 
 // El digito del documento sobre el que se valida, o null si no hay ninguno legible ahi.
@@ -106,14 +106,14 @@ export function fechasEsperadas(regla: ReglaAnio): number {
 // correcta -- y un NIT con letra daba NaN, que no coincide con nada y se iba sin decir por que.
 export function digitoDe(
   documento: string,
-  tipo: Exclude<TipoDigitoValidacion, "ninguno">,
+  tipo: Exclude<TipoDigitoValidacion, 'ninguno'>,
 ): number | null {
-  const limpio: string = documento.trim();
-  if (limpio.length === 0) return null;
+  const limpio: string = documento.trim()
+  if (limpio.length === 0) return null
 
-  const char: string = tipo === "primer_digito" ? limpio[0] : limpio[limpio.length - 1];
+  const char: string = tipo === 'primer_digito' ? limpio[0] : limpio[limpio.length - 1]
 
-  return UN_DIGITO.test(char) ? Number(char) : null;
+  return UN_DIGITO.test(char) ? Number(char) : null
 }
 
 export function buscarFechaLimite(
@@ -122,17 +122,17 @@ export function buscarFechaLimite(
   periodo: number,
   documento: string,
 ): string | undefined {
-  const regla: ReglaAnio | undefined = reglas.find((r) => r.anio === anio);
-  if (!regla) return undefined;
+  const regla: ReglaAnio | undefined = reglas.find((r) => r.anio === anio)
+  if (!regla) return undefined
 
-  if (regla.tipoDigito === "ninguno") {
-    return regla.fechas.find((f) => f.periodo === periodo)?.fecha;
+  if (regla.tipoDigito === 'ninguno') {
+    return regla.fechas.find((f) => f.periodo === periodo)?.fecha
   }
 
-  const digito: number | null = digitoDe(documento, regla.tipoDigito);
-  if (digito === null) return undefined;
+  const digito: number | null = digitoDe(documento, regla.tipoDigito)
+  if (digito === null) return undefined
 
-  return regla.fechas.find((f) => f.periodo === periodo && f.digito === digito)?.fecha;
+  return regla.fechas.find((f) => f.periodo === periodo && f.digito === digito)?.fecha
 }
 
 // Los `cantidad` anos gravables mas recientes que se pueden declarar, uno por ano y sin digito. El
@@ -145,19 +145,19 @@ export function generarReglasAnuales(
   offset: number,
   mesDia: string,
 ): ReglaAnio[] {
-  const reglas: ReglaAnio[] = [];
-  const ultimo: number = anioActual - offset;
+  const reglas: ReglaAnio[] = []
+  const ultimo: number = anioActual - offset
 
   for (let anio = ultimo - cantidad + 1; anio <= ultimo; anio += 1) {
     reglas.push({
       anio,
-      periodicidad: "anual",
-      tipoDigito: "ninguno",
+      periodicidad: 'anual',
+      tipoDigito: 'ninguno',
       fechas: [{ periodo: 1, fecha: `${anio + offset}/${mesDia}` }],
-    });
+    })
   }
 
-  return reglas;
+  return reglas
 }
 
 // Cambia la fecha de un ano anual, devolviendo una tabla nueva. Solo toca el periodo 1 y solo de
@@ -172,11 +172,11 @@ export function conFechaAnual(
   return {
     ...fechas,
     [kind]: fechas[kind].map((regla) =>
-      regla.anio === anio && regla.periodicidad === "anual" && regla.tipoDigito === "ninguno"
+      regla.anio === anio && regla.periodicidad === 'anual' && regla.tipoDigito === 'ninguno'
         ? { ...regla, fechas: [{ periodo: 1, fecha: nueva }] }
         : regla,
     ),
-  };
+  }
 }
 
 // Retencion y autorretencion salen vacias a proposito. El builder solo trae plantilla de industria
@@ -185,9 +185,9 @@ export function conFechaAnual(
 // ya esta, asi que cargarlas es pegar el volcado.
 export function generarFechasPorDefecto(anioActual: number): FechasMaximasPresentacion {
   return {
-    municipioId: "",
+    municipioId: '',
     ica: generarReglasAnuales(anioActual, ANIOS_POR_DEFECTO, OFFSET_ICA, MES_DIA_ICA),
     reteica: [],
     autoretencionIca: [],
-  };
+  }
 }

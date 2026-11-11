@@ -1,6 +1,6 @@
-import { FieldTypeBadge } from "../../atoms/FieldTypeBadge/FieldTypeBadge";
-import { FieldPreviewControl } from "../FieldPreviewControl/FieldPreviewControl";
-import type { RowDragPreviewProps } from "./RowDragPreview.types";
+import { FieldTypeBadge } from '../../atoms/FieldTypeBadge/FieldTypeBadge'
+import { FieldPreviewControl } from '../FieldPreviewControl/FieldPreviewControl'
+import type { RowDragPreviewProps } from './RowDragPreview.types'
 
 // Replica de la fila, no un chip: se dibuja al ancho real que se midio al empezar el arrastre para
 // que uno vea que lleva la seccion entera. Es una copia simplificada a proposito -sin tirador, sin
@@ -16,7 +16,7 @@ export function RowDragPreview({ row, width, scale }: RowDragPreviewProps) {
         // aplicar el zoom dos veces. `rotate-1` no estorba, Tailwind v4 lo compila a la propiedad
         // `rotate` suelta y no a `transform`.
         transform: scale === 1 ? undefined : `scale(${scale})`,
-        transformOrigin: "top left",
+        transformOrigin: 'top left',
       }}
       className="grid rotate-1 gap-3 rounded-md border-2 border-orange-500 bg-white p-3 shadow-2xl dark:border-orange-400 dark:bg-neutral-900"
     >
@@ -51,5 +51,5 @@ export function RowDragPreview({ row, width, scale }: RowDragPreviewProps) {
         </div>
       ))}
     </div>
-  );
+  )
 }

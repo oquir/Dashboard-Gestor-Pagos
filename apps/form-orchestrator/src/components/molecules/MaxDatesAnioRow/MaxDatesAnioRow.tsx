@@ -1,4 +1,4 @@
-import { fechasEsperadas } from "../../../lib/maxDates/maxDates";
+import { fechasEsperadas } from '../../../lib/maxDates/maxDates'
 import {
   BADGE_LOADED_CLASSES,
   BADGE_PARCIAL_CLASSES,
@@ -6,14 +6,14 @@ import {
   DIGITO_LABEL,
   HINT_CLASSES,
   PERIODICIDAD_LABEL,
-} from "./MaxDatesAnioRow.constants";
-import type { MaxDatesAnioRowProps } from "./MaxDatesAnioRow.types";
+} from './MaxDatesAnioRow.constants'
+import type { MaxDatesAnioRowProps } from './MaxDatesAnioRow.types'
 
 export function MaxDatesAnioRow({ regla, onEditFecha }: MaxDatesAnioRowProps) {
-  const esperadas: number = fechasEsperadas(regla);
-  const completo: boolean = regla.fechas.length === esperadas;
+  const esperadas: number = fechasEsperadas(regla)
+  const completo: boolean = regla.fechas.length === esperadas
   // Solo el caso simple se teclea. Los demas van de 6 a 120 fechas, y eso no lo carga nadie a mano.
-  const editable: boolean = regla.periodicidad === "anual" && regla.tipoDigito === "ninguno";
+  const editable: boolean = regla.periodicidad === 'anual' && regla.tipoDigito === 'ninguno'
 
   return (
     <li className="flex items-center justify-between gap-2">
@@ -30,7 +30,7 @@ export function MaxDatesAnioRow({ regla, onEditFecha }: MaxDatesAnioRowProps) {
 
       {editable ? (
         <input
-          value={regla.fechas[0]?.fecha ?? ""}
+          value={regla.fechas[0]?.fecha ?? ''}
           onChange={(event) => onEditFecha(event.target.value)}
           placeholder="YYYY/MM/DD"
           aria-label={`Fecha máxima del año ${regla.anio}`}
@@ -42,5 +42,5 @@ export function MaxDatesAnioRow({ regla, onEditFecha }: MaxDatesAnioRowProps) {
         </span>
       )}
     </li>
-  );
+  )
 }

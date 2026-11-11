@@ -1,7 +1,7 @@
-﻿import { VARIANT_CLASSES } from "./Button.constants";
-import type { ButtonProps } from "./Button.types";
+﻿import { VARIANT_CLASSES } from './Button.constants'
+import type { ButtonProps } from './Button.types'
 
-export function Button({ variant = "primary", className = "", children, ...rest }: ButtonProps) {
+export function Button({ variant = 'primary', className = '', children, ...rest }: ButtonProps) {
   return (
     <button
       type="button"
@@ -10,5 +10,5 @@ export function Button({ variant = "primary", className = "", children, ...rest 
     >
       {children}
     </button>
-  );
+  )
 }

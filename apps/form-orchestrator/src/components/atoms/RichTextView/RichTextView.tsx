@@ -1,14 +1,14 @@
-import { isEmptyRichText } from "../../../lib/richText/richText";
-import type { RichTextViewProps } from "./RichTextView.types";
-import { renderLeaf } from "./RichTextView.utils";
+import { isEmptyRichText } from '../../../lib/richText/richText'
+import type { RichTextViewProps } from './RichTextView.types'
+import { renderLeaf } from './RichTextView.utils'
 
 export function RichTextView({ content, className }: RichTextViewProps) {
   if (isEmptyRichText(content)) {
-    return <p className="text-xs italic text-fg-subtle">Bloque de texto vacío</p>;
+    return <p className="text-xs italic text-fg-subtle">Bloque de texto vacío</p>
   }
 
   return (
-    <div className={`flex flex-col gap-1 ${className ?? "text-xs text-fg-soft"}`}>
+    <div className={`flex flex-col gap-1 ${className ?? 'text-xs text-fg-soft'}`}>
       {(content ?? []).map((paragraph, index) => (
         // los parrafos no tienen id propio
         <p key={index}>
@@ -16,5 +16,5 @@ export function RichTextView({ content, className }: RichTextViewProps) {
         </p>
       ))}
     </div>
-  );
+  )
 }

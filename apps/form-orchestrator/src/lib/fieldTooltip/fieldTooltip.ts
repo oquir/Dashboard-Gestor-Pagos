@@ -1,32 +1,32 @@
-import { DEFAULT_TOOLTIP_POSITION } from "../../constants/fieldTooltip";
-import { TOOLTIP_CAPABLE_FIELD_TYPES } from "../../constants/fieldTypes";
-import type { ExportedTooltip } from "../../types/exportForm";
-import type { CanvasField, FieldTooltip } from "../../types/field";
-import { resolveTooltipStyles } from "../cssStyles/cssStyles";
-import { emptyRichText, isEmptyRichText } from "../richText/richText";
+import { DEFAULT_TOOLTIP_POSITION } from '../../constants/fieldTooltip'
+import { TOOLTIP_CAPABLE_FIELD_TYPES } from '../../constants/fieldTypes'
+import type { ExportedTooltip } from '../../types/exportForm'
+import type { CanvasField, FieldTooltip } from '../../types/field'
+import { resolveTooltipStyles } from '../cssStyles/cssStyles'
+import { emptyRichText, isEmptyRichText } from '../richText/richText'
 
 // La ayuda contextual de un campo. Solo ocho tipos la admiten. El contenido es RichTextContent,
 // igual que el campo rich_text, para reaprovechar el editor, la vista y el saneado de enlaces.
 // Un tooltip activado pero vacio no se exporta: marcar la casilla y no escribir no deja rastro.
 
 export function supportsTooltip(type: string): boolean {
-  return TOOLTIP_CAPABLE_FIELD_TYPES.includes(type);
+  return TOOLTIP_CAPABLE_FIELD_TYPES.includes(type)
 }
 
 export function hasTooltip(field: CanvasField): boolean {
-  return supportsTooltip(field.type) && !isEmptyRichText(field.tooltip?.content);
+  return supportsTooltip(field.type) && !isEmptyRichText(field.tooltip?.content)
 }
 
 export function exportableTooltip(field: CanvasField): ExportedTooltip | undefined {
-  if (!hasTooltip(field) || !field.tooltip) return undefined;
+  if (!hasTooltip(field) || !field.tooltip) return undefined
 
   return {
     content: field.tooltip.content,
     position: field.tooltip.position,
     styles: resolveTooltipStyles(field.tooltip),
-  };
+  }
 }
 
 export function createEmptyTooltip(): FieldTooltip {
-  return { content: emptyRichText(), position: DEFAULT_TOOLTIP_POSITION };
+  return { content: emptyRichText(), position: DEFAULT_TOOLTIP_POSITION }
 }

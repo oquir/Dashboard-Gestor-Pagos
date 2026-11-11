@@ -1,27 +1,27 @@
-import { v4 as uuidv4 } from "uuid";
-import { type TemporalState, temporal, type ZundoOptions } from "zundo";
-import { create, type Mutate, type StateCreator, type StoreApi, type UseBoundStore } from "zustand";
-import { ZOOM_DEFAULT } from "../constants/canvasZoom";
-import { GRID_BASE_COLUMNS, MAX_ROW_COLUMNS, MIN_ROW_COLUMNS } from "../constants/grid";
-import { HISTORY_BURST_MS, HISTORY_LIMIT } from "../constants/history";
-import { sameIdSet, toggleId, withoutIds } from "../lib/canvasSelection/canvasSelection";
-import { clampZoom } from "../lib/canvasZoom/canvasZoom";
-import { pruneDataSourceReferencing } from "../lib/fieldDataSource/fieldDataSource";
-import { slugifyFieldName, uniqueFieldName } from "../lib/fieldName/fieldName";
-import { allowsManualOptions, isOptionBasedField } from "../lib/fieldOptions/fieldOptions";
-import { createFieldRule, moveRule, pruneRulesReferencing } from "../lib/fieldRule/fieldRule";
-import { createEmptyTooltip } from "../lib/fieldTooltip/fieldTooltip";
+import { v4 as uuidv4 } from 'uuid'
+import { type TemporalState, temporal, type ZundoOptions } from 'zundo'
+import { create, type Mutate, type StateCreator, type StoreApi, type UseBoundStore } from 'zustand'
+import { ZOOM_DEFAULT } from '../constants/canvasZoom'
+import { GRID_BASE_COLUMNS, MAX_ROW_COLUMNS, MIN_ROW_COLUMNS } from '../constants/grid'
+import { HISTORY_BURST_MS, HISTORY_LIMIT } from '../constants/history'
+import { sameIdSet, toggleId, withoutIds } from '../lib/canvasSelection/canvasSelection'
+import { clampZoom } from '../lib/canvasZoom/canvasZoom'
+import { pruneDataSourceReferencing } from '../lib/fieldDataSource/fieldDataSource'
+import { slugifyFieldName, uniqueFieldName } from '../lib/fieldName/fieldName'
+import { allowsManualOptions, isOptionBasedField } from '../lib/fieldOptions/fieldOptions'
+import { createFieldRule, moveRule, pruneRulesReferencing } from '../lib/fieldRule/fieldRule'
+import { createEmptyTooltip } from '../lib/fieldTooltip/fieldTooltip'
 import {
   canTransfer,
   collectCrossingRefs,
   planLanding,
   transferGroup,
-} from "../lib/fieldTransfer/fieldTransfer";
+} from '../lib/fieldTransfer/fieldTransfer'
 import {
   createValidationOverride,
   pruneOverridesReferencing,
-} from "../lib/fieldValidationOverride/fieldValidationOverride";
-import { createBurstGate, sameDocument, toHistorySnapshot } from "../lib/history/history";
+} from '../lib/fieldValidationOverride/fieldValidationOverride'
+import { createBurstGate, sameDocument, toHistorySnapshot } from '../lib/history/history'
 import {
   clampGroupBounds,
   createRepeatableGroup,
@@ -29,29 +29,29 @@ import {
   groupNamesInUse,
   normalizeGroupRows,
   pruneEmptyGroups,
-} from "../lib/repeatableGroup/repeatableGroup";
+} from '../lib/repeatableGroup/repeatableGroup'
 import {
   getFreeRuns,
   getMaxSpanAt,
   repackRow,
   resolvePlacement,
   sortByColumn,
-} from "../lib/rowLayout/rowLayout";
-import { reorderRows } from "../lib/rowOrder/rowOrder";
-import type { CanvasField } from "../types/field";
-import type { FormState } from "../types/formStoreTypes";
+} from '../lib/rowLayout/rowLayout'
+import { reorderRows } from '../lib/rowOrder/rowOrder'
+import type { CanvasField } from '../types/field'
+import type { FormState } from '../types/formStoreTypes'
 import type {
   CanvasRow,
   FormStep,
   IntroModalState,
   IntroModalStep,
   RepeatableGroup,
-} from "../types/formStructure";
-import type { BurstGate, HistoryPastState, HistorySnapshot } from "../types/history";
-import type { CanvasTarget } from "../types/placement";
-import type { StateSlice } from "../types/store";
-import { createBanksSlice } from "./banksSlice";
-import { NO_GROUPS, NO_ROWS, NO_SELECTION, THEME_STORAGE_KEY } from "./formStore.constants";
+} from '../types/formStructure'
+import type { BurstGate, HistoryPastState, HistorySnapshot } from '../types/history'
+import type { CanvasTarget } from '../types/placement'
+import type { StateSlice } from '../types/store'
+import { createBanksSlice } from './banksSlice'
+import { NO_GROUPS, NO_ROWS, NO_SELECTION, THEME_STORAGE_KEY } from './formStore.constants'
 import {
   allFieldNames,
   allRows,
@@ -68,7 +68,7 @@ import {
   reconcileViewAfterHistory,
   rowsAcrossFrom,
   rowsOfTarget,
-} from "./formStore.utils";
+} from './formStore.utils'
 
 // El unico store de la aplicacion. Sostiene los dos lienzos a la vez -formSteps y las pantallas
 // del modal de intro- y casi toda mutacion se aplica al que contenga el id, sin preguntar cual
@@ -80,37 +80,37 @@ import {
 
 export function findRowById(slice: StateSlice, rowId: string): CanvasRow | null {
   for (const step of slice.formSteps) {
-    const row = step.rows.find((r) => r.id === rowId);
-    if (row) return row;
+    const row = step.rows.find((r) => r.id === rowId)
+    if (row) return row
   }
 
   for (const step of slice.introModal.steps) {
-    const row = step.rows.find((r) => r.id === rowId);
-    if (row) return row;
+    const row = step.rows.find((r) => r.id === rowId)
+    if (row) return row
   }
 
-  return null;
+  return null
 }
 
 // Agrupa las rafagas de cambios en un solo paso. Es de modulo porque lo comparten el handleSet de
 // zundo, que registra, y deshacer/rehacer, que lo reinician.
-const historyGate: BurstGate = createBurstGate(HISTORY_BURST_MS);
+const historyGate: BurstGate = createBurstGate(HISTORY_BURST_MS)
 
-const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (set) => ({
+const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (set) => ({
   // Los bancos del simulador entran enteros desde su propio archivo, estado y acciones incluidos.
   ...createBanksSlice(set),
   formSteps: [
     {
-      stepId: "step-1",
-      title: "Paso 1",
-      rows: [{ id: "row-1", columns: GRID_BASE_COLUMNS, fields: [] }],
+      stepId: 'step-1',
+      title: 'Paso 1',
+      rows: [{ id: 'row-1', columns: GRID_BASE_COLUMNS, fields: [] }],
     },
   ],
   introModal: { steps: [] },
-  formScript: "",
-  activeCanvas: { type: "formStep", stepId: "step-1" },
+  formScript: '',
+  activeCanvas: { type: 'formStep', stepId: 'step-1' },
   selectedFieldIds: NO_SELECTION,
-  canvasTool: "move",
+  canvasTool: 'move',
   setupConfig: {
     isComplete: false,
     formType: null,
@@ -120,9 +120,9 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
   isSidebarOpen: true,
   isSimulatorOpen: false,
   canvasZoom: ZOOM_DEFAULT,
-  canvasViewMode: "canvas",
-  sidebarTab: "fields",
-  rightSidebarTab: "project",
+  canvasViewMode: 'canvas',
+  sidebarTab: 'fields',
+  rightSidebarTab: 'project',
   dragPlacement: null,
   rowDropTarget: null,
   rowDrag: null,
@@ -152,15 +152,15 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
   markSaved: () => set({ lastSavedAt: new Date().toISOString() }),
   toggleDarkMode: () =>
     set((state) => {
-      const next = !state.isDarkMode;
-      window.localStorage.setItem(THEME_STORAGE_KEY, next ? "dark" : "light");
-      return { isDarkMode: next };
+      const next = !state.isDarkMode
+      window.localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light')
+      return { isDarkMode: next }
     }),
   selectFieldAndEdit: (fieldId, tab) =>
     set({ selectedFieldIds: [fieldId], sidebarTab: tab, isSidebarOpen: true }),
   completeSetup: (config) => {
     set(() => {
-      const formSteps = buildInitialFormSteps(config.formType);
+      const formSteps = buildInitialFormSteps(config.formType)
       return {
         setupConfig: { isComplete: true, ...config },
         formSteps,
@@ -169,12 +169,12 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
             ? buildInitialIntroSteps(config.formType, config.introModalSteps)
             : [],
         },
-        activeCanvas: { type: "formStep", stepId: formSteps[0].stepId },
+        activeCanvas: { type: 'formStep', stepId: formSteps[0].stepId },
         selectedFieldIds: NO_SELECTION,
-      };
-    });
+      }
+    })
     // Un formulario recien armado no se deshace hacia el lienzo en blanco de antes del asistente.
-    clearHistory();
+    clearHistory()
   },
   setActiveCanvas: (target) => set({ activeCanvas: target, selectedFieldIds: NO_SELECTION }),
   updateFormStepTitle: (stepId, title) =>
@@ -195,26 +195,26 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
         stepId: uuidv4(),
         title: `Paso ${state.formSteps.length + 1}`,
         rows: [createEmptyRow()],
-      };
+      }
       return {
         formSteps: [...state.formSteps, newStep],
-        activeCanvas: { type: "formStep", stepId: newStep.stepId },
+        activeCanvas: { type: 'formStep', stepId: newStep.stepId },
         selectedFieldIds: NO_SELECTION,
-      };
+      }
     }),
   removeFormStep: (stepId) =>
     set((state) => {
-      if (state.formSteps.length <= 1) return state;
-      const remainingSteps = state.formSteps.filter((step) => step.stepId !== stepId);
+      if (state.formSteps.length <= 1) return state
+      const remainingSteps = state.formSteps.filter((step) => step.stepId !== stepId)
       const wasActive =
-        state.activeCanvas.type === "formStep" && state.activeCanvas.stepId === stepId;
+        state.activeCanvas.type === 'formStep' && state.activeCanvas.stepId === stepId
       return {
         formSteps: remainingSteps,
         activeCanvas: wasActive
-          ? { type: "formStep", stepId: remainingSteps[0].stepId }
+          ? { type: 'formStep', stepId: remainingSteps[0].stepId }
           : state.activeCanvas,
         selectedFieldIds: wasActive ? NO_SELECTION : state.selectedFieldIds,
-      };
+      }
     }),
   updateIntroModalStepTitle: (stepId, title) =>
     set((state) => ({
@@ -238,7 +238,7 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
         stepId: uuidv4(),
         title: `Paso ${state.introModal.steps.length + 1}`,
         rows: [createEmptyRow()],
-      };
+      }
       return {
         introModal: { steps: [...state.introModal.steps, newStep] },
         setupConfig: {
@@ -246,15 +246,15 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
           hasIntroModal: true,
           introModalSteps: state.introModal.steps.length + 1,
         },
-        activeCanvas: { type: "introStep", stepId: newStep.stepId },
+        activeCanvas: { type: 'introStep', stepId: newStep.stepId },
         selectedFieldIds: NO_SELECTION,
-      };
+      }
     }),
   removeIntroModalStep: (stepId) =>
     set((state) => {
-      const remainingSteps = state.introModal.steps.filter((step) => step.stepId !== stepId);
+      const remainingSteps = state.introModal.steps.filter((step) => step.stepId !== stepId)
       const wasActive =
-        state.activeCanvas.type === "introStep" && state.activeCanvas.stepId === stepId;
+        state.activeCanvas.type === 'introStep' && state.activeCanvas.stepId === stepId
       return {
         introModal: { steps: remainingSteps },
         setupConfig: {
@@ -263,21 +263,21 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
           introModalSteps: remainingSteps.length,
         },
         activeCanvas: wasActive
-          ? { type: "formStep", stepId: state.formSteps[0].stepId }
+          ? { type: 'formStep', stepId: state.formSteps[0].stepId }
           : state.activeCanvas,
         selectedFieldIds: wasActive ? NO_SELECTION : state.selectedFieldIds,
-      };
+      }
     }),
   addRowToActiveCanvas: () =>
     set((state) => {
-      const newRow = createEmptyRow();
-      const stepId = state.activeCanvas.stepId;
-      if (state.activeCanvas.type === "formStep") {
+      const newRow = createEmptyRow()
+      const stepId = state.activeCanvas.stepId
+      if (state.activeCanvas.type === 'formStep') {
         return {
           formSteps: state.formSteps.map((step) =>
             step.stepId === stepId ? { ...step, rows: [...step.rows, newRow] } : step,
           ),
-        };
+        }
       }
       return {
         introModal: {
@@ -285,20 +285,20 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
             step.stepId === stepId ? { ...step, rows: [...step.rows, newRow] } : step,
           ),
         },
-      };
+      }
     }),
   updateRowColumns: (rowId, columns) =>
     set((state) => {
-      const row = findRowById(state, rowId);
-      if (!row) return state;
+      const row = findRowById(state, rowId)
+      if (!row) return state
       // El piso es la cantidad de campos que ya hay: nunca menos de una columna por campo, o
       // alguno se quedaria sin sitio al reempaquetar.
       const nextColumns = Math.max(
         MIN_ROW_COLUMNS,
         Math.min(MAX_ROW_COLUMNS, Math.round(columns)),
         row.fields.length,
-      );
-      return mapRowEverywhere(state, rowId, (current) => repackRow(current, nextColumns));
+      )
+      return mapRowEverywhere(state, rowId, (current) => repackRow(current, nextColumns))
     }),
   updateRowStyles: (rowId, updates) =>
     set((state) =>
@@ -310,7 +310,7 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
       // conjunto, un id colgando haria mentir al contador de la barra del lienzo.
       const removed: Set<string> = new Set<string>(
         (findRowById(state, rowId)?.fields ?? []).map((field) => field.id),
-      );
+      )
 
       return {
         formSteps: state.formSteps.map((step) =>
@@ -323,7 +323,7 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
           })),
         },
         selectedFieldIds: withoutIds(state.selectedFieldIds, removed),
-      };
+      }
     }),
   // Reordenar es solo cambiar de sitio dentro de `rows[]`: el orden de las filas no se guarda en
   // ningun campo, es el del arreglo. Por eso ni la persistencia ni la exportacion se enteran.
@@ -351,49 +351,49 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
   // cruce con todos los nombres, y la etiqueta de dos seleccionados no viaja dos veces.
   moveFieldsToStep: (fieldIds, target) =>
     set((state) => {
-      const rows: CanvasRow[] = allRows(state);
-      const targetRows: CanvasRow[] = rowsOfTarget(state, target);
+      const rows: CanvasRow[] = allRows(state)
+      const targetRows: CanvasRow[] = rowsOfTarget(state, target)
       // Soltar un campo en el paso donde ya esta no es una mudanza: ese se saltea y los demas siguen.
       const alreadyThere: Set<string> = new Set<string>(
         targetRows.flatMap((row) => row.fields.map((field) => field.id)),
-      );
-      const moving: CanvasField[] = [];
-      const movingIds: Set<string> = new Set<string>();
+      )
+      const moving: CanvasField[] = []
+      const movingIds: Set<string> = new Set<string>()
 
       for (const fieldId of fieldIds) {
-        if (alreadyThere.has(fieldId)) continue;
+        if (alreadyThere.has(fieldId)) continue
 
         for (const field of transferGroup(rows, fieldId)) {
-          if (movingIds.has(field.id)) continue;
-          movingIds.add(field.id);
-          moving.push(field);
+          if (movingIds.has(field.id)) continue
+          movingIds.add(field.id)
+          moving.push(field)
         }
       }
 
-      if (moving.length === 0) return state;
+      if (moving.length === 0) return state
       const strip = (rows: CanvasRow[]): CanvasRow[] =>
         rows.map((row) => {
-          const kept = row.fields.filter((field) => !movingIds.has(field.id));
+          const kept = row.fields.filter((field) => !movingIds.has(field.id))
 
-          return kept.length === row.fields.length ? row : { ...row, fields: kept };
-        });
+          return kept.length === row.fields.length ? row : { ...row, fields: kept }
+        })
 
       // El destino se limpia antes de plantar: la etiqueta enlazada podia vivir ya en este paso, y
       // sin esto planLanding la duplicaria en vez de moverla.
-      const landed: CanvasRow[] = planLanding(strip(targetRows), moving, createEmptyRow);
+      const landed: CanvasRow[] = planLanding(strip(targetRows), moving, createEmptyRow)
       const notice: string | null = crossingNotice(
         collectCrossingRefs(rowsAcrossFrom(state, target), moving),
-      );
+      )
 
       return {
         formSteps: state.formSteps.map((step) =>
-          target.type === "formStep" && step.stepId === target.stepId
+          target.type === 'formStep' && step.stepId === target.stepId
             ? { ...step, rows: landed }
             : { ...step, rows: strip(step.rows) },
         ),
         introModal: {
           steps: state.introModal.steps.map((step) =>
-            target.type === "introStep" && step.stepId === target.stepId
+            target.type === 'introStep' && step.stepId === target.stepId
               ? { ...step, rows: landed }
               : { ...step, rows: strip(step.rows) },
           ),
@@ -406,56 +406,56 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
           (fieldId) => movingIds.has(fieldId) || alreadyThere.has(fieldId),
         ),
         transferNotice: notice,
-      };
+      }
     }),
   // La fila se muda entera y se agrega al final: sus campos ya caben en ella, es la misma fila. La
   // posicion se ajusta despues reordenando, que ya se puede arrastrando.
   moveRowToStep: (rowId, target) =>
     set((state) => {
-      const row = findRowById(state, rowId);
-      if (!row) return state;
+      const row = findRowById(state, rowId)
+      if (!row) return state
 
       // Misma regla que al reordenar: una fila no sale de su grupo arrastrandola, y el grupo vive
       // en el paso de origen. canTransfer dice lo mismo para pintar la pestana como rechazada.
-      if (!canTransfer([row], { kind: "row", rowId }).allowed) return state;
+      if (!canTransfer([row], { kind: 'row', rowId }).allowed) return state
 
-      const targetRows: CanvasRow[] = rowsOfTarget(state, target);
-      if (targetRows.some((candidate) => candidate.id === rowId)) return state;
+      const targetRows: CanvasRow[] = rowsOfTarget(state, target)
+      if (targetRows.some((candidate) => candidate.id === rowId)) return state
 
       const notice: string | null = crossingNotice(
         collectCrossingRefs(rowsAcrossFrom(state, target), row.fields),
-      );
+      )
       const strip = (rows: CanvasRow[]): CanvasRow[] =>
-        rows.filter((candidate) => candidate.id !== rowId);
+        rows.filter((candidate) => candidate.id !== rowId)
 
       return {
         formSteps: state.formSteps.map((step) =>
-          target.type === "formStep" && step.stepId === target.stepId
+          target.type === 'formStep' && step.stepId === target.stepId
             ? { ...step, rows: [...step.rows, row] }
             : { ...step, rows: strip(step.rows) },
         ),
         introModal: {
           steps: state.introModal.steps.map((step) =>
-            target.type === "introStep" && step.stepId === target.stepId
+            target.type === 'introStep' && step.stepId === target.stepId
               ? { ...step, rows: [...step.rows, row] }
               : { ...step, rows: strip(step.rows) },
           ),
         },
         activeCanvas: target,
         transferNotice: notice,
-      };
+      }
     }),
   addGroupToActiveStep: () =>
     set((state) => {
-      if (state.activeCanvas.type !== "formStep") return state;
+      if (state.activeCanvas.type !== 'formStep') return state
 
-      const stepId: string = state.activeCanvas.stepId;
+      const stepId: string = state.activeCanvas.stepId
       const taken: Set<string> = new Set([
         ...allFieldNames(state),
         ...groupNamesInUse(state.formSteps),
-      ]);
-      const group: RepeatableGroup = createRepeatableGroup("Grupo repetible", taken);
-      const row: CanvasRow = { ...createEmptyRow(), groupId: group.id };
+      ])
+      const group: RepeatableGroup = createRepeatableGroup('Grupo repetible', taken)
+      const row: CanvasRow = { ...createEmptyRow(), groupId: group.id }
 
       return {
         formSteps: state.formSteps.map((step) =>
@@ -463,25 +463,25 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
             ? { ...step, rows: [...step.rows, row], groups: [...(step.groups ?? []), group] }
             : step,
         ),
-      };
+      }
     }),
   addRowToGroup: (groupId) =>
     set((state) => ({
       formSteps: state.formSteps.map((step) => {
-        if (!(step.groups ?? []).some((group) => group.id === groupId)) return step;
+        if (!(step.groups ?? []).some((group) => group.id === groupId)) return step
 
-        const row: CanvasRow = { ...createEmptyRow(), groupId };
+        const row: CanvasRow = { ...createEmptyRow(), groupId }
 
-        return { ...step, rows: normalizeGroupRows([...step.rows, row]) };
+        return { ...step, rows: normalizeGroupRows([...step.rows, row]) }
       }),
     })),
   updateGroup: (groupId, updates) =>
     set((state) => {
-      const taken: Set<string> = allFieldNames(state);
+      const taken: Set<string> = allFieldNames(state)
 
       for (const step of state.formSteps) {
         for (const group of step.groups ?? []) {
-          if (group.id !== groupId) taken.add(group.name);
+          if (group.id !== groupId) taken.add(group.name)
         }
       }
 
@@ -489,11 +489,11 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
         formSteps: state.formSteps.map((step) => {
           const current: RepeatableGroup | undefined = (step.groups ?? []).find(
             (group) => group.id === groupId,
-          );
+          )
 
-          if (!current) return step;
+          if (!current) return step
 
-          const merged: RepeatableGroup = { ...current, ...updates };
+          const merged: RepeatableGroup = { ...current, ...updates }
           const next: RepeatableGroup = {
             ...merged,
             ...clampGroupBounds(merged.min, merged.max),
@@ -501,8 +501,8 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
               updates.name === undefined
                 ? current.name
                 : uniqueFieldName(slugifyFieldName(updates.name), taken),
-          };
-          const movedArray: boolean = next.arrayPath !== current.arrayPath;
+          }
+          const movedArray: boolean = next.arrayPath !== current.arrayPath
 
           return {
             ...step,
@@ -515,7 +515,7 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
                     ? {
                         ...row,
                         fields: row.fields.map((field) =>
-                          field.apiBinding?.kind === "mapped"
+                          field.apiBinding?.kind === 'mapped'
                             ? { ...field, apiBinding: undefined }
                             : field,
                         ),
@@ -523,9 +523,9 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
                     : row,
                 )
               : step.rows,
-          };
+          }
         }),
-      };
+      }
     }),
   removeGroup: (groupId) =>
     set((state) => ({
@@ -533,23 +533,23 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
     })),
   addFieldToRow: (rowId, fieldType, requested) =>
     set((state) => {
-      const row = findRowById(state, rowId);
-      if (!row) return state;
-      const placement = resolvePlacement(row, GRID_BASE_COLUMNS, requested);
-      if (!placement) return state;
+      const row = findRowById(state, rowId)
+      if (!row) return state
+      const placement = resolvePlacement(row, GRID_BASE_COLUMNS, requested)
+      if (!placement) return state
       const newField = createEmptyField(
         fieldType.type,
         fieldType.label,
         placement,
         allFieldNames(state),
-      );
+      )
       return {
         ...mapRowEverywhere(state, rowId, (current) => ({
           ...current,
           fields: [...current.fields, newField],
         })),
         selectedFieldIds: [newField.id],
-      };
+      }
     }),
   // Borrar un campo obliga a limpiar todo lo que le apuntaba, o quedarian referencias colgando:
   // condiciones, reglas y la etiqueta externa que lo tuviera como destino. La etiqueta sobrevive
@@ -559,10 +559,10 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
   // a cualquiera de los borrados se limpia igual que si fuera el unico.
   removeFields: (fieldIds) =>
     set((state) => {
-      const removed: Set<string> = new Set<string>(fieldIds);
-      if (removed.size === 0) return state;
+      const removed: Set<string> = new Set<string>(fieldIds)
+      if (removed.size === 0) return state
 
-      const references = (id: string | undefined): boolean => id !== undefined && removed.has(id);
+      const references = (id: string | undefined): boolean => id !== undefined && removed.has(id)
       const applyTo = (rows: CanvasRow[]) =>
         rows.map((row) => ({
           ...row,
@@ -583,61 +583,61 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
                 rules: fieldIds.reduce(pruneRulesReferencing, field.logic.rules),
               },
             })),
-        }));
+        }))
       return {
         formSteps: state.formSteps.map((step) => ({ ...step, rows: applyTo(step.rows) })),
         introModal: {
           steps: state.introModal.steps.map((step) => ({ ...step, rows: applyTo(step.rows) })),
         },
         selectedFieldIds: withoutIds(state.selectedFieldIds, removed),
-      };
+      }
     }),
   moveField: (fieldId, targetRowId, requested) =>
     set((state) => {
-      const movedField = findAnyField(state, fieldId);
-      const targetRow = findRowById(state, targetRowId);
-      if (!movedField || !targetRow) return state;
+      const movedField = findAnyField(state, fieldId)
+      const targetRow = findRowById(state, targetRowId)
+      if (!movedField || !targetRow) return state
 
       // Sin hueco valido el movimiento se descarta entero: la fila destino queda intacta y el
       // campo se queda donde estaba. Nunca se desplaza a un vecino para hacer sitio.
-      const placement = resolvePlacement(targetRow, movedField.colSpan, requested, fieldId);
-      if (!placement) return state;
+      const placement = resolvePlacement(targetRow, movedField.colSpan, requested, fieldId)
+      if (!placement) return state
 
       // Sacar un campo de un grupo le quita el mapeo: su ruta esta dentro del item del array
       // (actividades[].algo) y fuera del grupo no significa nada.
-      const sourceRow = findRowContainingField(state, fieldId);
+      const sourceRow = findRowContainingField(state, fieldId)
       const leavesItemScope: boolean =
-        sourceRow?.groupId !== targetRow.groupId && movedField.apiBinding?.kind === "mapped";
+        sourceRow?.groupId !== targetRow.groupId && movedField.apiBinding?.kind === 'mapped'
 
       const placed: CanvasField = {
         ...movedField,
         ...placement,
         apiBinding: leavesItemScope ? undefined : movedField.apiBinding,
-      };
+      }
       const applyTo = (rows: CanvasRow[]): CanvasRow[] =>
         rows.map((row) => {
-          const withoutField = row.fields.filter((f) => f.id !== fieldId);
+          const withoutField = row.fields.filter((f) => f.id !== fieldId)
           if (row.id !== targetRowId) {
             return withoutField.length === row.fields.length
               ? row
-              : { ...row, fields: withoutField };
+              : { ...row, fields: withoutField }
           }
-          return { ...row, fields: sortByColumn([...withoutField, placed]) };
-        });
+          return { ...row, fields: sortByColumn([...withoutField, placed]) }
+        })
 
       return {
         formSteps: state.formSteps.map((step) => ({ ...step, rows: applyTo(step.rows) })),
         introModal: {
           steps: state.introModal.steps.map((step) => ({ ...step, rows: applyTo(step.rows) })),
         },
-      };
+      }
     }),
   setFieldName: (fieldId, name) =>
     set((state) => {
-      const slug: string = slugifyFieldName(name);
-      const unique: string = uniqueFieldName(slug, allFieldNames(state, fieldId));
+      const slug: string = slugifyFieldName(name)
+      const unique: string = uniqueFieldName(slug, allFieldNames(state, fieldId))
 
-      return mapFieldEverywhere(state, fieldId, (field) => ({ ...field, name: unique }));
+      return mapFieldEverywhere(state, fieldId, (field) => ({ ...field, name: unique }))
     }),
 
   setFieldContent: (fieldId, content) =>
@@ -653,22 +653,21 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
           ...row,
           fields: row.fields.map((field) => {
             if (field.id === labelId) {
-              return { ...field, labelFor: targetFieldId ?? undefined };
+              return { ...field, labelFor: targetFieldId ?? undefined }
             }
 
-            const stealsTarget: boolean =
-              targetFieldId !== null && field.labelFor === targetFieldId;
+            const stealsTarget: boolean = targetFieldId !== null && field.labelFor === targetFieldId
 
-            return stealsTarget ? { ...field, labelFor: undefined } : field;
+            return stealsTarget ? { ...field, labelFor: undefined } : field
           }),
-        }));
+        }))
 
       return {
         formSteps: state.formSteps.map((step) => ({ ...step, rows: applyTo(step.rows) })),
         introModal: {
           steps: state.introModal.steps.map((step) => ({ ...step, rows: applyTo(step.rows) })),
         },
-      };
+      }
     }),
   setFieldEnableWhen: (fieldId, condition) =>
     set((state) =>
@@ -687,19 +686,19 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
   updateFieldApiBinding: (fieldId, binding, optionsSetup) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => {
-        const next: CanvasField = { ...field, apiBinding: binding ?? undefined };
-        if (!isOptionBasedField(next.type)) return next;
+        const next: CanvasField = { ...field, apiBinding: binding ?? undefined }
+        if (!isOptionBasedField(next.type)) return next
 
         if (!allowsManualOptions(next)) {
-          next.options = undefined;
-          return next;
+          next.options = undefined
+          return next
         }
 
         if (optionsSetup) {
-          next.title = optionsSetup.title?.trim() || undefined;
-          next.options = createOptions(optionsSetup.optionCount);
+          next.title = optionsSetup.title?.trim() || undefined
+          next.options = createOptions(optionsSetup.optionCount)
         }
-        return next;
+        return next
       }),
     ),
   // Declarar un catalogo descarta las opciones autoradas, igual que salir de "excluido":
@@ -707,25 +706,25 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
   updateFieldDataSource: (fieldId, dataSource) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => {
-        const next: CanvasField = { ...field, dataSource: dataSource ?? undefined };
-        if (isOptionBasedField(next.type) && !allowsManualOptions(next)) next.options = undefined;
+        const next: CanvasField = { ...field, dataSource: dataSource ?? undefined }
+        if (isOptionBasedField(next.type) && !allowsManualOptions(next)) next.options = undefined
 
-        return next;
+        return next
       }),
     ),
   // Reemplaza la seleccion entera, que es lo que hace un clic comun. Elegir lo que ya estaba elegido
   // no escribe: devolver el mismo estado le ahorra a cada fila volver a dibujarse.
   selectField: (fieldId) =>
     set((state) => {
-      const current: string[] = state.selectedFieldIds;
+      const current: string[] = state.selectedFieldIds
 
       if (fieldId === null) {
-        return current.length === 0 ? state : { selectedFieldIds: NO_SELECTION };
+        return current.length === 0 ? state : { selectedFieldIds: NO_SELECTION }
       }
 
       return current.length === 1 && current[0] === fieldId
         ? state
-        : { selectedFieldIds: [fieldId] };
+        : { selectedFieldIds: [fieldId] }
     }),
   toggleFieldSelection: (fieldId) =>
     set((state) => ({ selectedFieldIds: toggleId(state.selectedFieldIds, fieldId) })),
@@ -737,19 +736,19 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
   updateField: (fieldId, updates) =>
     set((state) => {
       if (updates.colSpan === undefined) {
-        return mapFieldEverywhere(state, fieldId, (field) => ({ ...field, ...updates }));
+        return mapFieldEverywhere(state, fieldId, (field) => ({ ...field, ...updates }))
       }
-      const row = findRowContainingField(state, fieldId);
-      if (!row) return state;
+      const row = findRowContainingField(state, fieldId)
+      if (!row) return state
       const maxSpan = getMaxSpanAt(
         getFreeRuns(row.fields, row.columns, fieldId),
         row.fields.find((f) => f.id === fieldId)?.colStart ?? 1,
-      );
+      )
       return mapFieldEverywhere(state, fieldId, (field) => ({
         ...field,
         ...updates,
         colSpan: Math.max(1, Math.min(updates.colSpan ?? field.colSpan, maxSpan)),
-      }));
+      }))
     }),
   updateFieldValidations: (fieldId, updates) =>
     set((state) =>
@@ -942,15 +941,15 @@ const createFormState: StateCreator<FormState, [["temporal", unknown]], []> = (s
       introModal: draft.introModal,
       formScript: draft.formScript,
       setupConfig: draft.setupConfig,
-      activeCanvas: { type: "formStep", stepId: draft.formSteps[0].stepId },
+      activeCanvas: { type: 'formStep', stepId: draft.formSteps[0].stepId },
       selectedFieldIds: NO_SELECTION,
-    });
+    })
     // Deshacer no puede volver al lienzo de antes de recuperar el borrador.
-    clearHistory();
+    clearHistory()
   },
-  undo: () => travelHistory("undo"),
-  redo: () => travelHistory("redo"),
-});
+  undo: () => travelHistory('undo'),
+  redo: () => travelHistory('redo'),
+})
 
 const HISTORY_OPTIONS: ZundoOptions<FormState, HistorySnapshot> = {
   partialize: toHistorySnapshot,
@@ -959,105 +958,105 @@ const HISTORY_OPTIONS: ZundoOptions<FormState, HistorySnapshot> = {
   // zundo le pasa a handleSet la funcion que guarda el paso; la compuerta decide cuales llegan.
   handleSet: (handleSet) =>
     historyGate.wrap((pastState: HistoryPastState): void => handleSet(pastState)),
-};
+}
 
 export const useFormStore: UseBoundStore<
-  Mutate<StoreApi<FormState>, [["temporal", StoreApi<TemporalState<HistorySnapshot>>]]>
-> = create<FormState>()(temporal(createFormState, HISTORY_OPTIONS));
+  Mutate<StoreApi<FormState>, [['temporal', StoreApi<TemporalState<HistorySnapshot>>]]>
+> = create<FormState>()(temporal(createFormState, HISTORY_OPTIONS))
 
 // Deshacer y rehacer escriben con el set crudo de zundo, asi que no se registran como pasos nuevos.
 // Despues se reconcilia la vista con el documento restaurado: esa escritura solo toca estado de vista
 // y la igualdad del historial la descarta.
-function travelHistory(direction: "undo" | "redo"): void {
-  historyGate.reset();
+function travelHistory(direction: 'undo' | 'redo'): void {
+  historyGate.reset()
 
-  const temporalState: TemporalState<HistorySnapshot> = useFormStore.temporal.getState();
-  if (direction === "undo") temporalState.undo();
-  else temporalState.redo();
+  const temporalState: TemporalState<HistorySnapshot> = useFormStore.temporal.getState()
+  if (direction === 'undo') temporalState.undo()
+  else temporalState.redo()
 
-  useFormStore.setState(reconcileViewAfterHistory);
+  useFormStore.setState(reconcileViewAfterHistory)
 }
 
 function clearHistory(): void {
-  historyGate.reset();
-  useFormStore.temporal.getState().clear();
+  historyGate.reset()
+  useFormStore.temporal.getState().clear()
 }
 
 // Selectores del lienzo activo. Devuelven NO_ROWS / NO_GROUPS y no un [] recien creado, porque
 // Zustand compara por identidad y un vacio nuevo en cada llamada provoca un bucle de renders.
 export function getActiveRows(state: {
-  formSteps: FormStep[];
-  introModal: IntroModalState;
-  activeCanvas: CanvasTarget;
+  formSteps: FormStep[]
+  introModal: IntroModalState
+  activeCanvas: CanvasTarget
 }): CanvasRow[] {
-  const activeCanvas = state.activeCanvas;
+  const activeCanvas = state.activeCanvas
 
-  if (activeCanvas.type === "formStep") {
-    const step = state.formSteps.find((s) => s.stepId === activeCanvas.stepId);
-    return step ? step.rows : NO_ROWS;
+  if (activeCanvas.type === 'formStep') {
+    const step = state.formSteps.find((s) => s.stepId === activeCanvas.stepId)
+    return step ? step.rows : NO_ROWS
   }
 
-  const step = state.introModal.steps.find((s) => s.stepId === activeCanvas.stepId);
+  const step = state.introModal.steps.find((s) => s.stepId === activeCanvas.stepId)
 
-  return step ? step.rows : NO_ROWS;
+  return step ? step.rows : NO_ROWS
 }
 
 export function getActiveGroups(state: {
-  formSteps: FormStep[];
-  activeCanvas: CanvasTarget;
+  formSteps: FormStep[]
+  activeCanvas: CanvasTarget
 }): RepeatableGroup[] {
   // El lienzo del modal de intro no admite grupos repetibles: IntroModalStep no tiene `groups`.
-  if (state.activeCanvas.type !== "formStep") return NO_GROUPS;
+  if (state.activeCanvas.type !== 'formStep') return NO_GROUPS
 
-  const step = state.formSteps.find((s) => s.stepId === state.activeCanvas.stepId);
+  const step = state.formSteps.find((s) => s.stepId === state.activeCanvas.stepId)
 
-  return step?.groups ?? NO_GROUPS;
+  return step?.groups ?? NO_GROUPS
 }
 
 // El unico campo que los paneles saben editar: su id si hay exactamente uno seleccionado, y null con
 // ninguno o con varios. Devuelve un primitivo, asi que es estable para useSyncExternalStore.
 export function getSelectedFieldId(state: { selectedFieldIds: string[] }): string | null {
-  return state.selectedFieldIds.length === 1 ? state.selectedFieldIds[0] : null;
+  return state.selectedFieldIds.length === 1 ? state.selectedFieldIds[0] : null
 }
 
 export function findGroupForField(
   state: StateSlice,
   fieldId: string | null,
 ): RepeatableGroup | null {
-  if (!fieldId) return null;
+  if (!fieldId) return null
 
   for (const step of state.formSteps) {
-    const row = step.rows.find((r) => r.fields.some((f) => f.id === fieldId));
-    if (!row) continue;
+    const row = step.rows.find((r) => r.fields.some((f) => f.id === fieldId))
+    if (!row) continue
 
-    return (step.groups ?? []).find((group) => group.id === row.groupId) ?? null;
+    return (step.groups ?? []).find((group) => group.id === row.groupId) ?? null
   }
 
-  return null;
+  return null
 }
 
-export { findFieldById } from "./formStore.utils";
+export { findFieldById } from './formStore.utils'
 
 export function getAllFields(rows: CanvasRow[]): CanvasField[] {
-  return rows.flatMap((row) => row.fields);
+  return rows.flatMap((row) => row.fields)
 }
 
 export function findRowContainingField(
   state: { formSteps: FormStep[]; introModal: IntroModalState },
   fieldId: string | null,
 ): CanvasRow | null {
-  if (!fieldId) return null;
+  if (!fieldId) return null
   for (const step of state.formSteps) {
     for (const row of step.rows) {
-      if (row.fields.some((f) => f.id === fieldId)) return row;
+      if (row.fields.some((f) => f.id === fieldId)) return row
     }
   }
 
   for (const step of state.introModal.steps) {
     for (const row of step.rows) {
-      if (row.fields.some((f) => f.id === fieldId)) return row;
+      if (row.fields.some((f) => f.id === fieldId)) return row
     }
   }
 
-  return null;
+  return null
 }

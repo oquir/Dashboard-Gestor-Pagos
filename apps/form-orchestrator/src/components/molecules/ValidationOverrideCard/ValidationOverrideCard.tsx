@@ -1,19 +1,19 @@
-import { Xmark } from "reicon-react";
-import { OPERATOR_LABELS } from "../../../constants/conditions";
+import { Xmark } from 'reicon-react'
+import { OPERATOR_LABELS } from '../../../constants/conditions'
 import {
   operatorNeedsValue,
   operatorsForFieldType,
-} from "../../../lib/fieldCondition/fieldCondition";
-import { useFormStore } from "../../../store/formStore";
-import type { CanvasField, ConditionOperator, FieldValidationOverride } from "../../../types/field";
-import { TwoColumnFieldGroup } from "../../atoms/TwoColumnFieldGroup/TwoColumnFieldGroup";
-import { ConditionFieldSelect } from "../ConditionFieldSelect/ConditionFieldSelect";
-import { ConditionOperatorSelect } from "../ConditionOperatorSelect/ConditionOperatorSelect";
-import { ConditionValueInput } from "../ConditionValueInput/ConditionValueInput";
-import { LabeledInput } from "../LabeledInput/LabeledInput";
-import { CARD_CLASSES, POSITION_BADGE_CLASSES } from "./ValidationOverrideCard.constants";
-import type { ValidationOverrideCardProps } from "./ValidationOverrideCard.types";
-import { toNumberOrUndefined } from "./ValidationOverrideCard.utils";
+} from '../../../lib/fieldCondition/fieldCondition'
+import { useFormStore } from '../../../store/formStore'
+import type { CanvasField, ConditionOperator, FieldValidationOverride } from '../../../types/field'
+import { TwoColumnFieldGroup } from '../../atoms/TwoColumnFieldGroup/TwoColumnFieldGroup'
+import { ConditionFieldSelect } from '../ConditionFieldSelect/ConditionFieldSelect'
+import { ConditionOperatorSelect } from '../ConditionOperatorSelect/ConditionOperatorSelect'
+import { ConditionValueInput } from '../ConditionValueInput/ConditionValueInput'
+import { LabeledInput } from '../LabeledInput/LabeledInput'
+import { CARD_CLASSES, POSITION_BADGE_CLASSES } from './ValidationOverrideCard.constants'
+import type { ValidationOverrideCardProps } from './ValidationOverrideCard.types'
+import { toNumberOrUndefined } from './ValidationOverrideCard.utils'
 
 export function ValidationOverrideCard({
   field,
@@ -21,21 +21,21 @@ export function ValidationOverrideCard({
   candidates,
   position,
 }: ValidationOverrideCardProps) {
-  const updateOverride = useFormStore((state) => state.updateFieldValidationOverride);
-  const removeOverride = useFormStore((state) => state.removeFieldValidationOverride);
+  const updateOverride = useFormStore((state) => state.updateFieldValidationOverride)
+  const removeOverride = useFormStore((state) => state.removeFieldValidationOverride)
 
-  const observed = candidates.find((candidate) => candidate.id === override.when.fieldId);
+  const observed = candidates.find((candidate) => candidate.id === override.when.fieldId)
   // El campo observado puede haber cambiado de tipo desde que se escribio la condicion, asi que
   // los operadores se recalculan en vez de confiar en el que quedo guardado.
   const availableOperators: ConditionOperator[] = observed
     ? operatorsForFieldType(observed.type)
-    : operatorsForFieldType("text");
+    : operatorsForFieldType('text')
 
-  const isNumeric = field.type === "number" || field.type === "calculated";
-  const isTextLike = field.type === "text" || field.type === "textarea" || field.type === "select";
+  const isNumeric = field.type === 'number' || field.type === 'calculated'
+  const isTextLike = field.type === 'text' || field.type === 'textarea' || field.type === 'select'
 
-  function setRule(updates: Partial<FieldValidationOverride["validations"]>): void {
-    updateOverride(field.id, override.id, { validations: updates });
+  function setRule(updates: Partial<FieldValidationOverride['validations']>): void {
+    updateOverride(field.id, override.id, { validations: updates })
   }
 
   return (
@@ -60,19 +60,19 @@ export function ValidationOverrideCard({
           label="Campo observado"
           condition={override.when}
           otherFields={candidates}
-          observedIsDead={override.when.fieldId !== "" && observed === undefined}
+          observedIsDead={override.when.fieldId !== '' && observed === undefined}
           onChange={(fieldId) => {
             const next: CanvasField | undefined = candidates.find(
               (candidate) => candidate.id === fieldId,
-            );
-            const operators: ConditionOperator[] = operatorsForFieldType(next?.type ?? "text");
+            )
+            const operators: ConditionOperator[] = operatorsForFieldType(next?.type ?? 'text')
             const operator: ConditionOperator = operators.includes(override.when.operator)
               ? override.when.operator
-              : operators[0];
+              : operators[0]
 
             updateOverride(field.id, override.id, {
               when: { ...override.when, fieldId, operator },
-            });
+            })
           }}
         />
 
@@ -105,7 +105,7 @@ export function ValidationOverrideCard({
               label="Longitud mín."
               type="number"
               min={0}
-              value={override.validations.minLength ?? ""}
+              value={override.validations.minLength ?? ''}
               onChange={(event) => setRule({ minLength: toNumberOrUndefined(event.target.value) })}
             />
             <LabeledInput
@@ -113,7 +113,7 @@ export function ValidationOverrideCard({
               label="Longitud máx."
               type="number"
               min={0}
-              value={override.validations.maxLength ?? ""}
+              value={override.validations.maxLength ?? ''}
               onChange={(event) => setRule({ maxLength: toNumberOrUndefined(event.target.value) })}
             />
           </TwoColumnFieldGroup>
@@ -121,7 +121,7 @@ export function ValidationOverrideCard({
           <LabeledInput
             id={`override-pattern-${override.id}`}
             label="Expresión regular"
-            value={override.validations.pattern ?? ""}
+            value={override.validations.pattern ?? ''}
             onChange={(event) => setRule({ pattern: event.target.value || undefined })}
             placeholder="Hereda la de arriba"
             tone="code"
@@ -130,7 +130,7 @@ export function ValidationOverrideCard({
           <LabeledInput
             id={`override-message-${override.id}`}
             label="Mensaje de error"
-            value={override.validations.message ?? ""}
+            value={override.validations.message ?? ''}
             onChange={(event) => setRule({ message: event.target.value || undefined })}
             placeholder="Hereda el de arriba"
           />
@@ -143,18 +143,18 @@ export function ValidationOverrideCard({
             id={`override-min-${override.id}`}
             label="Valor mín."
             type="number"
-            value={override.validations.min ?? ""}
+            value={override.validations.min ?? ''}
             onChange={(event) => setRule({ min: toNumberOrUndefined(event.target.value) })}
           />
           <LabeledInput
             id={`override-max-${override.id}`}
             label="Valor máx."
             type="number"
-            value={override.validations.max ?? ""}
+            value={override.validations.max ?? ''}
             onChange={(event) => setRule({ max: toNumberOrUndefined(event.target.value) })}
           />
         </TwoColumnFieldGroup>
       )}
     </div>
-  );
+  )
 }

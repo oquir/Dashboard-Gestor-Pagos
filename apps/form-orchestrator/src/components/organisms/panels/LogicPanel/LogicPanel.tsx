@@ -1,22 +1,22 @@
-import { isPresentationalField } from "../../../../lib/fieldKind/fieldKind";
-import { getAllFields, useFormStore } from "../../../../store/formStore";
-import type { CanvasField } from "../../../../types/field";
-import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
-import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
-import { ConditionEditor } from "../ConditionEditor/ConditionEditor";
-import { FieldRulesEditor } from "../FieldRulesEditor/FieldRulesEditor";
-import { FieldScriptEditor } from "../FieldScriptEditor/FieldScriptEditor";
-import { HINT_CLASSES } from "./LogicPanel.constants";
+import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
+import { getAllFields, useFormStore } from '../../../../store/formStore'
+import type { CanvasField } from '../../../../types/field'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { ConditionEditor } from '../ConditionEditor/ConditionEditor'
+import { FieldRulesEditor } from '../FieldRulesEditor/FieldRulesEditor'
+import { FieldScriptEditor } from '../FieldScriptEditor/FieldScriptEditor'
+import { HINT_CLASSES } from './LogicPanel.constants'
 
 export function LogicPanel({ field }: { field: CanvasField }) {
-  const formSteps = useFormStore((state) => state.formSteps);
-  const updateField = useFormStore((state) => state.updateField);
+  const formSteps = useFormStore((state) => state.formSteps)
+  const updateField = useFormStore((state) => state.updateField)
 
-  const allFields: CanvasField[] = getAllFields(formSteps.flatMap((step) => step.rows));
+  const allFields: CanvasField[] = getAllFields(formSteps.flatMap((step) => step.rows))
   const otherFields: CanvasField[] = allFields.filter(
     (candidate) => candidate.id !== field.id && !isPresentationalField(candidate.type),
-  );
-  const isAlwaysDisabled = Boolean(field.alwaysDisabled);
+  )
+  const isAlwaysDisabled = Boolean(field.alwaysDisabled)
 
   // Un campo presentacional no tiene valor: se puede ocultar, pero no habilitar,
   // ni calcular, ni observar desde una regla.
@@ -29,7 +29,7 @@ export function LogicPanel({ field }: { field: CanvasField }) {
           reglas.
         </p>
       </div>
-    );
+    )
   }
 
   return (
@@ -60,5 +60,5 @@ export function LogicPanel({ field }: { field: CanvasField }) {
 
       <FieldRulesEditor field={field} candidates={otherFields} />
     </div>
-  );
+  )
 }

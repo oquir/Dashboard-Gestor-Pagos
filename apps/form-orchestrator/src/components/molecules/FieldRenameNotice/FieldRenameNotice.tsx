@@ -1,7 +1,7 @@
-import type { FieldRenameNoticeProps } from "./FieldRenameNotice.types";
+import type { FieldRenameNoticeProps } from './FieldRenameNotice.types'
 
-export function FieldRenameNotice({ renamed, className = "" }: FieldRenameNoticeProps) {
-  if (renamed.length === 0) return null;
+export function FieldRenameNotice({ renamed, className = '' }: FieldRenameNoticeProps) {
+  if (renamed.length === 0) return null
 
   return (
     <div
@@ -9,7 +9,7 @@ export function FieldRenameNotice({ renamed, className = "" }: FieldRenameNotice
     >
       <p className="text-[11px] font-medium text-amber-800 dark:text-amber-300">
         {renamed.length === 1
-          ? "Se corrigió 1 nombre técnico repetido."
+          ? 'Se corrigió 1 nombre técnico repetido.'
           : `Se corrigieron ${renamed.length} nombres técnicos repetidos.`}
       </p>
       <ul className="mt-1 flex flex-col gap-0.5">
@@ -26,5 +26,5 @@ export function FieldRenameNotice({ renamed, className = "" }: FieldRenameNotice
         Revisa las fórmulas y condiciones que los usen: seguían apuntando al nombre viejo.
       </p>
     </div>
-  );
+  )
 }

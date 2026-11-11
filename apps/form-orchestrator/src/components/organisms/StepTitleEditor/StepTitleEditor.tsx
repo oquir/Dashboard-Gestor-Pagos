@@ -1,21 +1,21 @@
-import { useFormStore } from "../../../store/formStore";
-import { LabeledInput } from "../../molecules/LabeledInput/LabeledInput";
+import { useFormStore } from '../../../store/formStore'
+import { LabeledInput } from '../../molecules/LabeledInput/LabeledInput'
 
 export function StepTitleEditor() {
-  const activeCanvas = useFormStore((state) => state.activeCanvas);
-  const formSteps = useFormStore((state) => state.formSteps);
-  const introSteps = useFormStore((state) => state.introModal.steps);
-  const updateFormStepTitle = useFormStore((state) => state.updateFormStepTitle);
-  const updateFormStepSubtitle = useFormStore((state) => state.updateFormStepSubtitle);
-  const updateIntroModalStepTitle = useFormStore((state) => state.updateIntroModalStepTitle);
-  const updateIntroModalStepSubtitle = useFormStore((state) => state.updateIntroModalStepSubtitle);
+  const activeCanvas = useFormStore((state) => state.activeCanvas)
+  const formSteps = useFormStore((state) => state.formSteps)
+  const introSteps = useFormStore((state) => state.introModal.steps)
+  const updateFormStepTitle = useFormStore((state) => state.updateFormStepTitle)
+  const updateFormStepSubtitle = useFormStore((state) => state.updateFormStepSubtitle)
+  const updateIntroModalStepTitle = useFormStore((state) => state.updateIntroModalStepTitle)
+  const updateIntroModalStepSubtitle = useFormStore((state) => state.updateIntroModalStepSubtitle)
 
   const step =
-    activeCanvas.type === "formStep"
+    activeCanvas.type === 'formStep'
       ? formSteps.find((s) => s.stepId === activeCanvas.stepId)
-      : introSteps.find((s) => s.stepId === activeCanvas.stepId);
+      : introSteps.find((s) => s.stepId === activeCanvas.stepId)
 
-  if (!step) return null;
+  if (!step) return null
 
   return (
     <div className="flex flex-col gap-3">
@@ -25,7 +25,7 @@ export function StepTitleEditor() {
         required
         value={step.title}
         onChange={(event) =>
-          activeCanvas.type === "formStep"
+          activeCanvas.type === 'formStep'
             ? updateFormStepTitle(step.stepId, event.target.value)
             : updateIntroModalStepTitle(step.stepId, event.target.value)
         }
@@ -34,14 +34,14 @@ export function StepTitleEditor() {
       <LabeledInput
         id="step-subtitle"
         label="Subtítulo del step (opcional)"
-        value={step.subtitle ?? ""}
+        value={step.subtitle ?? ''}
         onChange={(event) =>
-          activeCanvas.type === "formStep"
+          activeCanvas.type === 'formStep'
             ? updateFormStepSubtitle(step.stepId, event.target.value)
             : updateIntroModalStepSubtitle(step.stepId, event.target.value)
         }
         className="w-full"
       />
     </div>
-  );
+  )
 }

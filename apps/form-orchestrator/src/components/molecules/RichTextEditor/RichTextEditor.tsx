@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/refs -- falso positivo: el hook devuelve refs junto a valores comunes */
-import { useRichTextEditor } from "../../../hooks/useRichTextEditor/useRichTextEditor";
+import { useRichTextEditor } from '../../../hooks/useRichTextEditor/useRichTextEditor'
 import {
   EDITOR_CLASSES,
   ERROR_CLASSES,
@@ -8,11 +8,11 @@ import {
   LINK_INPUT_CLASSES,
   TOOL_BUTTON_CLASSES,
   TOOLBAR_CLASSES,
-} from "./RichTextEditor.constants";
-import type { RichTextEditorProps } from "./RichTextEditor.types";
+} from './RichTextEditor.constants'
+import type { RichTextEditorProps } from './RichTextEditor.types'
 
 export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
-  const editor = useRichTextEditor({ value, onChange });
+  const editor = useRichTextEditor({ value, onChange })
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -54,7 +54,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
             value={editor.linkValue}
             placeholder="https://…"
             onChange={(event) => editor.setLinkValue(event.target.value)}
-            onKeyDown={(event) => event.key === "Enter" && editor.applyLink()}
+            onKeyDown={(event) => event.key === 'Enter' && editor.applyLink()}
             className={LINK_INPUT_CLASSES}
           />
           <button type="button" onClick={editor.applyLink} className={TOOL_BUTTON_CLASSES}>
@@ -89,5 +89,5 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         </span>
       )}
     </div>
-  );
+  )
 }

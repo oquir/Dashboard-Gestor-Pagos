@@ -1,9 +1,9 @@
-import { PaletteChip } from "../../molecules/PaletteChip/PaletteChip";
+import { PaletteChip } from '../../molecules/PaletteChip/PaletteChip'
 import {
   PALETTE_SECTIONS,
   SECTION_GRID_CLASSES,
   SECTION_HEADING_CLASSES,
-} from "./FieldPalette.constants";
+} from './FieldPalette.constants'
 
 export function FieldPalette() {
   return (
@@ -23,5 +23,5 @@ export function FieldPalette() {
         </section>
       ))}
     </div>
-  );
+  )
 }

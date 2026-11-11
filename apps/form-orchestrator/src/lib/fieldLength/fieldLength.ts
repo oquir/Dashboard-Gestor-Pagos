@@ -1,5 +1,5 @@
-import { LENGTH_CAPABLE_FIELD_TYPES, NUMERIC_FIELD_TYPES } from "../../constants/fieldTypes";
-import type { AuthoredLengthField, LengthLimitedField } from "./fieldLength.types";
+import { LENGTH_CAPABLE_FIELD_TYPES, NUMERIC_FIELD_TYPES } from '../../constants/fieldTypes'
+import type { AuthoredLengthField, LengthLimitedField } from './fieldLength.types'
 
 // Cuanto se puede escribir en un campo. Una sola declaracion del autor -- validations.maxLength --
 // leida de dos maneras segun el tipo:
@@ -17,23 +17,23 @@ import type { AuthoredLengthField, LengthLimitedField } from "./fieldLength.type
 // escrito lo correria de orden de magnitud, que es justo lo que un tope esta para evitar.
 
 export function supportsMaxLength(type: string): boolean {
-  return LENGTH_CAPABLE_FIELD_TYPES.includes(type);
+  return LENGTH_CAPABLE_FIELD_TYPES.includes(type)
 }
 
 export function countsDigits(type: string): boolean {
-  return NUMERIC_FIELD_TYPES.includes(type);
+  return NUMERIC_FIELD_TYPES.includes(type)
 }
 
 // Un tope de cero no es una regla sino un numero a medio escribir en el panel: en un texto dejaria
 // el campo intocable y en un numero no lo cumpliria ningun valor, ni siquiera el 0. Se lee como
 // ausente, y pasan por aca tanto el schema como el input para que no puedan discrepar.
 export function effectiveMaxLength(declared: number | undefined): number | undefined {
-  return declared !== undefined && declared > 0 ? declared : undefined;
+  return declared !== undefined && declared > 0 ? declared : undefined
 }
 
 // Lo que el input tiene que aplicar, leido del campo ya exportado.
 export function maxLengthOf(field: LengthLimitedField): number | undefined {
-  return supportsMaxLength(field.type) ? effectiveMaxLength(field.maxLength) : undefined;
+  return supportsMaxLength(field.type) ? effectiveMaxLength(field.maxLength) : undefined
 }
 
 // Sale ademas del schema, no en lugar del. El schema es la regla -- es lo unico con lo que el
@@ -44,7 +44,5 @@ export function maxLengthOf(field: LengthLimitedField): number | undefined {
 // base. Es a proposito -- se elige la lectura mas floja, para que el teclado nunca rechace algo que
 // seria legal; lo que el override apriete lo caza el schema, que es quien manda.
 export function exportableMaxLength(field: AuthoredLengthField): number | undefined {
-  return supportsMaxLength(field.type)
-    ? effectiveMaxLength(field.validations.maxLength)
-    : undefined;
+  return supportsMaxLength(field.type) ? effectiveMaxLength(field.validations.maxLength) : undefined
 }

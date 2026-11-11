@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { Layers, Plus, Redo, Trash6, Undo, Xmark } from "reicon-react";
-import { CANVAS_TOOLS } from "../../../constants/canvasTool";
-import { CANVAS_TOOLBAR_ACTION_CLASSES } from "../../../constants/uiClasses";
-import { useFormHistory } from "../../../hooks/useFormHistory/useFormHistory";
-import { getBandElement, getRowElement } from "../../../lib/canvasDom/canvasDom";
-import { getActiveGroups, getActiveRows, useFormStore } from "../../../store/formStore";
-import type { CanvasRow, RepeatableGroup } from "../../../types/formStructure";
-import { MoveToStepMenu } from "../MoveToStepMenu/MoveToStepMenu";
+import { useEffect, useState } from 'react'
+import { Layers, Plus, Redo, Trash6, Undo, Xmark } from 'reicon-react'
+import { CANVAS_TOOLS } from '../../../constants/canvasTool'
+import { CANVAS_TOOLBAR_ACTION_CLASSES } from '../../../constants/uiClasses'
+import { useFormHistory } from '../../../hooks/useFormHistory/useFormHistory'
+import { getBandElement, getRowElement } from '../../../lib/canvasDom/canvasDom'
+import { getActiveGroups, getActiveRows, useFormStore } from '../../../store/formStore'
+import type { CanvasRow, RepeatableGroup } from '../../../types/formStructure'
+import { MoveToStepMenu } from '../MoveToStepMenu/MoveToStepMenu'
 import {
   SELECTION_COUNT_CLASSES,
   TOOL_BUTTON_ACTIVE_CLASSES,
@@ -18,64 +18,64 @@ import {
   TOOLBAR_DIVIDER_CLASSES,
   TOOLBAR_GROUP_CLASSES,
   TOOLBAR_ICON_ACTION_CLASSES,
-} from "./CanvasToolbar.constants";
-import type { CanvasReveal } from "./CanvasToolbar.types";
+} from './CanvasToolbar.constants'
+import type { CanvasReveal } from './CanvasToolbar.types'
 
 export function CanvasToolbar() {
-  const viewMode = useFormStore((state) => state.canvasViewMode);
-  const canvasTool = useFormStore((state) => state.canvasTool);
-  const setCanvasTool = useFormStore((state) => state.setCanvasTool);
-  const isIntro = useFormStore((state) => state.activeCanvas.type === "introStep");
-  const selectedFieldIds = useFormStore((state) => state.selectedFieldIds);
-  const addRowToActiveCanvas = useFormStore((state) => state.addRowToActiveCanvas);
-  const addGroupToActiveStep = useFormStore((state) => state.addGroupToActiveStep);
-  const selectField = useFormStore((state) => state.selectField);
-  const removeFields = useFormStore((state) => state.removeFields);
-  const moveFieldsToStep = useFormStore((state) => state.moveFieldsToStep);
-  const { canUndo, canRedo, undo, redo } = useFormHistory();
+  const viewMode = useFormStore((state) => state.canvasViewMode)
+  const canvasTool = useFormStore((state) => state.canvasTool)
+  const setCanvasTool = useFormStore((state) => state.setCanvasTool)
+  const isIntro = useFormStore((state) => state.activeCanvas.type === 'introStep')
+  const selectedFieldIds = useFormStore((state) => state.selectedFieldIds)
+  const addRowToActiveCanvas = useFormStore((state) => state.addRowToActiveCanvas)
+  const addGroupToActiveStep = useFormStore((state) => state.addGroupToActiveStep)
+  const selectField = useFormStore((state) => state.selectField)
+  const removeFields = useFormStore((state) => state.removeFields)
+  const moveFieldsToStep = useFormStore((state) => state.moveFieldsToStep)
+  const { canUndo, canRedo, undo, redo } = useFormHistory()
   // Lo agregado cae al final del paso, que con la barra flotando puede quedar lejos de lo que se
   // esta mirando. La vista se lleva hasta ahi despues del commit, cuando el nodo nuevo ya existe.
-  const [pendingReveal, setPendingReveal] = useState<CanvasReveal | null>(null);
+  const [pendingReveal, setPendingReveal] = useState<CanvasReveal | null>(null)
 
   useEffect(() => {
-    if (!pendingReveal) return;
+    if (!pendingReveal) return
 
     const element: HTMLElement | null =
-      pendingReveal.kind === "row"
+      pendingReveal.kind === 'row'
         ? getRowElement(pendingReveal.id)
-        : getBandElement(pendingReveal.id);
+        : getBandElement(pendingReveal.id)
 
-    element?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
+    element?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
     // eslint-disable-next-line react-hooks/set-state-in-effect -- consume el reveal pendiente despues del commit
-    setPendingReveal(null);
-  }, [pendingReveal]);
+    setPendingReveal(null)
+  }, [pendingReveal])
 
   function handleAddRow(): void {
-    const before: number = getActiveRows(useFormStore.getState()).length;
-    addRowToActiveCanvas();
+    const before: number = getActiveRows(useFormStore.getState()).length
+    addRowToActiveCanvas()
 
-    const rows: CanvasRow[] = getActiveRows(useFormStore.getState());
-    if (rows.length > before) setPendingReveal({ kind: "row", id: rows[rows.length - 1].id });
+    const rows: CanvasRow[] = getActiveRows(useFormStore.getState())
+    if (rows.length > before) setPendingReveal({ kind: 'row', id: rows[rows.length - 1].id })
   }
 
   function handleAddGroup(): void {
-    const before: number = getActiveGroups(useFormStore.getState()).length;
-    addGroupToActiveStep();
+    const before: number = getActiveGroups(useFormStore.getState()).length
+    addGroupToActiveStep()
 
-    const groups: RepeatableGroup[] = getActiveGroups(useFormStore.getState());
+    const groups: RepeatableGroup[] = getActiveGroups(useFormStore.getState())
     if (groups.length > before) {
-      setPendingReveal({ kind: "band", id: groups[groups.length - 1].id });
+      setPendingReveal({ kind: 'band', id: groups[groups.length - 1].id })
     }
   }
 
-  if (viewMode !== "canvas") return null;
+  if (viewMode !== 'canvas') return null
 
   return (
     <div role="toolbar" aria-label="Herramientas del lienzo" className={TOOLBAR_CLASSES}>
       <div className={TOOLBAR_GROUP_CLASSES}>
         {CANVAS_TOOLS.map((item) => {
-          const Icon = TOOL_ICONS[item.tool];
-          const isActive: boolean = canvasTool === item.tool;
+          const Icon = TOOL_ICONS[item.tool]
+          const isActive: boolean = canvasTool === item.tool
 
           return (
             <button
@@ -91,7 +91,7 @@ export function CanvasToolbar() {
             >
               <Icon size={16} />
             </button>
-          );
+          )
         })}
       </div>
 
@@ -114,8 +114,8 @@ export function CanvasToolbar() {
           disabled={isIntro}
           title={
             isIntro
-              ? "Los grupos repetibles solo existen en los pasos del formulario"
-              : "Un bloque que el contribuyente puede repetir varias veces"
+              ? 'Los grupos repetibles solo existen en los pasos del formulario'
+              : 'Un bloque que el contribuyente puede repetir varias veces'
           }
           className={CANVAS_TOOLBAR_ACTION_CLASSES}
         >
@@ -177,5 +177,5 @@ export function CanvasToolbar() {
         </>
       )}
     </div>
-  );
+  )
 }

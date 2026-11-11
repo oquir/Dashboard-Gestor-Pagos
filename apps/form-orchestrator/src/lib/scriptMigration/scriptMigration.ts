@@ -1,6 +1,6 @@
-import { parseFormula } from "./scriptMigration.parser";
-import type { FormulaNode } from "./scriptMigration.types";
-import { printNode } from "./scriptMigration.utils";
+import { parseFormula } from './scriptMigration.parser'
+import type { FormulaNode } from './scriptMigration.types'
+import { printNode } from './scriptMigration.utils'
 
 // Traduce el lenguaje de formulas al script. Es lo unico que queda de aquel lenguaje: el parser
 // vive al lado, ya sin evaluador, y existe solo para que un borrador guardado antes de este cambio
@@ -12,8 +12,8 @@ import { printNode } from "./scriptMigration.utils";
 // Devuelve null si la formula no parsea. Que hacer con eso lo decide quien llama, que es la
 // migracion del borrador: la conserva como comentario en vez de traducirla a medias.
 export function formulaToScript(formula: string): string | null {
-  const ast: FormulaNode | null = parseFormula(formula);
-  if (ast === null) return null;
+  const ast: FormulaNode | null = parseFormula(formula)
+  if (ast === null) return null
 
-  return `return ${printNode(ast, 0, false)};`;
+  return `return ${printNode(ast, 0, false)};`
 }

@@ -1,11 +1,11 @@
-import { fillsColumn } from "../../../../lib/catalogFill/catalogFill";
-import { maxLengthOf } from "../../../../lib/fieldLength/fieldLength";
-import { showsOptionsInline } from "../../../../lib/fieldOptions/fieldOptions";
-import { catalogOptions } from "../../../../lib/mockCatalog/mockCatalog";
-import type { CatalogOption } from "../../../../types/catalog";
-import { RichTextView } from "../../../atoms/RichTextView/RichTextView";
-import { PreviewNumberInput } from "../PreviewNumberInput/PreviewNumberInput";
-import { PreviewSearchSelect } from "../PreviewSearchSelect/PreviewSearchSelect";
+import { fillsColumn } from '../../../../lib/catalogFill/catalogFill'
+import { maxLengthOf } from '../../../../lib/fieldLength/fieldLength'
+import { showsOptionsInline } from '../../../../lib/fieldOptions/fieldOptions'
+import { catalogOptions } from '../../../../lib/mockCatalog/mockCatalog'
+import type { CatalogOption } from '../../../../types/catalog'
+import { RichTextView } from '../../../atoms/RichTextView/RichTextView'
+import { PreviewNumberInput } from '../PreviewNumberInput/PreviewNumberInput'
+import { PreviewSearchSelect } from '../PreviewSearchSelect/PreviewSearchSelect'
 import {
   CHIP_ACTIVE_CLASSES,
   CHIP_BASE_CLASSES,
@@ -16,9 +16,9 @@ import {
   INLINE_OPTIONS_CLASSES,
   OPTION_ROW_CLASSES,
   STACKED_OPTIONS_CLASSES,
-} from "./PreviewFieldControl.constants";
-import type { PreviewFieldControlProps } from "./PreviewFieldControl.types";
-import { toggleInList, toInputValue, toSelectedList } from "./PreviewFieldControl.utils";
+} from './PreviewFieldControl.constants'
+import type { PreviewFieldControlProps } from './PreviewFieldControl.types'
+import { toggleInList, toInputValue, toSelectedList } from './PreviewFieldControl.utils'
 
 export function PreviewFieldControl({
   field,
@@ -29,18 +29,18 @@ export function PreviewFieldControl({
   catalogBank,
   onChange,
 }: PreviewFieldControlProps) {
-  const controlClasses = `${CONTROL_BASE_CLASSES} ${invalid ? CONTROL_INVALID_CLASSES : CONTROL_IDLE_CLASSES}`;
-  const options: CatalogOption[] = catalogOptions(field, scopeValues, catalogBank);
-  const inputId = `preview-${field.name}`;
+  const controlClasses = `${CONTROL_BASE_CLASSES} ${invalid ? CONTROL_INVALID_CLASSES : CONTROL_IDLE_CLASSES}`
+  const options: CatalogOption[] = catalogOptions(field, scopeValues, catalogBank)
+  const inputId = `preview-${field.name}`
 
   switch (field.type) {
-    case "rich_text":
-      return <RichTextView content={field.content} />;
+    case 'rich_text':
+      return <RichTextView content={field.content} />
 
-    case "label":
-      return null;
+    case 'label':
+      return null
 
-    case "textarea":
+    case 'textarea':
       return (
         <textarea
           id={inputId}
@@ -51,7 +51,7 @@ export function PreviewFieldControl({
           onChange={(event) => onChange(event.target.value)}
           className={controlClasses}
         />
-      );
+      )
 
     // El redondeo y el formato se aplican al salir del campo, no mientras se escribe: uno haria
     // imposible tipear -- 499 pasaria a 0 en cuanto se escribe el 4 -- y el otro movetia el cursor
@@ -59,8 +59,8 @@ export function PreviewFieldControl({
     // deshabilitado nunca dispara blur, asi que su valor lo redondea runtimeDerived. El onChange
     // que recibimos ya viene atado a su grupo y su repeticion, asi que esto funciona igual
     // adentro de un grupo repetible.
-    case "number":
-    case "calculated":
+    case 'number':
+    case 'calculated':
       return (
         <PreviewNumberInput
           field={field}
@@ -70,9 +70,9 @@ export function PreviewFieldControl({
           className={controlClasses}
           onChange={onChange}
         />
-      );
+      )
 
-    case "checkbox":
+    case 'checkbox':
       return (
         <label className={OPTION_ROW_CLASSES}>
           <input
@@ -82,26 +82,26 @@ export function PreviewFieldControl({
             onChange={(event) => onChange(event.target.checked)}
             className="accent-orange-500"
           />
-          {field.title || "Acepto"}
+          {field.title || 'Acepto'}
         </label>
-      );
+      )
 
-    case "file":
+    case 'file':
       return (
         <input
           id={inputId}
           type="file"
           disabled={disabled}
-          accept={field.fileConfig?.acceptedFormats.join(",")}
+          accept={field.fileConfig?.acceptedFormats.join(',')}
           onChange={(event) => onChange(event.target.files?.[0])}
           className={`${controlClasses} file:mr-2 file:rounded file:border-0 file:bg-surface-raised file:px-2 file:py-0.5 file:text-xs file:text-fg-soft`}
         />
-      );
+      )
 
     // Un search_select existe porque su catalogo es demasiado grande para un desplegable: las 425
     // actividades por 15 repeticiones eran 6.375 <option> montados de entrada. El buscador tambien
     // es lo unico que puede mostrar codigo, descripcion y tarifa en columnas separadas.
-    case "search_select":
+    case 'search_select':
       return (
         <PreviewSearchSelect
           inputId={inputId}
@@ -110,12 +110,12 @@ export function PreviewFieldControl({
           value={value}
           disabled={disabled}
           invalid={invalid}
-          showsTarifa={fillsColumn(field, "tarifa")}
+          showsTarifa={fillsColumn(field, 'tarifa')}
           onChange={onChange}
         />
-      );
+      )
 
-    case "select":
+    case 'select':
       return (
         <select
           id={inputId}
@@ -131,9 +131,9 @@ export function PreviewFieldControl({
             </option>
           ))}
         </select>
-      );
+      )
 
-    case "toggle_group":
+    case 'toggle_group':
       return (
         <div className="flex flex-wrap gap-1.5">
           {options.map((option) => (
@@ -141,7 +141,7 @@ export function PreviewFieldControl({
               key={option.id}
               type="button"
               disabled={disabled}
-              onClick={() => onChange(toInputValue(value) === option.id ? "" : option.id)}
+              onClick={() => onChange(toInputValue(value) === option.id ? '' : option.id)}
               className={`${CHIP_BASE_CLASSES} ${
                 toInputValue(value) === option.id ? CHIP_ACTIVE_CLASSES : CHIP_IDLE_CLASSES
               }`}
@@ -150,9 +150,9 @@ export function PreviewFieldControl({
             </button>
           ))}
         </div>
-      );
+      )
 
-    case "radio_group":
+    case 'radio_group':
       return (
         <div
           className={showsOptionsInline(field) ? INLINE_OPTIONS_CLASSES : STACKED_OPTIONS_CLASSES}
@@ -171,10 +171,10 @@ export function PreviewFieldControl({
             </label>
           ))}
         </div>
-      );
+      )
 
-    case "checkbox_group": {
-      const selected: string[] = toSelectedList(value);
+    case 'checkbox_group': {
+      const selected: string[] = toSelectedList(value)
 
       return (
         <div
@@ -193,7 +193,7 @@ export function PreviewFieldControl({
             </label>
           ))}
         </div>
-      );
+      )
     }
 
     default:
@@ -207,6 +207,6 @@ export function PreviewFieldControl({
           onChange={(event) => onChange(event.target.value)}
           className={controlClasses}
         />
-      );
+      )
   }
 }
