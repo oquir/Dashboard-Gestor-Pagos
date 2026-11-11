@@ -191,26 +191,26 @@ function groupBy<T, K extends string>(
 }
 
 /** Antigüedad de la deuda según los días desde el vencimiento. */
-function age(dueDateItem: string) {
-  const days = Math.floor((Date.parse(today()) - Date.parse(dueDateItem)) / DAY)
-  if (days <= 0) return 'por_vencer'
-  if (days <= 30) return 'hasta_30'
-  if (days <= 90) return 'hasta_90'
-  if (days <= 180) return 'hasta_180'
-  return 'mas_180'
+function age(dueDate: string) {
+  const days = Math.floor((Date.parse(today()) - Date.parse(dueDate)) / DAY)
+  if (days <= 0) return 'not_due'
+  if (days <= 30) return 'up_to_30'
+  if (days <= 90) return 'up_to_90'
+  if (days <= 180) return 'up_to_180'
+  return 'over_180'
 }
 
 const ageLabel: Record<ReturnType<typeof age>, string> = {
-  por_vencer: 'Por vencer',
-  hasta_30: 'Vencida hace 1 a 30 días',
-  hasta_90: 'Vencida hace 31 a 90 días',
-  hasta_180: 'Vencida hace 91 a 180 días',
-  mas_180: 'Vencida hace más de 180 días',
+  not_due: 'Por vencer',
+  up_to_30: 'Vencida hace 1 a 30 días',
+  up_to_90: 'Vencida hace 31 a 90 días',
+  up_to_180: 'Vencida hace 91 a 180 días',
+  over_180: 'Vencida hace más de 180 días',
 }
 
 /** Los estados de pago en que una declaración puede quedar con saldo. */
 const STATUSES_WITH_BALANCE = {
-  sin_pago: paymentStatusLabel.no_payment,
+  no_payment: paymentStatusLabel.no_payment,
   partial: paymentStatusLabel.partial,
   ineffective: paymentStatusLabel.ineffective,
 }
