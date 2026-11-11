@@ -65,6 +65,10 @@ export { default as UnremittedWithholdings } from './payments/UnremittedWithhold
 export { default as ReceivablesTable } from './payments/ReceivablesTable'
 export { default as ReceivedPaymentsTable } from './payments/ReceivedPaymentsTable'
 
+export { default as IcaStatementTable } from './statement/IcaStatementTable'
+export { default as WithholdingStatementTable } from './statement/WithholdingStatementTable'
+export { default as PaymentHistory } from './statement/PaymentHistory'
+
 export { default as ReportTable } from './reports/ReportTable'
 
 export { default as NewUser } from './users/NewUser'
