@@ -13,6 +13,8 @@ import type {
   Check,
   MunicipalityConfig,
   Data,
+  DateQuery,
+  DateQueryPage,
   Summons,
   RitChangeStatus,
   Form,
@@ -33,9 +35,12 @@ interface StoreState extends Data {
   userId: string | null
   /** Municipio que está mirando el rol 1cero1; null = todos. */
   selectedMunicipality: string | null
+  /** Rango de fechas consultado en cada página que lo pide. Es solo de la pantalla: no deja registro en la bitácora. */
+  dateQueries: Partial<Record<DateQueryPage, DateQuery>>
   logIn: (userId: string) => void
   logOut: () => void
   selectMunicipality: (id: string | null) => void
+  setDateQuery: (page: DateQueryPage, query: DateQuery) => void
   resolveRitChange: (
     registrationId: string,
     ritChangeId: string,
@@ -175,14 +180,17 @@ export const useData = create<StoreState>()(
         ...generateData(),
         userId: null,
         selectedMunicipality: null,
+        dateQueries: {},
 
         logIn: (userId) => {
-          set({ userId, selectedMunicipality: null })
+          set({ userId, selectedMunicipality: null, dateQueries: {} })
           const u = currentUser()
           if (u) record(REQUESTS.logIn, u.municipalityId, { email: u.email })
         },
         logOut: () => set({ userId: null }),
         selectMunicipality: (id) => set({ selectedMunicipality: id }),
+        setDateQuery: (page, query) =>
+          set((s) => ({ dateQueries: { ...s.dateQueries, [page]: query } })),
 
         resolveRitChange: (registrationId, ritChangeId, status, observation, documents) => {
           const user = currentUser()
@@ -497,7 +505,7 @@ export const useData = create<StoreState>()(
           )
         },
 
-        resetDemo: () => set({ ...generateData(), selectedMunicipality: null }),
+        resetDemo: () => set({ ...generateData(), selectedMunicipality: null, dateQueries: {} }),
       }
     },
     { name: 'gestor-pagos-demo', version: 46 },

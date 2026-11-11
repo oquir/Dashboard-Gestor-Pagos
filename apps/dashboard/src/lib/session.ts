@@ -2,6 +2,8 @@ import { useMemo } from 'react'
 import { useData } from '../store'
 import type {
   MunicipalityConfig,
+  DateQuery,
+  DateQueryPage,
   Declaration,
   Form,
   Tax,
@@ -228,4 +230,21 @@ export function useNonFilers(municipality?: string | null) {
       ),
     [municipalities, settingsList, registrations, declarations, municipalityId, date],
   )
+}
+
+/** Si la fecha (AAAA-MM-DD) cae en el rango consultado, con los dos extremos incluidos. */
+export const inDateRange = (date: string, query: Pick<DateQuery, 'from' | 'to'>) =>
+  date >= query.from && date <= query.to
+
+/**
+ * El rango de fechas consultado en la página, o null si todavía no se ha consultado. La consulta es del municipio que se
+ * estaba viendo: si 1cero1 elige otro, hay que volver a consultar.
+ */
+export function useDateQuery(page: DateQueryPage) {
+  const { municipalityId } = useSession()
+  const saved = useData((s) => s.dateQueries[page])
+  const save = useData((s) => s.setDateQuery)
+  const query = saved && saved.municipalityId === municipalityId ? saved : null
+  const consult = (from: string, to: string) => save(page, { from, to, municipalityId })
+  return { query, consult }
 }
