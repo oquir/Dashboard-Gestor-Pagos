@@ -1,5 +1,5 @@
 import { Link } from 'react-router'
-import { Document } from 'reicon-react'
+import { Document, DocumentText } from 'reicon-react'
 import { ROW_BUTTON_CLASS } from '../../../../constants'
 import {
   approvalStatusLabel,
@@ -16,34 +16,60 @@ import {
   correctionTone,
   paymentTone,
 } from '../../../../lib'
+import type { Declaration } from '../../../../types'
 import { Badge } from '../../../atoms'
 import { col } from './DeclarationsTable.utils'
 
-export const COLUMNS = col.columns([
-  col.accessor((f) => f.d.number, {
-    id: 'number',
-    header: 'Radicado',
-    meta: { classes: 'whitespace-nowrap' },
+export const NUMBER_COLUMN = col.accessor((f) => f.d.number, {
+  id: 'number',
+  header: 'Radicado',
+  meta: { classes: 'whitespace-nowrap' },
+  cell: ({
+    row: {
+      original: { d },
+    },
+  }) => (
+    <Link
+      to={`/declaraciones/${d.id}`}
+      aria-label={`Ver la declaración ${d.number}`}
+      className={ROW_BUTTON_CLASS}
+    >
+      <Document className="size-4 text-brand-600" aria-hidden />
+      {d.number}
+    </Link>
+  ),
+})
+
+/** Al hacer clic en el número de factura se abre la vista previa del PDF de la declaración. */
+export const invoiceColumn = (preview: (d: Declaration) => void) =>
+  col.accessor((f) => f.d.invoiceNumber, {
+    id: 'invoice',
+    header: 'N.º de factura',
+    meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
     cell: ({
       row: {
         original: { d },
       },
     }) => (
-      <Link
-        to={`/declaraciones/${d.id}`}
-        aria-label={`Ver la declaración ${d.number}`}
-        className={ROW_BUTTON_CLASS}
+      // El pseudo-elemento invisible reserva el ancho en negrita, para que la columna no salte con el hover.
+      <button
+        type="button"
+        onClick={() => preview(d)}
+        aria-label={`Ver la factura ${d.invoiceNumber}`}
+        className="group inline-flex cursor-pointer items-center gap-1.5 rounded tabular-nums text-slate-700 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
       >
-        <Document className="size-4 text-brand-600" aria-hidden />
-        {d.number}
-      </Link>
+        <DocumentText className="size-4 shrink-0 text-brand-600" aria-hidden />
+        <span
+          data-text={d.invoiceNumber}
+          className="inline-flex flex-col after:invisible after:block after:h-0 after:overflow-hidden after:font-bold after:content-[attr(data-text)] group-hover:font-bold group-focus-visible:font-bold"
+        >
+          {d.invoiceNumber}
+        </span>
+      </button>
     ),
-  }),
-  col.accessor((f) => f.d.invoiceNumber, {
-    id: 'invoice',
-    header: 'N.º de factura',
-    meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
-  }),
+  })
+
+export const COLUMNS = col.columns([
   col.accessor((f) => declarationTypeText(f.d.kind, f.downward), {
     id: 'kind',
     header: 'Tipo de declaración',
