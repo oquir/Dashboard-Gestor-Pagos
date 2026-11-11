@@ -6,6 +6,7 @@ import {
   formatPesos,
   columnHelper,
   paymentTone,
+  statementPath,
 } from '../../../../lib'
 import type { ReceivablesRow } from '../../../../types'
 import { Badge } from '../../../atoms'
@@ -20,7 +21,17 @@ const col = columnHelper<ReceivablesRow>()
 export const COLUMNS = col.columns([
   col.accessor('name', {
     header: 'Contribuyente',
-    meta: { classes: 'max-w-64 truncate text-slate-900' },
+    meta: { classes: 'max-w-64 truncate' },
+    // Lleva al estado de cuenta del contribuyente, que se reconoce por su documento.
+    cell: ({ row: { original: f } }) => (
+      <Link
+        to={statementPath(f.d.municipalityId, f.d.taxpayer)}
+        aria-label={`Ver el estado de cuenta de ${f.name}`}
+        className="font-medium text-slate-900 hover:text-brand-700"
+      >
+        {f.name}
+      </Link>
+    ),
   }),
   col.accessor((f) => f.d.number, {
     id: 'declaration',
