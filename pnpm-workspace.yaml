@@ -6,11 +6,10 @@ packages:
 # repo en vez de aprobarse a mano en cada máquina.
 #
 # - core-js solo imprime un mensaje de donaciones al instalarse; no necesita ejecutarse.
-# - @biomejs/biome y esbuild sí lo necesitan: bajan el binario de su plataforma al instalar y sin
-#   eso no arrancan. esbuild entra por tsx, con el que el orquestador corre sus scripts de verificación.
+# - esbuild sí lo necesita: baja el binario de su plataforma al instalar y sin
+#   eso no arranca. Entra por tsx, con el que el orquestador corre sus scripts de verificación.
 allowBuilds:
   core-js: false
-  "@biomejs/biome": true
   esbuild: true
 
 # No instalar versiones publicadas hace menos de 7 días (en minutos).
