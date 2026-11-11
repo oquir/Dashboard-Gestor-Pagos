@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { Layout } from './components/templates'
+import AccountStatement from './pages/AccountStatement'
 import Activities from './pages/Activities'
 import AuditLog from './pages/AuditLog'
 import AuditLogDetail from './pages/AuditLogDetail'
@@ -27,6 +28,10 @@ export default function App() {
           <Route path="rit/:id" element={<RegistrationDetail />} />
           <Route path="declaraciones" element={<Declarations />} />
           <Route path="declaraciones/:id" element={<DeclarationDetail />} />
+          <Route
+            path="estado-de-cuenta/:municipalityId/:documentType/:document"
+            element={<AccountStatement />}
+          />
           <Route path="pagos" element={<Payments />} />
           <Route path="reportes" element={<Reports />} />
           <Route path="actividades" element={<Activities />} />
