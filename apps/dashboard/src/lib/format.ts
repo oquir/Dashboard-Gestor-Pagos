@@ -1,4 +1,4 @@
-import { PERIOD_NAMES } from '../constants'
+import { PERIOD_NAMES } from '../constants/calendar'
 import type {
   Capacity,
   Summons,

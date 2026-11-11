@@ -1,5 +1,5 @@
 // Calendario tributario: vencimientos por año gravable y formulario, con fecha única o por último dígito del NIT o la cédula.
-import { DIGITS, MONTHS_PER_PERIOD, PERIOD_NAMES } from '../constants'
+import { DIGITS, MONTHS_PER_PERIOD, PERIOD_NAMES } from '../constants/calendar'
 import type {
   FiscalYearCalendar,
   MunicipalityConfig,

@@ -1,5 +1,5 @@
 // Reportes del municipio: sus columnas (para la tabla y el Excel), sus filas y sus gráficas por categoría.
-import { SERIES_CLASS } from '../constants'
+import { SERIES_CLASS } from '../constants/styles'
 import type {
   Bar,
   Declaration,
