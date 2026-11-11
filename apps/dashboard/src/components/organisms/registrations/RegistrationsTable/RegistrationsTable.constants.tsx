@@ -34,12 +34,12 @@ export const COLUMNS = col.columns([
     header: 'Nombre o razón social',
     // Sin ancho mínimo, las razones sociales largas se partían en tres o cuatro líneas.
     meta: { classes: 'min-w-72' },
-    cell: ({ row: { original: i } }) => (
-      <>
-        <p className="font-medium text-slate-900">{i.name}</p>
-        <p className="text-xs text-slate-500">{documentFormat(i)}</p>
-      </>
-    ),
+    cell: ({ row: { original: i } }) => <p className="font-medium text-slate-900">{i.name}</p>,
+  }),
+  col.accessor((i) => documentFormat(i), {
+    id: 'idDocument',
+    header: 'Documento',
+    meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
   }),
   col.accessor((i) => personTypeLabel[i.personType], {
     id: 'tipoPersona',
