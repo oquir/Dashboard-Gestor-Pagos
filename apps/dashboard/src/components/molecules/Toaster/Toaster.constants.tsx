@@ -12,6 +12,8 @@ export const TOAST_CLASSES: NonNullable<ToasterProps['toastOptions']>['className
   icon: 'mt-0.5 shrink-0',
   title: 'font-medium',
   description: 'mt-0.5 opacity-90',
+  actionButton:
+    'ml-auto shrink-0 self-center rounded-md px-2 py-1 text-xs font-medium underline hover:bg-surface/60',
 }
 
 export const TOAST_ICONS: ToasterProps['icons'] = {
