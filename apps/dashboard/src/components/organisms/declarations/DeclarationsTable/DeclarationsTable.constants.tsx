@@ -58,7 +58,7 @@ export const invoiceColumn = (preview: (d: Declaration) => void) =>
         aria-label={`Ver la factura ${d.invoiceNumber}`}
         className="group inline-flex cursor-pointer items-center gap-1.5 rounded tabular-nums text-fg hover:text-fg-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-border"
       >
-        <DocumentText className="size-4 shrink-0 text-brand-fg" aria-hidden />
+        <DocumentText className="size-4 shrink-0 text-danger" aria-hidden />
         <span
           data-text={d.invoiceNumber}
           className="inline-flex flex-col after:invisible after:block after:h-0 after:overflow-hidden after:font-bold after:content-[attr(data-text)] group-hover:font-bold group-focus-visible:font-bold"
