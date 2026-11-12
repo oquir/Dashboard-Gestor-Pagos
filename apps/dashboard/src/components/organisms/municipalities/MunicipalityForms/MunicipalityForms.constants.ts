@@ -18,6 +18,9 @@ export const GROUPS: OptionGroup[] = [
   },
 ]
 
+/** Columnas de la matriz: el formulario, "Gestiona" y las opciones de cada grupo. Lo que ocupa la tarjeta del motivo. */
+export const COLUMN_COUNT: number = 2 + GROUPS.reduce((n, g) => n + g.options.length, 0)
+
 export const LEGEND = [
   {
     searchTerm: 'Gestiona',
