@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { goLiveText } from '../../../../lib'
 import { useData } from '../../../../store'
-import { DisabledNotice, Toggle, Section } from '../../../molecules'
+import { DisabledBadge, Toggle, Section } from '../../../molecules'
 import GoLiveModal from '../GoLiveModal'
 import type { MunicipalityModulesProps } from './MunicipalityModules.types'
 
@@ -30,8 +30,8 @@ export default function MunicipalityModules({ municipality: m, pausas }: Municip
           }
         />
         {m.rit && pausas.rit && (
-          <div className="mt-3 ml-12">
-            <DisabledNotice disabled={pausas.rit} />
+          <div className="mt-2 ml-12">
+            <DisabledBadge disabled={pausas.rit} />
           </div>
         )}
       </div>

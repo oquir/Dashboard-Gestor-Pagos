@@ -1,13 +1,13 @@
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import { ArrowUpRight } from 'reicon-react'
 import { FORM_BUILDER_URL } from '../../../../constants'
 import { taxLabel, goLiveText, can, useSession, TAXES } from '../../../../lib'
 import { useData } from '../../../../store'
 import type { Tax } from '../../../../types'
-import { Badge, Card, Switch } from '../../../atoms'
-import { CardHeader, DisabledNotice } from '../../../molecules'
+import { Card, Switch } from '../../../atoms'
+import { CardHeader, DisabledBadge } from '../../../molecules'
 import GoLiveModal from '../GoLiveModal'
-import { COLUMN_COUNT, GROUPS, LEGEND } from './MunicipalityForms.constants'
+import { GROUPS, LEGEND } from './MunicipalityForms.constants'
 import type { MunicipalityFormsProps, FormOption } from './MunicipalityForms.types'
 
 /**
@@ -82,86 +82,74 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
               const manages = m.taxes[i]
               const pausa = manages ? pausas[i] : undefined
               return (
-                <Fragment key={i}>
-                  <tr className={`${manages ? '' : 'bg-slate-50/70'} ${pausa ? 'border-b-0' : ''}`}>
-                    <th scope="row" className="px-5 py-3 text-left align-top font-medium">
-                      <span className={manages ? 'text-slate-900' : 'text-slate-500'}>
-                        {taxLabel[i]}
+                <tr key={i} className={manages ? '' : 'bg-slate-50/70'}>
+                  <th scope="row" className="px-5 py-3 text-left align-top font-medium">
+                    <span className={manages ? 'text-slate-900' : 'text-slate-500'}>
+                      {taxLabel[i]}
+                    </span>
+                    {pausa && (
+                      <span className="ml-2 align-middle">
+                        <DisabledBadge disabled={pausa} />
                       </span>
-                      <span className="mt-0.5 block text-xs font-normal text-slate-500">
-                        {goLiveText(m.inProductionSince[i])}
-                      </span>
-                      {pausa && (
-                        <span className="mt-1.5 block">
-                          <Badge tone="alert">Desactivado</Badge>
-                        </span>
-                      )}
-                      {manages && canOpenBuilder && (
-                        // Por ahora abre el orquestador sin contexto; después llevará el municipio y quizá el impuesto.
-                        <a
-                          href={FORM_BUILDER_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline"
-                        >
-                          Editar formulario
-                          <ArrowUpRight className="size-3.5" aria-hidden />
-                          <span className="sr-only">
-                            de {taxLabel[i]} (se abre en una pestaña nueva)
-                          </span>
-                        </a>
-                      )}
-                    </th>
-                    <td className="px-3 py-3 text-center align-top">
-                      <Switch
-                        checked={manages}
-                        aria-label={`Gestiona ${taxLabel[i]}`}
-                        onChange={() =>
-                          !manages && !m.inProductionSince[i]
-                            ? setRequesting(i)
-                            : toggleTax(m.id, i)
-                        }
-                      />
-                    </td>
-                    {GROUPS.map((g) =>
-                      g.options.map((o, j) => (
-                        <td
-                          key={o.key}
-                          className={`px-3 py-3 text-center align-top ${j === 0 ? 'border-l border-slate-100' : ''}`}
-                        >
-                          {manages ? (
-                            <Switch
-                              checked={checked(o.key, i)}
-                              disabled={o.key === 'validateAgainstRit' && !m.rit}
-                              title={
-                                o.key === 'validateAgainstRit' && !m.rit
-                                  ? 'Requiere el RIT en el aplicativo'
-                                  : undefined
-                              }
-                              aria-label={`${o.text} en ${taxLabel[i]}`}
-                              onChange={() => toggle[o.key](m.id, i)}
-                            />
-                          ) : (
-                            <span className="text-slate-300">
-                              <span aria-hidden>—</span>
-                              <span className="sr-only">
-                                No aplica: el municipio no gestiona este formulario
-                              </span>
-                            </span>
-                          )}
-                        </td>
-                      )),
                     )}
-                  </tr>
-                  {pausa && (
-                    // La línea de abajo del formulario se quitó arriba: la tarjeta es parte de él, no otra fila.
-                    <tr>
-                      <td colSpan={COLUMN_COUNT} className="px-5 pb-4">
-                        <DisabledNotice disabled={pausa} />
+                    <span className="mt-0.5 block text-xs font-normal text-slate-500">
+                      {goLiveText(m.inProductionSince[i])}
+                    </span>
+                    {manages && canOpenBuilder && (
+                      // Por ahora abre el orquestador sin contexto; después llevará el municipio y quizá el impuesto.
+                      <a
+                        href={FORM_BUILDER_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline"
+                      >
+                        Editar formulario
+                        <ArrowUpRight className="size-3.5" aria-hidden />
+                        <span className="sr-only">
+                          de {taxLabel[i]} (se abre en una pestaña nueva)
+                        </span>
+                      </a>
+                    )}
+                  </th>
+                  <td className="px-3 py-3 text-center align-top">
+                    <Switch
+                      checked={manages}
+                      aria-label={`Gestiona ${taxLabel[i]}`}
+                      onChange={() =>
+                        !manages && !m.inProductionSince[i] ? setRequesting(i) : toggleTax(m.id, i)
+                      }
+                    />
+                  </td>
+                  {GROUPS.map((g) =>
+                    g.options.map((o, j) => (
+                      <td
+                        key={o.key}
+                        className={`px-3 py-3 text-center align-top ${j === 0 ? 'border-l border-slate-100' : ''}`}
+                      >
+                        {manages ? (
+                          <Switch
+                            checked={checked(o.key, i)}
+                            disabled={o.key === 'validateAgainstRit' && !m.rit}
+                            title={
+                              o.key === 'validateAgainstRit' && !m.rit
+                                ? 'Requiere el RIT en el aplicativo'
+                                : undefined
+                            }
+                            aria-label={`${o.text} en ${taxLabel[i]}`}
+                            onChange={() => toggle[o.key](m.id, i)}
+                          />
+                        ) : (
+                          <span className="text-slate-300">
+                            <span aria-hidden>—</span>
+                            <span className="sr-only">
+                              No aplica: el municipio no gestiona este formulario
+                            </span>
+                          </span>
+                        )}
                       </td>
-                    </tr>
+                    )),
                   )}
-                </Fragment>
+                </tr>
               )
             })}
           </tbody>
