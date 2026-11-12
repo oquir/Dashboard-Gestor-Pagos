@@ -15,7 +15,6 @@ import {
   MunicipalitySearch,
   DeclarationsDownload,
   NonFilerList,
-  DeclarationSelection,
   DeclarationsTable,
 } from '../../components/organisms'
 import { APPROVAL_OPTIONS, CORRECTION_OPTIONS, CORRECTION_URL_VALUES } from '../../constants'
@@ -315,11 +314,6 @@ export default function Declarations() {
               />
             )}
           </FilterBar>
-
-          <DeclarationSelection
-            declarations={checkedOnes.map((f) => f.d)}
-            removeItem={() => setSelection(new Set())}
-          />
 
           <DeclarationsTable
             rows={filteredItems}

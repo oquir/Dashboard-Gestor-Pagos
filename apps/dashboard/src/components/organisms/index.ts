@@ -31,7 +31,6 @@ export { default as Calculation } from './declarations/Calculation'
 export { default as NonFilerList } from './declarations/NonFilerList'
 export { default as DeclarationPayments } from './declarations/DeclarationPayments'
 export { default as CorrectionApplication } from './declarations/CorrectionApplication'
-export { default as DeclarationSelection } from './declarations/DeclarationSelection'
 export { default as DeclarationsTable } from './declarations/DeclarationsTable'
 export { default as DeclarationValidations } from './declarations/DeclarationValidations'
 
