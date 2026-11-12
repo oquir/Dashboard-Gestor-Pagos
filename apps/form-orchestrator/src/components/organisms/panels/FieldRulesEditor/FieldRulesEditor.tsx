@@ -43,7 +43,7 @@ export function FieldRulesEditor({ field, candidates }: FieldRulesEditorProps) {
           {summaries.map((summary, index) => (
             <li key={summary.id} className={SUMMARY_CLASSES}>
               <span className={NUMBER_BADGE_CLASSES}>{index + 1}</span>
-              <div className="flex min-w-0 flex-1 flex-col gap-0.5 break-words">
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5 wrap-break-word">
                 {summary.label && <span className={SUMMARY_LABEL_CLASSES}>{summary.label}</span>}
                 <span className={SUMMARY_WHEN_CLASSES}>{summary.when}</span>
                 {summary.effects.length === 0 ? (

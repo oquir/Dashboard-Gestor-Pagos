@@ -55,7 +55,7 @@ export function ExportReviewModal({
               <p className="truncate text-xs font-medium text-slate-800 dark:text-neutral-100">
                 {problem.where}
               </p>
-              <p className="mt-0.5 break-words text-xs text-slate-500 dark:text-neutral-400">
+              <p className="mt-0.5 wrap-break-word text-xs text-slate-500 dark:text-neutral-400">
                 {problem.message}
               </p>
             </div>
