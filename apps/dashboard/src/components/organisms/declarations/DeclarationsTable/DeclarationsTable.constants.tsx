@@ -193,3 +193,7 @@ export const APPROVAL_COLUMN = col.accessor(
 )
 
 export const INITIAL_ORDER = [{ id: 'filing', desc: true }]
+
+/** Qué queda fuera de la suma del pie, para que no cuente dos veces el mismo periodo. */
+export const SUMMARY_NOTE =
+  'Sin las solicitudes de corrección sin aceptar ni las declaraciones que reemplazó una corrección.'
