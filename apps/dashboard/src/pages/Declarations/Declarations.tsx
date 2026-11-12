@@ -35,6 +35,8 @@ import {
   useDateQuery,
   useSession,
   useCorrectionApplication,
+  replaced,
+  totalPaid,
 } from '../../lib'
 import { useData } from '../../store'
 import type {
@@ -61,6 +63,7 @@ export default function Declarations() {
   const declarations = useDeclarations()
   const municipalities = useData((s) => s.municipalities)
   const settingsList = useData((s) => s.settingsList)
+  const payments = useData((s) => s.payments)
   const statusOf = usePaymentStatus()
   const approval = useApproval()
   const correction = useCorrectionApplication()
@@ -105,6 +108,7 @@ export default function Declarations() {
     const configByMunicipality = new Map(settingsList.map((c) => [c.municipalityId, c]))
     const inRit = withRit(municipalities)
     const inRange = declarations.filter((d) => inDateRange(d.filingDate, query))
+    const outside = replaced(declarations, correction)
     return inRange.map((d) => {
       const corrected = d.correctsId ? byId.get(d.correctsId) : undefined
       const situation = correction(d)
@@ -114,6 +118,8 @@ export default function Declarations() {
         document: documentFormat(d.taxpayer),
         // La solicitud de corrección que no se ha aceptado no se paga: su estado de pago no aplica.
         payment: currentCorrection(situation) ? statusOf(d) : undefined,
+        paidAmount: totalPaid(d.id, payments),
+        isReplaced: outside.has(d.id),
         corrects: corrected?.number,
         downward: isDownwardCorrection(d, corrected),
         correction: situation,
@@ -122,7 +128,7 @@ export default function Declarations() {
         unregistered: inRit(d) && !d.registrationId,
       }
     })
-  }, [declarations, municipalities, settingsList, statusOf, approval, correction, query])
+  }, [declarations, municipalities, settingsList, payments, statusOf, approval, correction, query])
 
   // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
   const withApproval = rows.some((f) => f.approval)
