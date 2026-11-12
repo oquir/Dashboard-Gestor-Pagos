@@ -2,7 +2,7 @@
 
 > **Este documento es la especificación original y se deja tal cual fue escrita.** No describe el estado actual del código: es la referencia de intención, y sobre todo de la forma del JSON destino. Donde la implementación difiere, manda `CLAUDE.md`.
 >
-> La diferencia más grande está en el punto 4 y en el ejemplo de JSON: el `logic` real es `{script?, rules?}`, no `{dependencies, typeScript}`. El cálculo de un campo se escribe como código —lo que pedía el punto 4— pero con `{campo}` en vez de `getFieldValue('campo')`, y el editor terminó siendo CodeMirror y no Monaco. El camino fue de ida y vuelta: primero se construyó un lenguaje de fórmulas propio que esta especificación no pedía, y después se reemplazó por el script, que es lo que estaba escrito acá desde el principio.
+> La diferencia más grande está en el punto 4 y en el ejemplo de JSON: el `logic` real es `{script?, rules?}`, no `{dependencies, typeScript}`. El cálculo de un campo se escribe como código —lo que pedía el punto 4— pero con `{{campo}}` en vez de `getFieldValue('campo')`, y el editor terminó siendo CodeMirror y no Monaco. El camino fue de ida y vuelta: primero se construyó un lenguaje de fórmulas propio que esta especificación no pedía, y después se reemplazó por el script, que es lo que estaba escrito acá desde el principio.
 
 ## 1. Descripción General
 

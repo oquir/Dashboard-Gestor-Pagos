@@ -1,10 +1,18 @@
-import type { ExportedField, ExportedStep } from '../../types'
-import type { RuntimeModel, RuntimeScope, RuntimeSnapshot, RuntimeValues } from '../../types'
-import { evaluateCondition } from '../runtimeCondition'
+import type { ExportedField, ExportedStep } from '../../types/exportForm'
+import type {
+  RuntimeIssue,
+  RuntimeModel,
+  RuntimeScope,
+  RuntimeSnapshot,
+  RuntimeValues,
+} from '../../types/formRuntime'
+import { evaluateCondition } from '../runtimeCondition/runtimeCondition'
 import { checkKey, fieldKey } from '../runtimeValidation/runtimeValidation.utils'
 
 // Piezas de apoyo del runtime: recorridos del export y armado de los ambitos.
 
+// stepFields y allSteps no tienen uso en el builder, pero FrontAutoliquidable las usa desde su
+// copia del runtime: borrarlas aca rompe al consumidor en la proxima copia.
 export function stepFields(step: ExportedStep): ExportedField[] {
   return step.rows.flatMap((row) => row.fields)
 }
@@ -101,4 +109,24 @@ export function emptyItem(fields: ExportedField[]): RuntimeValues {
   for (const field of fields) item[field.name] = undefined
 
   return item
+}
+
+// Un script roto dentro de un grupo falla una vez por repeticion, y el mismo calculo pasa por tres
+// pasadas: sin esto, un error se listaria cuarenta y cinco veces sobre quince actividades. Corre
+// otra vez sobre la lista final de validateRuntime, que suma fuentes que no pasaron por aca (dos
+// comprobaciones sin etiqueta fallan con el mismo texto), porque PreviewResults usa esta misma
+// clave como key: repetida, React deja avisos fantasma en pantalla.
+export function dedupeIssues(issues: RuntimeIssue[]): RuntimeIssue[] {
+  const seen = new Set<string>()
+  const unique: RuntimeIssue[] = []
+
+  for (const issue of issues) {
+    const key: string = `${issue.kind}|${issue.field ?? ''}|${issue.message}`
+    if (seen.has(key)) continue
+
+    seen.add(key)
+    unique.push(issue)
+  }
+
+  return unique
 }

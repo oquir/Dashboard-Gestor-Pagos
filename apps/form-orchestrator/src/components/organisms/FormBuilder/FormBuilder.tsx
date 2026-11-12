@@ -1,14 +1,15 @@
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { lazy, Suspense } from 'react'
-import { useDragAndDrop } from '../../../hooks'
-import { useFormStore } from '../../../store'
-import { SimulatorLoading } from '../../atoms'
-import { AppLayout } from '../../layout'
-import { DragPreview } from '../../molecules'
-import { Canvas } from '../Canvas'
-import { CanvasToolbar } from '../CanvasToolbar'
-import { RightSidebar } from '../RightSidebar'
-import { Sidebar } from '../Sidebar'
+import { useDragAndDrop } from '../../../hooks/useDragAndDrop/useDragAndDrop'
+import { useFormStore } from '../../../store/formStore'
+import { SimulatorLoading } from '../../atoms/SimulatorLoading/SimulatorLoading'
+import { AppLayout } from '../../layout/AppLayout'
+import { DragPreview } from '../../molecules/DragPreview/DragPreview'
+import { Canvas } from '../Canvas/Canvas'
+import { CanvasToolbar } from '../CanvasToolbar/CanvasToolbar'
+import { CollapsedRightSidebar } from '../CollapsedRightSidebar/CollapsedRightSidebar'
+import { RightSidebar } from '../RightSidebar/RightSidebar'
+import { Sidebar } from '../Sidebar/Sidebar'
 import { OVERLAY_STYLE } from './FormBuilder.constants'
 
 // El simulador se carga aparte: es la unica puerta a los catalogos de mentira y al zod que hidrata
@@ -50,7 +51,12 @@ export function FormBuilder() {
       <AppLayout
         sidebar={<Sidebar />}
         canvas={<Canvas />}
-        canvasOverlay={<CanvasToolbar />}
+        canvasOverlay={
+          <>
+            <CanvasToolbar />
+            <CollapsedRightSidebar />
+          </>
+        }
         rightSidebar={<RightSidebar />}
       />
       {/* Sin animacion de caida para una fila: dnd-kit la devuelve volando al sitio donde empezo,

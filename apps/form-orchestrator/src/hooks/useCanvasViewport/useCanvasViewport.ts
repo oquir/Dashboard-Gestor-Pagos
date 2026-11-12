@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/refs -- el ancla se captura en render a proposito, ver captureAnchor */
 import { type CSSProperties, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { getViewportLayout } from '../../lib'
-import { wheelZoom } from '../../lib'
-import { useFormStore } from '../../store'
-import type { ViewportLayout } from '../../types'
-import type { CanvasViewportReturn } from '../../types'
+import { getViewportLayout } from '../../lib/canvasViewport/canvasViewport'
+import { wheelZoom } from '../../lib/canvasZoom/canvasZoom'
+import { useFormStore } from '../../store/formStore'
+import type { ViewportLayout } from '../../types/canvasViewport'
+import type { CanvasViewportReturn } from '../../types/canvasViewportReturn'
 import type { HomedView, PortSize, ViewAnchor } from './useCanvasViewport.types'
 import { captureAnchor, readPortSize, restoreAnchor, samePortSize } from './useCanvasViewport.utils'
 
@@ -20,6 +20,9 @@ import { captureAnchor, readPortSize, restoreAnchor, samePortSize } from './useC
 // deja la caja de flujo ocupando exactamente lo que se ve.
 export function useCanvasViewport(): CanvasViewportReturn {
   const zoom: number = useFormStore((state) => state.canvasZoom)
+  const panelsCollapsed: boolean = useFormStore(
+    (state) => !state.isSidebarOpen && !state.isRightSidebarOpen,
+  )
   const canvasKey: string = useFormStore(
     (state) => `${state.activeCanvas.type}:${state.activeCanvas.stepId}`,
   )
@@ -112,13 +115,18 @@ export function useCanvasViewport(): CanvasViewportReturn {
   }
 
   const layout: ViewportLayout | null = portSize
-    ? getViewportLayout({ portWidth: portSize.width, portHeight: portSize.height, zoom })
+    ? getViewportLayout({
+        portWidth: portSize.width,
+        portHeight: portSize.height,
+        zoom,
+        panelsCollapsed,
+      })
     : null
 
   // Despues del commit: antes, la raiz todavia tiene el tamano viejo y el navegador recortaria el
   // scroll que le pidamos. zoom y portSize van como disparadores a proposito: el efecto tiene que
   // correr justo despues del commit que siguio a la captura del ancla.
-  // zoom y portSize son disparadores, no datos leidos
+  // biome-ignore lint/correctness/useExhaustiveDependencies: zoom y portSize son disparadores, no datos leidos
   useLayoutEffect(() => {
     const anchor: ViewAnchor | null = pendingAnchor.current
     if (!anchor || !content || !port) return

@@ -1,5 +1,5 @@
 import { AngleDown2, AngleLeft2, AngleRight2, AngleUp2 } from 'reicon-react'
-import type { TooltipPosition } from '../../../../types'
+import type { TooltipPosition } from '../../../../types/field'
 import type { TooltipPositionOption } from './FieldTooltipEditor.types'
 
 export const TOOLTIP_POSITION_OPTIONS: Record<TooltipPosition, TooltipPositionOption> = {
@@ -16,3 +16,6 @@ export const POSITION_ACTIVE_CLASSES: string = 'border-brand-border bg-brand-sur
 
 export const POSITION_IDLE_CLASSES: string =
   'border-border bg-field text-fg-muted hover:border-border-strong'
+
+export const TOOLTIP_DESCRIPTION: string =
+  'Agrega un ícono de información junto a la etiqueta. El contribuyente ve el mensaje al pasar el mouse o al tocarlo desde el celular.'

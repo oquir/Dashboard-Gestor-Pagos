@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/refs -- falso positivo: el hook devuelve refs junto a valores comunes */
 import { Magnifier } from 'reicon-react'
-import { usePreviewSearchSelect } from '../../../../hooks/usePreviewSearchSelect'
+import { usePreviewSearchSelect } from '../../../../hooks/usePreviewSearchSelect/usePreviewSearchSelect'
 import {
   FOOTER_BUTTON_CLASSES,
   OPTION_BUTTON_CLASSES,
@@ -22,6 +22,7 @@ export function PreviewSearchSelect({
   disabled,
   invalid,
   showsTarifa,
+  placeholder,
   onChange,
 }: PreviewSearchSelectProps) {
   const search = usePreviewSearchSelect({ options, value, onChange })
@@ -36,7 +37,7 @@ export function PreviewSearchSelect({
         className={`${TRIGGER_BASE_CLASSES} ${invalid ? TRIGGER_INVALID_CLASSES : TRIGGER_IDLE_CLASSES}`}
       >
         <span className={`truncate ${search.selected ? 'text-fg' : 'text-fg-muted'}`}>
-          {search.selected ? optionText(search.selected) : 'Buscar…'}
+          {search.selected ? optionText(search.selected) : (placeholder ?? 'Buscar…')}
         </span>
         <Magnifier size={14} weight="Filled" />
       </button>

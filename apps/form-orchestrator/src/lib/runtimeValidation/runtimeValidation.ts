@@ -1,5 +1,9 @@
 import type { z } from 'zod'
-import type { ExportedField, ExportedGroupCheck, ExportedRepeatableGroup } from '../../types'
+import type {
+  ExportedField,
+  ExportedGroupCheck,
+  ExportedRepeatableGroup,
+} from '../../types/exportForm'
 import type {
   RuntimeContext,
   RuntimeIssue,
@@ -8,13 +12,13 @@ import type {
   RuntimeSnapshot,
   RuntimeValues,
   ValidationResult,
-} from '../../types'
-import type { GroupCheckResult } from '../../types'
-import type { ScriptRunResult } from '../../types'
-import { isPresentationalField } from '../fieldKind'
-import { groupColumns } from '../formRuntime/formRuntime.utils'
-import { coerceValues, runFieldScript } from '../scriptRuntime'
-import { firstZodMessage, hydrateFieldSchemas } from '../zodHydrate'
+} from '../../types/formRuntime'
+import type { GroupCheckResult } from '../../types/groupCheck'
+import type { ScriptRunResult } from '../../types/scriptRuntime'
+import { isPresentationalField } from '../fieldKind/fieldKind'
+import { dedupeIssues, groupColumns } from '../formRuntime/formRuntime.utils'
+import { coerceValues, runFieldScript } from '../scriptRuntime/scriptRuntime'
+import { firstZodMessage, hydrateFieldSchemas } from '../zodHydrate/zodHydrate'
 import { checkKey, coerceValue, effectiveSchemaSource, fieldKey } from './runtimeValidation.utils'
 
 // Valida todo el formulario contra los schemas de Zod hidratados desde el export.
@@ -41,12 +45,12 @@ export function validateRuntime(
 
   return {
     errors,
-    issues: [...issues, ...snapshot.issues, ...cycleIssues(snapshot), ...checkIssues],
+    issues: dedupeIssues([...issues, ...snapshot.issues, ...cycleIssues(snapshot), ...checkIssues]),
   }
 }
 
 // El ambito en el que corre una comprobacion: el root con las columnas del grupo aplanadas a
-// arrays, que es lo que hace que sum({ingresos_gravados}) tenga algo que sumar.
+// arrays, que es lo que hace que sum({{ingresos_gravados}}) tenga algo que sumar.
 //
 // Las columnas se arman desde snapshot.groups y no desde snapshot.root.values, que ya trae unas.
 // No son las mismas: resolveRuntime mete en el root las de la PRIMERA pasada, y las definitivas son

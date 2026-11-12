@@ -1,9 +1,9 @@
 import { Plus, Trash } from 'reicon-react'
-import { useGroupChecksEditor } from '../../../../hooks'
-import { validateFieldScript } from '../../../../lib'
-import { IconButton } from '../../../atoms'
-import { ToggleSwitch } from '../../../atoms'
-import { ScriptInput } from '../../../molecules'
+import { useGroupChecksEditor } from '../../../../hooks/useGroupChecksEditor/useGroupChecksEditor'
+import { validateFieldScript } from '../../../../lib/fieldScript/fieldScript'
+import { IconButton } from '../../../atoms/IconButton/IconButton'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { ScriptInput } from '../../../molecules/ScriptInput/ScriptInput'
 import {
   CHECK_CARD_CLASSES,
   CHECK_HINT,
@@ -21,7 +21,6 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
     toggleOpen,
     checks,
     activeCount,
-    candidates,
     knownNames,
     formScript,
     addCheck,
@@ -95,18 +94,10 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
                 rows={4}
                 knownNames={knownNames}
                 placeholder={CHECK_PLACEHOLDER}
-                insertCandidates={candidates}
                 onChange={(next) => patchCheck(check.id, { script: next })}
               />
 
               {validation.error && <p className={ERROR_CLASSES}>{validation.error}</p>}
-
-              {validation.unknown.length > 0 && (
-                <p className={ERROR_CLASSES}>
-                  {validation.unknown.map((name) => `{${name}}`).join(', ')} no coincide con ningún
-                  campo.
-                </p>
-              )}
 
               <input
                 type="text"

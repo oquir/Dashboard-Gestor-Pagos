@@ -1,31 +1,58 @@
-import { RICH_TEXT_FIELD_TYPE } from '../../../../constants'
-import { GRID_BASE_COLUMNS } from '../../../../constants'
-import { findLabelFor, isPresentationalField, labelTargetCandidates } from '../../../../lib'
-import { allowsManualOptions, isOptionBasedField, supportsInlineOptions } from '../../../../lib'
-import { supportsRounding } from '../../../../lib'
-import { supportsTooltip } from '../../../../lib'
-import { getFreeRuns, getMaxSpanAt } from '../../../../lib'
+import { MAX_PLACEHOLDER_LENGTH } from '../../../../constants/fieldPlaceholder'
+import { RICH_TEXT_FIELD_TYPE } from '../../../../constants/fieldTypes'
+import { GRID_BASE_COLUMNS } from '../../../../constants/grid'
+import { isPhoneField } from '../../../../lib/fieldContact/fieldContact'
+import { isDateFieldType } from '../../../../lib/fieldDate/fieldDate'
+import {
+  findLabelFor,
+  isPresentationalField,
+  labelTargetCandidates,
+} from '../../../../lib/fieldKind/fieldKind'
+import {
+  allowsManualOptions,
+  isOptionBasedField,
+  supportsInlineOptions,
+} from '../../../../lib/fieldOptions/fieldOptions'
+import { supportsPlaceholder } from '../../../../lib/fieldPlaceholder/fieldPlaceholder'
+import { supportsRounding } from '../../../../lib/fieldRounding/fieldRounding'
+import { supportsSuggestions } from '../../../../lib/fieldSuggestions/fieldSuggestions'
+import { supportsTooltip } from '../../../../lib/fieldTooltip/fieldTooltip'
+import { getFreeRuns, getMaxSpanAt } from '../../../../lib/rowLayout/rowLayout'
 import {
   findRowContainingField,
   getActiveRows,
   getAllFields,
   useFormStore,
-} from '../../../../store'
-import type { CanvasField } from '../../../../types'
-import { ToggleSwitch } from '../../../atoms'
-import { FieldIdentityCard } from '../../../molecules'
-import { FieldNameInput } from '../../../molecules'
-import { LabeledInput } from '../../../molecules'
-import { LabeledRangeSlider } from '../../../molecules'
-import { LabelTargetSelect } from '../../../molecules'
-import { PanelSection } from '../../../molecules'
-import { RichTextEditor } from '../../../molecules'
-import { CatalogFillsEditor } from '../CatalogFillsEditor'
-import { FieldOptionsEditor } from '../FieldOptionsEditor'
-import { FieldTooltipEditor } from '../FieldTooltipEditor'
-import { FileOptionsEditor } from '../FileOptionsEditor'
-import { NumberOptionsEditor } from '../NumberOptionsEditor'
-import { SOURCE_BADGE_CLASSES, SOURCE_LINK_CLASSES } from './AttributesPanel.constants'
+} from '../../../../store/formStore'
+import type { CanvasField } from '../../../../types/field'
+import { InfoHint } from '../../../atoms/InfoHint/InfoHint'
+import { Input } from '../../../atoms/Input/Input'
+import { Label } from '../../../atoms/Label/Label'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { FieldIdentityCard } from '../../../molecules/FieldIdentityCard/FieldIdentityCard'
+import { FieldNameInput } from '../../../molecules/FieldNameInput/FieldNameInput'
+import { LabeledInput } from '../../../molecules/LabeledInput/LabeledInput'
+import { LabeledRangeSlider } from '../../../molecules/LabeledRangeSlider/LabeledRangeSlider'
+import { LabelTargetSelect } from '../../../molecules/LabelTargetSelect/LabelTargetSelect'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { RichTextEditor } from '../../../molecules/RichTextEditor/RichTextEditor'
+import { CatalogFillsEditor } from '../CatalogFillsEditor/CatalogFillsEditor'
+import { DateOptionsEditor } from '../DateOptionsEditor/DateOptionsEditor'
+import { FieldOptionsEditor } from '../FieldOptionsEditor/FieldOptionsEditor'
+import { FieldTooltipEditor } from '../FieldTooltipEditor/FieldTooltipEditor'
+import { FileOptionsEditor } from '../FileOptionsEditor/FileOptionsEditor'
+import { NumberOptionsEditor } from '../NumberOptionsEditor/NumberOptionsEditor'
+import { PhoneOptionsEditor } from '../PhoneOptionsEditor/PhoneOptionsEditor'
+import { SuggestionsEditor } from '../SuggestionsEditor/SuggestionsEditor'
+import {
+  GENERAL_DESCRIPTION,
+  LAYOUT_DESCRIPTION,
+  OPTIONS_SOURCE_DESCRIPTION,
+  PLACEHOLDER_DESCRIPTION,
+  PLACEHOLDER_EXAMPLE,
+  SOURCE_BADGE_CLASSES,
+  SOURCE_LINK_CLASSES,
+} from './AttributesPanel.constants'
 
 export function AttributesPanel({ field }: { field: CanvasField }) {
   const updateField = useFormStore((state) => state.updateField)
@@ -33,6 +60,7 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
   const setFieldLabelFor = useFormStore((state) => state.setFieldLabelFor)
   const setFieldContent = useFormStore((state) => state.setFieldContent)
   const setFieldInlineOptions = useFormStore((state) => state.setFieldInlineOptions)
+  const setFieldPlaceholder = useFormStore((state) => state.setFieldPlaceholder)
   const activeRows = useFormStore(getActiveRows)
   const row = useFormStore((state) => findRowContainingField(state, field.id))
   const rowColumns = row?.columns ?? GRID_BASE_COLUMNS
@@ -54,7 +82,7 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
     <div className="flex flex-col gap-3">
       <FieldIdentityCard field={field} linkedLabel={linkedLabel} />
 
-      <PanelSection title="General">
+      <PanelSection title="General" description={GENERAL_DESCRIPTION}>
         <div className="flex flex-col gap-1">
           <LabeledInput
             id="field-label"
@@ -70,9 +98,27 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
           )}
         </div>
 
+        {supportsPlaceholder(field.type) && (
+          <div className="relative">
+            <div className="flex items-center justify-between gap-2">
+              <Label htmlFor="field-placeholder">Placeholder</Label>
+              <InfoHint text={PLACEHOLDER_DESCRIPTION} label="Ayuda sobre Placeholder" />
+            </div>
+            <Input
+              id="field-placeholder"
+              value={field.placeholder ?? ''}
+              maxLength={MAX_PLACEHOLDER_LENGTH}
+              placeholder={PLACEHOLDER_EXAMPLE}
+              onChange={(event) => setFieldPlaceholder(field.id, event.target.value)}
+            />
+          </div>
+        )}
+
+        {/* Las keys de estos hermanos no pueden repetirse: con RichTextEditor y FieldNameInput en
+            key={field.id}, React dejaba el editor viejo huerfano en el DOM en cada cambio de campo. */}
         {isRichText && (
           <RichTextEditor
-            key={field.id}
+            key={`content-${field.id}`}
             value={field.content}
             onChange={(content) => setFieldContent(field.id, content)}
           />
@@ -86,11 +132,12 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
           />
         )}
 
-        <FieldNameInput key={field.id} field={field} />
+        <FieldNameInput key={`name-${field.id}`} field={field} />
       </PanelSection>
 
       <PanelSection
         title="Diseño"
+        description={LAYOUT_DESCRIPTION}
         aside={
           <span className="text-[11px] tabular-nums text-fg-muted">
             {field.colSpan} / {rowColumns} · desde col {field.colStart}
@@ -128,9 +175,12 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
 
       {canEditOptions && <FieldOptionsEditor field={field} />}
 
+      {supportsSuggestions(field.type) && <SuggestionsEditor field={field} />}
+
       {isOptionBased && !canEditOptions && (
         <PanelSection
           title="Origen de opciones"
+          description={OPTIONS_SOURCE_DESCRIPTION}
           aside={
             <span className={SOURCE_BADGE_CLASSES}>
               {field.dataSource ? 'Catálogo' : 'Base de datos'}
@@ -164,6 +214,10 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
       {field.type === 'file' && <FileOptionsEditor field={field} />}
 
       {supportsRounding(field.type) && <NumberOptionsEditor field={field} />}
+
+      {isDateFieldType(field.type) && <DateOptionsEditor field={field} />}
+
+      {isPhoneField(field.type) && <PhoneOptionsEditor field={field} />}
 
       {supportsTooltip(field.type) && <FieldTooltipEditor field={field} />}
     </div>

@@ -1,21 +1,18 @@
-import { isPresentationalField } from '../../../../lib'
-import { getAllFields, useFormStore } from '../../../../store'
-import type { CanvasField } from '../../../../types'
-import { ToggleSwitch } from '../../../atoms'
-import { PanelSection } from '../../../molecules'
-import { ConditionEditor } from '../ConditionEditor'
-import { FieldRulesEditor } from '../FieldRulesEditor'
-import { FieldScriptEditor } from '../FieldScriptEditor'
-import { HINT_CLASSES } from './LogicPanel.constants'
+import { useDependencyCandidates } from '../../../../hooks/useDependencyCandidates/useDependencyCandidates'
+import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
+import { useFormStore } from '../../../../store/formStore'
+import type { CanvasField } from '../../../../types/field'
+import { ToggleSwitch } from '../../../atoms/ToggleSwitch/ToggleSwitch'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { ConditionEditor } from '../ConditionEditor/ConditionEditor'
+import { FieldRulesEditor } from '../FieldRulesEditor/FieldRulesEditor'
+import { FieldScriptEditor } from '../FieldScriptEditor/FieldScriptEditor'
+import { HINT_CLASSES, READ_ONLY_DESCRIPTION } from './LogicPanel.constants'
 
 export function LogicPanel({ field }: { field: CanvasField }) {
-  const formSteps = useFormStore((state) => state.formSteps)
   const updateField = useFormStore((state) => state.updateField)
 
-  const allFields: CanvasField[] = getAllFields(formSteps.flatMap((step) => step.rows))
-  const otherFields: CanvasField[] = allFields.filter(
-    (candidate) => candidate.id !== field.id && !isPresentationalField(candidate.type),
-  )
+  const otherFields: CanvasField[] = useDependencyCandidates(field.id)
   const isAlwaysDisabled = Boolean(field.alwaysDisabled)
 
   // Un campo presentacional no tiene valor: se puede ocultar, pero no habilitar,
@@ -36,6 +33,7 @@ export function LogicPanel({ field }: { field: CanvasField }) {
     <div className="flex flex-col gap-3">
       <PanelSection
         title="Solo lectura"
+        description={READ_ONLY_DESCRIPTION}
         aside={
           <ToggleSwitch
             checked={isAlwaysDisabled}
@@ -43,12 +41,7 @@ export function LogicPanel({ field }: { field: CanvasField }) {
             label="Dejar el campo siempre deshabilitado"
           />
         }
-      >
-        <p className={HINT_CLASSES}>
-          El campo se muestra pero el usuario no puede editarlo. Útil para valores calculados o
-          informativos.
-        </p>
-      </PanelSection>
+      />
 
       <ConditionEditor field={field} otherFields={otherFields} kind="visible" />
 

@@ -1,19 +1,18 @@
 import { useState } from 'react'
-import { PAYLOAD_SCHEMA } from '../../constants'
-import { isPresentationalField } from '../../lib'
-import { isOptionBasedField } from '../../lib'
-import { fieldMatchesSchemaType } from '../../lib'
-import { flattenSelectableLeaves, resolveLeaf } from '../../lib'
-import { findGroupForField, getAllFields, useFormStore } from '../../store'
-import type { CanvasField } from '../../types'
-import type { OptionsSetup } from '../../types'
-import type { RepeatableGroup } from '../../types'
-import type { SchemaLeaf } from '../../types'
+import { PAYLOAD_SCHEMA } from '../../constants/payloadSchema'
+import { isOptionBasedField } from '../../lib/fieldOptions/fieldOptions'
+import { fieldMatchesLeaf } from '../../lib/payloadMapping/payloadMapping'
+import { flattenSelectableLeaves, resolveLeaf } from '../../lib/payloadSchema/payloadSchema'
+import { findGroupForField, useFormStore } from '../../store/formStore'
+import type { CanvasField } from '../../types/field'
+import type { OptionsSetup } from '../../types/formStoreTypes'
+import type { RepeatableGroup } from '../../types/formStructure'
+import type { SchemaLeaf } from '../../types/payloadSchema'
+import { useDependencyCandidates } from '../useDependencyCandidates/useDependencyCandidates'
 import type { UseApiMappingPanelParams, UseApiMappingPanelResult } from './useApiMappingPanel.types'
 
 export function useApiMappingPanel({ field }: UseApiMappingPanelParams): UseApiMappingPanelResult {
   const updateFieldApiBinding = useFormStore((state) => state.updateFieldApiBinding)
-  const formSteps = useFormStore((state) => state.formSteps)
   const [isAskingOptions, setIsAskingOptions] = useState<boolean>(false)
   const group: RepeatableGroup | null = useFormStore((state) => findGroupForField(state, field.id))
   const binding = field.apiBinding
@@ -29,12 +28,10 @@ export function useApiMappingPanel({ field }: UseApiMappingPanelParams): UseApiM
   const isOrphan = Boolean(path) && resolvedLeaf === null
   const isHostPath = Boolean(resolvedLeaf?.providedByHost)
   const showTypeMismatch = Boolean(
-    resolvedType && !isHostPath && !fieldMatchesSchemaType(field.type, resolvedType),
+    resolvedType && !isHostPath && !fieldMatchesLeaf(field, resolvedType),
   )
 
-  const dataSourceCandidates: CanvasField[] = getAllFields(
-    formSteps.flatMap((step) => step.rows),
-  ).filter((candidate) => candidate.id !== field.id && !isPresentationalField(candidate.type))
+  const dataSourceCandidates: CanvasField[] = useDependencyCandidates(field.id)
 
   // Con un catalogo declarado no hay opciones que autorar: excluir deja de arrastrar al modal.
   const needsOptionsSetup: boolean =

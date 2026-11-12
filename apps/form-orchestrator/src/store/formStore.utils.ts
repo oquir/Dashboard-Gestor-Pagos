@@ -1,19 +1,25 @@
 import { v4 as uuidv4 } from 'uuid'
-import { INDUSTRIA_COMERCIO_FORM_STEPS } from '../constants'
-import { GRID_BASE_COLUMNS } from '../constants'
-import { getIndustriaComercioFormTemplate, getIndustriaComercioIntroTemplate } from '../lib'
-import { collectFieldNames, slugifyFieldName, uniqueFieldName } from '../lib'
-import type { CanvasField, FieldOption } from '../types'
+import { INDUSTRIA_COMERCIO_FORM_STEPS } from '../constants/baseTemplate'
+import { GRID_BASE_COLUMNS } from '../constants/grid'
+import {
+  getIndustriaComercioFormTemplate,
+  getIndustriaComercioIntroTemplate,
+} from '../lib/baseTemplate/baseTemplate'
+import { pruneDataSourceReferencing } from '../lib/fieldDataSource/fieldDataSource'
+import { collectFieldNames, slugifyFieldName, uniqueFieldName } from '../lib/fieldName/fieldName'
+import { pruneRulesReferencing } from '../lib/fieldRule/fieldRule'
+import { pruneOverridesReferencing } from '../lib/fieldValidationOverride/fieldValidationOverride'
+import type { CanvasField, FieldOption } from '../types/field'
 import type {
   CanvasRow,
   FormStep,
   FormStepTemplate,
   IntroModalStep,
   IntroStepTemplate,
-} from '../types'
-import type { CanvasTarget, FieldPlacement } from '../types'
-import type { FormType } from '../types'
-import type { StateSlice } from '../types'
+} from '../types/formStructure'
+import type { CanvasTarget, FieldPlacement } from '../types/placement'
+import type { FormType } from '../types/setup'
+import type { StateSlice } from '../types/store'
 // Constructores, recorridos de todo el lienzo y arranque desde la plantilla.
 
 import { THEME_STORAGE_KEY } from './formStore.constants'
@@ -34,7 +40,7 @@ export function findFieldById(rows: CanvasRow[], fieldId: string | null): Canvas
 export function crossingNotice(labels: string[]): string | null {
   if (labels.length === 0) return null
 
-  return `Quedaron enlaces cruzados entre el modal de entrada y el formulario (${labels.join(', ')}). Siguen funcionando al llenar el formulario, pero el panel de Lógica no los va a ofrecer para editar.`
+  return `Quedaron campos del modal de entrada que dependen de campos del formulario (${labels.join(', ')}). El modal se llena primero, así que esa dependencia siempre va a ver el campo vacío: cámbiala en Lógica, Validaciones o Mapeo API.`
 }
 
 export function allRows(state: StateSlice): CanvasRow[] {
@@ -170,6 +176,49 @@ export function mapFieldEverywhere(
       })),
     },
   }
+}
+
+// Borra los campos y limpia todo lo que les apuntaba, o quedarian referencias colgando que el export
+// sacaria con el uuid en lugar del nombre: condiciones, reglas, validaciones condicionales, el padre
+// del catalogo y la etiqueta externa. La etiqueta sobrevive sin vinculo en vez de borrarse, igual
+// que un hueco en la fila se conserva. Lo usan borrar campos y borrar un paso, que se lleva los suyos.
+export function removeFieldsEverywhere(slice: StateSlice, fieldIds: string[]): StateSlice {
+  if (fieldIds.length === 0) return slice
+
+  const removed: Set<string> = new Set<string>(fieldIds)
+  const references = (id: string | undefined): boolean => id !== undefined && removed.has(id)
+  const applyTo = (rows: CanvasRow[]): CanvasRow[] =>
+    rows.map((row) => ({
+      ...row,
+      fields: row.fields
+        .filter((field) => !removed.has(field.id))
+        .map((field) => ({
+          ...field,
+          enableWhen: references(field.enableWhen?.fieldId) ? undefined : field.enableWhen,
+          visibleWhen: references(field.visibleWhen?.fieldId) ? undefined : field.visibleWhen,
+          labelFor: references(field.labelFor) ? undefined : field.labelFor,
+          dataSource: fieldIds.reduce(pruneDataSourceReferencing, field.dataSource),
+          validations: {
+            ...field.validations,
+            overrides: fieldIds.reduce(pruneOverridesReferencing, field.validations.overrides),
+          },
+          logic: {
+            ...field.logic,
+            rules: fieldIds.reduce(pruneRulesReferencing, field.logic.rules),
+          },
+        })),
+    }))
+
+  return {
+    formSteps: slice.formSteps.map((step) => ({ ...step, rows: applyTo(step.rows) })),
+    introModal: {
+      steps: slice.introModal.steps.map((step) => ({ ...step, rows: applyTo(step.rows) })),
+    },
+  }
+}
+
+export function stepFieldIds(step: { rows: CanvasRow[] }): string[] {
+  return step.rows.flatMap((row) => row.fields.map((field) => field.id))
 }
 
 export function createOptions(optionCount: number): FieldOption[] {

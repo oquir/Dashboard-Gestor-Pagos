@@ -3,6 +3,7 @@ import { useFormStore } from '../../../../store'
 import { ToggleSwitch } from '../../../atoms'
 import { PanelSection } from '../../../molecules'
 import {
+  DATA_SOURCE_DESCRIPTION,
   HINT_CLASSES,
   NO_PARENT_VALUE,
   SELECT_CLASSES,
@@ -38,6 +39,7 @@ export function FieldDataSourceEditor({ field, candidates }: FieldDataSourceEdit
   return (
     <PanelSection
       title="Origen de opciones"
+      description={DATA_SOURCE_DESCRIPTION}
       aside={
         <ToggleSwitch
           checked={source !== undefined}
@@ -96,11 +98,6 @@ export function FieldDataSourceEditor({ field, candidates }: FieldDataSourceEdit
               con qué filtrar y el campo va a quedar sin opciones.
             </p>
           )}
-
-          <p className={HINT_CLASSES}>
-            Las opciones no viajan en el JSON: solo viaja el nombre del catálogo, que el aplicativo
-            traduce a su endpoint.
-          </p>
         </>
       )}
     </PanelSection>

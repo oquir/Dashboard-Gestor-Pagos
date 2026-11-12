@@ -2,8 +2,8 @@ export const TIPO_DOCUMENTO_NIT: string = '2'
 
 // Solo digitos, con un largo entre min y max, y ademas descarta los valores de mentira que la
 // gente escribe para pasar de pantalla. Tres piezas:
-//   (?!0)            no arranca en cero: ni un documento ni un telefono colombiano lo hacen, y de
-//                    paso mata los 0000000 y los 0000001, que el chequeo de repetidos no alcanza.
+//   (?!0)            no arranca en cero: ningun documento colombiano lo hace, y de paso mata los
+//                    0000000 y los 0000001, que el chequeo de repetidos no alcanza.
 //   (?!([0-9])\1+$)  no son todos el mismo digito: 1111111, 99999999, etc. La captura pide un
 //                    digito y \1+ exige que lo que sigue hasta el final sea ese mismo.
 //   [0-9]{min,max}   la longitud, dentro del patron y no en minLength/maxLength, para que un valor
@@ -13,9 +13,10 @@ export const TIPO_DOCUMENTO_NIT: string = '2'
 // antes de llegar al RegExp. Por eso mismo los digitos van como [0-9] y no como \d: donde se
 // puede evitar una barra invertida, se evita.
 //
-// Se arma con una funcion en vez de repetir el texto en cada constante: los tres patrones solo se
+// Se arma con una funcion en vez de repetir el texto en cada constante: los dos patrones solo se
 // diferencian en el largo, y copiarlos es la manera de que en un mes uno tenga el lookahead y
-// otro no.
+// otro no. El telefono y el correo ya no estan aca: sus patrones los traen los tipos tel y email
+// (lib/fieldContact).
 function digitosSinRellenos(min: number, max: number): string {
   return `^(?!0)(?!([0-9])\\1+$)[0-9]{${min},${max}}$`
 }
@@ -25,30 +26,7 @@ export const DOCUMENTO_PATTERN: string = digitosSinRellenos(6, 10)
 // Un NIT son 9 digitos: el decimo es el digito de verificacion, y ese va en su propio campo.
 export const NIT_PATTERN: string = digitosSinRellenos(6, 9)
 
-// Un celular colombiano son 10 digitos; el piso en 7 deja pasar los fijos viejos, que es lo que
-// mas de un contribuyente sigue escribiendo aca.
-export const TELEFONO_PATTERN: string = digitosSinRellenos(7, 10)
-
-// El patron de correo de la spec de HTML5, partido en sus dos mitades para poder leerlo. Lleva dos
-// cambios respecto del original:
-//   - Va anclado con ^ y $. Zod valida con .test(), que busca en cualquier parte del texto: sin
-//     anclas "hola juan@x.com chau" pasaria como correo valido.
-//   - Las clases incluyen A-Z. El original es solo minusculas y aca no hay forma de agregar la
-//     bandera `i`, porque el consumidor arma el RegExp con new RegExp(patron) y sin banderas;
-//     sin esto "Juan@Gmail.com" quedaria rechazado.
-// La bandera /g del original tampoco viaja, y es mejor asi: un regex con /g guarda lastIndex entre
-// llamadas y con .test() daria valido y no valido alternadamente sobre el mismo texto.
-const CORREO_LOCAL: string = "[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]"
-
-const CORREO_ETIQUETA: string = '[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?'
-
-export const CORREO_PATTERN: string = `^${CORREO_LOCAL}+(?:\\.${CORREO_LOCAL}+)*@(?:${CORREO_ETIQUETA}\\.)+${CORREO_ETIQUETA}$`
-
 export const DOCUMENTO_MESSAGE: string = 'Ingrese un documento válido'
-
-export const CORREO_MESSAGE: string = 'Ingrese un correo válido'
-
-export const TELEFONO_MESSAGE: string = 'Ingrese un teléfono válido'
 
 // El mensaje cuelga del .regex(), y la variante de NIT tiene un solo regex: este texto sale igual
 // si escribieron diez digitos, letras o todos iguales. Por eso nombra el DV sin afirmar que ese
@@ -100,6 +78,17 @@ export const DECIMALS_BY_FIELD: Record<string, number> = {
   tarifa_x_mil: 1,
 }
 
+// El prefijo de todo renglon de plata, que son los numericos fuera de FIELDS_WITHOUT_ROUNDING.
+export const MONEY_PREFIX: string = '$'
+
+// La unidad de los que no llevan plata y tienen una. El DV y los establecimientos no la tienen.
+// La tarifa dice X1000 y no ‰, igual que en el buscador de actividades: el por mil se confunde
+// con un por ciento.
+export const SUFFIX_BY_FIELD: Record<string, string> = {
+  tarifa_x_mil: 'X1000',
+  generacion_energia_kw: 'kW',
+}
+
 // Los ids de EXTEMPORANEIDAD y OTRA dentro del catalogo tipos_sancion, escritos a mano porque el
 // editor de condiciones todavia no ofrece las opciones de un catalogo para elegir. Son los unicos
 // literales de la plantilla atados al contenido de un catalogo: si algun dia se reordena, esto se
@@ -148,7 +137,7 @@ const TOPE = 1;
 //
 // Ojo con poner acá el 33, el 34, el 35 o el 38: todos incluyen a este mismo
 // renglón en su cuenta, así que se armaría un cálculo circular.
-const base = {total_impuesto_a_cargo};
+const base = {{total_impuesto_a_cargo}};
 
 // El período dentro del año. La declaración de ICA es anual, así que es 1.
 const periodo = 1;
@@ -158,11 +147,11 @@ const periodo = 1;
 // Solo la extemporaneidad se autoliquida. Para los otros tipos devolvemos
 // undefined, que significa "dejá lo que escriba el usuario": el campo no se
 // marca como calculado y se sigue pudiendo teclear.
-if ({tipo_sancion} !== "${TIPO_SANCION_EXTEMPORANEIDAD}") return undefined;
+if ({{tipo_sancion}} !== "${TIPO_SANCION_EXTEMPORANEIDAD}") return undefined;
 
 // Meses o fracción de atraso contra la tabla de la pestaña Fechas.
 // Sin tabla cargada devuelve 0, y entonces no hay sanción.
-const meses = mesesDeMora({periodo_anio}, periodo, {numero_documento});
+const meses = mesesDeMora({{periodo_anio}}, periodo, {{numero_documento}});
 
 // Sin atraso no hay sanción, y esta salida va antes que el mínimo: el mínimo
 // es el piso de una sanción que existe, no crea una donde no la había.
@@ -198,9 +187,9 @@ const DIAS_ANIO = 365;
 // una deuda que no existe.
 //
 // Cambiar esta línea por otro renglón es todo lo que hace falta. El único que
-// NO puede ir acá es el 38 ({total_a_pagar}), que es el que consume estos
+// NO puede ir acá es el 38 ({{total_a_pagar}}), que es el que consume estos
 // intereses y cerraría un cálculo circular.
-const base = {valor_a_pagar};
+const base = {{valor_a_pagar}};
 
 // El período dentro del año. La declaración de ICA es anual, así que es 1.
 const periodo = 1;
@@ -210,10 +199,10 @@ const periodo = 1;
 // Sin fecha límite no hay con qué comparar, y entonces no se sabe si hay mora
 // ni de cuánto. Se devuelve undefined para dejar el campo escribible a mano en
 // vez de mostrar un 0 bloqueado que parece un cálculo ya hecho.
-const limite = fechaLimite({periodo_anio}, periodo, {numero_documento});
+const limite = fechaLimite({{periodo_anio}}, periodo, {{numero_documento}});
 if (limite === null) return undefined;
 
-const dias = diasDeMora({periodo_anio}, periodo, {numero_documento});
+const dias = diasDeMora({{periodo_anio}}, periodo, {{numero_documento}});
 if (dias <= 0) return 0;
 
 // Hacia arriba al millar, que es el ROUNDUP(...;-3) con el que se liquida.
@@ -226,7 +215,7 @@ return ceil((base * (TASA_ANUAL / DIAS_ANIO) * dias) / 1000) * 1000;`
 // Se compara con una tolerancia de un peso y no con === por la coma flotante. Hoy los dos lados se
 // aproximan al millar y darian exactos, pero la regla no tiene por que depender de eso.
 export const INGRESOS_ACTIVIDADES_SCRIPT: string =
-  'return abs(sum({ingresos_gravados}) - {total_ingresos_gravables}) < 1;'
+  'return abs(sum({{ingresos_gravados}}) - {{total_ingresos_gravables}}) < 1;'
 
 export const INGRESOS_ACTIVIDADES_MESSAGE: string =
   'La suma de los ingresos gravados de las actividades debe ser igual al renglón 16 (Total ingresos gravables).'
@@ -234,4 +223,4 @@ export const INGRESOS_ACTIVIDADES_MESSAGE: string =
 // El neto sin recortar, que comparten los renglones 33 y 34: uno lo toma en positivo y el otro
 // en negativo. Va como expresion suelta -- sin return -- porque se interpola dentro de max(...).
 export const SALDO_NETO: string =
-  '{total_impuesto_a_cargo} - {valor_exencion_exoneracion_impuesto} - {retenciones_a_favor} - {autorretenciones_a_favor} - {anticipo_liquidado_anio_anterior} + {anticipo_anio_siguiente} + {valor_sancion} - {saldo_favor_periodo_anterior}'
+  '{{total_impuesto_a_cargo}} - {{valor_exencion_exoneracion_impuesto}} - {{retenciones_a_favor}} - {{autorretenciones_a_favor}} - {{anticipo_liquidado_anio_anterior}} + {{anticipo_anio_siguiente}} + {{valor_sancion}} - {{saldo_favor_periodo_anterior}}'

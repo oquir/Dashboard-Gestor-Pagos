@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { CanvasField } from '../../types'
-import type { CanvasRow, FormStep, RepeatableGroup } from '../../types'
-import { slugifyFieldName, uniqueFieldName } from '../fieldName'
+import type { CanvasField } from '../../types/field'
+import type { CanvasRow, FormStep, RepeatableGroup } from '../../types/formStructure'
+import { slugifyFieldName, uniqueFieldName } from '../fieldName/fieldName'
 import {
   DEFAULT_GROUP_MAX,
   DEFAULT_GROUP_MIN,
@@ -38,10 +38,6 @@ export function groupRows(rows: CanvasRow[], groupId: string): CanvasRow[] {
 
 export function groupFields(rows: CanvasRow[], groupId: string): CanvasField[] {
   return groupRows(rows, groupId).flatMap((row) => row.fields)
-}
-
-export function findGroupIdForRow(rows: CanvasRow[], rowId: string): string | undefined {
-  return rows.find((row) => row.id === rowId)?.groupId
 }
 
 export function findGroupIdForField(rows: CanvasRow[], fieldId: string): string | undefined {

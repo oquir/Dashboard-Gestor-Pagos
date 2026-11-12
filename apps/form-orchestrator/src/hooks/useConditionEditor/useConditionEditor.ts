@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
-import { operatorNeedsValue, operatorsForFieldType } from '../../lib'
-import { buildFieldGraph, describeCycle, wouldCreateCycle } from '../../lib'
-import { useFormStore } from '../../store'
-import type { CanvasField, ConditionOperator, FieldCondition } from '../../types'
-import type { FieldGraph } from '../../types'
+import { operatorNeedsValue, operatorsForField } from '../../lib/fieldCondition/fieldCondition'
+import { buildFieldGraph, describeCycle, wouldCreateCycle } from '../../lib/fieldGraph/fieldGraph'
+import { useFormStore } from '../../store/formStore'
+import type { CanvasField, ConditionOperator, FieldCondition } from '../../types/field'
+import type { FieldGraph } from '../../types/fieldGraph'
 import { DEFAULT_OPERATORS } from './useConditionEditor.constants'
 import type { UseConditionEditorParams, UseConditionEditorResult } from './useConditionEditor.types'
 
@@ -22,7 +22,7 @@ export function useConditionEditor({
   const observed = condition ? (otherFields.find((f) => f.id === condition.fieldId) ?? null) : null
   const observedIsDead = Boolean(condition && !observed)
   const availableOperators: ConditionOperator[] = observed
-    ? operatorsForFieldType(observed.type)
+    ? operatorsForField(observed)
     : DEFAULT_OPERATORS
   const needsValue = Boolean(condition && operatorNeedsValue(condition.operator))
   const graph: FieldGraph = useMemo(() => {
@@ -40,7 +40,7 @@ export function useConditionEditor({
 
     if (!nextField) return
 
-    const ops: ConditionOperator[] = operatorsForFieldType(nextField.type)
+    const ops: ConditionOperator[] = operatorsForField(nextField)
 
     setCondition(field.id, {
       fieldId: nextField.id,

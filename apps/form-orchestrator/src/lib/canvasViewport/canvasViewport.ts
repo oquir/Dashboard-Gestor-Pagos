@@ -1,10 +1,11 @@
 import {
   CANVAS_PAN_ROOM_RATIO,
   DOCUMENT_GUTTER_PX,
+  DOCUMENT_MAX_WIDTH_FOCUSED_PX,
   DOCUMENT_MAX_WIDTH_PX,
   DOCUMENT_VERTICAL_GUTTER_PX,
-} from '../../constants'
-import type { ViewportInput, ViewportLayout } from '../../types'
+} from '../../constants/canvasViewport'
+import type { ViewportInput, ViewportLayout } from '../../types/canvasViewport'
 
 // Geometria del lienzo libre: cuanto mide el documento, cuanto margen de paneo lo rodea y donde
 // queda la vista al volver al inicio. Solo hace cuentas; medir el puerto y aplicar el resultado es
@@ -16,13 +17,12 @@ export function getViewportLayout({
   portWidth,
   portHeight,
   zoom,
+  panelsCollapsed,
 }: ViewportInput): ViewportLayout | null {
   if (portWidth <= 0 || portHeight <= 0) return null
 
-  const documentWidth: number = Math.max(
-    0,
-    Math.min(DOCUMENT_MAX_WIDTH_PX, portWidth - 2 * DOCUMENT_GUTTER_PX),
-  )
+  const maxWidth: number = panelsCollapsed ? DOCUMENT_MAX_WIDTH_FOCUSED_PX : DOCUMENT_MAX_WIDTH_PX
+  const documentWidth: number = Math.max(0, Math.min(maxWidth, portWidth - 2 * DOCUMENT_GUTTER_PX))
   const panX: number = Math.round(portWidth * CANVAS_PAN_ROOM_RATIO)
   const panY: number = Math.round(portHeight * CANVAS_PAN_ROOM_RATIO)
   // La franja donde vive el documento: el puerto entero si el documento entra, o el documento

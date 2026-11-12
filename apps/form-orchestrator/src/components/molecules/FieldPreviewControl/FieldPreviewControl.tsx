@@ -1,196 +1,317 @@
-import { ArrowDown2, Calculator, Check, Import, Magnifier } from 'reicon-react'
-import { allowsManualOptions, isOptionBasedField, showsOptionsInline } from '../../../lib'
-import { RichTextView } from '../../atoms'
+import type { ReactNode } from 'react'
 import {
-  CATALOG_HINT_CLASSES,
-  CHIP_INLINE_CLASSES,
-  MOCK_CONTROL_CLASSES,
+  AngleDown2,
+  AngleUp2,
+  Calculator,
+  Calendar,
+  CloudUpload,
+  Database,
+  Envelope,
+  ListDown,
+  Magnifier,
+  Phone,
+} from 'reicon-react'
+import { NARROW_FIELD_HIDDEN_CLASSES } from '../../../constants/uiClasses'
+import { affixOf } from '../../../lib/fieldAffix/fieldAffix'
+import { phoneKindOf } from '../../../lib/fieldContact/fieldContact'
+import { showsOptionsInline } from '../../../lib/fieldOptions/fieldOptions'
+import { placeholderOf } from '../../../lib/fieldPlaceholder/fieldPlaceholder'
+import { suggestionsOf } from '../../../lib/fieldSuggestions/fieldSuggestions'
+import type { CanvasField, FieldOption } from '../../../types/field'
+import { RichTextView } from '../../atoms/RichTextView/RichTextView'
+import {
+  AFFIX_CLASSES,
+  CHECKBOX_CLASSES,
+  CHECKBOX_ON_CLASSES,
+  DROPZONE_CLASSES,
+  GHOST_CHIP_CLASSES,
+  GHOST_NOTE_TEXT,
+  GHOST_NOTE_TITLE,
+  GHOST_TILE_CLASSES,
+  GROUP_TITLE_CLASSES,
+  INPUT_CLASSES,
+  OPTION_INLINE_CLASSES,
+  OPTION_LIST_CLASSES,
+  OPTION_ROW_CLASSES,
+  PHONE_SAMPLES,
+  PLACEHOLDER_OPTION_CLASSES,
+  RADIO_CLASSES,
+  RADIO_ON_CLASSES,
+  READONLY_INPUT_CLASSES,
+  SELECT_CHEVRON_CLASSES,
+  SELECT_NOTE_TEXT,
+  SPINNER_CLASSES,
+  SUGGESTION_COUNT_CLASSES,
+  TEXTAREA_CLASSES,
+  TILE_CLASSES,
+  TILE_ON_CLASSES,
+  TILE_ROW_CLASSES,
 } from './FieldPreviewControl.constants'
-import type { FieldPreviewControlProps } from './FieldPreviewControl.types'
+import type {
+  FieldPreviewControlProps,
+  OptionsNote,
+  PreviewOptions,
+} from './FieldPreviewControl.types'
+import { dateMockText, previewOptions, suggestionCountText } from './FieldPreviewControl.utils'
+
+function withFrame(title: string | undefined, control: ReactNode) {
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5">
+      {title && <p className={GROUP_TITLE_CLASSES}>{title}</p>}
+      {control}
+    </div>
+  )
+}
+
+// De donde salen las opciones, como una ficha punteada mas al final de la fila. Primero fue un
+// recuadro que reemplazaba al control -- y todos los tipos de opciones se veian iguales -- y despues
+// un renglon aparte, que cortaba el control. Los select lo dicen en su propio texto.
+function ghostNote(note: OptionsNote, classes: string) {
+  return (
+    <span title={GHOST_NOTE_TITLE[note]} className={classes}>
+      {note === 'catalog' && <Database size={11} className="shrink-0" />}
+      <span className="truncate">{GHOST_NOTE_TEXT[note]}</span>
+    </span>
+  )
+}
+
+function optionLabel(option: FieldOption, isPlaceholder: boolean) {
+  return (
+    <span className={isPlaceholder ? PLACEHOLDER_OPTION_CLASSES : 'truncate'}>{option.label}</span>
+  )
+}
+
+// El texto de muestra entre el prefijo y el sufijo, apagados como en el simulador.
+function withAffixes(field: CanvasField, sample: string) {
+  const prefix: string | undefined = affixOf(field, 'prefix')
+  const suffix: string | undefined = affixOf(field, 'suffix')
+
+  return (
+    <span className="flex min-w-0 items-center gap-1.5">
+      {prefix && <span className={AFFIX_CLASSES}>{prefix}</span>}
+      <span className="truncate">{sample}</span>
+      {suffix && <span className={AFFIX_CLASSES}>{suffix}</span>}
+    </span>
+  )
+}
+
+// Un trazo fino y no el Check de la libreria, que a este tamano se ve como una mancha.
+function checkMark() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 12 12" className="h-3 w-3">
+      <path
+        d="M2.5 6.5 5 9l4.5-5.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
 
 export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
-  if (field.type === 'search_select') {
-    return (
-      <div className="flex flex-col gap-1.5">
-        {field.title && (
-          <p className="text-xs font-medium text-slate-500 dark:text-neutral-400">{field.title}</p>
-        )}
-        <div className={MOCK_CONTROL_CLASSES}>
-          <span>Buscar y seleccionar…</span>
-          <Magnifier size={14} weight="Filled" />
-        </div>
-      </div>
-    )
-  }
-
-  if (isOptionBasedField(field.type) && !allowsManualOptions(field)) {
-    return (
-      <div className="flex flex-col gap-1.5">
-        {field.title && (
-          <p className="text-xs font-medium text-slate-500 dark:text-neutral-400">{field.title}</p>
-        )}
-        <div className={CATALOG_HINT_CLASSES}>
-          <span>Opciones desde la base de datos</span>
-          <ArrowDown2 size={14} weight="Filled" />
-        </div>
-      </div>
-    )
-  }
+  const options: PreviewOptions = previewOptions(field)
+  // Si el autor puso un placeholder, el lienzo muestra ese en vez del texto de muestra del tipo.
+  const placeholder: string | undefined = placeholderOf(field)
 
   switch (field.type) {
     case 'label':
       return null
+
     case 'rich_text':
       return <RichTextView content={field.content} />
-    case 'toggle_group': {
-      const options = field.options ?? []
+
+    case 'select':
       return (
-        <div className="flex flex-col gap-1.5">
-          {field.title && (
-            <p className="text-xs font-medium text-slate-500 dark:text-neutral-400">
-              {field.title}
-            </p>
-          )}
-          <div className="flex flex-wrap gap-1.5">
-            {options.map((option, index) => (
-              <span
-                key={option.id}
-                className={`rounded-md border px-2.5 py-1 text-xs overflow-x-hidden ${
-                  index === 0
-                    ? 'border-orange-500 bg-orange-50 text-orange-700 dark:border-orange-500 dark:bg-orange-500/10 dark:text-orange-400'
-                    : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400'
-                }`}
-              >
+        <div className={INPUT_CLASSES}>
+          <span className="truncate">
+            {placeholder ?? (options.note ? SELECT_NOTE_TEXT[options.note] : 'Seleccionar…')}
+          </span>
+          <span className={SELECT_CHEVRON_CLASSES}>
+            <AngleDown2 size={14} />
+          </span>
+        </div>
+      )
+
+    case 'search_select':
+      return withFrame(
+        field.title,
+        <div className={INPUT_CLASSES}>
+          <span className="flex min-w-0 items-center gap-2">
+            <Magnifier
+              size={14}
+              className={`shrink-0 text-fg-muted ${NARROW_FIELD_HIDDEN_CLASSES}`}
+            />
+            <span className="truncate">
+              {placeholder ??
+                (options.note ? SELECT_NOTE_TEXT[options.note] : 'Buscar y seleccionar…')}
+            </span>
+          </span>
+          <span className={SELECT_CHEVRON_CLASSES}>
+            <AngleDown2 size={14} />
+          </span>
+        </div>,
+      )
+
+    // Siempre en linea en el lienzo, tenga o no inlineOptions: en columna se confundia con una lista
+    // de checkboxes.
+    case 'radio_group':
+      return withFrame(
+        field.title,
+        <div className={OPTION_INLINE_CLASSES}>
+          {options.items.map((option, index) => (
+            <span key={option.id} className={OPTION_ROW_CLASSES}>
+              <span className={index === 0 ? RADIO_ON_CLASSES : RADIO_CLASSES}>
+                {index === 0 && <span className="h-2 w-2 rounded-full bg-brand" />}
+              </span>
+              {optionLabel(option, options.isPlaceholder)}
+            </span>
+          ))}
+          {options.note && ghostNote(options.note, GHOST_CHIP_CLASSES)}
+        </div>,
+      )
+
+    case 'checkbox_group':
+      return withFrame(
+        field.title,
+        <div className={showsOptionsInline(field) ? OPTION_INLINE_CLASSES : OPTION_LIST_CLASSES}>
+          {options.items.map((option, index) => (
+            <span key={option.id} className={OPTION_ROW_CLASSES}>
+              <span className={index === 0 ? CHECKBOX_ON_CLASSES : CHECKBOX_CLASSES}>
+                {index === 0 && checkMark()}
+              </span>
+              {optionLabel(option, options.isPlaceholder)}
+            </span>
+          ))}
+          {options.note && ghostNote(options.note, GHOST_CHIP_CLASSES)}
+        </div>,
+      )
+
+    case 'toggle_group':
+      return withFrame(
+        field.title,
+        <>
+          <div className={TILE_ROW_CLASSES}>
+            {options.items.map((option, index) => (
+              <span key={option.id} className={index === 0 ? TILE_ON_CLASSES : TILE_CLASSES}>
                 {option.label}
               </span>
             ))}
+            {options.note && ghostNote(options.note, GHOST_TILE_CLASSES)}
           </div>
           {!field.validations.required && (
-            <p className="text-[11px] text-slate-400 overflow-x-hidden underline decoration-dotted dark:text-neutral-500">
+            <p className="text-[11px] text-fg-subtle underline decoration-dotted">
               Limpiar selección
             </p>
           )}
-        </div>
+        </>,
       )
-    }
-    case 'checkbox_group': {
-      const options = field.options ?? []
-      return (
-        <div className="flex flex-col gap-1.5">
-          {field.title && (
-            <p className="text-xs font-medium text-slate-500 dark:text-neutral-400">
-              {field.title}
-            </p>
-          )}
-          <div className={showsOptionsInline(field) ? CHIP_INLINE_CLASSES : 'flex flex-col gap-1'}>
-            {options.map((option, index) => (
-              <p
-                key={option.id}
-                className="flex items-center gap-2 text-xs text-slate-500 overflow-x-hidden dark:text-neutral-400"
-              >
-                <span
-                  className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-sm border ${
-                    index === 0
-                      ? 'border-orange-500 bg-orange-500'
-                      : 'border-slate-300 dark:border-neutral-600'
-                  }`}
-                >
-                  {index === 0 && <Check size={9} weight="Filled" className="text-white" />}
-                </span>
-                {option.label}
-              </p>
-            ))}
-          </div>
-        </div>
-      )
-    }
-    case 'radio_group': {
-      const options = field.options ?? []
-      return (
-        <div className="flex flex-col gap-1.5">
-          {field.title && (
-            <p className="text-xs font-medium text-slate-500 dark:text-neutral-400">
-              {field.title}
-            </p>
-          )}
-          <div className={showsOptionsInline(field) ? CHIP_INLINE_CLASSES : 'flex flex-col gap-1'}>
-            {options.map((option, index) => (
-              <p
-                key={option.id}
-                className="flex items-center gap-2 text-xs text-slate-500 overflow-x-hidden dark:text-neutral-400"
-              >
-                <span
-                  className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full border ${
-                    index === 0 ? 'border-orange-500' : 'border-slate-300 dark:border-neutral-600'
-                  }`}
-                >
-                  {index === 0 && <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />}
-                </span>
-                {option.label}
-              </p>
-            ))}
-          </div>
-        </div>
-      )
-    }
-    case 'select':
-      return (
-        <div className={MOCK_CONTROL_CLASSES}>
-          <span>Seleccionar…</span>
-          <ArrowDown2 size={14} weight="Filled" />
-        </div>
-      )
-    case 'textarea':
-      return (
-        <div className={`${MOCK_CONTROL_CLASSES} h-16 items-start`}>
-          <span>Escribe aquí…</span>
-        </div>
-      )
+
     case 'checkbox':
       return (
-        <p className="flex items-center gap-2 text-sm text-slate-500 dark:text-neutral-400 overflow-x-hidden">
-          <span className="h-4 w-4 shrink-0 rounded border border-slate-300 bg-white dark:border-neutral-600 dark:bg-neutral-900" />
-          Marcar opción
-        </p>
+        <span className={OPTION_ROW_CLASSES}>
+          <span className={CHECKBOX_CLASSES} />
+          <span className="truncate">{field.title || 'Marcar opción'}</span>
+        </span>
       )
-    case 'calculated':
+
+    case 'textarea':
       return (
-        <div className={MOCK_CONTROL_CLASSES}>
-          <span>Valor calculado</span>
-          <Calculator size={14} weight="Filled" />
+        <div className={TEXTAREA_CLASSES}>
+          <span>{placeholder ?? 'Escribe aquí…'}</span>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 10 10"
+            className="absolute right-1 bottom-1 h-2.5 w-2.5 text-fg-subtle"
+          >
+            <path
+              d="M9 1 1 9M9 5 5 9"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+            />
+          </svg>
         </div>
       )
+
+    // La lista del navegador solo aparece al escribir, asi que en el lienzo lo que lo distingue de
+    // un texto comun es cuantas sugerencias tiene.
+    case 'datalist':
+      return (
+        <div className={INPUT_CLASSES}>
+          <span className="truncate">{placeholder ?? 'Escribe o elige…'}</span>
+          <span className={`${SUGGESTION_COUNT_CLASSES} ${NARROW_FIELD_HIDDEN_CLASSES}`}>
+            {suggestionCountText(suggestionsOf(field)?.length ?? 0)}
+            <ListDown size={14} className="shrink-0" />
+          </span>
+        </div>
+      )
+
     case 'number':
       return (
-        <div className={MOCK_CONTROL_CLASSES}>
-          <span>0</span>
+        <div className={INPUT_CLASSES}>
+          {withAffixes(field, placeholder ?? '0')}
+          <span className={SPINNER_CLASSES}>
+            <AngleUp2 size={10} />
+            <AngleDown2 size={10} />
+          </span>
         </div>
       )
+
+    case 'calculated':
+      return (
+        <div className={READONLY_INPUT_CLASSES}>
+          {withAffixes(field, placeholder ?? 'Valor calculado')}
+          <Calculator size={14} className={`shrink-0 ${NARROW_FIELD_HIDDEN_CLASSES}`} />
+        </div>
+      )
+
+    case 'tel':
+      return (
+        <div className={INPUT_CLASSES}>
+          <span className="truncate">{placeholder ?? PHONE_SAMPLES[phoneKindOf(field)]}</span>
+          <Phone size={14} className={`shrink-0 text-fg-muted ${NARROW_FIELD_HIDDEN_CLASSES}`} />
+        </div>
+      )
+
+    case 'email':
+      return (
+        <div className={INPUT_CLASSES}>
+          <span className="truncate">{placeholder ?? 'correo@ejemplo.com'}</span>
+          <Envelope size={14} className={`shrink-0 text-fg-muted ${NARROW_FIELD_HIDDEN_CLASSES}`} />
+        </div>
+      )
+
+    case 'date':
+      return (
+        <div className={INPUT_CLASSES}>
+          <span className="truncate">{dateMockText(field)}</span>
+          <Calendar size={14} className={`shrink-0 text-fg-muted ${NARROW_FIELD_HIDDEN_CLASSES}`} />
+        </div>
+      )
+
     case 'file': {
       const config = field.fileConfig ?? { acceptedFormats: [], maxSizeMB: 10 }
-      const formatsLabel =
+      const formats: string =
         config.acceptedFormats.length > 0 ? config.acceptedFormats.join(', ') : 'Cualquier formato'
+
       return (
-        <div className="flex flex-col gap-1.5">
-          <div className={MOCK_CONTROL_CLASSES}>
-            <span>Seleccionar archivo…</span>
-            <Import size={14} weight="Filled" />
-          </div>
-          <div className="flex flex-wrap gap-1 overflow-x-hidden">
-            <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400">
-              {formatsLabel}
-            </span>
-            <span className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-400">
-              Máx {config.maxSizeMB}MB
-            </span>
-          </div>
+        <div className={DROPZONE_CLASSES}>
+          <CloudUpload size={18} className="text-fg-muted" />
+          <span className="text-xs font-medium text-fg-soft">Subir archivo</span>
+          <span className="max-w-full truncate text-[10px] text-fg-subtle">
+            {formats} · Máx {config.maxSizeMB} MB
+          </span>
         </div>
       )
     }
+
     default:
       return (
-        <div className={MOCK_CONTROL_CLASSES}>
-          <span>Texto de ejemplo</span>
+        <div className={INPUT_CLASSES}>
+          <span className="truncate">{placeholder ?? 'Texto de ejemplo'}</span>
         </div>
       )
   }

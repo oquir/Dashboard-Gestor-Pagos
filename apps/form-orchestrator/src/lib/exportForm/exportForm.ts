@@ -1,8 +1,14 @@
-import { GRID_BASE_COLUMNS } from '../../constants'
-import type { FormExport, FormExportFile } from '../../types'
-import type { CanvasRow, FormStep, IntroModalStep } from '../../types'
-import type { SetupConfig } from '../../types'
-import { buildDraftPayload } from '../persistence'
+import { GRID_BASE_COLUMNS } from '../../constants/grid'
+import type {
+  ExportedFormSchema,
+  ExportedSetupConfig,
+  FormExport,
+  FormExportFile,
+} from '../../types/exportForm'
+import type { CanvasRow, FormStep, IntroModalStep } from '../../types/formStructure'
+import type { SetupConfig } from '../../types/setup'
+import { collectRequires } from '../formRequires/formRequires'
+import { buildDraftPayload } from '../persistence/persistence'
 import { buildNameIndex, mapFormStep, mapRows } from './exportForm.utils'
 
 // El JSON que se lleva el consumidor: todo lo que hace falta para dibujar y validar el formulario.
@@ -21,10 +27,29 @@ export function buildFormExport(
     ...introModalSteps.flatMap((step) => step.rows),
   ]
   const names: Map<string, string> = buildNameIndex(allRows)
-  // El compilador del script necesita saber que nombres existen para decidir que {x} es un campo
-  // y que {x} es JS del autor. Se arma una vez y baja a cada paso.
+  // El compilador del script necesita saber que nombres existen para decidir que {{x}} es un campo
+  // y cual no existe. Se arma una vez y baja a cada paso.
   const knownNames: Set<string> = new Set(names.values())
   const prelude: string = formScript.trim()
+
+  const exportedSetup: ExportedSetupConfig = {
+    hasIntroModal: setupConfig.hasIntroModal,
+    introModal: setupConfig.hasIntroModal
+      ? {
+          steps: introModalSteps.map((step) => ({
+            stepId: step.stepId,
+            title: step.title,
+            subtitle: step.subtitle || undefined,
+            rows: mapRows(step.rows, names, knownNames),
+          })),
+        }
+      : undefined,
+  }
+  const formSchema: ExportedFormSchema = {
+    gridBaseColumns: GRID_BASE_COLUMNS,
+    prelude: prelude.length > 0 ? prelude : undefined,
+    steps: formSteps.map((step) => mapFormStep(step, names, knownNames)),
+  }
 
   return {
     projectMeta: {
@@ -32,25 +57,11 @@ export function buildFormExport(
       formType: setupConfig.formType,
       version: '1.0.0',
       createdAt: new Date().toISOString(),
+      // Al final, porque se calcula sobre lo que ya quedo armado: juzga lo que viaja.
+      requires: collectRequires(exportedSetup, formSchema),
     },
-    setupConfig: {
-      hasIntroModal: setupConfig.hasIntroModal,
-      introModal: setupConfig.hasIntroModal
-        ? {
-            steps: introModalSteps.map((step) => ({
-              stepId: step.stepId,
-              title: step.title,
-              subtitle: step.subtitle || undefined,
-              rows: mapRows(step.rows, names, knownNames),
-            })),
-          }
-        : undefined,
-    },
-    formSchema: {
-      gridBaseColumns: GRID_BASE_COLUMNS,
-      prelude: prelude.length > 0 ? prelude : undefined,
-      steps: formSteps.map((step) => mapFormStep(step, names, knownNames)),
-    },
+    setupConfig: exportedSetup,
+    formSchema,
   }
 }
 

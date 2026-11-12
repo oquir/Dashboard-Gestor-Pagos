@@ -1,4 +1,4 @@
-import type { CatalogOption } from '../../../../types'
+import type { CatalogOption } from '../../../../types/catalog'
 
 export interface PreviewSearchSelectProps {
   inputId: string
@@ -8,5 +8,6 @@ export interface PreviewSearchSelectProps {
   disabled: boolean
   invalid: boolean
   showsTarifa: boolean
+  placeholder?: string
   onChange: (value: unknown) => void
 }

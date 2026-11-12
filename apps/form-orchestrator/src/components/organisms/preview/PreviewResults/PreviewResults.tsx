@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
-import { mappedFieldCount } from '../../../../lib/runtimePayload'
-import type { RuntimeIssue } from '../../../../types'
-import { JsonCode } from '../../../molecules'
-import { TabButtonGroup } from '../../../molecules'
+import { mappedFieldCount } from '../../../../lib/runtimePayload/runtimePayload'
+import type { RuntimeIssue } from '../../../../types/formRuntime'
+import { JsonCode } from '../../../molecules/JsonCode/JsonCode'
+import { TabButtonGroup } from '../../../molecules/TabButtonGroup/TabButtonGroup'
 import { RESULT_TABS, type ResultTab } from './PreviewResults.constants'
 import type { PreviewResultsProps } from './PreviewResults.types'
 
@@ -33,7 +33,10 @@ export function PreviewResults({ preview }: PreviewResultsProps) {
       {issues.length > 0 && (
         <ul className="flex shrink-0 list-none flex-col gap-1 rounded-md border border-warning-border bg-warning-surface p-2">
           {issues.map((issue) => (
-            <li key={`${issue.kind}-${issue.field ?? ''}`} className="text-[11px] text-warning">
+            <li
+              key={`${issue.kind}|${issue.field ?? ''}|${issue.message}`}
+              className="text-[11px] text-warning"
+            >
               {issue.field ? `${issue.field}: ` : ''}
               {issue.message}
             </li>

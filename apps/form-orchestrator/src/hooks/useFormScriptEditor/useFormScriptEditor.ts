@@ -1,30 +1,19 @@
 import { useMemo } from 'react'
-import { validatePrelude } from '../../lib'
-import { getAllFields, useFormStore } from '../../store'
-import type { PreludeValidation } from '../../types'
+import { validatePrelude } from '../../lib/fieldScript/fieldScript'
+import { useFormStore } from '../../store/formStore'
+import type { PreludeValidation } from '../../types/fieldScript'
+import { useKnownFieldNames } from '../useKnownFieldNames/useKnownFieldNames'
 import type { UseFormScriptEditorResult } from './useFormScriptEditor.types'
 
 export function useFormScriptEditor(): UseFormScriptEditorResult {
   const formScript = useFormStore((state) => state.formScript)
   const setFormScript = useFormStore((state) => state.setFormScript)
-  const formSteps = useFormStore((state) => state.formSteps)
-  const introSteps = useFormStore((state) => state.introModal.steps)
 
-  // Los dos lienzos comparten espacio de nombres, asi que el aviso de "esto es un campo" tiene que
-  // mirarlos juntos.
-  const knownNames: Set<string> = useMemo(() => {
-    const rows = [
-      ...formSteps.flatMap((step) => step.rows),
-      ...introSteps.flatMap((step) => step.rows),
-    ]
+  // Solo para pintar: en el preludio ningun {{x}} es legal, sea campo o no, asi que la validacion
+  // no los necesita. El editor si, para que un campo real se vea como ficha y no como un typo.
+  const knownNames: Set<string> = useKnownFieldNames()
 
-    return new Set(getAllFields(rows).map((field) => field.name))
-  }, [formSteps, introSteps])
-
-  const validation: PreludeValidation = useMemo(
-    () => validatePrelude(formScript, knownNames),
-    [formScript, knownNames],
-  )
+  const validation: PreludeValidation = useMemo(() => validatePrelude(formScript), [formScript])
 
   return {
     formScript,

@@ -1,17 +1,17 @@
-import { SCRIPT_VALUES_PARAM } from '../../constants'
-import type { ScriptRef } from '../../types'
+import { SCRIPT_VALUES_PARAM } from '../../constants/fieldScript'
+import type { ScriptRef } from '../../types/fieldScript'
 import { REF_PATTERN } from './fieldScript.constants'
 import type { ScanFrame, ScanResult } from './fieldScript.types'
 
 // Recorrido de la fuente distinguiendo codigo de texto. Existe porque sustituir a ciegas con una
-// expresion regular falla en dos casos silenciosos: un {campo} dentro de un string rompe el JS al
-// sustituirlo -- "falta {x}" quedaria como "falta __v["x"]" -- y uno dentro de un comentario
+// expresion regular falla en dos casos silenciosos: un {{campo}} dentro de un string rompe el JS
+// al sustituirlo -- "falta {{x}}" quedaria como "falta __v["x"]" -- y uno dentro de un comentario
 // inventa una dependencia que el script no lee, que en el grafo es una arista falsa capaz de
 // cerrar un ciclo inexistente.
 //
 // Limite conocido: no se detectan las expresiones regulares literales. Separar /foo/ de una
 // division obliga a seguir el contexto de la expresion entera, y para que esto rompa hace falta
-// que un campo se llame igual que un cuantificador: /a{n}/ con un campo llamado n.
+// un regex con un nombre de campo entre llaves dobles, algo que ningun cuantificador escribe.
 
 // Devuelve la posicion siguiente al string, o el salto de linea si quedo sin cerrar. Cortar en el
 // salto es lo que evita que una comilla suelta se trague el resto del script y apague las
@@ -36,7 +36,14 @@ function skipQuoted(source: string, start: number, quote: string): number {
   return source.length
 }
 
-export function scanScript(source: string, knownNames: Set<string>): ScanResult {
+// El patron es parametro por la migracion de la sintaxis vieja de una llave, que recorre con este
+// mismo codigo: lo delicado es distinguir codigo de texto, y copiarlo dejaria dos sitios que
+// arreglar. Tiene que llevar la bandera sticky, porque se prueba en cada llave y no se busca.
+export function scanScript(
+  source: string,
+  knownNames: Set<string>,
+  pattern: RegExp = REF_PATTERN,
+): ScanResult {
   const refs: ScriptRef[] = []
   const pieces: string[] = []
   const stack: ScanFrame[] = [{ kind: 'code', depth: 0 }]
@@ -94,18 +101,17 @@ export function scanScript(source: string, knownNames: Set<string>): ScanResult 
     }
 
     if (char === '{') {
-      REF_PATTERN.lastIndex = i
-      const match: RegExpExecArray | null = REF_PATTERN.exec(source)
+      pattern.lastIndex = i
+      const match: RegExpExecArray | null = pattern.exec(source)
 
       if (match) {
         const name: string = match[1]
         const known: boolean = knownNames.has(name)
         refs.push({ name, start: i, end: i + match[0].length, known })
 
-        // Solo se sustituye lo que es un campo de verdad. Un {a} que no lo es se deja intacto y
-        // sigue siendo JS legitimo -- una desestructuracion, un literal --, que es lo que hace
-        // segura la sintaxis: para colisionar hace falta una variable que se llame igual que un
-        // campo del formulario.
+        // Solo se sustituye lo que es un campo de verdad. Un {{x}} que no lo es se deja intacto y
+        // queda en `refs` como desconocido: no hay JS legitimo que se escriba asi, asi que es un
+        // typo o un campo que ya no existe, y validateFieldScript lo da como error.
         if (known) {
           pieces.push(source.slice(copied, i), `${SCRIPT_VALUES_PARAM}[${JSON.stringify(name)}]`)
           i += match[0].length

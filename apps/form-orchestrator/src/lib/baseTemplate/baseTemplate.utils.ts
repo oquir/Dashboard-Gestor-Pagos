@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import { GRID_BASE_COLUMNS } from '../../constants'
+import { GRID_BASE_COLUMNS } from '../../constants/grid'
 import type {
   ApiBinding,
   CanvasField,
@@ -8,9 +8,9 @@ import type {
   FieldDataSource,
   FieldRule,
   FieldValidationOverride,
-} from '../../types'
-import type { CanvasRow } from '../../types'
-import { supportsRounding } from '../fieldRounding'
+} from '../../types/field'
+import type { CanvasRow } from '../../types/formStructure'
+import { supportsRounding } from '../fieldRounding/fieldRounding'
 import type {
   FieldSpec,
   NumericDefaults,
@@ -148,6 +148,8 @@ export function resolveTemplateConditions<T extends { rows: CanvasRow[] }>(steps
 //                en clampedCalculated, que son los que de verdad pueden dar negativo.
 //   decimales -- todos el mismo, salvo los de decimalsByField. La declaracion no lleva decimales
 //                en ningun renglon; la tarifa es la unica excepcion.
+//   prefijo   -- el de plata en los mismos que redondean. Los que no llevan plata no lo llevan, y
+//                los que tienen otra unidad la reciben como sufijo de suffixByField.
 export function applyNumericDefaults<T extends { rows: CanvasRow[] }>(
   steps: T[],
   defaults: NumericDefaults,
@@ -162,7 +164,11 @@ export function applyNumericDefaults<T extends { rows: CanvasRow[] }>(
 
         field.formatted = true
         field.decimals = defaults.decimalsByField[field.name] ?? defaults.decimals
-        if (!skipRounding.has(field.name)) field.rounding = true
+        if (!skipRounding.has(field.name)) {
+          field.rounding = true
+          field.prefix = defaults.moneyPrefix
+        }
+        field.suffix = defaults.suffixByField[field.name]
         if (field.type === 'number' || clamped.has(field.name)) field.allowsNegative = false
       }
     }

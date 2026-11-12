@@ -1,24 +1,25 @@
-import { PAYLOAD_SCHEMA } from '../../constants'
-import type { CanvasField, FieldCondition } from '../../types'
-import type { FieldGraph } from '../../types'
-import type { ScriptCompileResult } from '../../types'
-import type { DiagnoseFormInput, ProblemTarget } from '../../types'
-import type { CanvasRow } from '../../types'
-import type { SchemaLeaf } from '../../types'
-import type { CanvasTarget } from '../../types'
-import type { SidebarTab } from '../../types'
-import { unsupportedDeclarations } from '../cssStyles'
-import { buildFieldGraph, describeCycle, topologicalOrder } from '../fieldGraph'
-import { isPresentationalField } from '../fieldKind'
-import { isOptionBasedField } from '../fieldOptions'
+import { PAYLOAD_SCHEMA } from '../../constants/payloadSchema'
+import type { CanvasField, FieldCondition } from '../../types/field'
+import type { FieldGraph } from '../../types/fieldGraph'
+import type { ScriptCompileResult } from '../../types/fieldScript'
+import type { DiagnoseFormInput, ProblemTarget } from '../../types/formDiagnostics'
+import type { CanvasRow } from '../../types/formStructure'
+import type { SchemaLeaf } from '../../types/payloadSchema'
+import type { CanvasTarget } from '../../types/placement'
+import type { SidebarTab } from '../../types/ui'
+import { unsupportedDeclarations } from '../cssStyles/cssStyles'
+import { buildFieldGraph, describeCycle, topologicalOrder } from '../fieldGraph/fieldGraph'
+import { isPresentationalField } from '../fieldKind/fieldKind'
+import { isOptionBasedField } from '../fieldOptions/fieldOptions'
 import {
   checkScriptSyntax,
   compileScript,
   composeScriptBody,
+  fieldRefText,
   validatePrelude,
-} from '../fieldScript'
-import { enabledChecks } from '../groupCheck'
-import { resolveLeaf } from '../payloadSchema'
+} from '../fieldScript/fieldScript'
+import { enabledChecks } from '../groupCheck/groupCheck'
+import { resolveLeaf } from '../payloadSchema/payloadSchema'
 import {
   CYCLE_MESSAGE,
   HOST_MAPPING_MESSAGE,
@@ -101,8 +102,8 @@ export function regexError(source: string): string | null {
   }
 }
 
-export function checkPrelude(formScript: string, knownNames: Set<string>): PreludeCheck {
-  const validation = validatePrelude(formScript, knownNames)
+export function checkPrelude(formScript: string): PreludeCheck {
+  const validation = validatePrelude(formScript)
   const target: ProblemTarget = { kind: 'prelude' }
   const problems: ProblemDraft[] = []
 
@@ -116,7 +117,7 @@ export function checkPrelude(formScript: string, knownNames: Set<string>): Prelu
   }
 
   if (validation.refs.length > 0) {
-    const names: string[] = [...new Set(validation.refs.map((ref) => `{${ref.name}}`))]
+    const names: string[] = [...new Set(validation.refs.map((ref) => fieldRefText(ref.name)))]
     problems.push({
       severity: 'error',
       where: PRELUDE_WHERE,
@@ -126,8 +127,9 @@ export function checkPrelude(formScript: string, knownNames: Set<string>): Prelu
   }
 
   // Con el preludio roto los scripts se validan sin el: si no, su error se repetiria en cada campo
-  // del formulario en vez de reportarse una sola vez.
-  return { problems, prelude: validation.error === null ? formScript : undefined }
+  // del formulario en vez de reportarse una sola vez. Roto incluye leer campos: un {{x}} ahi
+  // tampoco compila pegado delante de cada script.
+  return { problems, prelude: validation.isValid ? formScript : undefined }
 }
 
 // Mismo criterio que validateFieldScript, pero separando de quien es el error: el del script solo
@@ -144,6 +146,23 @@ function scriptDrafts(
   if (source.trim().length === 0) return []
 
   const compiled: ScriptCompileResult = compileScript(source, knownNames)
+
+  // Una referencia que no es campo va primero y sola: ese {{x}} sin sustituir casi siempre es
+  // tambien el error de sintaxis, y reportar los dos seria contar dos veces el mismo problema.
+  if (compiled.unknown.length > 0) {
+    const refs: string = compiled.unknown.map(fieldRefText).join(', ')
+    const noun: string = compiled.unknown.length === 1 ? 'que no es un campo' : 'que no son campos'
+
+    return [
+      {
+        severity: 'error',
+        where,
+        message: `${subject} lee ${refs}, ${noun}. ${UNKNOWN_REFS_HINT}`,
+        target,
+      },
+    ]
+  }
+
   const drafts: ProblemDraft[] = []
   const ownError: string | null = checkScriptSyntax(compiled.code)
   const body: string = composeScriptBody(compiled.code, prelude)
@@ -162,17 +181,6 @@ function scriptDrafts(
       severity: 'error',
       where,
       message: `${subject} no compila junto con el script del formulario: ${sharedError}`,
-      target,
-    })
-  }
-
-  if (compiled.unknown.length > 0) {
-    const refs: string = compiled.unknown.map((name) => `{${name}}`).join(', ')
-    const noun: string = compiled.unknown.length === 1 ? 'que no es un campo' : 'que no son campos'
-    drafts.push({
-      severity: 'warning',
-      where,
-      message: `${subject} lee ${refs}, ${noun}. ${UNKNOWN_REFS_HINT}`,
       target,
     })
   }

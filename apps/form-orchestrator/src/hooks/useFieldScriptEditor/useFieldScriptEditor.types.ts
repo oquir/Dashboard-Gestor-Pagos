@@ -1,5 +1,5 @@
-import type { CanvasField } from '../../types'
-import type { ScriptValidation } from '../../types'
+import type { CanvasField } from '../../types/field'
+import type { ScriptValidation } from '../../types/fieldScript'
 
 export interface UseFieldScriptEditorParams {
   field: CanvasField
@@ -14,4 +14,8 @@ export interface UseFieldScriptEditorResult {
   readsSelf: boolean
   dependencies: CanvasField[]
   handleChange: (next: string) => void
+  offersSimpleCalc: boolean
+  isSimpleCalcOpen: boolean
+  openSimpleCalc: () => void
+  closeSimpleCalc: () => void
 }

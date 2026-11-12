@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { GroupCheck } from '../../types'
+import type { GroupCheck } from '../../types/groupCheck'
 
 // Comprobaciones que abarcan un grupo repetible entero, en su forma declarativa: crear una y
 // decidir cuales cuentan. Nada de ejecutarlas.
@@ -15,8 +15,4 @@ export function createGroupCheck(): GroupCheck {
 
 export function enabledChecks(checks: GroupCheck[] | undefined): GroupCheck[] {
   return (checks ?? []).filter((check) => check.enabled && check.script.trim().length > 0)
-}
-
-export function hasChecks(checks: GroupCheck[] | undefined): boolean {
-  return (checks?.length ?? 0) > 0
 }

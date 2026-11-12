@@ -8,6 +8,7 @@ import type {
   FieldOption,
   TooltipPosition,
 } from './field'
+import type { DateFormatId } from './fieldDate'
 import type { DraftPayload } from './persistenceTypes'
 import type { RichTextContent } from './richText'
 import type { FormType } from './setup'
@@ -45,9 +46,10 @@ export interface ExportedValidations {
   zodSchemaWhen?: ExportedValidationVariant[]
 }
 
-// `compiled` es cuerpo de funcion listo para new Function, precedido del preludio del formulario
-// si lo hay. `source` viaja solo para poder reeditarlo: ejecutarlo seria un error, porque {campo}
-// no es JS. `reads` son los nombres que lee, para poder ordenar el calculo sin volver a parsear.
+// `compiled` es cuerpo de funcion listo para new Function, sin el preludio del formulario: ese
+// viaja una sola vez en formSchema.prelude y quien ejecuta lo antepone. `source` viaja solo para
+// poder reeditarlo: ejecutarlo seria un error, porque {{campo}} no es JS. `reads` son los nombres
+// que lee, para poder ordenar el calculo sin volver a parsear.
 export interface ExportedScript {
   source: string
   compiled: string
@@ -96,7 +98,24 @@ export interface ExportedField {
   // Solo aparece cuando vale false. Si no viene, el campo admite negativos.
   allowsNegative?: boolean
   decimals?: number
+  // Solo en un campo numerico que los declare, ya recortados. Se dibujan al lado del input y nunca
+  // entran en el valor; ver lib/fieldAffix.
+  prefix?: string
+  suffix?: string
+  // El texto gris del campo vacio, ya recortado. Solo presentacion: el consumidor lo pone como
+  // placeholder del input (o como primera opcion de un select) y nunca lo toma como valor.
+  placeholder?: string
+  // Solo en un datalist que las tenga, ya recortadas y sin repetidas. Son el <option value> de su
+  // <datalist>: sugieren, no restringen, y el valor sigue siendo el texto escrito.
+  suggestions?: string[]
   inlineOptions?: boolean
+  // Solo aparece en un campo fecha que pide rango: su valor es { desde, hasta } y no un texto.
+  dateRange?: boolean
+  // Solo aparece en un campo fecha que pide hora: su valor es AAAA-MM-DDTHH:mm, sin huso.
+  includesTime?: boolean
+  // Solo en un campo fecha con formato. El consumidor lo usa en dos bordes: para mostrar la fecha y
+  // al armar el payload. Valida y compara siempre sobre AAAA-MM-DD; ver lib/dateFormat.
+  dateFormat?: DateFormatId
   // Tope de longitud para el input. En texto son caracteres y en numero digitos de la parte
   // entera; la regla completa esta en lib/fieldLength. Va ademas del schema, no en lugar del: el
   // schema es lo que valida y esto es lo que frena el tecleo antes de que el valor exista.
@@ -139,6 +158,9 @@ export interface ExportedStep {
   stepId: string
   title: string
   subtitle?: string
+  // Solo aparece en true. El consumidor no lo muestra ni lo navega, pero calcula sus campos y los
+  // manda en el payload como cualquier otro.
+  hidden?: boolean
   rows: ExportedRow[]
   groups?: ExportedRepeatableGroup[]
 }
@@ -146,8 +168,13 @@ export interface ExportedStep {
 export interface ProjectMeta {
   formId: string
   formType: FormType | null
+  // Fija en "1.0.0" y no dice nada: sigue porque el consumidor ya la tipa. Lo que dice si un
+  // consumidor puede con este formulario es `requires`.
   version: string
   createdAt: string
+  // Lo que un consumidor tiene que saber hacer para ejecutar ESTE formulario sin perder nada en
+  // silencio. Si no reconoce alguna palabra, no lo carga. Ver lib/formRequires.
+  requires: string[]
 }
 
 export interface ExportedIntroModal {

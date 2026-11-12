@@ -1,13 +1,18 @@
 import { Xmark } from 'reicon-react'
-import { OPERATOR_LABELS } from '../../../constants'
-import { operatorNeedsValue, operatorsForFieldType } from '../../../lib'
-import { useFormStore } from '../../../store'
-import type { CanvasField, ConditionOperator, FieldValidationOverride } from '../../../types'
-import { TwoColumnFieldGroup } from '../../atoms'
-import { ConditionFieldSelect } from '../ConditionFieldSelect'
-import { ConditionOperatorSelect } from '../ConditionOperatorSelect'
-import { ConditionValueInput } from '../ConditionValueInput'
-import { LabeledInput } from '../LabeledInput'
+import { OPERATOR_LABELS } from '../../../constants/conditions'
+import {
+  operatorNeedsValue,
+  operatorsForField,
+  operatorsForFieldType,
+} from '../../../lib/fieldCondition/fieldCondition'
+import { isContactField } from '../../../lib/fieldContact/fieldContact'
+import { useFormStore } from '../../../store/formStore'
+import type { CanvasField, ConditionOperator, FieldValidationOverride } from '../../../types/field'
+import { TwoColumnFieldGroup } from '../../atoms/TwoColumnFieldGroup/TwoColumnFieldGroup'
+import { ConditionFieldSelect } from '../ConditionFieldSelect/ConditionFieldSelect'
+import { ConditionOperatorSelect } from '../ConditionOperatorSelect/ConditionOperatorSelect'
+import { ConditionValueInput } from '../ConditionValueInput/ConditionValueInput'
+import { LabeledInput } from '../LabeledInput/LabeledInput'
 import { CARD_CLASSES, POSITION_BADGE_CLASSES } from './ValidationOverrideCard.constants'
 import type { ValidationOverrideCardProps } from './ValidationOverrideCard.types'
 import { toNumberOrUndefined } from './ValidationOverrideCard.utils'
@@ -25,11 +30,16 @@ export function ValidationOverrideCard({
   // El campo observado puede haber cambiado de tipo desde que se escribio la condicion, asi que
   // los operadores se recalculan en vez de confiar en el que quedo guardado.
   const availableOperators: ConditionOperator[] = observed
-    ? operatorsForFieldType(observed.type)
+    ? operatorsForField(observed)
     : operatorsForFieldType('text')
 
   const isNumeric = field.type === 'number' || field.type === 'calculated'
-  const isTextLike = field.type === 'text' || field.type === 'textarea' || field.type === 'select'
+  const isTextLike =
+    field.type === 'text' ||
+    field.type === 'textarea' ||
+    field.type === 'select' ||
+    field.type === 'datalist' ||
+    isContactField(field.type)
 
   function setRule(updates: Partial<FieldValidationOverride['validations']>): void {
     updateOverride(field.id, override.id, { validations: updates })
@@ -62,7 +72,9 @@ export function ValidationOverrideCard({
             const next: CanvasField | undefined = candidates.find(
               (candidate) => candidate.id === fieldId,
             )
-            const operators: ConditionOperator[] = operatorsForFieldType(next?.type ?? 'text')
+            const operators: ConditionOperator[] = next
+              ? operatorsForField(next)
+              : operatorsForFieldType('text')
             const operator: ConditionOperator = operators.includes(override.when.operator)
               ? override.when.operator
               : operators[0]

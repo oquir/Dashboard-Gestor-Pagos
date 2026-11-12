@@ -1,6 +1,6 @@
-import type { CanvasField } from '../../types'
-import type { FieldGraph } from '../../types'
-import { collectRuleRefs, ruleScriptSources } from '../fieldRule'
+import type { CanvasField } from '../../types/field'
+import type { FieldGraph } from '../../types/fieldGraph'
+import { collectRuleRefs, ruleScriptSources } from '../fieldRule/fieldRule'
 import type { TopologicalResult } from './fieldGraph.types'
 import { scriptRefIds } from './fieldGraph.utils'
 
@@ -51,7 +51,7 @@ export function fieldDependencies(
 export function buildFieldGraph(fields: CanvasField[]): FieldGraph {
   const byId: Map<string, CanvasField> = new Map(fields.map((field) => [field.id, field]))
   const byName: Map<string, string> = buildNameToIdIndex(fields)
-  // Se arma una vez y no por campo: el compilador del script la consulta para cada {x} y armarla
+  // Se arma una vez y no por campo: el compilador del script la consulta para cada {{x}} y armarla
   // adentro del bucle volveria cuadratica la construccion del grafo.
   const knownNames: Set<string> = new Set(byName.keys())
   const edges: Map<string, string[]> = new Map()

@@ -1,6 +1,5 @@
 // Atomos: las piezas minimas de la interfaz. No usan otros componentes.
 export * from './Button'
-export * from './Checkbox'
 export * from './CodeBlock'
 export * from './CopyIconButton'
 export * from './DashedAddButton'

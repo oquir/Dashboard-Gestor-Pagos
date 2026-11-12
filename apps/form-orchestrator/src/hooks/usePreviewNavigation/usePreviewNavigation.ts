@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { stepErrorKeys } from '../../lib/formRuntime/formRuntime.utils'
-import type { ExportedStep } from '../../types'
-import type { FormPreviewApi } from '../../types'
+import type { ExportedStep } from '../../types/exportForm'
+import type { FormPreviewApi } from '../../types/formPreview'
 import type { UsePreviewNavigationResult } from './usePreviewNavigation.types'
 
 // El recorrido del simulador: en que paso esta, si el modal de entrada sigue arriba y si el
@@ -14,7 +14,8 @@ export function usePreviewNavigation(preview: FormPreviewApi): UsePreviewNavigat
   const [stepIndex, setStepIndex] = useState<number>(0)
   const [submitted, setSubmitted] = useState<boolean>(false)
 
-  const steps: ExportedStep[] = preview.model.steps
+  // Un paso oculto no se navega, pero sus campos siguen en el modelo: calculan y viajan igual.
+  const steps: ExportedStep[] = preview.model.steps.filter((s) => !s.hidden)
   const introSteps: ExportedStep[] = preview.model.introSteps
   // Si borran pasos en el lienzo el indice puede quedar mas alto que la lista.
   const current: number = Math.max(0, Math.min(stepIndex, steps.length - 1))

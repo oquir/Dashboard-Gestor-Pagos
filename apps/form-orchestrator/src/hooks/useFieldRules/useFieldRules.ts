@@ -1,18 +1,18 @@
 import { useMemo } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { operatorNeedsValue, operatorsForFieldType } from '../../lib'
-import { buildFieldGraph, describeCycle, wouldCreateCycle } from '../../lib'
-import { useFormStore } from '../../store'
-import type { CanvasField, ConditionOperator, FieldRule, RuleCondition } from '../../types'
-import type { FieldGraph } from '../../types'
-import type { UseFieldRulesResult } from '../../types'
+import { operatorNeedsValue, operatorsForField } from '../../lib/fieldCondition/fieldCondition'
+import { buildFieldGraph, describeCycle, wouldCreateCycle } from '../../lib/fieldGraph/fieldGraph'
+import { useFormStore } from '../../store/formStore'
+import type { CanvasField, ConditionOperator, FieldRule, RuleCondition } from '../../types/field'
+import type { FieldGraph } from '../../types/fieldGraph'
+import type { UseFieldRulesResult } from '../../types/fieldRulesReturn'
 import type { UseFieldRulesParams } from './useFieldRules.types'
 
 // Estado del editor de calculos y reglas. Ademas de las altas y bajas, sostiene las guardas que
 // impiden armar una dependencia circular desde la interfaz.
 
 function conditionOn(target: CanvasField, id: string): RuleCondition {
-  const operators: ConditionOperator[] = operatorsForFieldType(target.type)
+  const operators: ConditionOperator[] = operatorsForField(target)
 
   return {
     id,

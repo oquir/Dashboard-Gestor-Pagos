@@ -1,4 +1,9 @@
-import type { ExportedField, ExportedRepeatableGroup, ExportedStep, FormExport } from '../../types'
+import type {
+  ExportedField,
+  ExportedRepeatableGroup,
+  ExportedStep,
+  FormExport,
+} from '../../types/exportForm'
 import type {
   PreviewState,
   RuntimeContext,
@@ -7,11 +12,11 @@ import type {
   RuntimeScope,
   RuntimeSnapshot,
   RuntimeValues,
-} from '../../types'
-import type { DeclaracionKind } from '../../types'
-import type { FormType } from '../../types'
-import { computeDerivedValues, type DerivedResult } from '../runtimeDerived'
-import { buildScope, emptyItem, groupColumns } from './formRuntime.utils'
+} from '../../types/formRuntime'
+import type { DeclaracionKind } from '../../types/maxDates'
+import type { FormType } from '../../types/setup'
+import { computeDerivedValues, type DerivedResult } from '../runtimeDerived/runtimeDerived'
+import { buildScope, dedupeIssues, emptyItem, groupColumns } from './formRuntime.utils'
 
 // El corazon del simulador. Solo consume el JSON exportado, nunca el store: si algo no se puede
 // hacer con lo que hay aca, el aplicativo que consuma el export tampoco podra.
@@ -24,7 +29,6 @@ export function buildRuntimeModel(exported: FormExport): RuntimeModel {
   const introSteps: ExportedStep[] = exported.setupConfig.introModal?.steps ?? []
   const fieldsByName: Map<string, ExportedField> = new Map()
   const groupsById: Map<string, ExportedRepeatableGroup> = new Map()
-  const groupIdByFieldName: Map<string, string> = new Map()
   const groupFields: Map<string, ExportedField[]> = new Map()
   const externalLabels: Map<string, string> = new Map()
   const rootFields: ExportedField[] = []
@@ -41,7 +45,6 @@ export function buildRuntimeModel(exported: FormExport): RuntimeModel {
         if (field.labelFor) externalLabels.set(field.labelFor, field.label)
 
         if (row.groupId) {
-          groupIdByFieldName.set(field.name, row.groupId)
           groupFields.set(row.groupId, [...(groupFields.get(row.groupId) ?? []), field])
           continue
         }
@@ -55,12 +58,10 @@ export function buildRuntimeModel(exported: FormExport): RuntimeModel {
     steps,
     introSteps,
     hasIntroModal: exported.setupConfig.hasIntroModal && introSteps.length > 0,
-    gridBaseColumns: exported.formSchema.gridBaseColumns,
     prelude: exported.formSchema.prelude ?? '',
     declaracion: declaracionDe(exported.projectMeta.formType),
     fieldsByName,
     groupsById,
-    groupIdByFieldName,
     rootFields,
     groupFields,
     externalLabels,
@@ -89,10 +90,10 @@ export function createInitialState(model: RuntimeModel): PreviewState {
   return { values: {}, groups }
 }
 
-// Tres pasadas, y el orden no es negociable: dentro de un grupo {campo} es el escalar de esa fila,
-// pero desde el root el mismo nombre tiene que ser el array con la columna entera, asi que las
-// columnas del grupo tienen que estar aplanadas en el root antes de resolverlo. Juntar esto en una
-// sola pasada hace que los totales de la declaracion den 0 sin que nada falle a la vista.
+// Tres pasadas, y el orden no es negociable: dentro de un grupo {{campo}} es el escalar de esa
+// fila, pero desde el root el mismo nombre tiene que ser el array con la columna entera, asi que
+// las columnas del grupo tienen que estar aplanadas en el root antes de resolverlo. Juntar esto en
+// una sola pasada hace que los totales de la declaracion den 0 sin que nada falle a la vista.
 export function resolveRuntime(
   model: RuntimeModel,
   state: PreviewState,
@@ -153,23 +154,6 @@ export function resolveRuntime(
     cycle: cycles.length > 0 ? [...new Set(cycles)] : null,
     issues: dedupeIssues(issues),
   }
-}
-
-// Un script roto dentro de un grupo falla una vez por repeticion, y el mismo calculo pasa por tres
-// pasadas: sin esto, un error se listaria cuarenta y cinco veces sobre quince actividades.
-function dedupeIssues(issues: RuntimeIssue[]): RuntimeIssue[] {
-  const seen = new Set<string>()
-  const unique: RuntimeIssue[] = []
-
-  for (const issue of issues) {
-    const key: string = `${issue.kind}|${issue.field ?? ''}|${issue.message}`
-    if (seen.has(key)) continue
-
-    seen.add(key)
-    unique.push(issue)
-  }
-
-  return unique
 }
 
 // Un ambito por repeticion, no una bolsa comun: cada fila del grupo resuelve a sus hermanas de

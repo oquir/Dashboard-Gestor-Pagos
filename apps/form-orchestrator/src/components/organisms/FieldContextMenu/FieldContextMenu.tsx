@@ -1,13 +1,13 @@
 ﻿import { Trash6, Xmark } from 'reicon-react'
-import { useFieldContextMenu } from '../../../hooks'
-import type { FieldContextMenuState } from '../../../types'
-import { IconButton } from '../../atoms'
-import { TabButtonGroup } from '../../molecules'
-import { ApiMappingPanel } from '../panels/ApiMappingPanel'
-import { AttributesPanel } from '../panels/AttributesPanel'
-import { LogicPanel } from '../panels/LogicPanel'
-import { StylesPanel } from '../panels/StylesPanel'
-import { ValidationsPanel } from '../panels/ValidationsPanel'
+import { useFieldContextMenu } from '../../../hooks/useFieldContextMenu/useFieldContextMenu'
+import type { FieldContextMenuState } from '../../../types/fieldContextMenu'
+import { IconButton } from '../../atoms/IconButton/IconButton'
+import { TabButtonGroup } from '../../molecules/TabButtonGroup/TabButtonGroup'
+import { ApiMappingPanel } from '../panels/ApiMappingPanel/ApiMappingPanel'
+import { AttributesPanel } from '../panels/AttributesPanel/AttributesPanel'
+import { LogicPanel } from '../panels/LogicPanel/LogicPanel'
+import { StylesPanel } from '../panels/StylesPanel/StylesPanel'
+import { ValidationsPanel } from '../panels/ValidationsPanel/ValidationsPanel'
 import { CONTEXT_MENU_TABS } from './FieldContextMenu.constants'
 
 export function FieldContextMenu({
@@ -26,8 +26,14 @@ export function FieldContextMenu({
 
   return (
     <div
-      style={{ left: position.left, top: position.top, width: position.width }}
-      className="fixed z-50 flex max-h-[80vh] flex-col overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+      style={{
+        left: position.left,
+        top: position.top,
+        bottom: position.bottom,
+        width: position.width,
+        maxHeight: position.maxHeight,
+      }}
+      className="fixed z-50 flex flex-col overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
       onPointerDown={(event) => event.stopPropagation()}
     >
       <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2 dark:border-neutral-800">
@@ -55,7 +61,7 @@ export function FieldContextMenu({
 
       <TabButtonGroup tabs={CONTEXT_MENU_TABS} activeTab={activeTab} onSelect={handleSelectTab} />
 
-      <div className="overflow-y-auto p-3">
+      <div className="overflow-y-auto p-3 [scrollbar-gutter:stable]">
         {activeTab === 'attributes' && <AttributesPanel field={field} />}
         {activeTab === 'validations' && <ValidationsPanel field={field} />}
         {activeTab === 'styles' && <StylesPanel field={field} />}

@@ -1,14 +1,14 @@
-import type { CanvasField } from '../../types'
-import type { JsonNode } from '../../types'
-import type { MappingNode, OrphanBinding } from '../../types'
-import type { SchemaNode, SchemaNodeType } from '../../types'
-import { resolveLeafType } from '../payloadSchema'
+import type { CanvasField } from '../../types/field'
+import type { JsonNode } from '../../types/jsonTree'
+import type { MappingNode, OrphanBinding } from '../../types/payloadMapping'
+import type { SchemaNode, SchemaNodeType } from '../../types/payloadSchema'
+import { resolveLeafType } from '../payloadSchema/payloadSchema'
 import { buildNode, buildPathIndex } from './payloadMapping.utils'
 
 // Cruza el contrato de la API con lo que el usuario mapeo, para poder mostrar la cobertura y
 // avisar de desajustes de tipo, rutas huerfanas y hojas que pone el host.
 
-export { fieldMatchesSchemaType } from './payloadMapping.utils'
+export { fieldMatchesLeaf } from './payloadMapping.utils'
 
 export function buildMappingTree(schema: SchemaNode, fields: CanvasField[]): MappingNode {
   const index: Map<string, CanvasField> = buildPathIndex(fields)

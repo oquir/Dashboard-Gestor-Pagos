@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { conFechaAnual } from '../../../../lib'
-import { maxDatesEnUso, usesCustomMaxDates } from '../../../../lib'
-import { useFormStore } from '../../../../store'
-import type { FechasMaximasPresentacion } from '../../../../types'
-import { BinaryChoiceToggle } from '../../../molecules'
-import { MaxDatesDeclaracionSection } from '../../../molecules'
-import { MaxDatesPasteForm } from '../../../molecules'
-import { PanelSection } from '../../../molecules'
+import { conFechaAnual } from '../../../../lib/maxDates/maxDates'
+import { maxDatesEnUso, usesCustomMaxDates } from '../../../../lib/maxDatesBank/maxDatesBank'
+import { useFormStore } from '../../../../store/formStore'
+import type { FechasMaximasPresentacion } from '../../../../types/maxDates'
+import { BinaryChoiceToggle } from '../../../molecules/BinaryChoiceToggle/BinaryChoiceToggle'
+import { MaxDatesDeclaracionSection } from '../../../molecules/MaxDatesDeclaracionSection/MaxDatesDeclaracionSection'
+import { MaxDatesPasteForm } from '../../../molecules/MaxDatesPasteForm/MaxDatesPasteForm'
+import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
 import {
   ACTION_CLASSES,
   BADGE_EMPTY_CLASSES,
@@ -14,6 +14,7 @@ import {
   DECLARACIONES,
   HINT_CLASSES,
   INPUT_CLASSES,
+  TABLE_DESCRIPTION,
 } from './MaxDatesPanel.constants'
 
 export function MaxDatesPanel() {
@@ -46,6 +47,7 @@ export function MaxDatesPanel() {
 
       <PanelSection
         title="Tabla en uso"
+        description={TABLE_DESCRIPTION}
         aside={
           <span className={isCustom ? BADGE_LOADED_CLASSES : BADGE_EMPTY_CLASSES}>
             {isCustom ? 'Cargada' : 'Generada'}

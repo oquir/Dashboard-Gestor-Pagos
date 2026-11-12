@@ -1,4 +1,4 @@
-import { isEmptyRichText } from '../../../lib'
+import { isEmptyRichText } from '../../../lib/richText/richText'
 import type { RichTextViewProps } from './RichTextView.types'
 import { renderLeaf } from './RichTextView.utils'
 
@@ -8,9 +8,11 @@ export function RichTextView({ content, className }: RichTextViewProps) {
   }
 
   return (
-    <div className={`flex flex-col gap-1 ${className ?? 'text-xs text-fg-soft'}`}>
+    <div
+      className={`flex min-w-0 flex-col gap-1 wrap-break-word ${className ?? 'text-xs text-fg-soft'}`}
+    >
       {(content ?? []).map((paragraph, index) => (
-        // los parrafos no tienen id propio
+        // biome-ignore lint/suspicious/noArrayIndexKey: los parrafos no tienen id propio
         <p key={index}>
           {paragraph.children.map((leaf, leafIndex) => renderLeaf(leaf, leafIndex))}
         </p>

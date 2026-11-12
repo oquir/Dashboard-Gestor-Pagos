@@ -1,5 +1,5 @@
-import { PRESENTATIONAL_FIELD_TYPES } from '../../constants'
-import type { CanvasField } from '../../types'
+import { NUMERIC_FIELD_TYPES, PRESENTATIONAL_FIELD_TYPES } from '../../constants/fieldTypes'
+import type { CanvasField } from '../../types/field'
 
 // Separa los campos que recogen un valor de los que solo muestran contenido. Conviene preguntarlo
 // por aca y no comparar el tipo a mano, para que los paneles, el schema y el export no se
@@ -12,6 +12,12 @@ export function isPresentationalField(type: string): boolean {
 
 export function isInputField(type: string): boolean {
   return !isPresentationalField(type)
+}
+
+// Los que llegan al script como numero (coerceForScript): un vacio vale 0, asi que se pueden sumar
+// y restar con + y - sin cuidar nada mas.
+export function isNumericField(type: string): boolean {
+  return NUMERIC_FIELD_TYPES.includes(type)
 }
 
 export function findLabelFor(fields: CanvasField[], fieldId: string): CanvasField | null {

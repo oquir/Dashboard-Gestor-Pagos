@@ -1,4 +1,4 @@
-import type { RichTextContent, RichTextLeaf, RichTextParagraph } from '../../types'
+import type { RichTextContent, RichTextLeaf, RichTextParagraph } from '../../types/richText'
 import {
   BLOCK_TAGS,
   BREAK_TAG,
@@ -84,12 +84,6 @@ export function isEmptyRichText(content: RichTextContent | undefined): boolean {
   if (!content || content.length === 0) return true
 
   return content.every((paragraph) => paragraph.children.every((leaf) => leaf.text.trim() === ''))
-}
-
-export function richTextToPlainText(content: RichTextContent | undefined): string {
-  if (!content) return ''
-
-  return content.map((paragraph) => paragraph.children.map((leaf) => leaf.text).join('')).join('\n')
 }
 
 export function emptyRichText(): RichTextContent {
