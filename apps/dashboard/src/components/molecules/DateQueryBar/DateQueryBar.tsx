@@ -20,14 +20,21 @@ export default function DateQueryBar({ query, consult, criterion }: DateQueryBar
 
   return (
     <Card className="mb-6 p-4">
-      <form className="flex flex-wrap items-start gap-3" onSubmit={submit}>
-        <DateRange from={from} to={to} changeFrom={setFrom} changeTo={setTo} />
-        {/* El margen alinea el botón con los campos, debajo de sus etiquetas. */}
-        <Button type="submit" variant="primary" className="mt-6" disabled={invalid || consulted}>
+      <form className="flex flex-col items-center gap-4" onSubmit={submit}>
+        {/* Dos campos medianos, lado a lado; en el celular, uno debajo del otro. */}
+        <div className="grid w-full max-w-xl gap-4 sm:grid-cols-2">
+          <DateRange from={from} to={to} changeFrom={setFrom} changeTo={setTo} />
+        </div>
+        <Button
+          type="submit"
+          variant="primary"
+          className="min-w-40"
+          disabled={invalid || consulted}
+        >
           Consultar
         </Button>
       </form>
-      <p className="mt-2 text-xs text-fg-muted">{criterion}</p>
+      <p className="mt-3 text-center text-xs text-fg-muted">{criterion}</p>
     </Card>
   )
 }
