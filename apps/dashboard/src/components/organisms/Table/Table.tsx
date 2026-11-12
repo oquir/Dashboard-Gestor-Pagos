@@ -18,6 +18,7 @@ export default function Table<T extends RowData>({
   dense = false,
   rowId,
   rowClass,
+  summary,
 }: TableProps<T>) {
   const table = useTable({
     features: features,
@@ -112,8 +113,9 @@ export default function Table<T extends RowData>({
         </table>
       </div>
 
-      {(name || pageCount > 1 || sizes.length > 0) && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-subtle px-5 py-3 text-xs text-fg-muted">
+      {(name || pageCount > 1 || sizes.length > 0 || summary) && (
+        // Tres zonas: el tamaño de página y el conteo, los botones de página al centro y la suma a la derecha.
+        <div className="grid gap-3 border-t border-border-subtle px-5 py-3 text-xs text-fg-muted sm:grid-cols-[1fr_auto_1fr] sm:items-center">
           <div className="flex flex-wrap items-center gap-3">
             {sizes.length > 0 && (
               <label className="flex items-center gap-2">
@@ -136,8 +138,8 @@ export default function Table<T extends RowData>({
               {pageCount > 1 ? `${from}–${to} de ${total}` : total} {name}
             </span>
           </div>
-          {pageCount > 1 && (
-            <nav aria-label="Paginación" className="flex items-center gap-1">
+          {pageCount > 1 ? (
+            <nav aria-label="Paginación" className="flex items-center justify-center gap-1">
               <Button
                 variant="ghost"
                 className="px-2 py-1"
@@ -169,7 +171,10 @@ export default function Table<T extends RowData>({
                 <ChevronRight className="size-4" />
               </Button>
             </nav>
+          ) : (
+            <div />
           )}
+          {summary && <div className="sm:justify-self-end">{summary}</div>}
         </div>
       )}
     </>
