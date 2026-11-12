@@ -212,41 +212,38 @@ export default function Declarations() {
         criterion={view === 'nonFilers' ? CRITERION.nonFilers : CRITERION.filed}
       />
 
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        {withRitVisible && (
+      {/* Vista e impuesto solo salen después de consultar: antes no hay qué separar ni contar. */}
+      {query && (
+        <div className="mb-4 flex flex-wrap items-center gap-3">
+          {withRitVisible && (
+            <SegmentedControl
+              label="Vista"
+              className="sm:inline-flex"
+              options={VIEWS.map((v) => ({
+                ...v,
+                count: v.value === 'nonFilers' ? nonFilers.nonFilers.length : rows.length,
+              }))}
+              value={view}
+              change={(v) =>
+                setParams(v === 'nonFilers' ? { vista: 'omisos' } : {}, { replace: true })
+              }
+            />
+          )}
           <SegmentedControl
-            label="Vista"
+            label="Impuesto"
             className="sm:inline-flex"
-            options={VIEWS.map((v) => ({
-              ...v,
-              // Sin consulta no hay qué contar.
-              count: !query
-                ? undefined
-                : v.value === 'nonFilers'
-                  ? nonFilers.nonFilers.length
-                  : rows.length,
+            options={tabs.map((p) => ({
+              ...p,
+              count:
+                view === 'nonFilers'
+                  ? nonFilers.nonFilers.filter((o) => !p.value || o.tax === p.value).length
+                  : rows.filter((f) => !p.value || f.d.tax === p.value).length,
             }))}
-            value={view}
-            change={(v) =>
-              setParams(v === 'nonFilers' ? { vista: 'omisos' } : {}, { replace: true })
-            }
+            value={tax}
+            change={setTax}
           />
-        )}
-        <SegmentedControl
-          label="Impuesto"
-          className="sm:inline-flex"
-          options={tabs.map((p) => ({
-            ...p,
-            count: !query
-              ? undefined
-              : view === 'nonFilers'
-                ? nonFilers.nonFilers.filter((o) => !p.value || o.tax === p.value).length
-                : rows.filter((f) => !p.value || f.d.tax === p.value).length,
-          }))}
-          value={tax}
-          change={setTax}
-        />
-      </div>
+        </div>
+      )}
 
       {!query ? (
         <Card>
