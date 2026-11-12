@@ -15,18 +15,18 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen lg:flex">
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex">
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-surface lg:flex">
         <Mark />
         <Navigation />
-        <p className="border-t border-slate-100 px-5 py-4 text-xs text-slate-400">
+        <p className="border-t border-border-subtle px-5 py-4 text-xs text-fg-subtle">
           Demo con datos simulados · sin API
         </p>
       </aside>
 
       {menuOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
-          <div className="absolute inset-0 bg-slate-900/40" onClick={() => setMenuOpen(false)} />
-          <aside className="relative flex h-full w-72 flex-col bg-white shadow-xl">
+          <div className="absolute inset-0 bg-overlay" onClick={() => setMenuOpen(false)} />
+          <aside className="relative flex h-full w-72 flex-col bg-surface shadow-xl">
             <div className="flex items-center justify-between pr-3">
               <Mark />
               <Button variant="ghost" aria-label="Cerrar menú" onClick={() => setMenuOpen(false)}>

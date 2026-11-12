@@ -113,6 +113,7 @@ export default function Payments() {
         {canSeeCollection && (
           <StatTile
             label="Recaudado en 2026"
+            isPositive
             value={`$${compactFormat(data.collection2026)}`}
             detail={`${data.received.length} pagos registrados`}
           />
@@ -132,7 +133,7 @@ export default function Payments() {
               <>
                 ${compactFormat(data.unremittedBalance)} ·{' '}
                 {data.overdueOnes > 0 ? (
-                  <span className="text-red-700">
+                  <span className="text-danger-fg">
                     {data.overdueOnes === 1 ? '1 pasó' : `${data.overdueOnes} pasaron`} los 2 meses
                   </span>
                 ) : (

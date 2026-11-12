@@ -20,22 +20,22 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-50 to-slate-50 px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-b from-brand-surface to-surface-sunken px-4 py-12">
       <div className="mx-auto max-w-5xl">
         <div className="mb-10 flex items-center gap-3">
-          <span className="flex size-11 items-center justify-center rounded-xl bg-brand-600 text-white">
+          <span className="flex size-11 items-center justify-center rounded-xl bg-brand text-on-brand">
             <Courthouse className="size-6" aria-hidden />
           </span>
           <div>
-            <h1 className="text-2xl font-semibold text-slate-900">Gestor de Pagos</h1>
-            <p className="text-sm text-slate-500">
+            <h1 className="text-2xl font-semibold text-fg-strong">Gestor de Pagos</h1>
+            <p className="text-sm text-fg-muted">
               Industria y comercio, ReteICA, AutoReteICA y RIT · demo con datos simulados
             </p>
           </div>
         </div>
 
-        <h2 className="mb-1 text-lg font-semibold text-slate-900">Elige con qué usuario entrar</h2>
-        <p className="mb-6 text-sm text-slate-500">
+        <h2 className="mb-1 text-lg font-semibold text-fg-strong">Elige con qué usuario entrar</h2>
+        <p className="mb-6 text-sm text-fg-muted">
           No hay contraseñas: es una demo para validar cómo se verá el aplicativo con cada rol.
         </p>
 
@@ -43,8 +43,8 @@ export default function Login() {
           {ORDER.map((role) => (
             <section key={role}>
               <div className="mb-3">
-                <h3 className="text-sm font-semibold text-slate-900">{roleLabel[role]}</h3>
-                <p className="text-sm text-slate-500">{ROLE_DESCRIPTION[role]}</p>
+                <h3 className="text-sm font-semibold text-fg-strong">{roleLabel[role]}</h3>
+                <p className="text-sm text-fg-muted">{ROLE_DESCRIPTION[role]}</p>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {users
@@ -62,9 +62,9 @@ export default function Login() {
                       onClick={() => enter(u.id)}
                       className="text-left"
                     >
-                      <Card className="h-full p-4 transition hover:border-brand-300 hover:shadow-md">
-                        <p className="font-medium text-slate-900">{fullName(u)}</p>
-                        <p className="text-sm text-slate-500">{u.jobTitle}</p>
+                      <Card className="h-full p-4 transition hover:border-brand-border-soft hover:shadow-md">
+                        <p className="font-medium text-fg-strong">{fullName(u)}</p>
+                        <p className="text-sm text-fg-muted">{u.jobTitle}</p>
                         <div className="mt-3">
                           <Badge tone={role === '1cero1' ? 'info' : 'neutral'}>
                             {municipalities.find((m) => m.id === u.municipalityId)?.name ??

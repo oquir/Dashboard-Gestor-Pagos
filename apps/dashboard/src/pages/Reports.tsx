@@ -114,7 +114,7 @@ export default function Reports() {
             )}
           </div>
         ) : (
-          <p className="text-sm text-slate-500">Datos al día de hoy.</p>
+          <p className="text-sm text-fg-muted">Datos al día de hoy.</p>
         )}
       </div>
 
