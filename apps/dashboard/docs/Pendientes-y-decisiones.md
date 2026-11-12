@@ -123,6 +123,7 @@ Nada de esto se ha decidido:
 - en el RIT, la inscripción de oficio, la carga de la resolución de autorretenedores y la naturaleza jurídica del inscrito (ideas de la §9 de `Contexto-RIT.md`);
 - la cadena de correcciones de cada periodo (hoy solo hay los enlaces "corrige a" y "reemplazada por");
 - un tour o un guion para presentar la demo.
+- pasarle al orquestador el municipio elegido (decidido) y quizá el impuesto (ICA, ReteICA o AutoReteICA) al abrirlo desde Municipios; hoy abre sin contexto porque el orquestador aún no los recibe.
 
 ### 2.5 Lo que no hace falta en el mock
 

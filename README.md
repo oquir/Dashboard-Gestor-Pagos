@@ -22,7 +22,7 @@ pnpm lint:fix           # ESLint con --fix + Prettier --write
 pnpm format             # Prettier --write
 ```
 
-El menú del dashboard le muestra a 1cero1 la opción **Formularios**, que abre el orquestador en una pestaña nueva. La dirección sale de `VITE_FORM_BUILDER_URL` y, sin ella, es `http://localhost:5174`. Los dos puertos están fijos (`strictPort`): si uno está ocupado, Vite falla en vez de moverse a otro y dejar el enlace roto.
+En **Municipios**, con un municipio elegido, cada formulario que gestiona tiene un enlace **Editar formulario** que abre el orquestador en una pestaña nueva (solo 1cero1). La dirección sale de `VITE_FORM_BUILDER_URL` y, sin ella, es `http://localhost:5174`. Los dos puertos están fijos (`strictPort`): si uno está ocupado, Vite falla en vez de moverse a otro y dejar el enlace roto.
 
 Cada app conserva su propio `pnpm-lock.yaml` (`sharedWorkspaceLockfile: false` en `pnpm-workspace.yaml`).
 
