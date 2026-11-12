@@ -1,12 +1,15 @@
 import { useState } from 'react'
-import { formLabel, fullName, useSession } from '../../../../lib'
+import { can, formLabel, fullName, useSession } from '../../../../lib'
 import type { Form, DisabledForm } from '../../../../types'
 import { today } from '../../../../utils'
-import { DisabledNotice, Toggle, ReasonModal, Section } from '../../../molecules'
+import { DisabledBadge, Toggle, ReasonModal, Section } from '../../../molecules'
 import { HELP } from './FormsSection.constants'
 import type { FormsSectionProps } from './FormsSection.types'
 
-/** Formularios que el municipio ofrece a los contribuyentes. Para desactivar uno hay que dar el motivo en una ventana. */
+/**
+ * Formularios que el municipio ofrece a los contribuyentes. Solo 1cero1 desactiva uno, y da el motivo en una ventana;
+ * el municipio ve la etiqueta Desactivado y, al pasar el mouse, el motivo.
+ */
 export default function FormsSection({
   b,
   change,
@@ -16,6 +19,7 @@ export default function FormsSection({
   savedOnes,
 }: FormsSectionProps) {
   const { user } = useSession()
+  const canDisable = editable && can(user?.role, 'disableForms')
   /** El formulario del que se pide el motivo: el que se está apagando o el que ya está apagado. */
   const [requesting, setRequesting] = useState<Form | null>(null)
   const disabledOnes = b.disabledForms
@@ -38,39 +42,48 @@ export default function FormsSection({
   return (
     <Section
       title="Formularios"
-      description="Desactivar un formulario impide que los contribuyentes lo diligencien; lo que ya radicaron se sigue gestionando aquí. Hay que indicar el motivo."
+      description={
+        canDisable
+          ? 'Desactivar un formulario impide que los contribuyentes lo diligencien; lo que ya radicaron se sigue gestionando aquí. Hay que indicar el motivo.'
+          : 'Los formularios que el municipio ofrece a los contribuyentes. Si 1cero1 desactiva uno, pasa el mouse sobre su etiqueta para ver el motivo.'
+      }
     >
       {forms.map((f) => {
         const d = disabledOnes[f]
         const saved = savedOnes[f]
+        if (!canDisable)
+          return (
+            <div key={f}>
+              <p className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                {formLabel[f]}
+                {d && <DisabledBadge disabled={d} />}
+              </p>
+              <p className="text-xs text-slate-500">{HELP[f]}</p>
+            </div>
+          )
         return (
           <div key={f} className="space-y-1.5">
             <Toggle
               label={formLabel[f]}
               help={HELP[f]}
               value={!d}
-              isDisabled={!editable}
               onChange={(isActive) => (isActive ? assign(f, undefined) : setRequesting(f))}
             />
             {d && (
               // Alineado con la etiqueta del interruptor.
-              <div className="ml-12">
-                <DisabledNotice
+              <div className="ml-12 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <DisabledBadge
                   disabled={d}
                   meta={saved ? undefined : 'Se desactiva al guardar los cambios.'}
-                  missingReason={errors[`motivo-${f}`]}
-                  action={
-                    editable && (
-                      <button
-                        type="button"
-                        className="text-xs font-medium text-brand-700 hover:underline"
-                        onClick={() => setRequesting(f)}
-                      >
-                        Cambiar
-                      </button>
-                    )
-                  }
                 />
+                <button
+                  type="button"
+                  className="text-xs font-medium text-brand-700 hover:underline"
+                  onClick={() => setRequesting(f)}
+                >
+                  Cambiar motivo
+                </button>
+                {!d.reason && <span className="text-xs text-red-600">{errors[`motivo-${f}`]}</span>}
               </div>
             )}
           </div>
