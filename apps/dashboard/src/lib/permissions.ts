@@ -17,6 +17,8 @@ export type Permission =
   | 'canSeeAuditLog'
   /** Ver en Inicio la alerta de ReteICA y AutoReteICA sin consignar, que puede ser delito (art. 402 del Código Penal). */
   | 'canSeeUnremittedAlert'
+  /** Abrir el orquestador de formularios, donde se arma el formulario de cada municipio. */
+  | 'openFormBuilder'
 
 const PERMISSIONS: Record<Permission, Role[]> = {
   canSeeAllMunicipalities: ['1cero1'],
@@ -34,6 +36,8 @@ const PERMISSIONS: Record<Permission, Role[]> = {
   canSeeAuditLog: ['1cero1'],
   // Lo jurídico de lo que no se consigna lo atiende el municipio, no 1cero1.
   canSeeUnremittedAlert: ['municipality_admin', 'official'],
+  // Los formularios los arma 1cero1; el municipio solo los usa.
+  openFormBuilder: ['1cero1'],
 }
 
 export const can = (role: Role | undefined, permission: Permission) =>
