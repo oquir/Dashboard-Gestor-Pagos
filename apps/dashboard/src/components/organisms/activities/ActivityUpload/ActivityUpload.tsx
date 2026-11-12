@@ -1,5 +1,6 @@
-import { Document, DocumentDownload, TickCircle } from 'reicon-react'
+import { Document, DocumentDownload } from 'reicon-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { downloadTemplate, readTemplate } from '../../../../lib'
 import { useData } from '../../../../store'
 import { Button, Card } from '../../../atoms'
@@ -17,10 +18,8 @@ export default function ActivityUpload({
 }: ActivityUploadProps) {
   const loadActivities = useData((s) => s.loadActivities)
   const [errors, setErrors] = useState<string[]>([])
-  const [loaded, setLoaded] = useState<string | null>(null)
 
   const read = async (file: File) => {
-    setLoaded(null)
     const reading = await readTemplate(file)
     setErrors(reading.errors)
     changeView(reading.errors.length > 0 ? null : { file: file.name, rates: reading.rates })
@@ -29,7 +28,9 @@ export default function ActivityUpload({
   const confirm = () => {
     if (!view) return
     loadActivities(municipalityId, fiscalYear, view.rates, view.file)
-    setLoaded(`Se cargaron ${view.rates.length} actividades para el año gravable ${fiscalYear}.`)
+    toast.success(
+      `Se cargaron ${view.rates.length} actividades para el año gravable ${fiscalYear}.`,
+    )
     changeView(null)
   }
 
@@ -98,12 +99,6 @@ export default function ActivityUpload({
               </Button>
             </div>
           </div>
-        )}
-
-        {loaded && (
-          <Notice tone="success" icon={TickCircle} role="status">
-            <p className="font-medium">{loaded}</p>
-          </Notice>
         )}
       </div>
     </Card>

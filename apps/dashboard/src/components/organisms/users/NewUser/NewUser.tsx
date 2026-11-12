@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { roleLabel, useSession } from '../../../../lib'
 import { useData } from '../../../../store'
 import type { User } from '../../../../types'
@@ -44,6 +45,7 @@ export default function NewUser({ onFinish }: NewUserProps) {
       isActive: true,
     }
     saveUser(newValue)
+    toast.success(`Se creó el usuario ${newValue.firstNames} ${newValue.lastNames}.`)
     onFinish()
   }
 
