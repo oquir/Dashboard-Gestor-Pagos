@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Navigate, Outlet } from 'react-router'
 import { useSession } from '../../lib'
 import { Button } from '../atoms'
-import { Mark } from '../molecules'
+import { Mark, Toaster } from '../molecules'
 import { TopBar, Navigation } from '../organisms'
 
 /** Estructura de las páginas con sesión: menú lateral (cajón en pantallas angostas), barra superior y contenido. */
@@ -40,6 +40,7 @@ export default function Layout() {
 
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar openMenu={() => setMenuOpen(true)} />
+        <Toaster />
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
           <Outlet />
         </main>
