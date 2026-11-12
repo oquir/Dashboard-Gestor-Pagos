@@ -2,6 +2,7 @@
 // Entre moléculas se importan por su ruta, no desde este índice.
 export { default as AttachDocuments } from './AttachDocuments'
 export { default as Notice } from './Notice'
+export { default as DisabledNotice } from './DisabledNotice'
 export { default as FilterBar } from './FilterBar'
 export { default as SaveBar } from './SaveBar'
 export { default as SearchBox } from './SearchBox'
