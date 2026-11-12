@@ -214,7 +214,7 @@ export default function Declarations() {
 
       {/* Vista e impuesto solo salen después de consultar: antes no hay qué separar ni contar. */}
       {query && (
-        <div className="mb-4 flex flex-wrap items-center gap-3">
+        <div className="mb-4 flex flex-wrap items-center justify-center gap-3">
           {withRitVisible && (
             <SegmentedControl
               label="Vista"
