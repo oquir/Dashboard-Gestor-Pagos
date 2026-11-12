@@ -247,6 +247,21 @@ export default function Declarations() {
             value={tax}
             change={setTax}
           />
+          {/* Solo aplican a las presentadas, y cada una sale si hay alguna declaración que la cumpla. */}
+          {view === 'filed' && withNoCalendar && (
+            <CheckboxFilter
+              label="Sin calendario cargado"
+              isChecked={noCalendarOnly}
+              change={setNoCalendarOnly}
+            />
+          )}
+          {view === 'filed' && withUnregistered && (
+            <CheckboxFilter
+              label="No inscritos en el RIT"
+              isChecked={unregisteredOnly}
+              change={setUnregisteredOnly}
+            />
+          )}
         </div>
       )}
 
@@ -297,20 +312,6 @@ export default function Declarations() {
                 options={CORRECTION_OPTIONS}
                 value={correctionStatus}
                 change={setCorrectionFilter}
-              />
-            )}
-            {withNoCalendar && (
-              <CheckboxFilter
-                label="Sin calendario cargado"
-                isChecked={noCalendarOnly}
-                change={setNoCalendarOnly}
-              />
-            )}
-            {withUnregistered && (
-              <CheckboxFilter
-                label="No inscritos en el RIT"
-                isChecked={unregisteredOnly}
-                change={setUnregisteredOnly}
               />
             )}
           </FilterBar>
