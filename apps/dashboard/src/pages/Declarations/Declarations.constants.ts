@@ -32,7 +32,7 @@ export const PAYMENT_OPTIONS: Record<FilterValue<PaymentStatus>, string> = {
 
 /** Con qué fecha se filtra la consulta en cada vista. */
 export const CRITERION = {
-  filed: 'Por la fecha en que se presentó la declaración.',
+  filed: '',
   nonFilers: 'Por la fecha de vencimiento del periodo que no se declaró.',
 }
 

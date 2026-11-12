@@ -34,7 +34,7 @@ export default function DateQueryBar({ query, consult, criterion }: DateQueryBar
           Consultar
         </Button>
       </form>
-      <p className="mt-3 text-center text-xs text-fg-muted">{criterion}</p>
+      {criterion && <p className="mt-3 text-center text-xs text-fg-muted">{criterion}</p>}
     </Card>
   )
 }
