@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { ALL_ACTIVE } from '../../../../constants'
 import { settingsErrors, formsOf, TAXES, acceptsChecks } from '../../../../lib'
 import { useData } from '../../../../store'
@@ -26,10 +27,8 @@ export default function SettingsForm({ config, editable }: SettingsFormProps) {
   const withRit = municipality?.rit ?? true
   const withApproval = TAXES.filter((i) => taxes[i] && municipality?.priorApproval[i])
   const [b, setB] = useState(config)
-  const [saved, setSaved] = useState(false)
   const change = (partial: Partial<MunicipalityConfig>) => {
     setB((current) => ({ ...current, ...partial }))
-    setSaved(false)
   }
 
   const errors = settingsErrors(b)
@@ -55,15 +54,10 @@ export default function SettingsForm({ config, editable }: SettingsFormProps) {
         <SaveBar
           modification={modification}
           hasErrors={Object.keys(errors).length > 0}
-          saved={saved}
-          savedMessage="Configuración guardada."
-          onDiscard={() => {
-            setB(config)
-            setSaved(false)
-          }}
+          onDiscard={() => setB(config)}
           onSave={() => {
             saveSettings(b)
-            setSaved(true)
+            toast.success('Configuración guardada.')
           }}
         />
       )}
