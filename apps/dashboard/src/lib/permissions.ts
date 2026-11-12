@@ -19,6 +19,8 @@ export type Permission =
   | 'canSeeUnremittedAlert'
   /** Abrir el orquestador de formularios, donde se arma el formulario de cada municipio. */
   | 'openFormBuilder'
+  /** Desactivar un formulario del municipio, con el motivo. */
+  | 'disableForms'
 
 const PERMISSIONS: Record<Permission, Role[]> = {
   canSeeAllMunicipalities: ['1cero1'],
@@ -38,6 +40,8 @@ const PERMISSIONS: Record<Permission, Role[]> = {
   canSeeUnremittedAlert: ['municipality_admin', 'official'],
   // Los formularios los arma 1cero1; el municipio solo los usa.
   openFormBuilder: ['1cero1'],
+  // El municipio no apaga sus formularios por su cuenta: lo hace 1cero1 y el municipio ve el motivo.
+  disableForms: ['1cero1'],
 }
 
 export const can = (role: Role | undefined, permission: Permission) =>
