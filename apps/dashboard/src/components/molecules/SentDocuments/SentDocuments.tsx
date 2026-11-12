@@ -16,11 +16,11 @@ export default function SentDocuments({
           <button
             type="button"
             onClick={() => downloadFile(a, title, context)}
-            className="inline-flex max-w-full items-center gap-1.5 text-left text-brand-700 hover:underline"
+            className="inline-flex max-w-full items-center gap-1.5 text-left text-brand-fg hover:underline"
           >
             <Download className="size-3.5 shrink-0" aria-hidden />
             <span className="truncate">{a.name}</span>
-            <span className="shrink-0 text-slate-500">· {formatSize(a.size)}</span>
+            <span className="shrink-0 text-fg-muted">· {formatSize(a.size)}</span>
           </button>
         </li>
       ))}

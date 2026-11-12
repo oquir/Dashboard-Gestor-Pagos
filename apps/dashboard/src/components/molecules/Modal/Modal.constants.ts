@@ -9,4 +9,4 @@ export const SIZE_CLASSES: Record<NonNullable<ModalProps['size']>, string> = {
 
 /** Botón de ícono de la cabecera, como la X de cerrar. */
 export const MODAL_ICON_BUTTON_CLASS =
-  'rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600'
+  'rounded-lg p-1 text-fg-subtle hover:bg-surface-raised hover:text-fg-soft'

@@ -7,8 +7,8 @@ export default function Toggle({ label, help, value, onChange, isDisabled = fals
     <label className="flex items-start gap-3">
       <Switch checked={value} disabled={isDisabled} onChange={(e) => onChange(e.target.checked)} />
       <span>
-        <span className="block text-sm font-medium text-slate-700">{label}</span>
-        {help && <span className="block text-xs text-slate-500">{help}</span>}
+        <span className="block text-sm font-medium text-fg">{label}</span>
+        {help && <span className="block text-xs text-fg-muted">{help}</span>}
       </span>
     </label>
   )

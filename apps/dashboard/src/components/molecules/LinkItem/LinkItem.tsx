@@ -5,10 +5,13 @@ import type { LinkItemProps } from './LinkItem.types'
 export default function LinkItem({ a, title, detail, right }: LinkItemProps) {
   return (
     <li>
-      <Link to={a} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50">
+      <Link
+        to={a}
+        className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-surface-sunken"
+      >
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-slate-900">{title}</p>
-          <p className="truncate text-xs text-slate-500">{detail}</p>
+          <p className="truncate text-sm font-medium text-fg-strong">{title}</p>
+          <p className="truncate text-xs text-fg-muted">{detail}</p>
         </div>
         <div className="shrink-0 text-right">{right}</div>
       </Link>

@@ -5,7 +5,7 @@ export default function Checkbox({ small = false, className = '', ...props }: Ch
   return (
     <input
       type="checkbox"
-      className={`${small ? 'size-3.5' : 'size-4'} accent-brand-600 ${className}`}
+      className={`${small ? 'size-3.5' : 'size-4'} accent-brand ${className}`}
       {...props}
     />
   )

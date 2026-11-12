@@ -5,4 +5,6 @@ export interface StatTileProps {
   value: string
   detail?: ReactNode
   icon?: ReactNode
+  /** En verde, para lo que suma, como el recaudo. */
+  isPositive?: boolean
 }

@@ -13,7 +13,7 @@ export default function SegmentedControl<T extends string | number>({
     <div
       role="group"
       aria-label={label}
-      className={`flex flex-wrap gap-1 rounded-lg bg-slate-100 p-1 ${className}`}
+      className={`flex flex-wrap gap-1 rounded-lg bg-surface-raised p-1 ${className}`}
     >
       {options.map((o) => (
         <button
@@ -23,13 +23,13 @@ export default function SegmentedControl<T extends string | number>({
           onClick={() => change(o.value)}
           className={`rounded-md text-sm font-medium tabular-nums transition ${compact ? 'px-2.5 py-1' : 'px-3 py-1.5'} ${
             value === o.value
-              ? 'bg-white text-slate-900 shadow-sm'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-surface text-fg-strong shadow-sm'
+              : 'text-fg-soft hover:text-fg-strong'
           }`}
         >
           {o.text}
           {o.count !== undefined && (
-            <span className="ml-1.5 text-xs text-slate-400">{o.count}</span>
+            <span className="ml-1.5 text-xs text-fg-subtle">{o.count}</span>
           )}
         </button>
       ))}

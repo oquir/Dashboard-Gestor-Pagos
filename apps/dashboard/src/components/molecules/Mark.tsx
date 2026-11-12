@@ -6,7 +6,7 @@ export default function Mark() {
         <img src="/1cero1.svg" alt="1cero1" className="h-9 w-auto" />
       </span>
       <div>
-        <p className="text-sm font-semibold text-slate-900">Gestor de Pagos</p>
+        <p className="text-sm font-semibold text-fg-strong">Gestor de Pagos</p>
       </div>
     </div>
   )

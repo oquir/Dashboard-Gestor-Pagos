@@ -54,10 +54,10 @@ export default function DisabledBadge({ disabled, meta }: DisabledBadgeProps) {
           id={id}
           role="tooltip"
           style={{ top: position.top, left: position.left, width: BUBBLE_WIDTH }}
-          className="fixed z-50 rounded-lg bg-slate-900 px-3 py-2 text-white shadow-lg"
+          className="fixed z-50 rounded-lg bg-inverse px-3 py-2 text-on-inverse shadow-lg"
         >
           <p className="text-sm">{disabled.reason ? `“${disabled.reason}”` : 'Sin motivo'}</p>
-          <p className="mt-1 text-xs text-slate-300">{line}</p>
+          <p className="mt-1 text-xs text-on-inverse-muted">{line}</p>
         </div>
       )}
     </>
