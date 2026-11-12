@@ -1,10 +1,12 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { buildFieldGraph, describeCycle, topologicalOrder } from "../../lib/fieldGraph/fieldGraph";
+import { isNumericField } from "../../lib/fieldKind/fieldKind";
 import { validateFieldScript } from "../../lib/fieldScript/fieldScript";
 import { useFormStore } from "../../store/formStore";
 import type { CanvasField } from "../../types/field";
 import type { FieldGraph } from "../../types/fieldGraph";
 import type { ScriptValidation } from "../../types/fieldScript";
+import { useKnownFieldNames } from "../useKnownFieldNames/useKnownFieldNames";
 import type {
   UseFieldScriptEditorParams,
   UseFieldScriptEditorResult,
@@ -19,12 +21,9 @@ export function useFieldScriptEditor({
 
   const source: string = field.logic.script ?? "";
 
-  // El propio campo entra en los nombres conocidos: asi {mi_campo} se sustituye y se puede avisar
-  // de la autorreferencia, en vez de quedar como JS roto sin explicacion.
-  const knownNames: Set<string> = useMemo(
-    () => new Set([field, ...candidates].map((candidate) => candidate.name)),
-    [field, candidates],
-  );
+  // El propio campo entra en los nombres conocidos: asi {{mi_campo}} se sustituye y se puede avisar
+  // de la autorreferencia, en vez de marcarlo como un campo que no existe.
+  const knownNames: Set<string> = useKnownFieldNames();
 
   const validation: ScriptValidation = useMemo(
     () => validateFieldScript(source, knownNames, formScript),
@@ -48,8 +47,20 @@ export function useFieldScriptEditor({
     return found ? [found] : [];
   });
 
+  // El calculo sin codigo solo suma y resta numeros: en un campo de texto no tiene nada que armar.
+  const offersSimpleCalc: boolean = isNumericField(field.type);
+  const [isSimpleCalcOpen, setIsSimpleCalcOpen] = useState<boolean>(false);
+
   function handleChange(next: string): void {
     setFieldScript(field.id, next);
+  }
+
+  function openSimpleCalc(): void {
+    setIsSimpleCalcOpen(true);
+  }
+
+  function closeSimpleCalc(): void {
+    setIsSimpleCalcOpen(false);
   }
 
   return {
@@ -60,5 +71,9 @@ export function useFieldScriptEditor({
     readsSelf,
     dependencies,
     handleChange,
+    offersSimpleCalc,
+    isSimpleCalcOpen,
+    openSimpleCalc,
+    closeSimpleCalc,
   };
 }

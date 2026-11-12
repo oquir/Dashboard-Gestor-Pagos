@@ -84,7 +84,7 @@ Con la mano o la selección múltiple el documento queda inerte: ningún campo s
 
 ### Zoom
 
-El lienzo va de **50% a 150%**. Se cambia con **Ctrl/Cmd+rueda** (continuo), con **Ctrl/Cmd + `+` / `-`** (de a 10%) y **Ctrl/Cmd+0** (vuelve a 100%), o desde el menú `100% ˅` del panel derecho: Acercar, Alejar y los atajos a 50, 75, 100, 125 y 150%.
+El lienzo va de **50% a 150%**. Se cambia con **Ctrl/Cmd+rueda** (continuo), con **Ctrl/Cmd + `+` / `-`** (de a 10%) y **Ctrl/Cmd+0** (vuelve a 100%), o desde el menú `100% ˅` del panel derecho (o del chip, si está plegado): Acercar, Alejar y los atajos a 50, 75, 100, 125 y 150%.
 
 Solo escala el documento; los paneles, la barra flotante y el menú contextual se quedan a tamaño real. El ancla es el centro de la vista y no el cursor, porque el zoom también llega desde el teclado y el menú. No se guarda: al recargar vuelve a 100%.
 
@@ -113,8 +113,8 @@ Está hecho con `zundo`, el middleware de historial para Zustand.
 > Un `X.types.ts` o `X.constants.ts` es **privado a su carpeta**. En cuanto algo de afuera lo importa, la declaración pasa a `src/types/` o `src/constants/`. Ambas direcciones están auditadas en cero.
 
 - **`atoms/`** — primitivas sin lógica de negocio: `Button`, `Checkbox`, `CodeBlock`, `CopyIconButton`, `DashedAddButton`, `FieldDragHandle`, `FieldResizeHandle`, `FieldResizeHandleBar`, `FieldResizeHandleKnob`, `FieldTypeBadge`, `IconButton`, `Input`, `Label`, `ModalActions`, `ModalShell`, `PanelHeader`, `RichTextView`, `RowDragHandle`, `SimulatorLoading`, `TextArea`, `ToggleSwitch`, `TwoColumnFieldGroup`, `WizardFooterActions`.
-- **`molecules/`** — combinaciones reutilizables: `ApiPathSelect`, `BinaryChoiceToggle`, `CanvasFieldChip`, `CanvasZoomControl`, `CatalogCard`, `ColorPickerField`, `ConditionFieldSelect`, `ConditionOperatorSelect`, `ConditionValueInput`, `CssValidationHint`, `DragPreview`, `FieldIdentityCard`, `FieldNameInput`, `FieldPreviewControl`, `FieldRenameNotice`, `FieldRuleCard`, `FormSummary`, `GeneratedSchemaPreview`, `JsonCode`, `LabeledInput`, `LabeledRangeSlider`, `LabelTargetSelect`, `MaxDatesAnioRow`, `MaxDatesDeclaracionSection`, `MaxDatesPasteForm`, `PaletteChip`, `PanelBlock`, `PanelSection`, `PreviewTooltip`, `ProjectFilePicker`, `PxInput`, `RichTextEditor`, `RowDragPreview`, `RowZoneOverlay`, `RuleEffectRow`, `ScriptEditor`, `ScriptInput`, `SelectableOptionCard`, `SelectionSummary`, `SidebarTabRail`, `StepTabChip`, `TabButtonGroup`, `TooltipBubble`, `TransferNotice`, `ValidationOverrideCard`, `ViewModeSwitch`.
-- **`organisms/`** — secciones autocontenidas: `Canvas`, `CanvasRow`, `CanvasRowsGrid`, `CanvasTabs`, `CanvasToolbar`, `CanvasToolLayer`, `DraftRecoveryModal`, `ExportReviewModal`, `FieldContextMenu`, `FieldOptionsModal`, `FieldPalette`, `FormBuilder`, `FormSimulator`, `JsonPreviewCanvas`, `MoveToStepMenu`, `PayloadPreviewCanvas`, `ProjectImportModal`, `RepeatableGroupBand`, `RightSidebar`, `RowColumnsMenu`, `RowStylesMenu`, `RowToolbar`, `SaveButton`, `SetupWizardModal`, `Sidebar`, `StepTitleEditor`. Además:
+- **`molecules/`** — combinaciones reutilizables: `ApiPathSelect`, `BinaryChoiceToggle`, `CanvasFieldChip`, `CanvasZoomControl`, `CatalogCard`, `ColorPickerField`, `ConditionFieldSelect`, `ConditionOperatorSelect`, `ConditionValueInput`, `CssValidationHint`, `DragPreview`, `FieldIdentityCard`, `FieldNameInput`, `FieldPreviewControl`, `FieldRenameNotice`, `FieldRuleCard`, `FormSummary`, `GeneratedSchemaPreview`, `JsonCode`, `LabeledInput`, `LabeledRangeSlider`, `LabelTargetSelect`, `MaxDatesAnioRow`, `MaxDatesDeclaracionSection`, `MaxDatesPasteForm`, `PaletteChip`, `PanelBlock`, `PanelSection`, `PreviewTooltip`, `ProjectFilePicker`, `PxInput`, `RichTextEditor`, `RightPanelToggle`, `RowDragPreview`, `RowZoneOverlay`, `RuleEffectRow`, `ScriptEditor`, `ScriptInput`, `SelectableOptionCard`, `SelectionSummary`, `SidebarTabRail`, `StepTabChip`, `TabButtonGroup`, `TooltipBubble`, `TransferNotice`, `ValidationOverrideCard`, `ViewModeSwitch`.
+- **`organisms/`** — secciones autocontenidas: `Canvas`, `CanvasRow`, `CanvasRowsGrid`, `CanvasTabs`, `CanvasToolbar`, `CanvasToolLayer`, `CollapsedRightSidebar`, `DraftRecoveryModal`, `ExportButton`, `ExportReviewModal`, `FieldContextMenu`, `FieldOptionsModal`, `FieldPalette`, `FormBuilder`, `FormSimulator`, `JsonPreviewCanvas`, `MoveToStepMenu`, `PayloadPreviewCanvas`, `ProjectImportModal`, `RepeatableGroupBand`, `RightSidebar`, `RowColumnsMenu`, `RowStylesMenu`, `RowToolbar`, `SaveButton`, `SetupWizardModal`, `Sidebar`, `SimulatorButton`, `StepTitleEditor`. Además:
   - `organisms/panels/`, paneles y editores: `ApiMappingPanel`, `AttributesPanel`, `CatalogFillsEditor`, `CatalogsPanel`, `ConditionEditor`, `FieldDataSourceEditor`, `FieldOptionsEditor`, `FieldRulesEditor`, `FieldScriptEditor`, `FieldTooltipEditor`, `FileOptionsEditor`, `FormScriptEditor`, `GroupChecksEditor`, `LogicPanel`, `MaxDatesPanel`, `NumberOptionsEditor`, `StylesPanel`, `ValidationOverridesEditor`, `ValidationsPanel`, `ValoresAnualesEditor`.
   - `organisms/preview/`, las piezas del simulador: `PreviewField`, `PreviewFieldControl`, `PreviewForm`, `PreviewGroupBand`, `PreviewNumberInput`, `PreviewResults`, `PreviewRowsGrid`, `PreviewSearchSelect`, `PreviewStep`.
 - **`layout/AppLayout.tsx`** — el shell de la app, con cuatro espacios. Va fuera de la jerarquía atómica porque es el layout raíz.
@@ -126,12 +126,13 @@ Está hecho con `zundo`, el middleware de historial para Zustand.
 - **Sidebar izquierdo** (`organisms/Sidebar/`): un rail vertical de íconos (`SidebarTabRail`, incluye el toggle de modo oscuro) más el panel correspondiente. Las pestañas son Campos, Atributos, Validaciones, Estilos, Lógica, Mapeo API, Catálogos y Fechas. Campos, Catálogos, Fechas y Lógica funcionan sin ningún campo seleccionado — en Lógica, sin selección, se edita el preludio del formulario. Al hacer clic sobre la pestaña ya activa, el panel se colapsa; el rail siempre queda visible.
 - **Lienzo** (`organisms/Canvas/`): ocupa todo el alto de la ventana como lienzo libre. Una grilla por fila (`@dnd-kit` `useDroppable`), redimensionado de campos por arrastre y menú contextual por campo. Al pasar por una fila aparece su barra (`RowToolbar`): manija para arrastrarla, columnas, estilos de la fila y eliminar. El modal de entrada se dibuja dentro de un marco decorativo de modal. En las vistas JSON y Payload el lienzo se reemplaza por `JsonPreviewCanvas` (vista previa en vivo del export) o `PayloadPreviewCanvas` (cobertura del contrato).
 - **Barra flotante** (`organisms/CanvasToolbar/`): va en `canvasOverlay`, al lado del lienzo y no adentro, así que ni se desplaza ni escala con él. Ver "Barra del lienzo, herramientas y selección múltiple".
-- **Panel derecho** (`organisms/RightSidebar/`): sigue el modelo del panel derecho de Figma y tiene ancho fijo; no se colapsa.
-  - Arriba, la fila de acciones: **Guardar** a la izquierda; **Simulador** y **Exportar** a la derecha.
-  - Debajo, las pestañas **Proyecto** y **Steps**, con el zoom a la derecha (solo en la vista Lienzo).
+- **Panel derecho** (`organisms/RightSidebar/`): sigue el modelo del panel derecho de Figma. Mide 320 px mientras está abierto, y se pliega desde el botón de la fila de acciones.
+  - Arriba, la fila de acciones: **Guardar** a la izquierda; **Simulador**, **Exportar** y el botón de plegar a la derecha.
+  - Debajo, las pestañas **Proyecto** y **Steps**, con el zoom a la derecha (gris fuera de la vista Lienzo, donde no significa nada).
   - **Proyecto**: "Vista", para elegir entre Lienzo, JSON y Payload, y "Formulario", con el tipo de formulario, cuántos steps, pasos de modal y campos tiene, y si está guardado. El bloque Formulario trae **Abrir…**, que carga un JSON exportado en lugar del formulario actual (ver "Abrir un formulario exportado").
   - **Steps**: "Pasos", la grilla de chips numerados para cambiar de paso (**+** agrega uno y la **✕** del chip activo lo borra), y "Paso activo", con su título y subtítulo. Mientras arrastras un campo o una fila esta pestaña se abre sola, porque sus chips son donde se suelta para mudar algo a otro paso.
   - El aviso de referencias que cruzan de paso (`TransferNotice`) aparece arriba de las dos pestañas.
+- **Chip del panel plegado** (`organisms/CollapsedRightSidebar/`): con el panel cerrado, el `<aside>` no se dibuja y en su lugar queda un chip flotante en la esquina superior derecha, con Guardar, el zoom, Simulador, Exportar y el botón para volver. Debajo cuelga el aviso de referencias cruzadas si lo hay. Plegado es un **modo foco** sobre el paso activo: se edita, se guarda, se exporta y se simula, pero no se puede cambiar de paso, ni volver de JSON o Payload a Lienzo, ni mudar campos y filas a otro paso arrastrando — todo eso vive dentro del panel. Hay que abrirlo de nuevo.
 
 El wiring de drag-and-drop vive en `src/hooks/useDragAndDrop/`; el `DndContext`/`DragOverlay` los arma `organisms/FormBuilder/`, que es lo único que envuelve al `AppLayout`.
 
@@ -151,11 +152,13 @@ Cada hook vive en su propia carpeta, igual que los componentes:
 
 Se declaran en `FIELD_TYPES` (`src/constants/fieldTypes.ts`) y se agrupan por categoría, que es lo que dibuja la paleta:
 
-- **Básicos** — `text`, `number`, `select`, `textarea`, `checkbox`, `calculated`, `file`.
-- **Complejos** — `search_select`, `toggle_group`, `radio_group`, `checkbox_group`.
+- **Básicos** — `text`, `number`, `tel`, `email`, `date`, `select`, `textarea`, `checkbox`, `calculated`, `file`.
+- **Complejos** — `search_select`, `datalist`, `toggle_group`, `radio_group`, `checkbox_group`.
 - **Contenido** — `label`, `rich_text`.
 
 `checkbox` y `checkbox_group` son tipos distintos a propósito: el primero es un booleano único, el segundo es multi-selección con `options[]`.
+
+`datalist` ("Input Datalist") es texto libre que sugiere una lista mientras se escribe, el `<datalist>` de HTML. No es un campo de opciones: el valor es lo escrito, así que valida y se mapea como un `text`, y sus `suggestions` (una por línea en Atributos) no restringen nada.
 
 `radio_group` y `checkbox_group` pueden declarar `inlineOptions: true` para poner sus opciones en una sola línea en vez de apiladas; se prende en Atributos, sección Diseño. Es solo presentación y usa `flex-wrap`, así que no promete que todo quepa. `toggle_group` ya es horizontal y `select` no tiene dónde ponerlas.
 
@@ -272,7 +275,7 @@ Cada grupo lleva `min`, `max` y un `arrayPath` que lo ata a un arreglo del contr
 Un grupo puede llevar **comprobaciones sobre el grupo entero**: un script que se evalúa una sola vez, en el ámbito raíz, donde la columna del grupo es el arreglo completo. **Verdadero pasa; falso muestra el mensaje** y no deja avanzar de paso.
 
 ```js
-return abs(sum({ingresos_gravados}) - {total_ingresos_gravables}) < 1;
+return abs(sum({{ingresos_gravados}}) - {{total_ingresos_gravables}}) < 1;
 ```
 
 Es la regla que trae la plantilla de ICA: lo declarado por actividad tiene que sumar lo mismo que el renglón 16. Viene prendida, porque olvidarse de activarla dejaría pasar la evasión sin aviso. Compara con tolerancia de un peso y no con `===`, por la coma flotante.
@@ -284,10 +287,10 @@ Es la regla que trae la plantilla de ICA: lo declarado por actividad tiene que s
 
 ### Cálculo: el script del campo
 
-**El valor de un campo se calcula en un solo lugar: `logic.script`**, JavaScript con `{campo}` para leer otros campos.
+**El valor de un campo se calcula en un solo lugar: `logic.script`**, JavaScript con `{{campo}}` para leer otros campos.
 
 ```js
-return {total_ingresos_nacionales} - {ingresos_fuera_municipio};
+return {{total_ingresos_nacionales}} - {{ingresos_fuera_municipio}};
 ```
 
 Antes había tres mecanismos compitiendo por la misma pregunta: un lenguaje aritmético propio, un editor de reglas y un textarea de "script TypeScript" que se exportaba y nunca se ejecutaba. Ahora hay uno.
@@ -296,18 +299,18 @@ El contrato:
 
 - **`return` da el valor del campo. `return undefined` deja lo que haya escrito el usuario** — el campo no queda marcado como calculado y sigue siendo editable.
 - En ámbito: `value` (el valor actual del campo), `index` (la repetición dentro de un grupo) y los helpers `num`, `sum`, `count`, `abs`, `min`, `max`, `round`, `floor`, `ceil` y `dvNit`, más los que leen las tablas del simulador: `fechaLimite`, `diasDeMora`, `mesesDeMora`, `uvt` y `smmlv` (ver "Fechas máximas de presentación" y "UVT y SMMLV").
-- Dentro de un grupo repetible, `{hermano}` es el escalar de esa fila; desde afuera, `{columna}` es el arreglo completo. `sum` aplana arreglos, así que un total de columna es `sum({impuesto_actividad})`.
+- Dentro de un grupo repetible, `{{hermano}}` es el escalar de esa fila; desde afuera, `{{columna}}` es el arreglo completo. `sum` aplana arreglos, así que un total de columna es `sum({{impuesto_actividad}})`.
 - Un resultado no finito sale como `null`, que es como se comporta la división por cero.
 
-**Solo se sustituye `{x}` cuando `x` es el nombre de un campo que existe.** Esa única regla es la que deja convivir la sintaxis con JavaScript: un `const {a} = obj` queda intacto. Por eso una referencia desconocida es un **aviso y no un error** — no hay forma de distinguir un typo de una desestructuración.
+**Las referencias van entre llaves dobles para que no se confundan con las de JavaScript.** `{{x}}` no es JS válido en ninguna expresión, mientras que la sintaxis vieja de una llave, `{a}`, podía ser un campo o una desestructuración. Por eso **una referencia a algo que no es un campo es un error**: un typo, o un campo que se borró o cambió de nombre. Sale en rojo en el editor y bloquea la exportación. Se sustituye `{{x}}` cuando `x` es el nombre de un campo de cualquiera de los dos lienzos, igual que en el export. Los borradores y archivos con la sintaxis vieja se migran solos al abrirlos (versión 7 del borrador), y lo migrado compila exactamente igual que antes.
 
 El **preludio** (`formScript`) es del formulario entero: funciones y constantes que todos los scripts ven en ámbito, para los cálculos que se repiten en varios renglones. Se edita en la pestaña Lógica sin ningún campo seleccionado. **No puede leer campos**: los valores entran por parámetro.
 
 Las **reglas** (`FieldRule`) sobrevivieron a propósito: no son otro lenguaje sino una estructura declarativa —condición más efecto— y su efecto habla el mismo script. Corren **después** del script del campo y pisan lo que haya devuelto, en el orden de la lista.
 
-`src/lib/fieldGraph/` unifica **cuatro** fuentes de dependencias en un solo grafo —`visibleWhen`, `enableWhen`, las condiciones de las reglas y las referencias `{campo}` del script y de los efectos— y detecta ciclos. En el editor de script el ciclo se **avisa**, no se bloquea: es texto libre y trabar la escritura a mitad de una palabra sería pelearse con quien escribe.
+`src/lib/fieldGraph/` unifica **cuatro** fuentes de dependencias en un solo grafo —`visibleWhen`, `enableWhen`, las condiciones de las reglas y las referencias `{{campo}}` del script y de los efectos— y detecta ciclos. En el editor de script el ciclo se **avisa**, no se bloquea: es texto libre y trabar la escritura a mitad de una palabra sería pelearse con quien escribe.
 
-El editor es **CodeMirror 6** con resaltado, autocompletado de campos al escribir `{` y subrayado de las referencias que no existen. Va detrás de un `React.lazy`: son 457 kB que no se bajan hasta abrir la pestaña Lógica, con el textarea de siempre como respaldo mientras tanto.
+El editor es **CodeMirror 6** con resaltado y referencias marcadas en rojo cuando no existen. Los campos se autocompletan al escribir `{{`; Ctrl+Espacio los ofrece en cualquier parte, junto con las funciones, y los inserta ya envueltos. Ya no hay un selector de "Insertar campo". Va detrás de un `React.lazy`: son 457 kB que no se bajan hasta abrir la pestaña Lógica, con el textarea de siempre como respaldo mientras tanto.
 
 Los ejemplos más completos de la plantilla son los renglones 31 y 37: ver "Sanción por extemporaneidad" e "Intereses de mora".
 
@@ -443,7 +446,7 @@ El borrador lleva **versión de esquema** y se **migra antes de validarse con Zo
 
 `organisms/SetupWizardModal/`: modal de 2 pasos cuando `setupConfig.isComplete` es `false`. El paso 1 elige el `FormType` — `industria_comercio` carga la plantilla completa de ocho pasos desde `src/lib/baseTemplate/`; los otros dos (`retencion_industria_comercio` y `autorretencion`) arrancan con una fila vacía. El paso 2 pregunta si hace falta un modal introductorio y cuántos steps tiene.
 
-En Industria y Comercio el asistente no pregunta por el modal: lo crea con los dos pasos de la plantilla, "Seleccione año gravable y período" y "Seleccione tipo de declaración". Los renglones 31 y 37 leen `{periodo_anio}` de ahí, así que borrar esos pasos después los deja sin calcular (ver gaps).
+En Industria y Comercio el asistente no pregunta por el modal: lo crea con los dos pasos de la plantilla, "Seleccione año gravable y período" y "Seleccione tipo de declaración". Los renglones 31 y 37 leen `{{periodo_anio}}` de ahí, así que borrar esos pasos después los deja sin calcular (ver gaps).
 
 El paso 1 ofrece además **Cargar formulario**, que no crea nada: abre un JSON exportado y el proyecto entero sale del archivo (ver "Abrir un formulario exportado").
 
@@ -470,7 +473,7 @@ Cada campo exporta `fieldId`, `name`, `type`, `label`, `colStart`, `colSpan`, `s
 Detalles del contrato:
 
 - Los ids de campo en condiciones, reglas y `labelFor` salen **resueltos a nombre**, así el consumidor no necesita el mapa de uuids.
-- El `script` sale como `{source, compiled, reads}`: `compiled` es JS con `{campo}` ya sustituido, listo para `new Function`; `source` viaja solo para poder reeditarlo (ejecutarlo sería un error, porque `{campo}` no es JS); y `reads` son los campos que lee, para ordenar el cálculo sin volver a parsear.
+- El `script` sale como `{source, compiled, reads}`: `compiled` es JS con `{{campo}}` ya sustituido, listo para `new Function`; `source` viaja solo para poder reeditarlo (ejecutarlo sería un error, porque `{{campo}}` no es JS); y `reads` son los campos que lee, para ordenar el cálculo sin volver a parsear.
 - `validations.zodSchema` es **opcional**: los campos presentacionales lo omiten, y su ausencia es cómo el consumidor sabe que ahí no hay nada que validar. Las variantes condicionales llegan en `validations.zodSchemaWhen`.
 - `styles` es un objeto CSS ya resuelto. En el campo viene siempre, aunque sea `{}`; en la fila, solo si tiene algo.
 - `projectMeta.formId` y `projectMeta.version` todavía no identifican nada (ver gaps).
@@ -481,8 +484,8 @@ El archivo que baja **Exportar** lleva una clave más, `builderDraft`: la copia 
 
 **Exportar** revisa el formulario completo antes de descargarlo (`diagnoseForm`, en `src/lib/formDiagnostics/`). Si no encuentra nada, descarga directo; si encuentra problemas, abre una lista donde cada uno tiene un botón **Ir** que lleva al paso, al campo y a la pestaña donde se corrige.
 
-- **Errores, que bloquean la exportación:** un script de campo, de efecto de regla o de comprobación de grupo que no compila; un script del formulario que no compila o que lee campos; una expresión regular inválida en `validations.pattern`, en una validación condicional o en una condición `matches`; y un ciclo entre campos.
-- **Avisos, que no bloquean:** `{x}` que no son campos, campos mapeados a una ruta que no existe o a una hoja que llena el aplicativo receptor, y CSS que el navegador no reconoce.
+- **Errores, que bloquean la exportación:** un script de campo, de efecto de regla o de comprobación de grupo que no compila o que lee un `{{x}}` que no es un campo; un script del formulario que no compila o que lee campos; una expresión regular inválida en `validations.pattern`, en una validación condicional o en una condición `matches`; y un ciclo entre campos.
+- **Avisos, que no bloquean:** campos mapeados a una ruta que no existe o a una hoja que llena el aplicativo receptor, y CSS que el navegador no reconoce.
 - **Se revisa lo que de verdad se exporta:** los mismos nombres de campo que usa el export, sin las comprobaciones apagadas, y la regex de `pattern` solo en los tipos donde el schema la incluye.
 - **Quedan fuera a propósito** los `⚠ tipo` y la cobertura del payload: siguen en Mapeo API y en la vista Payload.
 - Corre solo al darle Exportar, no mientras se edita. Copiar el JSON desde la vista JSON no pasa por la revisión.
@@ -505,7 +508,7 @@ Vive en `src/lib/projectFile/`, `useProjectImport`, `ProjectFilePicker` y `Proje
 - El `script` se exporta compilado a JS y el consumidor lo ejecuta con `new Function`. **Esto define el límite de confianza del archivo**: cualquiera que le pueda entregar un JSON al consumidor obtiene ejecución de código en él. Es una decisión coordinada, no una restricción de API pública.
 - **Un bucle infinito en un script congela la pestaña.** No hay defensa barata en el hilo principal; la salida real sería un Web Worker con timeout. Riesgo asumido: quien escribe el script es quien lo prueba.
 - **Hay un solo borrador por navegador.** No caben dos formularios guardados a la vez, y un borrador que no valida al abrir la app se borra —con aviso— sin dejar copia. La salida es exportar: el JSON trae el proyecto completo y se puede volver a abrir (ver "Abrir un formulario exportado").
-- **Los renglones 31 y 37 necesitan el modal de entrada**, porque leen `{periodo_anio}` de ahí. El asistente lo crea siempre para ICA, pero nada impide borrar esos pasos después: sin ellos, el campo sigue escribible pero no calcula, y no avisa.
+- **Los renglones 31 y 37 necesitan el modal de entrada**, porque leen `{{periodo_anio}}` de ahí. El asistente lo crea siempre para ICA, pero nada impide borrar esos pasos después. Sin ellos el campo sigue escribible pero no calcula; al menos ya no pasa en silencio: la referencia sale en rojo y la revisión de Exportar lo bloquea.
 - **El renglón 31 tiene escritos a mano dos ids del catálogo `tipos_sancion`**: `TIPO_SANCION_EXTEMPORANEIDAD = "1"` y `TIPO_SANCION_OTRA = "4"`, en `baseTemplate.constants.ts`. Si el catálogo cambia esos ids, la regla se rompe en silencio.
 - **Mudar a otro paso un campo que estaba en un grupo repetible conserva su `apiBinding`**, contra la regla de que salir del grupo limpia el mapeo. Pasa igual arrastrándolo a un chip de paso que con "Mover a paso".
 - **Tres campos con opciones todavía infieren su catálogo desde `apiBinding.path`**: `periodo_anio`, `clasificacion_contribuyente` y `tipo_representante`; los otros diez ya declaran `dataSource`. `juegos_permitidos` está en `CATALOGS` pero ningún campo lo usa, y los nombres de catálogo todavía hay que acordarlos con el otro proyecto. Sigue abierto: `FieldOption.id` es un uuid, así que una opción escrita a mano no tiene id de catálogo que enviar.
@@ -519,7 +522,7 @@ Vive en `src/lib/projectFile/`, `useProjectImport`, `ProjectFilePicker` y `Proje
 - Con varios campos seleccionados no se pueden **arrastrar juntos dentro del lienzo** ni **editar propiedades en lote**, y el marco de selección no desplaza el lienzo al llegar al borde.
 - ~~El simulador no aplica `styles`~~ **Resuelto.** El simulador ahora pinta `field.styles`, `row.styles` y `tooltip.styles` tal como llegan del export.
 - ~~`styles.customClasses` funciona solo por casualidad~~ **Resuelto.** Los estilos ya no viajan como clases de Tailwind: `customCss` guarda CSS de verdad (`"font-weight: 700; text-align: right;"`), y el export entrega un objeto `style` plano — el consumidor no necesita tener esas clases en su propio código fuente. Ver "Estilos" y, en `CLAUDE.md`, la sección "Styles are plain CSS, not Tailwind classes".
-- ~~Renglón 35 (`valor_a_pagar`) no tiene cálculo~~ **Resuelto.** El 35 es el 33 (`return {total_saldo_a_cargo};`): con saldo a favor el 33 ya da 0 y no queda nada que pagar. El 38 es `max(35 − 36 + 37 − 34, 0)`; restar el 34 evita que los intereses se cobren sobre una deuda que no existe. Algunos municipios piden ver el saldo a favor como un 35 negativo; esa variante no está hecha.
+- ~~Renglón 35 (`valor_a_pagar`) no tiene cálculo~~ **Resuelto.** El 35 es el 33 (`return {{total_saldo_a_cargo}};`): con saldo a favor el 33 ya da 0 y no queda nada que pagar. El 38 es `max(35 − 36 + 37 − 34, 0)`; restar el 34 evita que los intereses se cobren sobre una deuda que no existe. Algunos municipios piden ver el saldo a favor como un 35 negativo; esa variante no está hecha.
 
 ---
 

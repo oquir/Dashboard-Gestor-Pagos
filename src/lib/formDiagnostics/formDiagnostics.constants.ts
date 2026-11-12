@@ -1,7 +1,7 @@
 // La rama de texto de buildSchemaFor (lib/zodSchema) es la unica que mete `pattern` en el schema:
-// los campos de opciones van por z.enum o z.string sin regex, y estos cuatro tienen su propio caso.
+// los campos de opciones van por z.enum o z.string sin regex, y estos cinco tienen su propio caso.
 // Una regex rota en uno de estos no viaja, asi que no hay nada que avisar.
-export const TYPES_WITHOUT_PATTERN: string[] = ["number", "calculated", "checkbox", "file"];
+export const TYPES_WITHOUT_PATTERN: string[] = ["number", "calculated", "checkbox", "file", "date"];
 
 export const PRELUDE_WHERE: string = "Script del formulario";
 
@@ -13,7 +13,7 @@ export const PRELUDE_READS_FIELDS_MESSAGE: string =
   "El script del formulario no puede leer campos, y lee:";
 
 export const UNKNOWN_REFS_HINT: string =
-  "Si era un campo, ese cálculo no va a funcionar; si es una desestructuración, se puede ignorar.";
+  "Si el campo se borró o cambió de nombre, hay que corregir la referencia.";
 
 export const INVALID_PATTERN_MESSAGE: string = "La expresión regular no es válida:";
 

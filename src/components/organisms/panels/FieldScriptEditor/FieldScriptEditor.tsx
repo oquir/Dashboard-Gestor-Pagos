@@ -1,33 +1,61 @@
 import { useFieldScriptEditor } from "../../../../hooks/useFieldScriptEditor/useFieldScriptEditor";
+import { Button } from "../../../atoms/Button/Button";
 import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
 import { ScriptInput } from "../../../molecules/ScriptInput/ScriptInput";
+import { SimpleCalcModal } from "../../SimpleCalcModal/SimpleCalcModal";
 import {
-  DATE_HELPERS_HINT,
   ERROR_CLASSES,
   HINT_CLASSES,
   READS_CLASSES,
-  SCRIPT_HINT,
+  SCRIPT_DESCRIPTION,
   SCRIPT_PLACEHOLDER,
-  SCRIPT_SCOPE_HINT,
-  VALUE_HELPERS_HINT,
+  SIMPLE_CALC_DESCRIPTION,
   WARNING_CLASSES,
 } from "./FieldScriptEditor.constants";
 import type { FieldScriptEditorProps } from "./FieldScriptEditor.types";
 
 export function FieldScriptEditor({ field, candidates }: FieldScriptEditorProps) {
-  const { source, knownNames, validation, cycle, readsSelf, dependencies, handleChange } =
-    useFieldScriptEditor({ field, candidates });
+  const {
+    source,
+    knownNames,
+    validation,
+    cycle,
+    readsSelf,
+    dependencies,
+    handleChange,
+    offersSimpleCalc,
+    isSimpleCalcOpen,
+    openSimpleCalc,
+    closeSimpleCalc,
+  } = useFieldScriptEditor({ field, candidates });
 
   return (
-    <PanelSection title="Cálculo del campo">
+    <PanelSection
+      title="Cálculo del campo"
+      description={
+        offersSimpleCalc ? `${SCRIPT_DESCRIPTION}\n${SIMPLE_CALC_DESCRIPTION}` : SCRIPT_DESCRIPTION
+      }
+    >
+      {offersSimpleCalc && (
+        <Button
+          variant="secondary"
+          onClick={openSimpleCalc}
+          className="px-3 py-1.5 text-xs hover:cursor-pointer"
+        >
+          Editar sin código
+        </Button>
+      )}
+
+      {/* Un editor por campo: CodeMirror guarda en su historial el cambio de documento, y con el
+          mismo editor un Ctrl+Z adentro le devolvia a este campo el script del anterior. */}
       <ScriptInput
+        key={field.id}
         id="field-script"
         label="Script"
         value={source}
         rows={8}
         knownNames={knownNames}
         placeholder={SCRIPT_PLACEHOLDER}
-        insertCandidates={candidates}
         onChange={handleChange}
       />
 
@@ -39,13 +67,6 @@ export function FieldScriptEditor({ field, candidates }: FieldScriptEditorProps)
         <p className={WARNING_CLASSES}>
           El script se lee a sí mismo ({field.name}); ese valor no va a poder resolverse. Para leer
           lo que hay escrito en el campo usá <code className="font-mono">value</code>.
-        </p>
-      )}
-
-      {validation.unknown.length > 0 && (
-        <p className={WARNING_CLASSES}>
-          {validation.unknown.map((name) => `{${name}}`).join(", ")} no coincide con ningún campo,
-          así que se deja tal cual como JavaScript.
         </p>
       )}
 
@@ -62,10 +83,9 @@ export function FieldScriptEditor({ field, candidates }: FieldScriptEditorProps)
         </div>
       )}
 
-      <p className={HINT_CLASSES}>{SCRIPT_HINT}</p>
-      <p className={HINT_CLASSES}>{SCRIPT_SCOPE_HINT}</p>
-      <p className={HINT_CLASSES}>{DATE_HELPERS_HINT}</p>
-      <p className={HINT_CLASSES}>{VALUE_HELPERS_HINT}</p>
+      {isSimpleCalcOpen && (
+        <SimpleCalcModal field={field} candidates={candidates} onClose={closeSimpleCalc} />
+      )}
     </PanelSection>
   );
 }

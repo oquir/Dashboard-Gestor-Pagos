@@ -18,15 +18,54 @@ export const INLINE_CAPABLE_FIELD_TYPES: string[] = ["radio_group", "checkbox_gr
 // de verdad a un campo de solo lectura es alwaysDisabled.
 export const NUMERIC_FIELD_TYPES: string[] = ["number", "calculated"];
 
-// Los que admiten un tope de longitud. Los dos primeros lo cuentan en caracteres y los dos ultimos
-// en digitos de la parte entera, que no es lo mismo; la regla vive en lib/fieldLength.
-export const LENGTH_CAPABLE_FIELD_TYPES: string[] = ["text", "textarea", "number", "calculated"];
+export const TEL_FIELD_TYPE = "tel";
+
+export const EMAIL_FIELD_TYPE = "email";
+
+// Texto libre que sugiere una lista mientras se escribe: el <datalist> de HTML. No es un campo de
+// opciones -- el valor es lo escrito, no un id --, asi que valida y se mapea como un texto. Ver
+// lib/fieldSuggestions.
+export const DATALIST_FIELD_TYPE = "datalist";
+
+// Texto que trae su propio formato: sin un patron del autor validan contra el del tipo. Ver
+// lib/fieldContact.
+export const CONTACT_FIELD_TYPES: string[] = [TEL_FIELD_TYPE, EMAIL_FIELD_TYPE];
+
+// Los que admiten un tope de longitud. Los de texto lo cuentan en caracteres y los numericos en
+// digitos de la parte entera, que no es lo mismo; la regla vive en lib/fieldLength.
+export const LENGTH_CAPABLE_FIELD_TYPES: string[] = [
+  "text",
+  "textarea",
+  TEL_FIELD_TYPE,
+  EMAIL_FIELD_TYPE,
+  DATALIST_FIELD_TYPE,
+  "number",
+  "calculated",
+];
+
+// Los que muestran una caja vacia donde cabe un placeholder. La fecha no: su caja ya muestra el
+// formato. Ver lib/fieldPlaceholder.
+export const PLACEHOLDER_CAPABLE_FIELD_TYPES: string[] = [
+  "text",
+  "textarea",
+  TEL_FIELD_TYPE,
+  EMAIL_FIELD_TYPE,
+  DATALIST_FIELD_TYPE,
+  "number",
+  "calculated",
+  "select",
+  "search_select",
+];
 
 export const PRESENTATIONAL_FIELD_TYPES: string[] = ["label", "rich_text"];
 
 export const TOOLTIP_CAPABLE_FIELD_TYPES: string[] = [
   "text",
+  TEL_FIELD_TYPE,
+  EMAIL_FIELD_TYPE,
+  DATALIST_FIELD_TYPE,
   "number",
+  "date",
   "select",
   "checkbox",
   "calculated",
@@ -37,15 +76,20 @@ export const TOOLTIP_CAPABLE_FIELD_TYPES: string[] = [
 
 export const RICH_TEXT_FIELD_TYPE = "rich_text";
 
+export const DATE_FIELD_TYPE = "date";
 export const FIELD_TYPES: FieldTypeDef[] = [
   { type: "text", label: "Texto", category: "basico" },
   { type: "number", label: "Número", category: "basico" },
+  { type: TEL_FIELD_TYPE, label: "Teléfono", category: "basico" },
+  { type: EMAIL_FIELD_TYPE, label: "Correo", category: "basico" },
+  { type: "date", label: "Fecha", category: "basico" },
   { type: "select", label: "Select", category: "basico" },
   { type: "textarea", label: "Área de texto", category: "basico" },
   { type: "checkbox", label: "Checkbox", category: "basico" },
   { type: "calculated", label: "Calculado", category: "basico" },
   { type: "file", label: "Archivo", category: "basico" },
   { type: "search_select", label: "Select con búsqueda", category: "complejo" },
+  { type: DATALIST_FIELD_TYPE, label: "Input Datalist", category: "complejo" },
   { type: "toggle_group", label: "Toggle Buttons", category: "complejo" },
   { type: "radio_group", label: "Radio Buttons", category: "complejo" },
   { type: "checkbox_group", label: "Checkbox Group", category: "complejo" },

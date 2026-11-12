@@ -26,6 +26,7 @@ import {
   PASTE_PLACEHOLDER,
   ROW_CLASSES,
   TEXTAREA_CLASSES,
+  VALORES_DESCRIPTION,
   WARNING_CLASSES,
 } from "./ValoresAnualesEditor.constants";
 
@@ -71,6 +72,7 @@ export function ValoresAnualesEditor() {
   return (
     <PanelSection
       title="UVT y salario mínimo"
+      description={VALORES_DESCRIPTION}
       aside={
         <span className={cargadas > 0 ? BADGE_LOADED_CLASSES : BADGE_EMPTY_CLASSES}>
           {cargadas > 0 ? `${cargadas} años` : "Por defecto"}
@@ -164,7 +166,7 @@ export function ValoresAnualesEditor() {
 
           <p className={HINT_CLASSES}>
             Una fila a la que le falte cualquiera de las tres se descarta: media fila daría un 0 que
-            pasa por dato bueno.
+            pasa por dato bueno. Si un año viene repetido, vale su primera fila.
           </p>
 
           {error && <p className={ERROR_CLASSES}>{error}</p>}

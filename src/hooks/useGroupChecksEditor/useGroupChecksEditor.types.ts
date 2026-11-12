@@ -1,4 +1,3 @@
-import type { CanvasField } from "../../types/field";
 import type { RepeatableGroup } from "../../types/formStructure";
 import type { GroupCheck } from "../../types/groupCheck";
 
@@ -8,11 +7,9 @@ export interface UseGroupChecksEditorParams {
 
 export interface UseGroupChecksEditorResult {
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
   toggleOpen: () => void;
   checks: GroupCheck[];
   activeCount: number;
-  candidates: CanvasField[];
   knownNames: Set<string>;
   formScript: string;
   addCheck: () => void;

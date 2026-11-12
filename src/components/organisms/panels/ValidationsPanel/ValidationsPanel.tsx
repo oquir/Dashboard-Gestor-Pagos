@@ -1,26 +1,41 @@
+import { useDependencyCandidates } from "../../../../hooks/useDependencyCandidates/useDependencyCandidates";
+import { builtInFormatOf, isContactField } from "../../../../lib/fieldContact/fieldContact";
+import { isDateFieldType } from "../../../../lib/fieldDate/fieldDate";
 import { isPresentationalField } from "../../../../lib/fieldKind/fieldKind";
 import { supportsMaxLength } from "../../../../lib/fieldLength/fieldLength";
 import { buildZodSchema } from "../../../../lib/zodSchema/zodSchema";
-import { getAllFields, useFormStore } from "../../../../store/formStore";
+import { useFormStore } from "../../../../store/formStore";
 import type { CanvasField, FieldValidations } from "../../../../types/field";
+import type { PatternRule } from "../../../../types/fieldContact";
 import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
 import { TwoColumnFieldGroup } from "../../../atoms/TwoColumnFieldGroup/TwoColumnFieldGroup";
+import { DateBoundInput } from "../../../molecules/DateBoundInput/DateBoundInput";
 import { GeneratedSchemaPreview } from "../../../molecules/GeneratedSchemaPreview/GeneratedSchemaPreview";
 import { LabeledInput } from "../../../molecules/LabeledInput/LabeledInput";
 import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
 import { ValidationOverridesEditor } from "../ValidationOverridesEditor/ValidationOverridesEditor";
+import {
+  BASIC_RULES_DESCRIPTION,
+  BUILT_IN_FORMAT_DESCRIPTION,
+  DATE_BOUNDS_DESCRIPTION,
+  FORMAT_DESCRIPTION,
+  MAX_DIGITS_DESCRIPTION,
+} from "./ValidationsPanel.constants";
 import { toNumberOrUndefined } from "./ValidationsPanel.utils";
 
 export function ValidationsPanel({ field }: { field: CanvasField }) {
   const updateFieldValidations = useFormStore((state) => state.updateFieldValidations);
-  const formSteps = useFormStore((state) => state.formSteps);
   const v: FieldValidations = field.validations;
-  // Mismo criterio que LogicPanel: solo campos con valor, y nunca el propio.
-  const candidates: CanvasField[] = getAllFields(formSteps.flatMap((step) => step.rows)).filter(
-    (candidate) => candidate.id !== field.id && !isPresentationalField(candidate.type),
-  );
+  const candidates: CanvasField[] = useDependencyCandidates(field.id);
   const isNumeric = field.type === "number" || field.type === "calculated";
-  const isTextLike = field.type === "text" || field.type === "textarea" || field.type === "select";
+  const isTextLike =
+    field.type === "text" ||
+    field.type === "textarea" ||
+    field.type === "select" ||
+    field.type === "datalist" ||
+    isContactField(field.type);
+  // Telefono y correo ya validan sin patron: lo vacio no es "sin formato" sino "el de fabrica".
+  const builtInFormat: PatternRule | undefined = builtInFormatOf(field);
   // La longitud se declara una sola vez pero se cuenta distinto, asi que son dos controles: en
   // texto son caracteres y en numero digitos de la parte entera. Un select queda afuera de los dos
   // -- su valor es el id de una opcion y buildZodSchema ni mira la longitud.
@@ -40,7 +55,14 @@ export function ValidationsPanel({ field }: { field: CanvasField }) {
   return (
     <div className="flex flex-col gap-3">
       {showsBasicRules && (
-        <PanelSection title="Reglas básicas">
+        <PanelSection
+          title="Reglas básicas"
+          description={
+            isNumeric
+              ? `${BASIC_RULES_DESCRIPTION}\n${MAX_DIGITS_DESCRIPTION}`
+              : BASIC_RULES_DESCRIPTION
+          }
+        >
           {field.type !== "checkbox" && (
             <div className="flex items-center justify-between gap-2">
               <span className="text-sm text-fg">Campo requerido</span>
@@ -109,37 +131,55 @@ export function ValidationsPanel({ field }: { field: CanvasField }) {
           )}
 
           {isNumeric && (
-            <div>
-              <LabeledInput
-                id="max-digits"
-                label="Máximo de dígitos"
-                type="number"
-                min={1}
-                placeholder="—"
-                value={v.maxLength ?? ""}
-                onChange={(event) =>
-                  updateFieldValidations(field.id, {
-                    maxLength: toNumberOrUndefined(event.target.value),
-                  })
-                }
-              />
-              <p className="mt-1 text-[11px] text-fg-subtle">
-                Cuenta los dígitos de la parte entera. Los puntos de miles, la coma decimal y el
-                signo no cuentan.
-              </p>
-            </div>
+            <LabeledInput
+              id="max-digits"
+              label="Máximo de dígitos"
+              type="number"
+              min={1}
+              placeholder="—"
+              value={v.maxLength ?? ""}
+              onChange={(event) =>
+                updateFieldValidations(field.id, {
+                  maxLength: toNumberOrUndefined(event.target.value),
+                })
+              }
+            />
           )}
         </PanelSection>
       )}
 
+      {isDateFieldType(field.type) && (
+        <PanelSection title="Fechas permitidas" description={DATE_BOUNDS_DESCRIPTION}>
+          <DateBoundInput
+            id="min-date"
+            label="No antes de"
+            bound={v.minDate}
+            onChange={(minDate) => updateFieldValidations(field.id, { minDate })}
+          />
+          <DateBoundInput
+            id="max-date"
+            label="No después de"
+            bound={v.maxDate}
+            onChange={(maxDate) => updateFieldValidations(field.id, { maxDate })}
+          />
+        </PanelSection>
+      )}
+
       {isTextLike && (
-        <PanelSection title="Formato y mensaje">
+        <PanelSection
+          title="Formato y mensaje"
+          description={
+            builtInFormat
+              ? `${FORMAT_DESCRIPTION}\n${BUILT_IN_FORMAT_DESCRIPTION}`
+              : FORMAT_DESCRIPTION
+          }
+        >
           <LabeledInput
             id="pattern"
             label="Expresión regular"
             value={v.pattern ?? ""}
             onChange={(event) => updateFieldValidations(field.id, { pattern: event.target.value })}
-            placeholder="^[0-9]+-[0-9]$"
+            placeholder={builtInFormat ? "La del tipo" : "^[0-9]+-[0-9]$"}
             tone="code"
           />
 
@@ -148,7 +188,7 @@ export function ValidationsPanel({ field }: { field: CanvasField }) {
             label="Mensaje de error"
             value={v.message ?? ""}
             onChange={(event) => updateFieldValidations(field.id, { message: event.target.value })}
-            placeholder="Formato inválido"
+            placeholder={builtInFormat?.message ?? "Formato inválido"}
           />
         </PanelSection>
       )}

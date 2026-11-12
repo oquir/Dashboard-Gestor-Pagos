@@ -51,6 +51,13 @@ export const CHROME_ON_ROW_CLASSES: string =
 
 export const CHROME_PINNED_CLASSES: string = "opacity-100";
 
+// El icono de adentro del control de muestra (la calculadora, el calendario, la lupa) se esconde
+// cuando el campo es tan angosto que no deja ver ni el texto, como el DV con los dos paneles
+// abiertos. Es una container query sobre el ancho real del contenido del chip, que depende de la
+// fila, de los paneles y de la pantalla. Los iconos de la cabecera no usan esto: deciden con el
+// largo de su propio nombre (ver CanvasFieldChip).
+export const NARROW_FIELD_HIDDEN_CLASSES: string = "@max-[5rem]:hidden";
+
 // La barra de herramientas de una fila del lienzo. El disparador y el desplegable los dibujan
 // RowColumnsMenu y RowStylesMenu, que viven en otra carpeta, asi que las clases no pueden quedarse
 // privadas dentro de RowToolbar.
@@ -65,7 +72,14 @@ export const ROW_TOOLBAR_ICON_ITEM_CLASSES: string =
 export const ROW_TOOLBAR_POPOVER_CLASSES: string =
   "absolute right-0 top-6 z-20 flex w-72 flex-col gap-2 rounded-md border border-border bg-surface p-3 shadow-lg dark:bg-surface-raised";
 
-// Las acciones con texto de la barra flotante del lienzo. Las comparten CanvasToolbar y
-// MoveToStepMenu, que viven en carpetas distintas.
+// Las acciones con texto de la barra flotante del lienzo. Las comparten CanvasToolbar,
+// MoveToStepMenu y CollapsedRightSidebar, que viven en carpetas distintas.
 export const CANVAS_TOOLBAR_ACTION_CLASSES: string =
   "flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-fg-soft transition-colors hover:cursor-pointer hover:bg-surface-raised hover:text-fg-strong disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-fg-soft dark:hover:bg-surface-inset";
+
+// La accion de solo icono y el separador de esa misma barra. Bajaron aca cuando el chip del panel
+// derecho plegado, que es su hermano visual, empezo a necesitarlos desde otra carpeta.
+export const CANVAS_TOOLBAR_ICON_ACTION_CLASSES: string =
+  "flex h-8 w-8 items-center justify-center rounded-lg text-fg-muted transition-colors hover:cursor-pointer hover:bg-surface-raised hover:text-fg-strong dark:hover:bg-surface-inset disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-fg-muted dark:disabled:hover:bg-transparent";
+
+export const CANVAS_TOOLBAR_DIVIDER_CLASSES: string = "mx-0.5 h-5 w-px bg-border";

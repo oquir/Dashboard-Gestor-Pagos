@@ -12,13 +12,21 @@ import type {
 import type { CanvasField, CatalogFill, FieldCondition, FieldDataSource } from "../../types/field";
 import type { CanvasRow, FormStep, RepeatableGroup } from "../../types/formStructure";
 import { resolveFieldStyles, resolveRowStyles } from "../cssStyles/cssStyles";
+import { affixOf } from "../fieldAffix/fieldAffix";
 import { operatorTakesList, parseConditionList } from "../fieldCondition/fieldCondition";
+import {
+  exportableDateFormat,
+  exportableDateRange,
+  exportableIncludesTime,
+} from "../fieldDate/fieldDate";
 import { isPresentationalField } from "../fieldKind/fieldKind";
 import { exportableMaxLength } from "../fieldLength/fieldLength";
 import { exportableInlineOptions, exportableOptions } from "../fieldOptions/fieldOptions";
+import { placeholderOf } from "../fieldPlaceholder/fieldPlaceholder";
 import { exportableDecimals, exportableRounding } from "../fieldRounding/fieldRounding";
 import { compileScript } from "../fieldScript/fieldScript";
 import { exportableAllowsNegative } from "../fieldSign/fieldSign";
+import { suggestionsOf } from "../fieldSuggestions/fieldSuggestions";
 import { exportableTooltip } from "../fieldTooltip/fieldTooltip";
 import { enabledChecks } from "../groupCheck/groupCheck";
 import { exportableFormatting } from "../numberFormat/numberFormat";
@@ -85,7 +93,7 @@ export function resolveValidations(
   };
 }
 
-// El script se compila aca y no del lado del consumidor: {campo} no es JS, y hacer que cada
+// El script se compila aca y no del lado del consumidor: {{campo}} no es JS, y hacer que cada
 // consumidor implemente el recorrido que distingue codigo de texto seria repartir la parte
 // delicada. Sale ya en JS, con las dependencias que declara al leerlas.
 function compileSource(source: string, knownNames: Set<string>): ExportedScript {
@@ -199,7 +207,14 @@ export function mapRows(
       formatted: exportableFormatting(field),
       allowsNegative: exportableAllowsNegative(field),
       decimals: exportableDecimals(field),
+      prefix: affixOf(field, "prefix"),
+      suffix: affixOf(field, "suffix"),
+      placeholder: placeholderOf(field),
+      suggestions: suggestionsOf(field),
       inlineOptions: exportableInlineOptions(field),
+      dateRange: exportableDateRange(field),
+      includesTime: exportableIncludesTime(field),
+      dateFormat: exportableDateFormat(field),
       maxLength: exportableMaxLength(field),
     })),
   }));
@@ -249,6 +264,7 @@ export function mapFormStep(
     stepId: step.stepId,
     title: step.title,
     subtitle: step.subtitle || undefined,
+    hidden: step.hidden ? true : undefined,
     rows: mapRows(step.rows, names, knownNames),
     groups: mapGroups(step, knownNames),
   };

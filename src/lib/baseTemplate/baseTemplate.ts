@@ -17,8 +17,6 @@ import type {
 } from "../../types/formStructure";
 import {
   CALCULATED_WITHOUT_NEGATIVE,
-  CORREO_MESSAGE,
-  CORREO_PATTERN,
   DECIMALS_BY_FIELD,
   DOCUMENTO_MESSAGE,
   DOCUMENTO_PATTERN,
@@ -26,12 +24,12 @@ import {
   INGRESOS_ACTIVIDADES_MESSAGE,
   INGRESOS_ACTIVIDADES_SCRIPT,
   INTERES_MORA_SCRIPT,
+  MONEY_PREFIX,
   NIT_MESSAGE,
   NIT_PATTERN,
   SALDO_NETO,
   SANCION_EXTEMPORANEIDAD_SCRIPT,
-  TELEFONO_MESSAGE,
-  TELEFONO_PATTERN,
+  SUFFIX_BY_FIELD,
   TEMPLATE_DECIMALS,
   TIPO_DOCUMENTO_NIT,
   TIPO_SANCION_OTRA,
@@ -186,7 +184,8 @@ function buildActividadesStep(): FormStepTemplate {
           {
             name: "tarifa_x_mil",
             type: "number",
-            label: "Tarifa X1000",
+            // La unidad la pone el sufijo X1000 (SUFFIX_BY_FIELD); repetida aca se leeria dos veces.
+            label: "Tarifa",
             colSpan: 5,
             path: "actividades[].tarifaXMil",
             alwaysDisabled: true,
@@ -198,7 +197,7 @@ function buildActividadesStep(): FormStepTemplate {
             colSpan: 5,
             path: "actividades[].valorImpuestoActividad",
             alwaysDisabled: true,
-            script: "return round({ingresos_gravados} * {tarifa_x_mil} / 1000);",
+            script: "return round({{ingresos_gravados}} * {{tarifa_x_mil}} / 1000);",
           },
         ],
         group.id,
@@ -263,7 +262,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
                 {
                   label: "Digito de verificacion del NIT",
                   when: [SOLO_PERSONA_JURIDICA],
-                  script: "return dvNit({numero_documento});",
+                  script: "return dvNit({{numero_documento}});",
                 },
               ],
             },
@@ -347,25 +346,22 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
             },
           ]),
           buildRow([
+            // Sin patron propio: el tipo trae el de fabrica. Ver lib/fieldContact.
             {
               name: "telefono_celular",
-              type: "text",
+              type: "tel",
               label: "Teléfono celular",
               colSpan: 8,
               path: "contribuyente.telefono",
               required: true,
-              pattern: TELEFONO_PATTERN,
-              message: TELEFONO_MESSAGE,
             },
             {
               name: "correo_electronico",
-              type: "text",
+              type: "email",
               label: "Correo electrónico",
               colSpan: 8,
               path: "contribuyente.correo",
               required: true,
-              pattern: CORREO_PATTERN,
-              message: CORREO_MESSAGE,
             },
           ]),
           buildRow([
@@ -423,7 +419,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               colSpan: GRID_BASE_COLUMNS,
               path: "baseGravable.totalIngresosOrdinarios",
               alwaysDisabled: true,
-              script: "return {total_ingresos_nacionales} - {ingresos_fuera_municipio};",
+              script: "return {{total_ingresos_nacionales}} - {{ingresos_fuera_municipio}};",
             },
           ]),
           buildRow([
@@ -492,7 +488,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               path: "baseGravable.totalIngresosGravables",
               alwaysDisabled: true,
               script:
-                "return {total_ingresos_ordinarios} - {ingresos_devoluciones_descuentos} - {ingresos_exportaciones} - {ingresos_venta_activos} - {ingresos_excluidos_no_gravados} - {ingresos_exentos_municipio};",
+                "return {{total_ingresos_ordinarios}} - {{ingresos_devoluciones_descuentos}} - {{ingresos_exportaciones}} - {{ingresos_venta_activos}} - {{ingresos_excluidos_no_gravados}} - {{ingresos_exentos_municipio}};",
             },
           ]),
         ],
@@ -509,7 +505,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               colSpan: GRID_BASE_COLUMNS,
               excluded: true,
               alwaysDisabled: true,
-              script: "return sum({impuesto_actividad});",
+              script: "return sum({{impuesto_actividad}});",
             },
           ]),
           buildRow([
@@ -542,7 +538,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               colSpan: GRID_BASE_COLUMNS,
               excluded: true,
               alwaysDisabled: true,
-              script: "return {total_impuesto} + {impuesto_ley_56};",
+              script: "return {{total_impuesto}} + {{impuesto_ley_56}};",
             },
           ]),
           buildRow([
@@ -553,7 +549,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               colSpan: GRID_BASE_COLUMNS,
               path: "impuestoACargo.impuestoAvisosTableros",
               alwaysDisabled: true,
-              script: "return {total_impuesto_industria_comercio} * 0.15;",
+              script: "return {{total_impuesto_industria_comercio}} * 0.15;",
             },
           ]),
           buildRow([
@@ -600,7 +596,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               path: "impuestoACargo.totalImpuestoACargo",
               alwaysDisabled: true,
               script:
-                "return {total_impuesto_industria_comercio} + {impuesto_avisos_tableros} + {pago_unidades_sector_financiero} + {sobretasa_bomberil} + {sobretasa_seguridad};",
+                "return {{total_impuesto_industria_comercio}} + {{impuesto_avisos_tableros}} + {{pago_unidades_sector_financiero}} + {{sobretasa_bomberil}} + {{sobretasa_seguridad}};",
             },
           ]),
         ],
@@ -787,7 +783,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               colSpan: GRID_BASE_COLUMNS,
               excluded: true,
               alwaysDisabled: true,
-              script: "return {total_saldo_a_cargo};",
+              script: "return {{total_saldo_a_cargo}};",
             },
           ]),
           buildRow([
@@ -831,7 +827,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               // favor. El max(..., 0) es el otro lado de lo mismo -- por debajo de cero el
               // resultado ya es el saldo a favor, y ese se declara en el 34, no aca en negativo.
               script:
-                "return max({valor_a_pagar} - {descuento_pronto_pago} + {interes_mora} - {total_saldo_a_favor}, 0);",
+                "return max({{valor_a_pagar}} - {{descuento_pronto_pago}} + {{interes_mora}} - {{total_saldo_a_favor}}, 0);",
             },
           ]),
         ],
@@ -859,7 +855,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               colSpan: GRID_BASE_COLUMNS,
               excluded: true,
               alwaysDisabled: true,
-              script: "return {total_a_pagar} + {valor_aporte_voluntario};",
+              script: "return {{total_a_pagar}} + {{valor_aporte_voluntario}};",
             },
           ]),
           buildRow([
@@ -971,14 +967,14 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
           buildRow([
             {
               name: "celular_responsable",
-              type: "text",
+              type: "tel",
               label: "Celular",
               colSpan: 6,
               path: "responsableLegal.celular",
             },
             {
               name: "correo_responsable",
-              type: "text",
+              type: "email",
               label: "Correo electrónico",
               colSpan: 5,
               path: "responsableLegal.correoElectronico",
@@ -999,6 +995,8 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
       clampedCalculated: CALCULATED_WITHOUT_NEGATIVE,
       decimals: TEMPLATE_DECIMALS,
       decimalsByField: DECIMALS_BY_FIELD,
+      moneyPrefix: MONEY_PREFIX,
+      suffixByField: SUFFIX_BY_FIELD,
     },
   );
 }

@@ -18,7 +18,7 @@ export function RowDragPreview({ row, width, scale }: RowDragPreviewProps) {
         transform: scale === 1 ? undefined : `scale(${scale})`,
         transformOrigin: "top left",
       }}
-      className="grid rotate-1 gap-3 rounded-md border-2 border-orange-500 bg-white p-3 shadow-2xl dark:border-orange-400 dark:bg-neutral-900"
+      className="grid rotate-1 gap-3 rounded-md border-2 border-brand bg-white p-3 shadow-2xl dark:bg-neutral-900"
     >
       {row.fields.length === 0 && (
         <div
@@ -34,6 +34,7 @@ export function RowDragPreview({ row, width, scale }: RowDragPreviewProps) {
           key={field.id}
           style={{
             gridColumn: `${field.colStart} / span ${field.colSpan}`,
+            gridRow: 1,
             marginTop: field.styles.marginTop,
             marginBottom: field.styles.marginBottom,
             backgroundColor: field.styles.backgroundColor,

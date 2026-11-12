@@ -1,9 +1,21 @@
 import { fillsColumn } from "../../../../lib/catalogFill/catalogFill";
+import { affixOf } from "../../../../lib/fieldAffix/fieldAffix";
+import {
+  dateFormatOf,
+  dateInputMax,
+  includesTime,
+  isDateRangeField,
+} from "../../../../lib/fieldDate/fieldDate";
 import { maxLengthOf } from "../../../../lib/fieldLength/fieldLength";
 import { showsOptionsInline } from "../../../../lib/fieldOptions/fieldOptions";
+import { placeholderOf } from "../../../../lib/fieldPlaceholder/fieldPlaceholder";
 import { catalogOptions } from "../../../../lib/mockCatalog/mockCatalog";
 import type { CatalogOption } from "../../../../types/catalog";
 import { RichTextView } from "../../../atoms/RichTextView/RichTextView";
+import { PreviewAffixFrame } from "../PreviewAffixFrame/PreviewAffixFrame";
+import { PreviewDatalistInput } from "../PreviewDatalistInput/PreviewDatalistInput";
+import { PreviewDateInput } from "../PreviewDateInput/PreviewDateInput";
+import { PreviewDateRangeInput } from "../PreviewDateRangeInput/PreviewDateRangeInput";
 import { PreviewNumberInput } from "../PreviewNumberInput/PreviewNumberInput";
 import { PreviewSearchSelect } from "../PreviewSearchSelect/PreviewSearchSelect";
 import {
@@ -32,6 +44,7 @@ export function PreviewFieldControl({
   const controlClasses = `${CONTROL_BASE_CLASSES} ${invalid ? CONTROL_INVALID_CLASSES : CONTROL_IDLE_CLASSES}`;
   const options: CatalogOption[] = catalogOptions(field, scopeValues, catalogBank);
   const inputId = `preview-${field.name}`;
+  const placeholder: string | undefined = placeholderOf(field);
 
   switch (field.type) {
     case "rich_text":
@@ -46,6 +59,7 @@ export function PreviewFieldControl({
           id={inputId}
           rows={3}
           maxLength={maxLengthOf(field)}
+          placeholder={placeholder}
           disabled={disabled}
           value={toInputValue(value)}
           onChange={(event) => onChange(event.target.value)}
@@ -60,13 +74,87 @@ export function PreviewFieldControl({
     // que recibimos ya viene atado a su grupo y su repeticion, asi que esto funciona igual
     // adentro de un grupo repetible.
     case "number":
-    case "calculated":
-      return (
+    case "calculated": {
+      const prefix: string | undefined = affixOf(field, "prefix");
+      const suffix: string | undefined = affixOf(field, "suffix");
+      const numberInput = (className: string) => (
         <PreviewNumberInput
           field={field}
           value={value}
           disabled={disabled}
           inputId={inputId}
+          className={className}
+          onChange={onChange}
+        />
+      );
+
+      // Sin afijos queda el input de siempre: el marco solo aparece cuando hay algo que enmarcar.
+      return prefix || suffix ? (
+        <PreviewAffixFrame prefix={prefix} suffix={suffix} invalid={invalid}>
+          {numberInput}
+        </PreviewAffixFrame>
+      ) : (
+        numberInput(controlClasses)
+      );
+    }
+
+    // El valor es lo escrito, se elija una sugerencia o no: por eso valida y viaja como un texto.
+    case "datalist":
+      return (
+        <PreviewDatalistInput
+          inputId={inputId}
+          suggestions={field.suggestions ?? []}
+          value={toInputValue(value)}
+          placeholder={placeholder}
+          maxLength={maxLengthOf(field)}
+          disabled={disabled}
+          className={controlClasses}
+          onChange={onChange}
+        />
+      );
+
+    // type tel y email no validan nada por si solos fuera de un <form>; lo que traen es el teclado
+    // del celular. El formato lo valida el schema, con el patron de fabrica del tipo.
+    case "tel":
+    case "email":
+      return (
+        <input
+          id={inputId}
+          type={field.type}
+          autoComplete="off"
+          maxLength={maxLengthOf(field)}
+          placeholder={placeholder}
+          disabled={disabled}
+          value={toInputValue(value)}
+          onChange={(event) => onChange(event.target.value)}
+          className={controlClasses}
+        />
+      );
+
+    // El valor es el texto que entrega el input, tal cual (AAAA-MM-DD, o AAAA-MM-DDTHH:mm con hora):
+    // es lo que valida el schema y lo que viaja en el payload. El dd/mm/aaaa en pantalla lo pone el
+    // navegador segun su idioma.
+    case "date":
+      return isDateRangeField(field) ? (
+        <PreviewDateRangeInput
+          label={field.label}
+          value={value}
+          disabled={disabled}
+          inputId={inputId}
+          format={dateFormatOf(field)}
+          withTime={includesTime(field)}
+          max={dateInputMax(field)}
+          className={controlClasses}
+          onChange={onChange}
+        />
+      ) : (
+        <PreviewDateInput
+          id={inputId}
+          format={dateFormatOf(field)}
+          withTime={includesTime(field)}
+          value={toInputValue(value)}
+          max={dateInputMax(field)}
+          disabled={disabled}
           className={controlClasses}
           onChange={onChange}
         />
@@ -80,7 +168,7 @@ export function PreviewFieldControl({
             disabled={disabled}
             checked={Boolean(value)}
             onChange={(event) => onChange(event.target.checked)}
-            className="accent-orange-500"
+            className="accent-brand"
           />
           {field.title || "Acepto"}
         </label>
@@ -111,6 +199,7 @@ export function PreviewFieldControl({
           disabled={disabled}
           invalid={invalid}
           showsTarifa={fillsColumn(field, "tarifa")}
+          placeholder={placeholder}
           onChange={onChange}
         />
       );
@@ -124,7 +213,7 @@ export function PreviewFieldControl({
           onChange={(event) => onChange(event.target.value)}
           className={controlClasses}
         >
-          <option value="">Seleccionar…</option>
+          <option value="">{placeholder ?? "Seleccionar…"}</option>
           {options.map((option) => (
             <option key={option.id} value={option.id}>
               {option.label}
@@ -165,7 +254,7 @@ export function PreviewFieldControl({
                 disabled={disabled}
                 checked={toInputValue(value) === option.id}
                 onChange={() => onChange(option.id)}
-                className="accent-orange-500"
+                className="accent-brand"
               />
               {option.label}
             </label>
@@ -187,7 +276,7 @@ export function PreviewFieldControl({
                 disabled={disabled}
                 checked={selected.includes(option.id)}
                 onChange={() => onChange(toggleInList(selected, option.id))}
-                className="accent-orange-500"
+                className="accent-brand"
               />
               {option.label}
             </label>
@@ -202,6 +291,7 @@ export function PreviewFieldControl({
           id={inputId}
           type="text"
           maxLength={maxLengthOf(field)}
+          placeholder={placeholder}
           disabled={disabled}
           value={toInputValue(value)}
           onChange={(event) => onChange(event.target.value)}

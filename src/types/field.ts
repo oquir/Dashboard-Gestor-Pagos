@@ -1,4 +1,6 @@
 import type { CatalogColumn } from "./catalog";
+import type { PhoneKind } from "./fieldContact";
+import type { DateBound, DateFormatId } from "./fieldDate";
 import type { RichTextContent } from "./richText";
 
 // Lo que una condicion puede cambiar. Vive aparte de FieldValidations para que un override no
@@ -11,6 +13,9 @@ export interface FieldValidationRules {
   max?: number;
   pattern?: string;
   message?: string;
+  // Solo campos fecha: lo mas temprano y lo mas tarde que se acepta. Ver lib/dateBound.
+  minDate?: DateBound;
+  maxDate?: DateBound;
 }
 
 // Cuando `when` se cumple, estas reglas se fusionan sobre las de base. Lo que el override no
@@ -39,7 +44,7 @@ export interface FieldStyles {
 // solo se aplicaria ahi por casualidad. Ver lib/cssStyles.
 export type CssStyleMap = Record<string, string>;
 
-// El calculo de un campo vive en un solo lugar: `script`, codigo con {campo} para leer a los
+// El calculo de un campo vive en un solo lugar: `script`, codigo con {{campo}} para leer a los
 // demas. Las reglas siguen aparte porque no son otro lenguaje sino una estructura declarativa
 // encima del mismo: condicion mas efecto, y el efecto habla este script.
 export interface FieldLogic {
@@ -92,7 +97,7 @@ export interface RuleCondition extends FieldCondition {
   id: string;
 }
 
-// El efecto habla el mismo lenguaje que `logic.script` -- {campo} y un return que da el valor --
+// El efecto habla el mismo lenguaje que `logic.script` -- {{campo}} y un return que da el valor --
 // y no el de formulas. Las reglas siguen siendo una estructura declarativa, pero un solo lenguaje
 // de calculo en todo el aplicativo: dos era el problema que este cambio vino a sacar.
 export type RuleEffect =
@@ -160,7 +165,30 @@ export interface CanvasField {
   // Cuantos decimales muestra y deja teclear. Ausente = los que traiga, hasta el tope de la lib.
   // Recorta el valor ademas de rellenarlo al mostrar; ver lib/fieldRounding.
   decimals?: number;
+  // Texto fijo antes y despues del numero ($, X1000, kW). Solo presentacion, como `formatted`: el
+  // valor sigue siendo el numero y el prefijo nunca entra en el. Ver lib/fieldAffix.
+  prefix?: string;
+  suffix?: string;
+  // El texto gris del campo vacio. Solo presentacion: nunca entra en el valor. Ver
+  // lib/fieldPlaceholder.
+  placeholder?: string;
+  // Solo datalist: lo que se sugiere mientras se escribe, una entrada por linea del panel y tal
+  // cual se tecleo -- vacias incluidas --. No limita el valor, que sigue siendo el texto escrito.
+  // Ver lib/fieldSuggestions.
+  suggestions?: string[];
+  // Solo telefono: que numero pide, y con eso que patron de fabrica valida. Ausente es celular, y
+  // por eso el store solo guarda "fijo" o "fax". Ver lib/fieldContact.
+  phoneKind?: PhoneKind;
   // Dibujar las opciones en una sola linea en vez de una debajo de otra. Solo presentacion, y solo
   // para radio_group y checkbox_group; ver lib/fieldOptions.
   inlineOptions?: boolean;
+  // Un campo fecha que pide un rango en vez de una sola fecha: el valor pasa a ser
+  // { desde, hasta }. Cambia la forma del valor, no solo como se ve; ver lib/fieldDate.
+  dateRange?: boolean;
+  // Un campo fecha que pide tambien la hora, en una sola fecha o en las dos puntas del rango: el
+  // valor pasa de AAAA-MM-DD a AAAA-MM-DDTHH:mm. Solo cuando el municipio lo pide.
+  includesTime?: boolean;
+  // Como se ve la fecha y como viaja a la API. Por dentro el valor sigue en AAAA-MM-DD; el formato
+  // se aplica solo en el input y en el payload. Ausente = el input del navegador. Ver lib/dateFormat.
+  dateFormat?: DateFormatId;
 }

@@ -11,6 +11,9 @@ import type {
   FieldValidationOverride,
   FieldValidations,
 } from "./field";
+import type { AffixSide } from "./fieldAffix";
+import type { PhoneKind } from "./fieldContact";
+import type { DateFormatId } from "./fieldDate";
 import type { FieldTypeDef } from "./fieldTypes";
 import type { FormStep, IntroModalState, RepeatableGroup, RowStyles } from "./formStructure";
 import type {
@@ -34,7 +37,7 @@ export interface FormState extends BanksSlice {
   formSteps: FormStep[];
   introModal: IntroModalState;
   // Preludio: funciones y constantes que todos los scripts de campo ven en ambito. No lee campos
-  // -- {campo} no vale aca -- porque fuera de todo ambito, y sobre todo dentro de un grupo
+  // -- {{campo}} no vale aca -- porque fuera de todo ambito, y sobre todo dentro de un grupo
   // repetible, esa pregunta no tiene una respuesta unica.
   formScript: string;
   activeCanvas: CanvasTarget;
@@ -44,6 +47,7 @@ export interface FormState extends BanksSlice {
   canvasTool: CanvasTool;
   setupConfig: SetupConfig;
   isSidebarOpen: boolean;
+  isRightSidebarOpen: boolean;
   isSimulatorOpen: boolean;
   canvasZoom: number;
   canvasViewMode: CanvasViewMode;
@@ -64,6 +68,7 @@ export interface FormState extends BanksSlice {
   setHoveredTransferTarget: (target: CanvasTarget | null) => void;
   dismissTransferNotice: () => void;
   setSidebarOpen: (open: boolean) => void;
+  setRightSidebarOpen: (open: boolean) => void;
   setCanvasViewMode: (mode: CanvasViewMode) => void;
   setSimulatorOpen: (open: boolean) => void;
   setCanvasZoom: (zoom: number) => void;
@@ -81,6 +86,7 @@ export interface FormState extends BanksSlice {
   setActiveCanvas: (target: CanvasTarget) => void;
   updateFormStepTitle: (stepId: string, title: string) => void;
   updateFormStepSubtitle: (stepId: string, subtitle: string) => void;
+  setFormStepHidden: (stepId: string, hidden: boolean) => void;
   addFormStep: () => void;
   removeFormStep: (stepId: string) => void;
   updateIntroModalStepTitle: (stepId: string, title: string) => void;
@@ -146,7 +152,16 @@ export interface FormState extends BanksSlice {
   setFieldFormatted: (fieldId: string, formatted: boolean) => void;
   setFieldAllowsNegative: (fieldId: string, allows: boolean) => void;
   setFieldDecimals: (fieldId: string, decimals: number | null) => void;
+  setFieldAffix: (fieldId: string, side: AffixSide, text: string) => void;
+  setFieldPhoneKind: (fieldId: string, kind: PhoneKind) => void;
+  setFieldPlaceholder: (fieldId: string, text: string) => void;
+  // El texto del panel, una sugerencia por linea.
+  setFieldSuggestions: (fieldId: string, text: string) => void;
   setFieldInlineOptions: (fieldId: string, inline: boolean) => void;
+  setFieldDateRange: (fieldId: string, range: boolean) => void;
+  setFieldIncludesTime: (fieldId: string, withTime: boolean) => void;
+  // null vuelve al input del navegador.
+  setFieldDateFormat: (fieldId: string, format: DateFormatId | null) => void;
   updateFieldTooltip: (fieldId: string, updates: Partial<FieldTooltip> | null) => void;
   addFieldOption: (fieldId: string) => void;
   removeFieldOption: (fieldId: string, optionId: string) => void;

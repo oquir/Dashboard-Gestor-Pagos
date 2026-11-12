@@ -9,40 +9,67 @@ The core builder is implemented: the eight-step Industria y Comercio template, r
 **Tax domain: read `docs/Dominio-ICA.md` before working on the `industria_comercio`, `retencion_industria_comercio` or `autorretencion` templates, their renglones, scripts, sanctions or deadlines.** It explains how the three declarations work (the national FUN renglón by renglón, ReteICA and autorretención with their per-municipality variations) and marks with ⏳ the data that expires (UVT, minimum bases, deadlines, rates): re-verify only those, not the whole document.
 
 Known gaps:
+- **The consumer has drifted from the builder, silently** (checked 2026-10-07, unchanged 2026-10-09). `FrontAutoliquidable` copied the runtime on 2026-08-26 and lacks `fieldDate`, `dateFormat`, `dateBound`, `fieldAffix`, `fieldContact`, so `dateRange`/`dateFormat`/`includesTime`/`prefix`/`suffix`/phone/email ship and get ignored there. The ICA template already uses them: `$`/`X1000`/`kW` affixes and `email`/`tel` fields, which the consumer paints without affix and as a plain text box (the `default` of its `SchemaFieldControl`). The `datalist` type (added 2026-10-20) lands in that same default: the typed text works, its `suggestions` are dropped. Plan: (1) port the missing modules to the consumer — pending; (2) **builder side done**: the export declares `projectMeta.requires` (see "What a form requires"); pending on the consumer: its own list of supported words and refusing to load a form that asks for one it lacks — (1) and (2) go together there, since the check alone would block ICA today; (3) sharing the runtime as a package is **postponed by the user's call** (compatibility; may come back), so the runtime keeps being copied. `scripts/verifyRuntime.ts` in the consumer (`pnpm verify`) already runs the real JSON through its runtime; it could also run it through both engines and diff the results.
 - No test runner, none planned (project too volatile per the user). Verification uses throwaway `pnpm exec tsx` scripts in the scratchpad.
 - `logic.script` exports **compiled JS**, run by the consumer with `new Function` — this is the file's trust boundary (anyone handing the consumer a JSON gets code execution there). Coordinated decision since the user builds both ends.
 - `persistence.ts` versions and migrates drafts (`DRAFT_SCHEMA_VERSION`) before validating. Zod validates *shape*, not coherence (`colSpan: -999`, a `dataSource` on a `text` field, a dangling `labelFor` all pass).
 - `validations.pattern` isn't validated while typing (a `try { new RegExp(value) }` guard in `ValidationsPanel` was offered, not built), but the export review blocks an invalid regex from shipping.
 - **Renglón 31 hardcodes two catalog ids**: `TIPO_SANCION_OTRA = "4"` and `TIPO_SANCION_EXTEMPORANEIDAD = "1"` in `baseTemplate.constants.ts`. Reordering `tipos_sancion` breaks both in silence. Fix (read the catalog bank, not `lib/mockCatalog`) is scoped and deferred.
 - **Two catalog-fed selects still use path-inference instead of `dataSource`**: `periodo_anio`, `clasificacion_contribuyente` (+ the `tipo_representante` toggle). `CATALOGS` declares 9 names, only 8 are wired. `juegos_permitidos` has no field pointing at it yet. Catalog ids are unconfirmed contract names with the consumer.
-- **Renglones 31 and 37 need the intro modal** (`{periodo_anio}` lives there). The wizard always creates it for `industria_comercio` (step 2 is skipped), but nothing stops deleting those intro steps afterwards. Without them the field stays typeable but silently uncalculated.
+- **Renglones 31 and 37 need the intro modal** (`{{periodo_anio}}` lives there). The wizard always creates it for `industria_comercio` (step 2 is skipped), but nothing stops deleting those intro steps afterwards. Without them the field stays typeable but uncalculated — no longer silently: the unknown `{{periodo_anio}}` shows red and the export review blocks.
 - Selects mapped to `number` leaves show a permanent `⚠ tipo` warning (a two-line fix in `fieldMatchesSchemaType` has been offered, not approved).
 - **Moving a field out of a repeatable group to another step keeps its `apiBinding`** — `moveFieldsToStep` → `planLanding` copies the field as is, contrary to the rule in "Repeatable groups". Shared by drag-to-tab and "Mover a paso". One-line fix, not applied: it changes single-field transfers too.
 ## The right panel (`RightSidebar`)
 
-Header, `CanvasTabs`, `TransferNotice` and `StepTitleEditor` moved off the canvas into a right-hand panel (`organisms/RightSidebar/`). `AppLayout` takes four slots (`sidebar`, `canvas`, `canvasOverlay`, `rightSidebar`) — the overlay is the floating tool bar, see "Canvas tools and floating toolbar".
+Header, `CanvasTabs`, `TransferNotice` and `StepTitleEditor` moved off the canvas into a right-hand panel (`organisms/RightSidebar/`). `AppLayout` takes four slots (`sidebar`, `canvas`, `canvasOverlay`, `rightSidebar`) — the overlay carries the floating tool bar and, with the panel collapsed, `CollapsedRightSidebar`; see "Canvas tools and floating toolbar".
 
-**It is modelled on Figma's right panel, by explicit user reference**, in three stacked rows: an **action row** (Guardar left; Simulador and Exportar right, mapping Figma's ▷ and Share), a **text tab strip** with the zoom on its right (Figma's `Design | Prototype … 7% ˅`), and a **body of flat blocks**. The two tabs are `RightSidebarTab` in `types/ui.ts` (`TABS` in `RightSidebar.constants.ts`): **Proyecto** — blocks "Vista" (`ViewModeSwitch`) and "Formulario" (`FormSummary`) — and **Steps** — "Pasos" (the chip grid) and "Paso activo" (título/subtítulo).
+**It is modelled on Figma's right panel, by explicit user reference**, in three stacked rows: an **action row** (Guardar left; Simulador, Exportar and the collapse toggle right, mapping Figma's ▷ and Share), a **text tab strip** with the zoom on its right (Figma's `Design | Prototype … 7% ˅`), and a **body of flat blocks**. The two tabs are `RightSidebarTab` in `types/ui.ts` (`TABS` in `RightSidebar.constants.ts`): **Proyecto** — blocks "Vista" (`ViewModeSwitch`) and "Formulario" (`FormSummary`) — and **Steps** — "Pasos" (the chip grid) and "Paso activo" (título/subtítulo).
 
 Settled:
-- **The right panel does not collapse.** Fixed `w-80`, no `isRightSidebarOpen`, no chevron strip — the tabs switch content instead of hiding it. The left sidebar keeps its own collapse (clicking the active tab), so the two are deliberately *not* symmetric on this point.
+- **The right panel collapses to a floating chip** (`organisms/CollapsedRightSidebar/`, in the `canvasOverlay` slot, top-right). This reverses an earlier settled decision — the panel used to be fixed `w-80` with no `isRightSidebarOpen` — asked for by the user's boss after seeing the left sidebar fold. The chip carries only Guardar, the zoom, Simulador, Exportar and the toggle back. The trigger is a **button in the action row**, not a click on the active tab: the two panels are still deliberately not symmetric, but now only on the gesture.
+- **Collapsed, the `<aside>` is not rendered at all** — not `w-0` with the left sidebar's clipped `w-80` child. That mold exists on the left because its 56 px rail stays visible, so its content can't unmount; the right panel leaves nothing behind. More importantly, `w-0` would keep `CanvasTabs` mounted, and with it `StepTabChip`'s droppables — live drop zones nobody can see. It doesn't animate its width either: `useCanvasViewport` watches the port, so a transition would fire a `setPortSize` and a canvas re-render per frame, and panel and chip are different objects with no visual continuity to preserve. Animate the chip if anything, never the layout's width.
+- **Collapsed is a focus mode over the active step**, with three accepted losses: you can't add, delete or rename steps (`CanvasTabs`), you can't get back from the JSON/Payload views (`ViewModeSwitch` lives in the Proyecto block), and you can't drag a field or a row to another step. Changing step still works with **Ctrl + ← / →** (see "Step navigation shortcut"). Dragging onto the chip to spring it open was considered and **deliberately not built**.
+- **The panel can't appear or disappear mid-drag**, which is what keeps the reflow-under-the-pointer problem dead: the only trigger is a button, and you can't click one with a row hanging off the cursor. A keyboard shortcut would need an explicit `rowDrag`/`draggingFieldId` guard — that is why there isn't one.
+- **`ExportButton` owns `useExportReview` and its modal**, not `RightSidebar` — same shape as `SaveButton` owning `useSaveButton`. The panel and the chip both mount it and are mutually exclusive, so there is never a second instance and neither needs props. `SimulatorButton` was extracted for the same reason; `ProjectImportModal` stayed in the panel, since `Abrir…` lives in the Formulario block.
+- **Nothing in the chip's container may set `transform`, `filter`, `backdrop-filter` or `will-change`.** `ExportReviewModal` renders from inside it through `ModalShell`, which is `fixed inset-0`; any of those creates a containing block and the modal would size itself against the chip instead of the window. `TOOLBAR_CLASSES`, the bar it is modelled on, ships `-translate-x-1/2` — copying that string wholesale is the way to break it. No `overflow-hidden` either, or the zoom menu gets clipped.
 - **The active tab is underlined, not filled.** A grey `bg-surface-raised` pill was the first version and read as a fourth button of the action row right above it — an elevated surface on an elevated surface. It is now plain text, semibold when active, with a 2 px brand rule (`after:` pseudo-element) sitting on the strip's own `border-b`: no new surface, and the only orange is a 2 px sliver that doesn't compete with Exportar. During a drag the forced Steps tab grows a small brand dot (`PANEL_TAB_DROP_DOT_CLASSES`) — the only thing that explains why the tab switched by itself.
 - **Text tabs, not an icon rail.** An icon rail was built first (mirroring the left sidebar) and rejected in favour of the Figma reference. `SidebarTabRail` was made generic for that version and **reverted** once only the left sidebar used it again — an unused generic is the kind of leftover nobody later knows whether they can touch.
 - **`molecules/PanelBlock/` is the flat section, and it coexists with `PanelSection` on purpose.** `PanelSection` is the rounded card with a black veil, for panels that already have margins (the left sidebar's eight). `PanelBlock` is a full-bleed block closed by a `border-b`, for a panel that runs to its own edge. Unifying them would repaint all eight left panels, which is not what was asked.
 - **"Vista" is a segmented control (`molecules/ViewModeSwitch/`), not `TabButtonGroup`.** Three exclusive modes of one canvas read as a segmented control: a sunken rail, the active option a raised pill (`bg-surface`, `dark:bg-surface-inset`), one icon each (`Grid`/`Code12`/`Hierarchy22` in `VIEW_MODE_ICONS`). The old version put three loose buttons with the active one in solid orange, needed a `[&>nav]` override to strip the shared component's own border and padding, and never said the modes were exclusive. `VIEW_MODE_TABS` stays the canonical list of modes and labels; the icons are the control's business. `TabButtonGroup` itself stays — `FieldContextMenu` and `PreviewResults` still use it.
 - **"Formulario" is `molecules/FormSummary/`, not four label→value rows.** Identity first (brand-tinted badge + form type + "Tipo de formulario"), then a bordered strip of big `tabular-nums` metrics (Steps / Modal / Campos), then the save state as a dot + hour. `Campos` is the one number the panel didn't read before: `formSteps.reduce(… getAllFields(step.rows).length)`, form steps only (the modal has its own cell). The dot tells saved from never-saved without spending a row saying it; the Modal cell and its grid column disappear with `hasIntroModal` off.
-- **The zoom lives on the tab strip, not inside Proyecto**, because it belongs to the canvas rather than to a section: it stays visible under either tab (and only in `canvas` view mode, where it means anything).
+- **The zoom lives on the tab strip, not inside Proyecto**, because it belongs to the canvas rather than to a section: it stays visible under either tab. Outside `canvas` view mode it is **disabled, not hidden**, and the gate lives inside `CanvasZoomControl` so both mounts — the strip and the chip — behave the same. Hiding it made the chip change width when switching views, the same reason "+ Grupo repetible" greys out instead of disappearing.
 - **`CanvasZoomControl` is a `100% ˅` dropdown, not `− 100% +`.** Menu: Acercar / Alejar with their shortcut hints, then `ZOOM_PRESETS` (50/75/100/125/150 %) with a check on the current one. Choosing closes it — it is a jump, not a control you keep manipulating; the wheel and Ctrl `+`/`-`/`0` still do the continuous work with the menu shut. Presets must stay inside `[ZOOM_MIN, ZOOM_MAX]` or `clampZoom` silently returns something other than the label.
 - **The panel never scrolls.** `min-h-0` on the body wrapper (without it a flex item can't shrink below its content and the overflow escapes the panel) plus a `max-h-56 overflow-y-auto` scoped to just the step-chip grid inside `CanvasTabs` — the one deliberate exception, and the only place in the panel that can scroll.
 - **Every step tab is a bare number, the active one included.** The active chip used to expand with its title; that made the whole grid reflow on every step change — exactly what must not happen while you point at one of these chips with a row hanging off the cursor. The active chip is now the same 28 px square, told apart by a brand fill plus a `ring-[3px] ring-brand/20` halo, and the delete ✕ still hangs only off it. Uniform width packs 8/row (~40 steps before the grid's own scrollbar). The name lives in the "Paso activo" block, whose header now reads `Paso N · Formulario` to tie the chip's number to the title being edited, and in each chip's native `title`.
 - **The two chip groups are captioned only when both exist** (`GROUP_CAPTION_CLASSES`) — with the intro modal off, a "Formulario" caption would just repeat the block title above it.
 - `StepTabChip`'s droppable id/data is unchanged — only the visual content collapses.
-- **During a drag the Steps tab wins, derived and not written** (`visibleTab = isTransferring ? "steps" : activeTab`, off `rowDrag`/`draggingFieldId`). The step tabs are the drop targets for moving a field or a row to another step; from Proyecto that gesture would have nowhere to land. It snaps back to the chosen tab on drop with no store write. What made this impossible before — opening the panel reflowed the canvas under a moving pointer, mid-gesture — no longer applies now that the panel's width is fixed.
+- **During a drag the Steps tab wins, derived and not written** (`visibleTab = isTransferring ? "steps" : activeTab`, off `rowDrag`/`draggingFieldId`). The step tabs are the drop targets for moving a field or a row to another step; from Proyecto that gesture would have nowhere to land. It snaps back to the chosen tab on drop with no store write. What made this impossible before — opening the panel reflowed the canvas under a moving pointer, mid-gesture — still doesn't apply: while the panel exists its width is fixed, and it cannot be collapsed or reopened mid-drag (see the collapse notes above).
 - `canvasViewMode` moved to the store (`types/ui.ts` / `constants/canvasView.ts`) since the tabs and canvas are now different subtrees.
 - Neither `rightSidebarTab` nor `canvasViewMode` is persisted, matching `isSidebarOpen` and `canvasZoom`.
 - `FORM_TYPES`/`FormTypeOption` moved to `constants/formType.ts`/`types/setup.ts` (co-location rule: used from outside `SetupWizardModal/`).
 - **`SaveButton` is compact and its timestamp is its `title`.** It first sat above a second line with the hour; in a three-button action row there is no second line, and text that comes and goes would shift the buttons beside it. The hour is still readable as a row of the "Formulario" block.
-- **`TransferNotice` carries its own `m-3`.** The body has no padding of its own — each block brings it — and a padded wrapper would leave dead space at the top whenever there is no notice, which is nearly always.
+- **`TransferNotice` carries its own `m-3`, as the default of a `className` prop.** The body has no padding of its own — each block brings it — and a padded wrapper would leave dead space at the top whenever there is no notice, which is nearly always. The prop exists because the collapsed chip mounts the notice too, hanging below it with absolute position instead of a margin: "Mover a paso" keeps writing `transferNotice` while the panel is folded, and without it those crossing references would be lost in silence.
+
+## Hidden steps (`step.hidden`)
+
+A form step can be hidden (`FormStep.hidden?: true`, toggle + (i) in the "Paso activo" block, `setFormStepHidden`): the taxpayer never sees it and "Siguiente" skips it, but its fields **keep computing and keep travelling in the payload** (calculated ones with their value, the rest empty). Motivating case: municipalities that want ICA step 7 gone, which would zero `total_a_pagar_con_aporte_voluntario` if its fields were deleted.
+
+Settled:
+- **Not `visibleWhen` on each field** — a hidden field neither validates nor travels in the payload; a hidden step only stops being shown and navigated.
+- Form steps only (the intro modal is navigated differently). The chip's `title` says "(oculto)"; the step stays editable on the canvas.
+- No required fields belong there — nobody can fill them. Navigation never gates on them (validation is per step), though the simulator's results panel would list them.
+- Exported as `hidden: true` (absent otherwise) and declared as `step.hidden` in `requires`. Additive key: one `persistence.schema.ts` line, no version bump.
+
+## Step navigation shortcut (Ctrl + ← / →)
+
+Builder-only (never the consumer): Ctrl+← / Ctrl+→ moves to the previous / next step, one at a time, in `useKeyboardShortcuts`. Pure order in `src/lib/stepNavigation/` (`orderedSteps`, `adjacentStep`); keys and the chips' `title` hint in `constants/stepNavigation.ts`.
+
+Settled:
+- **One at a time, no wrap-around, no direct jump** (no Alt+N, no first/last) — the user's call: reaching a far step means walking through the ones in between.
+- **Order is the taxpayer's, not the panel's**: intro steps first, then form steps (the user's call). The panel lists the form group above the modal group; the arrows follow the real fill order instead.
+- **Ctrl only.** Alt+arrows is browser back/forward (a missed `preventDefault` leaves the app), Ctrl+Alt+arrows rotates the screen on many Intel-graphics PCs, Alt+Shift switches the Windows keyboard layout, Cmd+arrows is back on Mac. Plain/Shift arrows stay free for nudging a field later.
+- Ignored in editable targets (word jump), with the simulator open, before setup, and **mid-drag** (`rowDrag`/`draggingFieldId`: changing step would unmount what hangs off the pointer).
+- Goes through `setActiveCanvas` like a chip click (clears selection, re-homes, no history step). The active chip `scrollIntoView`s itself (`nearest`), since the chip grid scrolls past ~40 steps.
 
 ## Zone placement (Shift / Shift+Ctrl while dragging)
 
@@ -125,6 +152,7 @@ Settled:
 - `HISTORY_LIMIT = 100`; steps are references, so the memory cost is negligible. **Not persisted** — a reload starts empty.
 - **Ctrl+Z inside an editable target is left alone** (`isEditableTarget`): inputs and CodeMirror keep their own text history. Ignored with the simulator open.
 - **`RichTextEditor` repaints when `value` arrives different from what it shows** (reference compare against what it last painted or emitted; the panels store the emitted object as is). It used to paint only on mount, so after an undo it kept the stale text and the next blur wrote it back, silently undoing the undo. `ScriptEditor` already synced external changes.
+- **The field script gets one CodeMirror per field** (`key={field.id}` on `FieldScriptEditor`'s `ScriptInput`). The external-value sync is a transaction that enters CodeMirror's own history, so with one shared editor a Ctrl+Z inside it wrote the previous field's script into the new one (verified in Edge). Never route a *different document* through that sync.
 - Verified with a tsx script against the real store: bursts, no-op writes, a change right after an undo, multi-delete, move-to-step, intro steps with `setupConfig`, clearing on setup/draft restore, view reconciliation.
 
 ## Reordering rows (drag the row itself)
@@ -171,7 +199,7 @@ Settled:
 Settled:
 - **Export carries one flat `CssStyleMap`** per field/row/tooltip, not named properties + a class string. `textColor` → `color` only on export; internal name stays `textColor`.
 - **The free text wins** (`{...namedProperties, ...parseCssText(customCss)}`, ordinary cascade) — canvas paints what the consumer will paint.
-- **No sanitizer** — CSS via React `style` executes nothing; `unsupportedDeclarations` is informational, not blocking, same treatment as an unrecognized `{campo}`.
+- **No sanitizer** — CSS via React `style` executes nothing; `unsupportedDeclarations` is informational, not blocking (a declaration this browser rejects may work in the consumer's).
 - **Structural placement always wins**, enforced by DOM node separation (field's `gridColumn` lives on a different node than `customCss`) or spread order (row's structural props spread after resolved styles).
 - Canvas splits `marginTop`/`marginBottom` onto the spacing wrapper and the rest onto the `<button>` that paints (applying custom CSS to the wrapper would be invisible under the button's opaque background). `CanvasRow`/`TooltipBubble` have one node each, apply the map directly.
 - Simulator doesn't re-resolve anything — consumes `ExportedField/Row/Tooltip.styles` as already-resolved objects.
@@ -192,7 +220,7 @@ Settled:
 - A row lands appended at the end of the target step; reposition afterward by dragging.
 - Target step is stripped of any pre-existing linked label before planting, to avoid duplicating it.
 - `activeCanvas` follows the move and the field stays selected.
-- **Crossing references are reported, never pruned** (`TransferNotice`) — they still evaluate at runtime by name, but `LogicPanel`'s candidate list is `formSteps`-only so they stop being editable there. Script refs are excluded (travel by name, which moves with the field).
+- **Backward references are reported, never pruned** (`TransferNotice`) — only those a move leaves on an intro field pointing at a form field, the one direction the pickers refuse (see "Conditions"). A form field watching an intro field is legal and stays silent. Script refs are excluded (travel by name, which moves with the field).
 - Tab droppable is `disabled` unless a transfer is in flight (same structural guard as the group band).
 - **Collision detection is `pointerWithin` first, `rectIntersection` fallback** (`pointerFirstCollision`) — dnd-kit's default compared the row-wide overlay against each tab, so the widest covered tab always won regardless of pointer position. Rect fallback still forgives gaps between rows.
 - Over a tab the row preview collapses to a compact chip (`hoveredTransferTarget`) so the tab strip stays visible, and switches to `centerOverlayOnCursor`.
@@ -231,25 +259,23 @@ Settled:
 
 ## The field script (`logic.script`, `formScript`, `logic.rules`)
 
-**A field's value is computed in exactly one place: `logic.script`**, JS with `{campo}` to read other fields. Replaced a self-contained formula language + rules editor + an unexecuted `logic.typeScript` textarea — three mechanisms for one question.
+**A field's value is computed in exactly one place: `logic.script`**, JS with `{{campo}}` to read other fields. Replaced a self-contained formula language + rules editor + an unexecuted `logic.typeScript` textarea — three mechanisms for one question.
 
-`src/lib/fieldScript/fieldScript.ts`: `compileScript`, `validateFieldScript`, `validatePrelude`, `buildScriptFunction`, `composeScriptBody`, `preludeLineOffset`, `normalizeScriptResult`. **No function throws** — errors travel in the result since the editor calls them on every keystroke.
+`src/lib/fieldScript/fieldScript.ts`: `compileScript`, `validateFieldScript`, `validatePrelude`, `buildScriptFunction`, `composeScriptBody`, `normalizeScriptResult`, `fieldRefText`, `unknownRefsMessage`, `findScriptRefs`. **No function throws** — errors travel in the result since the editor calls them on every keystroke.
 
 Contract (identical for a script and a rule effect):
 - `return` gives the value; **`return undefined` means "leave what the user typed"** (not `computed`, stays editable).
 - Scope: `value`, `index` (repetition inside a group), and helpers from `src/constants/fieldScript.ts` — `num`, `sum`, `count`, `abs`, `min`, `max`, `round`, `floor`, `ceil`, `dvNit` — passed as **named parameters**, not a container object.
-- Inside a group `{sibling}` is that row's scalar; from root `{column}` is the whole array (`sum` flattens it).
+- Inside a group `{{sibling}}` is that row's scalar; from root `{{column}}` is the whole array (`sum` flattens it).
 - Non-finite result → `null` (`normalizeScriptResult`).
 
-**Only `{x}` where `x` is an actual field name is substituted** — lets the syntax coexist with JS destructuring (`const {a} = obj` untouched). Unknown `{x}` is a **warning, not an error** (no way to tell typo from destructuring).
+**`scanScript` is a scanner, not a regex** — blind substitution broke on `{{campo}}` inside strings/comments. Skips strings/comments/template text, **substitutes inside `${...}`**. Known limit: regex literals aren't detected (now needs a regex with a field name between double braces to bite).
 
-**`scanScript` is a scanner, not a regex** — blind substitution broke on `{campo}` inside strings/comments. Skips strings/comments/template text, **substitutes inside `${...}`**. Known limit: regex literals aren't detected.
-
-`formScript` (the prelude) is form-wide, **cannot read fields** (`{campo}` invalid there — no single answer inside a repeatable group). Concatenated ahead of the body, so the compile cache absorbs the repetition; `validateFieldScript` checks the body alone first so a broken prelude reports as the form's problem, not every field's.
+`formScript` (the prelude) is form-wide, **cannot read fields** (`{{campo}}` invalid there — no single answer inside a repeatable group). Concatenated ahead of the body, so the compile cache absorbs the repetition; `validateFieldScript` checks the body alone first so a broken prelude reports as the form's problem, not every field's.
 
 `FieldRule` = `{id, label?, matchAll, when: RuleCondition[], effects: RuleEffect[]}`, effect is `{kind:"script", source}` or `{kind:"constant", value}` — **survived on purpose** (declarative condition+effect, not a second language). Run **after** the script, overwrite in list order. `src/lib/fieldRule/fieldRule.ts`, UI in `FieldRulesEditor`/`useFieldRules`.
 
-`src/lib/fieldGraph/fieldGraph.ts` unifies **four** edge sources (`visibleWhen`, `enableWhen`, `rules[].when[]`, `{campo}` refs) into one dependency graph — `buildNameToIdIndex` normalizes refs to ids, `topologicalOrder` returns `{order, unresolved, cycle}`, never throws.
+`src/lib/fieldGraph/fieldGraph.ts` unifies **four** edge sources (`visibleWhen`, `enableWhen`, `rules[].when[]`, `{{campo}}` refs) into one dependency graph — `buildNameToIdIndex` normalizes refs to ids, `topologicalOrder` returns `{order, unresolved, cycle}`, never throws.
 
 Settled:
 - **A script cycle is warned about, never blocked** (free text, refusing input mid-word fights the person typing); condition editors *do* block with an `alert` since those are picked from a list.
@@ -258,6 +284,32 @@ Settled:
 - `evaluationOrder` is **not exported** (silently appended cycle members to the end). What's exported instead is `script.reads` per field.
 - `lib/formula/` is gone except its parser, which survives in `lib/scriptMigration/` purely to open pre-migration drafts. Delete once no old drafts remain.
 - **An unparseable formula is preserved as a comment inside the script**, field falls back to `return undefined` — neither dropped nor crashes the draft (old formula editor stored invalid text too).
+
+### References are `{{campo}}` (double braces)
+
+**The single-brace `{campo}` syntax was replaced by `{{campo}}`** so a reference can't be mistaken for JS: `{a}` could be a field or a destructuring/object literal, `{{x}}` is valid JS in no expression. Spaces inside are tolerated (`{{ campo }}`), newlines never (`REF_PATTERN`). **`fieldRefText(name)` is the one place that writes the syntax** (messages, autocomplete, migration) — changing it again means that function plus `REF_PATTERN`.
+
+Settled:
+- **Only a known name is substituted, and an unknown `{{x}}` is an error, not a warning** (typo, deleted or renamed field). `validateFieldScript` checks it *before* syntax — the leftover `{{x}}` is almost always also the syntax error, and "Unexpected token '{'" says nothing — and the export review blocks on it, reported alone. The old "warning, because it might be destructuring" reasoning died with the single brace.
+- **Editors judge refs against the same names as the export**: `useKnownFieldNames()` (both canvases), used by the field script, rule effects, group checks and the prelude. They used to see `formSteps` only, which falsely flagged `{periodo_anio}` on renglones 31/37. `candidates`/dependencies/cycle come from `useDependencyCandidates` (see "Conditions").
+- **Any `{{x}}` in the prelude is an error, field or not** (`validatePrelude` takes no names); with one present the syntax check is skipped, and `checkPrelude` treats the prelude as broken (`isValid`, not just `error === null`) so field scripts aren't composed with it.
+- **Autocomplete**: `{{` opens the field list and closes with `}}` respecting what closeBrackets already inserted. A single `{` no longer opens it (it popped on every JS block, and Enter then accepted a field). **Ctrl+Space anywhere offers helpers + fields**, a field inserted already wrapped; plain typing offers helpers only, for the same Enter reason.
+- **The "+ Insertar campo…" select is gone** from `ScriptInput` (and so from the field script, rule effects and group checks, sidebar and right-click alike) — the autocomplete covers it.
+- **The simulator and the consumer never read the syntax**: they run `compiled` (`__v["campo"]`) and `reads`, byte-identical under both syntaxes — the change needed zero runtime code. `source` carries `{{campo}}` and is still never executed.
+- **Drafts migrate at `DRAFT_SCHEMA_VERSION` 7** (`upgradeFieldRefs` in `lib/scriptMigration/`): field scripts, rule effects, group checks and the prelude, both canvases. It rewrites **exactly what the old compiler substituted** — `findScriptRefs` runs the same scanner with the frozen `LEGACY_REF_PATTERN` (`scanScript` takes the pattern as a parameter for this) and only known names change — so a migrated script compiles to the same body. Verified with a tsx script over 34 scripts with trap cases (destructuring, strings, comments, template `${}`, regex quantifiers, unknown refs, a nameless field): identical compiled output before/after. The rewritten ICA template compiles identically too, except one comment that names `{{total_a_pagar}}`. Comments in saved scripts keep `{campo}` (the scanner skips comments, on purpose). `formulaToScript` still prints `{x}`: it is step 2→3, and step 6→7 lifts its output.
+
+### No-code calculation (`SimpleCalcModal`)
+
+Asked for explicitly by the user's boss (the user disagreed: everyone on the team programs), so a non-programmer can set a field's calculation. "Editar sin código" in "Cálculo del campo" (numeric fields only) opens a modal: rows of `[+|−] field`, "Multiplicar el resultado por", "No bajar de 0", a `<details>` with the generated JS. Pure core in `src/lib/simpleCalc/` (`buildCalcTermOptions`, `indexCalcTermOptions`, `buildSimpleCalcScript`, `parseSimpleCalcScript`), state in `useSimpleCalcBuilder`, rows in `molecules/CalcTermRow`.
+
+Settled:
+- **`logic.script` stays the only truth** — no stored model, no draft/export/consumer change. Apply writes once through `setFieldScript` (one undo step); Cancel leaves nothing.
+- **Generated text copies the ICA template style letter for letter** (`return {{a}} - {{b}};`, `max(…, 0)`, `({{a}} + {{b}}) * 0.15`), which is what lets the modal reopen template renglones. **The floor wraps the multiplier**: what can't go below zero is the field's value.
+- **Reopening = read leniently, regenerate, compare without whitespace.** The modal only claims scripts it would write identically; anything else opens empty with a "Aplicar lo reemplaza" banner. On the ICA template it recognizes 10: renglones 10, 16, 17, 20, 21, 25, 33, 35, 38, 40. A line break right after `return` is rejected (ASI would return `undefined`).
+- **`sum({{x}})` iff `x` lives in a group other than the edited field's** — there `{{x}}` is the column array and `+` would concatenate it as text. Same-group siblings and root fields go bare.
+- **Picker**: numeric form-step fields only, labels (not slugs), one `<optgroup>` per step and per group ("misma fila" / "suma de todas las filas"). Options that already depend on the edited field are disabled (`wouldCreateCycle`, the export review's verdict).
+- **Keyboard guard**: a capture-phase `keydown` on `window` stops every key while the modal is mounted (Escape cancels). Without it Delete would delete the field being edited and Escape would deselect it, unmounting the modal — focus may be on `body` after a backdrop click, so a React `onKeyDown` isn't enough. Ctrl+S is swallowed meanwhile; autosave keeps running.
+- Not built: field × field (`impuesto_actividad`), constants as terms, renglón 34's `-(…)`, a searchable picker.
 
 ## Presentational fields (`label`, `rich_text`)
 
@@ -281,7 +333,7 @@ Standalone, never bound to input. Bold/italic/underline/links only — no lists,
 
 **Content is stored structured, never as HTML** (`RichTextContent`, `src/types/richText.ts`) — an HTML blob would be executable markup, same class of risk as the `validations.pattern` injection. Do not "simplify" to HTML.
 
-**The serializer is the sanitizer** (`serializeRichText`, DOM walk with a whitelist: `b/strong/i/em/u/ins/a/br`, drops `script`/`style`/`iframe` subtrees, flattens everything else to text, reads inline `font-weight`/`style`/`text-decoration` for paste-from-Word).
+**The serializer is the sanitizer** (`serializeRichText`, DOM walk with a whitelist: `b/strong/i/em/u/ins/a/br`, drops `script`/`style`/`iframe` subtrees, flattens everything else to text, reads inline `font-weight`/`style`/`text-decoration` for HTML that still gets in, e.g. dropped). **Pasting is always plain text** (`pastePlainText`, like Ctrl+Shift+V): pasted HTML was breaking the editor; formatting is applied afterwards with the buttons.
 
 **`safeHref`** allows only `http:`/`https:`/`mailto:` (prefixes `https://` if no scheme) — runs at insert, serialize, **and again on draft load** (localStorage is devtools-editable). Keep all three.
 
@@ -316,7 +368,7 @@ Settled:
 - **`eval` is the contract, not a shortcut** — `ExportedField.validations` carries only Zod strings; the consumer has no other validation path. `hydrateZodSchema` wraps in try/catch → `RuntimeIssue`.
 - `hydrateFieldSchemas` keys by schema *string* (a field can have >1 schema depending on override state; a name key can't answer).
 - `required` is sniffed from the schema string (no trailing `.optional()`); `checkbox` excluded (never gets `.optional()` appended).
-- Runtime issues deduplicated (`dedupeIssues`) — a broken group script would otherwise report once per repetition.
+- Runtime issues deduplicated (`dedupeIssues`) — a broken group script would otherwise report once per repetition. It runs again over `validateRuntime`'s final list, which adds sources after the snapshot's dedupe, because `PreviewResults` keys each warning by the same `kind|field|message`.
 - Preview state is **local to the component tree**, never the Zustand store (answers are throwaway).
 - Hidden fields are neither rendered nor validated.
 - **Validation is per step and gates navigation** — no "validate everything" button. `stepErrorKeys` expands group rows to per-repetition keys; errors revealed only for reached fields (`revealed`), but the results panel shows everything live.
@@ -420,6 +472,31 @@ Settled:
 - `select` lost the dead "Longitud" fieldset (option-based fields go the `z.enum` branch, which never reads `minLength`/`maxLength`).
 - ICA declares no cap — `numero_documento`'s 7–10 digit rule already lives in its `pattern`.
 
+## Placeholder (`field.placeholder`)
+
+The grey text of an empty field (`placeholder?: string`), asked for by nearly every municipality. Offered for `text`, `textarea`, `tel`, `email`, `datalist`, `number`, `calculated`, `select`, `search_select` (`PLACEHOLDER_CAPABLE_FIELD_TYPES`); `src/lib/fieldPlaceholder/` (`supportsPlaceholder`, `placeholderOf`), store action `setFieldPlaceholder`, input + (i) in Atributos → General.
+
+Settled:
+- **Presentation only** — never part of the value, so the schema, scripts and payload never see it; an empty required field still fails.
+- **`date` is left out**: its box already shows the format (`dd/mm/aaaa`), the hint that actually matters there.
+- In a `select` it replaces the first option's "Seleccionar…"; in a `search_select`, the trigger's "Buscar…". On the canvas it replaces the type's sample text.
+- Stored as typed, trimmed by `placeholderOf` on export and render (trimming per keystroke would eat the space before the next word); a type that doesn't take it ignores a leftover key. Capped at `MAX_PLACEHOLDER_LENGTH = 80` — longer belongs in a tooltip.
+- Additive optional key: no `DRAFT_SCHEMA_VERSION` bump, one `persistence.schema.ts` line. Ships as `field.placeholder` in `requires` — the compile-enforced key table caught it when it was added.
+
+## Datalist (`datalist`, `field.suggestions`)
+
+"Input Datalist" in the palette (complejos; the team are all programmers, so the HTML name over a descriptive one): HTML's `<input list>` + `<datalist>`, free text that offers a list while typing. Municipalities ask for it rarely. `suggestions?: string[]` on the field; `src/lib/fieldSuggestions/` (`supportsSuggestions`, `suggestionsOf`, `suggestionsText`, `parseSuggestionsText`), store action `setFieldSuggestions`, `SuggestionsEditor` in Atributos, `PreviewDatalistInput` in the simulator.
+
+Settled:
+- **Not an option-based type** (not in `OPTION_BASED_FIELD_TYPES`): the value is the typed text, not an option id, so it validates like `text` (`z.string()` + length + `pattern`, never `z.enum`), maps to string leaves, takes the text operators in conditions and reaches scripts as a string. A suggestion restricts nothing; forcing a choice from a list is what `select`/`search_select` are for.
+- **`suggestions` is its own key, not `options[]`**: options are the value domain (`{id, label}`, the id is what gets stored) and ship only for excluded fields; suggestions ship whatever the `apiBinding`, since they don't constrain what travels in the payload.
+- **Stored as typed** — one entry per line of the panel's textarea, untrimmed, empties included (cleaning per keystroke would eat the newline just typed) — and **cleaned on export and render** by `suggestionsOf`: trimmed, empties dropped, repeats collapsed keeping the first (each suggestion is its `<option>`'s React key). Nothing left → key absent.
+- **A textarea, one per line**, not `FieldOptionsEditor`'s row per option: lists like barrios or bancos run to dozens and get pasted from Excel.
+- Joins the length, placeholder and tooltip lists, like `text`.
+- `requires`: `type:datalist`; `suggestions` is `"core"` in `FIELD_KEYS`, covered by the type word like `options`/`fileConfig`/`content`. Additive optional key: one `persistence.schema.ts` line, no version bump.
+- Simulator: the list's id comes from `useId` (every repetition of a group renders the same field), and `autoComplete="off"` keeps the browser's own history out of the list.
+- Not built: suggestions from a catalog (`dataSource`), an `<option label>` different from the inserted value, the consumer's branch (see "Known gaps").
+
 ## Options and `apiBinding`
 
 Option-based types (`select`, `search_select`, `toggle_group`, `radio_group`, `checkbox_group`) get **manually authored options only when excluded from the payload *and* declares no `dataSource`**; otherwise options are injected at runtime. Predicates in `src/lib/fieldOptions/fieldOptions.ts` — use `allowsManualOptions`, not an inline `apiBinding` check (exactly 4 call sites enforce this).
@@ -478,6 +555,7 @@ Settled:
 - **`default`/`custom` is a per-catalog switch, not a modal prompt** — flipping to `default` keeps the pasted data. A global "which mode?" modal was rejected as either annoying or an unfindable one-time setting.
 - `isSimulatedCatalog` takes the bank as an argument, so the "simulado" badge is actually true.
 - **No HTTP** — deferred (CORS/auth/offline cost); pasting gets the same data for free.
+- **A repeated id (catálogos) or year (UVT/SMMLV, fechas) keeps its first row on paste** — the user's call over rejecting the paste. That value is also its row's React key; repeated, it left ghost options/rows. Almost always a mis-named id column.
 
 ### Fechas máximas de presentación — the second simulator-only bank
 
@@ -524,7 +602,7 @@ Settled:
 - **`diasDeMora` returns `0`, not `NaN`, with no table loaded** — a sanción must never be born from missing data.
 - Dates parsed by hand into UTC (`aUtc`) — `new Date("2025/03/31")` (local) vs `"2025-03-31"` (UTC) differ by a day depending on timezone, and a day here decides on-time vs. late. Also round-trips to catch invalid dates like 31 Feb.
 - `hoy` is a parameter, not a clock read — makes mora testable without touching system time.
-- No graph changes needed — `{campo}` inputs are already scanned as reads.
+- No graph changes needed — `{{campo}}` inputs are already scanned as reads.
 - Names come from `DATE_HELPER_NAMES` in both places (same anti-drift trick as `SCRIPT_HELPER_VALUES`).
 - Used by renglón 31 (`mesesDeMora`) and renglón 37 (`fechaLimite`, `diasDeMora`).
 
@@ -556,7 +634,7 @@ Settled:
 Same shape as the sanción: whole rule inside `logic.script` (`INTERES_MORA_SCRIPT` seed). Formula (art. 634-635 ET): **`base × (TASA_ANUAL / DIAS_ANIO) × días`**, daily/simple, rounded **up** to the thousand. Rate = tasa de usura (Superfinanciera) − 2 points, **the rate at time of payment applies to the whole delay** (why one constant is correct instead of a per-period table). Ships August 2026 value (27,66% E.A.).
 
 Settled:
-- **`const base = {valor_a_pagar};` is meant to be edited** per municipality — falls out of `{campo}` substitution for free. **Only renglón 38 is illegal** as a base (consumes the interest itself, would close a cycle); 33/34/35/25 were all checked against `fieldGraph` and don't.
+- **`const base = {{valor_a_pagar}};` is meant to be edited** per municipality — falls out of `{{campo}}` substitution for free. **Only renglón 38 is illegal** as a base (consumes the interest itself, would close a cycle); 33/34/35/25 were all checked against `fieldGraph` and don't.
 - **Default base is renglón 35** — inherits 33's `max(…,0)`, so a saldo a favor charges zero interest on a non-debt.
 - **Rounding is `ceil`, done in the script** (matches the municipality's `ROUNDUP(…;-3)`) — the one renglón whose rounding isn't the project's default round-to-nearest; `applyRounding` afterward is a no-op since the value is already a multiple of 1000.
 - **`fechaLimite` decides whether to compute at all; `diasDeMora` only supplies the number** — they look redundant but aren't: `diasDeMora=0` means either "on time" or "no table loaded", which must not be treated the same. `fechaLimite === null` → script returns `undefined`, field stays typeable (a locked `0` would be indistinguishable from a real on-time result).
@@ -594,7 +672,8 @@ Settled:
 - **A hidden field's Zod schema still exports unchanged** (`buildZodSchema` knows nothing about `visibleWhen`) — the consumer must drop hidden fields from its resolver itself. Same coordinated-consumer arrangement as `logic.script`.
 - Visibility is editable even when `alwaysDisabled` is on (hiding a read-only field is legitimate); the enable editor itself is hidden in that case.
 - `wouldCreateCycle` walks **every** edge kind (a cycle can span condition and script edges).
-- `LogicPanel`'s candidate list is `formSteps`-only — a form-step field cannot condition on an intro-modal field (untouched limit, not a decision; revisit if needed).
+- **Who can depend on whom follows the fill order** (`dependencyCandidates` in `src/lib/fieldCandidates/`, read through `useDependencyCandidates`): a form-step field sees intro-modal fields first, then form fields; an intro field sees only intro fields. One list feeds every picker — conditions, rules, the script's dependencies/cycle, validation overrides (Validaciones) and the catalog parent (Mapeo API). The other direction is what the old `formSteps`-only list allowed by accident: the modal showed a field watching one nobody had filled yet, hidden and so unvalidated, and let the taxpayer through without año gravable (verified with a tsx script). Runtime, export and consumer needed no change — `buildRuntimeModel` already puts intro fields in the same root scope.
+- **Deleting a step or a row prunes what pointed at its fields**, exactly like `removeFields` (`removeFieldsEverywhere` in `formStore.utils.ts`). Before, `removeFormStep`/`removeIntroModalStep`/`removeRow` dropped the fields and left the conditions behind: the export wrote the dead uuid as the field name, the consumer evaluated it against nothing (a hidden field stayed hidden forever, a conditional `required` vanished) and the export review saw nothing. Ctrl+Z brings the step and the conditions back together.
 
 ## Opening an exported form (`builderDraft`)
 
@@ -614,11 +693,11 @@ Settled:
 
 **Exportar** runs `diagnoseForm` (`src/lib/formDiagnostics/`) before downloading; `useExportReview` owns when it runs and where "Ir" leads, and `ExportReviewModal` lists the problems. No problems → straight download.
 
-Errors (block the download): a field, rule-effect or enabled group-check script that doesn't compile (alone, or once composed with the prelude); a prelude that doesn't compile or reads fields; an invalid regex in `validations.pattern`, an override's `pattern` or a `matches` condition; a dependency cycle. Warnings (never block): unknown `{x}`, a binding to a path the contract lacks or to a host-provided leaf, unsupported CSS in field/row/tooltip styles.
+Errors (block the download): a field, rule-effect or enabled group-check script that doesn't compile (alone, or once composed with the prelude) or reads an unknown `{{x}}`; a prelude that doesn't compile or reads fields; an invalid regex in `validations.pattern`, an override's `pattern` or a `matches` condition; a dependency cycle. Warnings (never block): a binding to a path the contract lacks or to a host-provided leaf, unsupported CSS in field/row/tooltip styles.
 
 Settled:
 - **Runs only on Exportar**, never live — no per-keystroke cost, which matters on the user's slow work PC.
-- **Errors block, warnings don't** — only certainly-broken things are errors; an unknown `{a}` may be destructuring.
+- **Errors block, warnings don't** — only certainly-broken things are errors. An unknown `{{x}}` is one since the double braces (it can't be destructuring); it is reported alone, without the "no compila" it almost always also causes.
 - **`⚠ tipo` and payload coverage are left out on purpose** (user's call): the 12 known type warnings would show on every export, and the contract doesn't mark which leaves are required. Both stay in Mapeo API and the Payload view.
 - **Judges what actually ships**: `knownNames` from both canvases (as `buildFormExport` does), disabled checks skipped, `pattern` checked only where `buildSchemaFor` embeds it (`TYPES_WITHOUT_PATTERN`).
 - **A broken prelude is reported once**, and scripts are then checked without it. With a valid prelude, a script that only fails once composed (e.g. `const UVT` in both) gets its own "no compila junto con el script del formulario" message — built from `compileScript`/`checkScriptSyntax`/`composeScriptBody` instead of parsing `validateFieldScript`'s prefixed message.
@@ -627,6 +706,27 @@ Settled:
 - "Ir": `setCanvasViewMode("canvas")` → `setActiveCanvas` → `selectFieldAndEdit` (order matters: `setActiveCanvas` clears the selection), then `scrollIntoView` in an effect after the commit — the same `pendingReveal` pattern as `CanvasToolbar`. `getFieldElement` joined `lib/canvasDom`.
 - Stays out of the lazy chunks: imports nothing from `formRuntime`/`scriptRuntime`/`zodHydrate`/`mockCatalog` (measured: `FormSimulator` and `ScriptEditor` unchanged, main chunk +8 kB).
 - The JSON view's copy button doesn't go through the review.
+- **`ExportButton` owns the hook and the modal**, not `RightSidebar` — so the collapsed chip can export too. The panel and the chip are mutually exclusive, so exactly one `useExportReview` is ever mounted and its local `problems` can't drift. `ModalShell` is `fixed inset-0`, which is why the chip's container may not set `transform`/`filter`/`backdrop-filter`/`will-change` (see "The right panel").
+
+## What a form requires (`projectMeta.requires`)
+
+The export lists in `projectMeta.requires` every word of the JSON a consumer must know to run *that* form without silently losing anything; a consumer that doesn't recognize one refuses to load the form. The user's call: when a municipality asks for something new it wants it now, and blocking beats degrading in silence. Pure module `src/lib/formRequires/` (`collectRequires`), called at the end of `buildFormExport`. The ICA template asks for 57 words.
+
+Two kinds of word, sorted:
+- **Keys**, `scope.key`, declared when the key carries something: `field.prefix`, `field.logic.script`, `field.validations.zodSchemaWhen`, `field.dataSource.fills`, `field.tooltip.styles`, `richText.href`, `row.styles`, `step.groups`, `group.checks`, `formSchema.prelude`, `setupConfig.introModal`.
+- **Values of a closed list the consumer branches on**, `category:value`: `type:`, `operator:`, `helper:`, `catalog:`, `effect:`, `fillColumn:`, `dateFormat:`, `binding:`, `tooltipPosition:`, `richTextBlock:`.
+
+Settled:
+- **A list, not a version number** — a number would also block an old form that uses nothing new. `projectMeta.version` stays a fixed `"1.0.0"` only because the consumer already types it.
+- **Computed from the export, not the model** — it judges what ships: an empty tooltip, a disabled check or an `alwaysDisabled: false` left by the panel ask for nothing.
+- **The key tables are compile-enforced**: `formRequires.constants.ts` holds a `Record<keyof T, KeyRule>` per exported object, so adding a key to `ExportedField` (or row, step, group, condition, rule…) without classifying it as `"core"` or `"feature"` doesn't typecheck. A key whose value comes from a closed list also needs its value words in `formRequires.utils.ts` — the one step the compiler can't force. Objects without a table (compiled script, validation variant, catalog fill, option, file config, rich-text paragraph) are pure skeleton and need one the day they gain an optional key.
+- `"present"` exists for `allowsNegative`, the one key that travels only as `false`.
+- **Helpers are matched on the raw compiled text**, comments and strings included: a false positive only over-asks, while a second code/text walker could hide a real call. Not after a dot (`Math.max`) nor glued to a quote (`__v["max"]`, a field named so). The prelude is scanned separately — `compiled` doesn't carry it.
+- **Intro-modal steps count** — they run in the same root scope.
+- Not covered: catalog inference from `apiBinding.path` (legacy, being replaced by `dataSource`), and a change in how an existing word behaves (a rounding fix) — that needs the consumer redeployed and its `pnpm verify`, not a new word.
+- **Deploy order** (the consumer is a container in `GestorPagosWeb/compose.yml`; the builder isn't deployed with it): whoever reads goes first — the back if the payload changes, then the consumer — and the form that uses the new word is published last.
+- **The consumer side isn't built** (the user's call: builder only for now). Its `checkContract.ts` accepts the extra key and its runtime only reads `projectMeta.formType`, so the new key breaks nothing there.
+- Verified with a tsx script: ICA's 57 words, a one-text-field form asking only `type:text` (with `alwaysDisabled: false` and empty styles), helper traps (`Math.max`, a field named `count`, `uvt` in a comment), the prelude, determinism and a JSON round trip.
 
 ## Commit conventions
 
@@ -696,23 +796,23 @@ Both import cycles this shape produced are fixed the same way: implementation mo
   - `introModal.steps[]` — same minus `groups`.
   - `formScript` — the shared prelude.
   - `activeCanvas`: `{type: "formStep"|"introStep", stepId}`.
-  - UI state: `selectedFieldIds`, `canvasTool`, `isSidebarOpen`, `sidebarTab`, `rightSidebarTab`, `canvasViewMode`, `canvasZoom`, `dragPlacement`, `rowDropTarget`, `rowDrag`, `draggingFieldId`, `hoveredTransferTarget`, `transferNotice`, `isDarkMode` (persisted separately), `lastSavedAt`.
+  - UI state: `selectedFieldIds`, `canvasTool`, `isSidebarOpen`, `isRightSidebarOpen`, `sidebarTab`, `rightSidebarTab`, `canvasViewMode`, `canvasZoom`, `dragPlacement`, `rowDropTarget`, `rowDrag`, `draggingFieldId`, `hoveredTransferTarget`, `transferNotice`, `isDarkMode` (persisted separately), `lastSavedAt`.
   - `setupConfig` + the three banks (each own `localStorage` key, none in draft/export).
   - Selectors: `getActiveRows`, `getActiveGroups`, `getSelectedFieldId`, `findFieldById`, `getAllFields`, `findRowContainingField`, `findRowById`.
   - Row/field mutations apply uniformly via `mapRowEverywhere`/`mapFieldEverywhere`. Key actions: `addFieldToRow`, `moveField`, `removeFields`, `selectField`/`toggleFieldSelection`/`setFieldSelection`, `updateField`, `setFieldName`, `updateFieldValidations/Styles/FileConfig`, `updateFieldApiBinding`, `setFieldScript`, `setFormScript`, `setFieldRounding/Formatted/AllowsNegative/Decimals/LabelFor/Content`, `addFieldRule`/`updateFieldRule`/`removeFieldRule`/`reorderFieldRule`, `addFieldOption`/`removeFieldOption`/`updateFieldOptionLabel`, `setFieldEnableWhen`/`setFieldVisibleWhen`, `addRowToActiveCanvas`/`updateRowColumns`/`removeRow`/`moveRow`, `moveFieldsToStep`/`moveRowToStep`, `setCanvasTool`, `addGroupToActiveStep`/`addRowToGroup`/`updateGroup`/`removeGroup`, step actions, `restoreDraft`, `undo`/`redo`.
   - **Wrapped in zundo's `temporal` middleware**: history lives in `useFormStore.temporal`, read through `useFormHistory`. The creator is `createFormState`, passed to `create<FormState>()(temporal(…))` — any further middleware has to keep that curried form. See "Undo / redo".
   - **Selectors must return stable references** — Zustand's `useSyncExternalStore` compares by identity; a fresh `[]` per call causes "Maximum update depth exceeded" (hence `NO_ROWS`/`NO_GROUPS`).
-- **Field model** (`CanvasField`, `src/types/field.ts`): `name` (unique slug), `type`, `label`, `colStart`, `colSpan`, `validations`, `styles`, `logic`, plus optional `title`, `options[]`, `fileConfig`, `alwaysDisabled`, `apiBinding`, `labelFor`, `content`, `tooltip`, `rounding`, `formatted`, `allowsNegative`, `decimals`, `enableWhen`, `visibleWhen` (`FieldCondition = {fieldId, operator, value}`). Operators: `equals|notEquals|greaterThan|lessThan|startsWith|endsWith|contains|matches|in|isEmpty|isNotEmpty|isTruthy|isFalsy`. `logic` = `{script?, rules?}`. Types in `FIELD_TYPES` (`src/constants/fieldTypes.ts`), grouped **básicos** (text, number, select, textarea, checkbox, calculated, file), **complejos** (search_select, toggle_group, radio_group, checkbox_group), **contenido** (label, rich_text). Adding a type is just a `FIELD_TYPES` entry (`PALETTE_SECTIONS` skips empty categories).
+- **Field model** (`CanvasField`, `src/types/field.ts`): `name` (unique slug), `type`, `label`, `colStart`, `colSpan`, `validations`, `styles`, `logic`, plus optional `title`, `options[]`, `fileConfig`, `alwaysDisabled`, `apiBinding`, `labelFor`, `content`, `tooltip`, `rounding`, `formatted`, `allowsNegative`, `decimals`, `placeholder`, `suggestions`, `enableWhen`, `visibleWhen` (`FieldCondition = {fieldId, operator, value}`). Operators: `equals|notEquals|greaterThan|lessThan|startsWith|endsWith|contains|matches|in|isEmpty|isNotEmpty|isTruthy|isFalsy`. `logic` = `{script?, rules?}`. Types in `FIELD_TYPES` (`src/constants/fieldTypes.ts`), grouped **básicos** (text, number, tel, email, date, select, textarea, checkbox, calculated, file), **complejos** (search_select, datalist, toggle_group, radio_group, checkbox_group), **contenido** (label, rich_text). Adding a type is just a `FIELD_TYPES` entry (`PALETTE_SECTIONS` skips empty categories).
 - **Grid**: `src/constants/grid.ts` — `GRID_BASE_COLUMNS = 16` default; rows carry their own `columns` (clamped 1–24), shrinking clamps field `colSpan`s to fit.
 - **Four-slot layout** (`AppLayout.tsx`: `sidebar`, `canvas`, `canvasOverlay`, `rightSidebar`):
   - Left sidebar (`Sidebar/`): icon rail (`SidebarTabRail`, includes dark-mode toggle) over a tabbed panel — `SidebarTab` = `fields|attributes|validations|styles|logic|apiMapping|catalogs|fechas`. `fields`, `catalogs`, `fechas`, and `logic` (renders the prelude) work with no field selected. `LogicPanel` hosts `FieldScriptEditor`, `FieldRulesEditor`, `ConditionEditor` (×2, by `kind`). `FileOptionsEditor`/`NumberOptionsEditor`/`FieldOptionsEditor` handle type-specific config. This is the panel that still collapses (click the active tab).
   - Canvas (`Canvas/Canvas.tsx`): owns the full height of the window as a free canvas with pan room (`useCanvasViewport`); `CanvasToolLayer` mounts the hand and the marquee. Grid drop targets (`@dnd-kit` `useDroppable` per row), laid out by `CanvasRowsGrid` (blocks consecutive same-group rows into `RepeatableGroupBand`); `RowColumnsMenu` + `FieldResizeHandle`/`useFieldResize` for column count/`colSpan`; `FieldContextMenu` (right-click) for per-field actions; `JsonPreviewCanvas`/`PayloadPreviewCanvas` swap in by `canvasViewMode`. Intro-modal canvas renders inside a decorative fake-modal frame.
-  - Right panel (`RightSidebar/`): action row (`SaveButton`, Simulador, Exportar) over a text tab strip carrying `CanvasZoomControl`, over the blocks of the active tab — view mode and project info under **Proyecto** (the Formulario block's `Abrir…` opens `ProjectImportModal`); `CanvasTabs` (which switches `activeCanvas`) and `StepTitleEditor` under **Steps**. `TransferNotice` shows above both. See "The right panel".
-  - Canvas overlay (`CanvasToolbar/`): the floating bar with the pointer tools, + Fila / + Grupo repetible and the multi-selection actions. See "Canvas tools and floating toolbar".
+  - Right panel (`RightSidebar/`): action row (`SaveButton`, `SimulatorButton`, `ExportButton`, `RightPanelToggle`) over a text tab strip carrying `CanvasZoomControl`, over the blocks of the active tab — view mode and project info under **Proyecto** (the Formulario block's `Abrir…` opens `ProjectImportModal`); `CanvasTabs` (which switches `activeCanvas`) and `StepTitleEditor` under **Steps**. `TransferNotice` shows above both. Collapsed (`isRightSidebarOpen`), the whole `<aside>` is unrendered and `CollapsedRightSidebar` replaces it. See "The right panel".
+  - Canvas overlay (`CanvasToolbar/`, `CollapsedRightSidebar/`): the floating bar with the pointer tools, + Fila / + Grupo repetible and the multi-selection actions, plus the right panel's chip when it is folded. See "Canvas tools and floating toolbar".
   - Drag-and-drop wiring in `src/hooks/useDragAndDrop/`; `FormBuilder` wires `DndContext`/`DragOverlay` (and swaps to the lazy `FormSimulator`). Every palette drop creates the field directly; options are configured later.
 - **Payload mapping** (`src/lib/payloadSchema/`, `src/lib/payloadMapping/`): `PAYLOAD_SCHEMA` is the hardcoded `DeclaracionIcaE` contract. `buildMappingTree` pairs leaves with bound fields, flags type mismatches/orphans/host-provided leaves; rendered by `PayloadPreviewCanvas`.
 - **Persistence** (`useAutosave/`, `src/lib/persistence/persistence.ts`): autosaves on interval once setup is complete; Ctrl/Cmd+S via `useKeyboardShortcuts/`. `loadDraft`/`clearDraft` back the recovery modal. `loadDraft` is `JSON.parse` + `parseDraft`, which `lib/projectFile` reuses for exported files; `buildDraftPayload` (shared with the export) stamps `schemaVersion`/`savedAt`. Draft carries `schemaVersion`, **migrates before validating** (the reverse order would discard old drafts precisely when migration could save them). Migration steps in `persistence.migrations.ts`, indexed by source version, work on the raw object (no shape assumed) — a gap in the chain stops the walk and the version rejection kicks in. **Every shape change needs a migration step**; `z.object` silently strips undeclared keys, so skipping the step loses data without a word. A purely additive optional key (like `rounding`) needs no version bump, just its `persistence.schema.ts` line — forgetting that line is the same silent-strip trap from the other direction.
-- **Output** (`src/lib/exportForm/`): `downloadFormExport`/`buildFormExport` serialize `projectMeta`, `setupConfig.introModal`, `formSchema.steps[]` (each field's `colStart`/`colSpan`/`styles`/`validations.zodSchema`/`logic`/`options`/`fileConfig`/`alwaysDisabled`/`apiBinding`/`labelFor`/`content`/`tooltip`/`rounding`/`formatted`/`allowsNegative`/`decimals`/`enableWhen`/`visibleWhen`) plus `groups[]` (`min`/`max`/`arrayPath`, array Zod schema, `checks[]`) and `rows[].groupId`, plus `formSchema.gridBaseColumns`/`prelude` (sent once, not repeated per `compiled`). Field ids in conditions/rules/`labelFor` are **resolved to names** on export. `validations.zodSchema` is optional — its absence is how the consumer knows there's nothing to validate. `downloadFormExport` adds `builderDraft` (the draft payload) to the downloaded file only — `buildFormExport`, which the simulator and the JSON view read, never carries it. The Exportar button goes through the export review first (see "Export review").
+- **Output** (`src/lib/exportForm/`): `downloadFormExport`/`buildFormExport` serialize `projectMeta` (with `requires`, see "What a form requires"), `setupConfig.introModal`, `formSchema.steps[]` (each field's `colStart`/`colSpan`/`styles`/`validations.zodSchema`/`logic`/`options`/`fileConfig`/`alwaysDisabled`/`apiBinding`/`labelFor`/`content`/`tooltip`/`rounding`/`formatted`/`allowsNegative`/`decimals`/`enableWhen`/`visibleWhen`) plus `groups[]` (`min`/`max`/`arrayPath`, array Zod schema, `checks[]`) and `rows[].groupId`, plus `formSchema.gridBaseColumns`/`prelude` (sent once, not repeated per `compiled`). Field ids in conditions/rules/`labelFor` are **resolved to names** on export. `validations.zodSchema` is optional — its absence is how the consumer knows there's nothing to validate. `downloadFormExport` adds `builderDraft` (the draft payload) to the downloaded file only — `buildFormExport`, which the simulator and the JSON view read, never carries it. The Exportar button goes through the export review first (see "Export review").
 
 ### Prescribed stack
 

@@ -9,7 +9,7 @@ import type {
 } from "../../types/fieldScript";
 import { scanScript } from "./fieldScript.utils";
 
-// API publica del script de campo: de texto con {campo} a cuerpo de funcion ejecutable, mas las
+// API publica del script de campo: de texto con {{campo}} a cuerpo de funcion ejecutable, mas las
 // dependencias que ese texto declara al leerlas. Nada de React ni del store entra aca.
 //
 // lib/formula existia justamente para no ejecutar texto del usuario. Esto hace lo contrario y es
@@ -19,6 +19,31 @@ import { scanScript } from "./fieldScript.utils";
 //
 // Ninguna funcion de aca lanza: el error viaja en el resultado, porque el editor las llama en
 // cada tecla y necesita pintar el mensaje sin envolver todo en try/catch.
+
+// El unico sitio que escribe la sintaxis de una referencia: los mensajes, el autocompletado y la
+// migracion la arman con esto, asi que cambiarla otra vez seria tocar esta linea y REF_PATTERN.
+export function fieldRefText(name: string): string {
+  return `{{${name}}}`;
+}
+
+export function unknownRefsMessage(names: string[]): string {
+  const refs: string = names.map(fieldRefText).join(", ");
+
+  return names.length === 1
+    ? `${refs} no es un campo del formulario.`
+    : `${refs} no son campos del formulario.`;
+}
+
+// Las referencias que encuentra `pattern` con el mismo recorrido del compilador. Existe para la
+// migracion de la sintaxis vieja: lo que hay que reescribir ahi es exactamente lo que el
+// compilador de entonces sustituia, ni una referencia mas ni una menos.
+export function findScriptRefs(
+  source: string,
+  knownNames: Set<string>,
+  pattern: RegExp,
+): ScriptRef[] {
+  return scanScript(source, knownNames, pattern).refs;
+}
 
 export function compileScript(source: string, knownNames: Set<string>): ScriptCompileResult {
   const { code, refs } = scanScript(source, knownNames);
@@ -51,14 +76,6 @@ export function composeScriptBody(code: string, prelude?: string): string {
   return shared.length === 0 ? code : `${shared}\n${code}`;
 }
 
-// Cuantas lineas mete el preludio por delante. El editor las resta para no subrayar la linea
-// equivocada del script del campo.
-export function preludeLineOffset(prelude?: string): number {
-  const shared: string = prelude?.trim() ?? "";
-
-  return shared.length === 0 ? 0 : shared.split("\n").length;
-}
-
 export function buildScriptFunction(body: string): ScriptFunctionResult {
   try {
     return { fn: new Function(...SCRIPT_PARAM_NAMES, body) as ScriptFunction, error: null };
@@ -81,8 +98,13 @@ export function validateFieldScript(
 
   if (isEmpty) return { ...compiled, error: null, isEmpty, isValid: true };
 
-  // Las referencias desconocidas no invalidan nada: {a} puede ser una desestructuracion legitima.
-  // Se reportan aparte, como aviso, y quien pinte el panel decide como mostrarlas.
+  // Una referencia desconocida es error: con llaves dobles no hay JS legitimo que se escriba asi.
+  // Va antes que la sintaxis porque el {{x}} que queda sin sustituir casi siempre tambien rompe
+  // el parseo, y "Unexpected token '{'" no le dice a nadie que el campo no existe.
+  if (compiled.unknown.length > 0) {
+    return { ...compiled, error: unknownRefsMessage(compiled.unknown), isEmpty, isValid: false };
+  }
+
   const ownError: string | null = checkScriptSyntax(compiled.code);
   if (ownError) return { ...compiled, error: ownError, isEmpty, isValid: false };
 
@@ -100,13 +122,16 @@ export function validateFieldScript(
 }
 
 // El preludio no puede leer campos: es funciones y constantes puras, y los valores entran por
-// argumento. Sin esta regla habria que decidir que significa {ingresos} fuera de todo ambito, y
+// argumento. Sin esta regla habria que decidir que significa {{ingresos}} fuera de todo ambito, y
 // dentro de un grupo repetible esa pregunta no tiene una respuesta unica.
-export function validatePrelude(source: string, knownNames: Set<string>): PreludeValidation {
+//
+// Cuenta cualquier {{x}}, sea campo o no: aca ninguno puede sustituirse, y todos rompen igual.
+// Con alguno presente no se revisa la sintaxis, porque el error seria ese mismo {{x}} otra vez.
+export function validatePrelude(source: string): PreludeValidation {
   // El codigo sustituido se descarta: escanear es la unica forma de ver si nombro algun campo.
-  const refs: ScriptRef[] = scanScript(source, knownNames).refs.filter((ref) => ref.known);
+  const refs: ScriptRef[] = scanScript(source, new Set<string>()).refs;
   const isEmpty: boolean = source.trim().length === 0;
-  const error: string | null = isEmpty ? null : checkScriptSyntax(source);
+  const error: string | null = isEmpty || refs.length > 0 ? null : checkScriptSyntax(source);
 
   return { refs, error, isEmpty, isValid: error === null && refs.length === 0 };
 }

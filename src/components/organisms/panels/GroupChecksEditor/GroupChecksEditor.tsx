@@ -21,7 +21,6 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
     toggleOpen,
     checks,
     activeCount,
-    candidates,
     knownNames,
     formScript,
     addCheck,
@@ -95,18 +94,10 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
                 rows={4}
                 knownNames={knownNames}
                 placeholder={CHECK_PLACEHOLDER}
-                insertCandidates={candidates}
                 onChange={(next) => patchCheck(check.id, { script: next })}
               />
 
               {validation.error && <p className={ERROR_CLASSES}>{validation.error}</p>}
-
-              {validation.unknown.length > 0 && (
-                <p className={ERROR_CLASSES}>
-                  {validation.unknown.map((name) => `{${name}}`).join(", ")} no coincide con ningún
-                  campo.
-                </p>
-              )}
 
               <input
                 type="text"

@@ -2,15 +2,23 @@ import { useApiMappingPanel } from "../../../../hooks/useApiMappingPanel/useApiM
 import { isPresentationalField } from "../../../../lib/fieldKind/fieldKind";
 import { allowsManualOptions, isOptionBasedField } from "../../../../lib/fieldOptions/fieldOptions";
 import type { CanvasField } from "../../../../types/field";
-import { ToggleSwitch } from "../../../atoms/ToggleSwitch/ToggleSwitch";
 import { ApiPathSelect } from "../../../molecules/ApiPathSelect/ApiPathSelect";
 import { PanelSection } from "../../../molecules/PanelSection/PanelSection";
 import { FieldOptionsModal } from "../../FieldOptionsModal/FieldOptionsModal";
 import { FieldDataSourceEditor } from "../FieldDataSourceEditor/FieldDataSourceEditor";
 import {
+  DESTINATION_CHOICES,
+  DESTINATION_DESCRIPTION,
+  DESTINATION_ITEM_ACTIVE_CLASSES,
+  DESTINATION_ITEM_BASE_CLASSES,
+  DESTINATION_ITEM_INACTIVE_CLASSES,
+  DESTINATION_TRACK_CLASSES,
   ERROR_CLASSES,
+  EXCLUDED_HINT,
   HINT_CLASSES,
   NOTE_CLASSES,
+  OPTIONS_DISCARD_HINT,
+  PENDING_PATH_HINT,
   WARNING_CLASSES,
 } from "./ApiMappingPanel.constants";
 
@@ -43,27 +51,39 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <PanelSection
-        title="Destino en el payload"
-        aside={
-          <ToggleSwitch
-            checked={isExcluded}
-            onChange={handleExcludedToggle}
-            label="Excluir el campo del payload"
-          />
-        }
-      >
-        <p className={HINT_CLASSES}>
-          {isExcluded ? (
-            <>
-              Excluido: no se enviará al objeto final aunque participe en cálculos o condiciones.
-              {allowsManualOptions(field) &&
-                " Si lo volvés a incluir, las opciones que cargaste se descartan."}
-            </>
-          ) : (
-            "Apagá el interruptor de la derecha solo si el campo es de uso interno del formulario y no viaja a la API."
-          )}
-        </p>
+      <PanelSection title="Envío a la API" description={DESTINATION_DESCRIPTION}>
+        <fieldset aria-label="Si el campo se envía a la API" className={DESTINATION_TRACK_CLASSES}>
+          {DESTINATION_CHOICES.map((choice) => {
+            const isActive: boolean = choice.sends !== isExcluded;
+
+            return (
+              <button
+                key={choice.label}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => {
+                  if (!isActive) handleExcludedToggle(!choice.sends);
+                }}
+                className={`${DESTINATION_ITEM_BASE_CLASSES} ${
+                  isActive ? DESTINATION_ITEM_ACTIVE_CLASSES : DESTINATION_ITEM_INACTIVE_CLASSES
+                }`}
+              >
+                {choice.label}
+              </button>
+            );
+          })}
+        </fieldset>
+
+        {isExcluded && (
+          <p className={HINT_CLASSES}>
+            {EXCLUDED_HINT}
+            {allowsManualOptions(field) && ` ${OPTIONS_DISCARD_HINT}`}
+          </p>
+        )}
+
+        {!isExcluded && !path && !awaitsGroupArrayPath && (
+          <p className={HINT_CLASSES}>{PENDING_PATH_HINT}</p>
+        )}
 
         {!isExcluded && group !== null && (
           <p className={NOTE_CLASSES}>
