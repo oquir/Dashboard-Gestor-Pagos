@@ -16,7 +16,7 @@ export default function AuditLogTrail({ previous, nextOne, scope }: AuditLogTrai
         <ChevronLeft className="size-4" aria-hidden />{' '}
         {previous ? `Anterior: N.º ${previous.id}` : 'No hay anteriores'}
       </Button>
-      <p className="text-sm text-slate-500">Recorres los registros de {scope}</p>
+      <p className="text-sm text-fg-muted">Recorres los registros de {scope}</p>
       <Button disabled={!nextOne} onClick={() => nextOne && goTo(`/bitacora/${nextOne.id}`)}>
         {nextOne ? `Siguiente: N.º ${nextOne.id}` : 'No hay siguientes'}{' '}
         <ChevronRight className="size-4" aria-hidden />

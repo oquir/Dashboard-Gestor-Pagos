@@ -20,20 +20,20 @@ export default function DeclarationData({ d, corrected, downward = false }: Decl
           {formatDate(d.filingDate)}
           {/* Solo la inicial llega tarde: la corrección se presenta después del vencimiento sin ser extemporánea. */}
           {d.kind === 'initial' && daysLate > 0 && (
-            <span className="text-amber-700"> · {daysLate} días tarde</span>
+            <span className="text-warning-fg"> · {daysLate} días tarde</span>
           )}
         </DataItem>
         {d.closingDate && <DataItem label="Fecha de cierre">{formatDate(d.closingDate)}</DataItem>}
         {corrected && (
           <DataItem label="Corrige a">
             <Link
-              className="font-medium text-brand-700 hover:underline"
+              className="font-medium text-brand-fg hover:underline"
               to={`/declaraciones/${corrected.id}`}
             >
               {corrected.number}
             </Link>
             {downward && (
-              <span className="block text-xs text-slate-500">
+              <span className="block text-xs text-fg-muted">
                 A la baja: {formatPesos(lowestValue(d, corrected))} menos. No lleva sanción por
                 corrección.
               </span>

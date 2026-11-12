@@ -23,11 +23,11 @@ export default function DueDatesTable({
   const firstNames = PERIOD_NAMES[value.frequency]
 
   return (
-    <div className="space-y-4 rounded-lg border border-slate-200 p-4">
+    <div className="space-y-4 rounded-lg border border-border p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-slate-800">{title}</h3>
-          <p className="text-xs text-slate-500">{description}</p>
+          <h3 className="text-sm font-semibold text-fg-strong">{title}</h3>
+          <p className="text-xs text-fg-muted">{description}</p>
         </div>
         {value.frequency !== 'annual' && (
           <Field label="Periodicidad" help="Al cambiarla, las fechas quedan vacías.">
@@ -71,17 +71,14 @@ export default function DueDatesTable({
             <table className="text-sm">
               <thead>
                 <tr>
-                  <th
-                    scope="col"
-                    className="px-2 pb-1 text-left text-xs font-medium text-slate-500"
-                  >
+                  <th scope="col" className="px-2 pb-1 text-left text-xs font-medium text-fg-muted">
                     Último dígito (sin DV)
                   </th>
                   {value.periods.map((p) => (
                     <th
                       key={p.period}
                       scope="col"
-                      className="min-w-40 px-1 pb-1 text-left text-xs font-medium text-slate-700"
+                      className="min-w-40 px-1 pb-1 text-left text-xs font-medium text-fg"
                     >
                       {firstNames[p.period - 1]}
                     </th>
@@ -93,7 +90,7 @@ export default function DueDatesTable({
                   <tr key={d}>
                     <th
                       scope="row"
-                      className="px-2 py-1 text-left font-medium tabular-nums text-slate-700"
+                      className="px-2 py-1 text-left font-medium tabular-nums text-fg"
                     >
                       {d}
                     </th>
@@ -116,7 +113,7 @@ export default function DueDatesTable({
                   <tr>
                     <td />
                     {value.periods.map((p) => (
-                      <td key={p.period} className="px-1 pt-1 align-top text-xs text-red-600">
+                      <td key={p.period} className="px-1 pt-1 align-top text-xs text-danger">
                         {errors[p.period]}
                       </td>
                     ))}

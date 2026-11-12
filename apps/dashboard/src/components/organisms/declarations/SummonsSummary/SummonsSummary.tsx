@@ -37,16 +37,16 @@ export default function SummonsSummary({ e, detail = false, className = '' }: Su
           <button
             type="button"
             onClick={() => setConfirming(true)}
-            className="text-slate-500 underline hover:text-red-700"
+            className="text-fg-muted underline hover:text-danger-fg"
           >
             Quitar
           </button>
         )}
       </div>
-      <p className="mt-1 whitespace-nowrap tabular-nums text-slate-700">
+      <p className="mt-1 whitespace-nowrap tabular-nums text-fg">
         N.º {e.number} · notificado el {formatDate(e.notificationDate)}
       </p>
-      <p className="mt-0.5 text-slate-500">
+      <p className="mt-0.5 text-fg-muted">
         {detail ? situationText(e, situation) : termText(e, situation)}
       </p>
       {e.copy && (
@@ -80,7 +80,7 @@ export default function SummonsSummary({ e, detail = false, className = '' }: Su
             </>
           }
         >
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-fg-soft">
             El aplicativo dejará de liquidarle la sanción más alta por este emplazamiento.
           </p>
         </Modal>

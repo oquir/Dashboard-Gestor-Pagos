@@ -7,5 +7,5 @@ export const municipalityColumn = (municipalities: Municipality[]) =>
   col.accessor((i) => municipalities.find((m) => m.id === i.municipalityId)?.name ?? '', {
     id: 'municipality',
     header: 'Municipio',
-    meta: { classes: 'whitespace-nowrap text-slate-700' },
+    meta: { classes: 'whitespace-nowrap text-fg' },
   })

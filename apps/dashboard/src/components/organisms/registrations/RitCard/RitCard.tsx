@@ -28,7 +28,7 @@ export default function RitCard({ data, previous, rates }: RitCardProps) {
             previousOnes={previous && accountantFields(previous.accountant)}
           />
         ) : (
-          <p className="p-5 text-sm text-slate-500">No registró contador ni revisor fiscal.</p>
+          <p className="p-5 text-sm text-fg-muted">No registró contador ni revisor fiscal.</p>
         )}
       </Card>
 
@@ -37,20 +37,20 @@ export default function RitCard({ data, previous, rates }: RitCardProps) {
           title="Calidades"
           description="Nacen de la norma o del acto de designación, no de la inscripción."
         />
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {data.capacities.map((c) => (
             <li
               key={c.capacity}
               className="flex flex-wrap items-start justify-between gap-3 px-5 py-3"
             >
               <div>
-                <p className="text-sm font-medium text-slate-900">
+                <p className="text-sm font-medium text-fg-strong">
                   {capacityLabel[c.capacity]}{' '}
                   {added(!previous?.capacities.some((a) => a.capacity === c.capacity))}
                 </p>
-                <p className="text-xs text-slate-500">{ENABLES[c.capacity]}</p>
+                <p className="text-xs text-fg-muted">{ENABLES[c.capacity]}</p>
               </div>
-              <div className="text-right text-xs text-slate-500">
+              <div className="text-right text-xs text-fg-muted">
                 <p>Desde {formatDate(c.from)}</p>
                 {c.act && <p>{c.act}</p>}
               </div>
@@ -61,17 +61,17 @@ export default function RitCard({ data, previous, rates }: RitCardProps) {
 
       <Card>
         <CardHeader title="Actividades económicas" />
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {data.activities.map((a) => (
             <li key={a.ciiu} className="flex items-center justify-between gap-3 px-5 py-3 text-sm">
               <div>
-                <span className="tabular-nums text-slate-500">CIIU {a.ciiu}</span> ·{' '}
-                <span className="text-slate-900">{a.description}</span>
+                <span className="tabular-nums text-fg-muted">CIIU {a.ciiu}</span> ·{' '}
+                <span className="text-fg-strong">{a.description}</span>
                 {a.main && <Badge tone="info">Principal</Badge>}{' '}
                 {added(!previous?.activities.some((x) => x.ciiu === a.ciiu))}
               </div>
               {rates && (
-                <span className="whitespace-nowrap text-slate-600">
+                <span className="whitespace-nowrap text-fg-soft">
                   {rates.find((t) => t.ciiu === a.ciiu)?.perThousand ?? '—'} por mil
                 </span>
               )}
@@ -104,7 +104,7 @@ function FieldList({
               <>
                 {' '}
                 <Badge tone="alert">Modificado</Badge>
-                <span className="mt-0.5 block text-xs text-slate-500">Antes: {prior ?? '—'}</span>
+                <span className="mt-0.5 block text-xs text-fg-muted">Antes: {prior ?? '—'}</span>
               </>
             )}
           </DataItem>

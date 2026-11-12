@@ -19,12 +19,12 @@ export default function MunicipalityHeader({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-semibold text-slate-900">{m.name}</h2>
+            <h2 className="text-lg font-semibold text-fg-strong">{m.name}</h2>
             <Badge tone={m.isActive ? 'success' : 'neutral'}>
               {m.isActive ? 'Activo' : 'Inactivo'}
             </Badge>
           </div>
-          <p className="mt-0.5 flex items-center gap-1 text-sm text-slate-500">
+          <p className="mt-0.5 flex items-center gap-1 text-sm text-fg-muted">
             <Location className="size-3.5" aria-hidden /> {m.department} · DANE {m.daneCode}
           </p>
         </div>
@@ -38,20 +38,22 @@ export default function MunicipalityHeader({
         </div>
       </div>
       {!m.isActive && (
-        <p className="mt-3 text-sm text-slate-500">
+        <p className="mt-3 text-sm text-fg-muted">
           Mientras esté inactivo, sus usuarios no pueden entrar al aplicativo.
         </p>
       )}
-      <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4 sm:grid-cols-4">
+      <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-border-subtle pt-4 sm:grid-cols-4">
         <Figure label="Inscripciones activas">
           {m.rit ? (
             c.activeItems
           ) : (
-            <span className="text-sm font-normal text-slate-500">Sin RIT</span>
+            <span className="text-sm font-normal text-fg-muted">Sin RIT</span>
           )}
         </Figure>
         <Figure label="Declaraciones">{c.declarations}</Figure>
-        <Figure label="Recaudo 2026">${compactFormat(c.collection)}</Figure>
+        <Figure label="Recaudo 2026" isPositive>
+          ${compactFormat(c.collection)}
+        </Figure>
         <Figure label="Usuarios activos">{c.users}</Figure>
       </dl>
     </Card>

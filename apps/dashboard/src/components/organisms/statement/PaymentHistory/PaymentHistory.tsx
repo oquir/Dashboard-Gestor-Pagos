@@ -22,7 +22,7 @@ export default function PaymentHistory({ movements }: PaymentHistoryProps) {
       {movements.length === 0 ? (
         <EmptyState title="No hay pagos registrados" />
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {movements.map((m) => {
             const { d } = m
             const returned = m.kind === 'check' && m.c.status === 'returned'
@@ -31,14 +31,14 @@ export default function PaymentHistory({ movements }: PaymentHistoryProps) {
                 key={m.kind === 'payment' ? m.p.id : m.c.id}
                 className="flex items-center justify-between gap-3 px-5 py-3 text-sm"
               >
-                <span className="min-w-0 text-slate-700">
+                <span className="min-w-0 text-fg">
                   {m.kind === 'payment'
                     ? `${formatDate(m.p.date)} · ${m.p.method}`
                     : `${formatDate(m.c.receiptDate)} · Cheque de gerencia ${m.c.number}, ${m.c.bank}`}
-                  <span className="block text-xs text-slate-500">
+                  <span className="block text-xs text-fg-muted">
                     <Link
                       to={`/declaraciones/${d.id}`}
-                      className="hover:text-brand-700 hover:underline"
+                      className="hover:text-brand-fg hover:underline"
                     >
                       {taxLabel[d.tax]} · {periodLabel(d)} · {d.number}
                     </Link>
@@ -52,7 +52,7 @@ export default function PaymentHistory({ movements }: PaymentHistoryProps) {
                     <Badge tone={checkTone[m.c.status]}>{checkStatusLabel[m.c.status]}</Badge>
                   )}
                   <span
-                    className={`tabular-nums ${returned ? 'text-slate-400 line-through' : 'text-slate-900'}`}
+                    className={`tabular-nums ${returned ? 'text-fg-subtle line-through' : 'text-fg-strong'}`}
                   >
                     {formatPesos(m.kind === 'payment' ? m.p.value : m.c.value)}
                   </span>

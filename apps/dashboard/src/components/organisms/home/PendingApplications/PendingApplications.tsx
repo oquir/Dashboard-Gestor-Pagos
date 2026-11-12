@@ -17,7 +17,7 @@ export default function PendingApplications({
       {pendingOnes.length === 0 ? (
         <EmptyState title="No hay solicitudes pendientes" />
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {pendingOnes.slice(0, 6).map(({ reg, ritChange }) => (
             <LinkItem
               key={ritChange.id}
@@ -27,7 +27,7 @@ export default function PendingApplications({
               right={
                 <>
                   <Badge tone="alert">{ritChangeKindLabel[ritChange.kind]}</Badge>
-                  <p className="mt-1 text-xs text-slate-500">{formatDate(ritChange.date)}</p>
+                  <p className="mt-1 text-xs text-fg-muted">{formatDate(ritChange.date)}</p>
                 </>
               }
             />

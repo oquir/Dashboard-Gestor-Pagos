@@ -95,12 +95,12 @@ export default function SummonsModal({ kind, recipients, close }: SummonsModalPr
           />
         </Field>
 
-        <ul className="max-h-[50vh] divide-y divide-slate-100 overflow-y-auto rounded-lg ring-1 ring-slate-200">
+        <ul className="max-h-[50vh] divide-y divide-border-subtle overflow-y-auto rounded-lg ring-1 ring-border">
           {recipients.map(({ key, title, description }) => (
             <li key={key} className="space-y-2 px-3 py-3">
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-slate-900">{title}</p>
-                <p className="truncate text-xs text-slate-500">{description}</p>
+                <p className="truncate text-sm font-medium text-fg-strong">{title}</p>
+                <p className="truncate text-xs text-fg-muted">{description}</p>
               </div>
               <Field label="Número del acto" error={attempted ? numberFails(key) : undefined}>
                 <Input
@@ -112,16 +112,16 @@ export default function SummonsModal({ kind, recipients, close }: SummonsModalPr
                 />
               </Field>
               {copies[key] ? (
-                <p className="flex items-center gap-2 text-sm text-slate-700">
-                  <Document className="size-4 shrink-0 text-brand-600" aria-hidden />
+                <p className="flex items-center gap-2 text-sm text-fg">
+                  <Document className="size-4 shrink-0 text-brand-fg" aria-hidden />
                   <span className="min-w-0 flex-1 truncate">{copies[key].name}</span>
-                  <span className="shrink-0 text-xs text-slate-500">
+                  <span className="shrink-0 text-xs text-fg-muted">
                     {formatSize(copies[key].size)}
                   </span>
                   <button
                     type="button"
                     onClick={() => removeCopy(key)}
-                    className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-red-600"
+                    className="rounded p-0.5 text-fg-subtle hover:bg-surface-raised hover:text-danger"
                     aria-label={`Quitar ${copies[key].name}`}
                   >
                     <Xmark className="size-4" aria-hidden />
@@ -136,7 +136,7 @@ export default function SummonsModal({ kind, recipients, close }: SummonsModalPr
                     onChange={pickCopy(key)}
                   />
                   <p
-                    className={`mt-1 text-xs ${tooLarge === key ? 'text-red-600' : 'text-slate-500'}`}
+                    className={`mt-1 text-xs ${tooLarge === key ? 'text-danger' : 'text-fg-muted'}`}
                   >
                     {tooLarge === key
                       ? 'Supera los 10 MB y no se adjuntó.'

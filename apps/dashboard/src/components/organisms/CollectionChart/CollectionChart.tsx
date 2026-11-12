@@ -38,7 +38,7 @@ export default function CollectionChart({
         }
       />
       <div className="px-5 pb-5 pt-4">
-        <ul className="mb-4 flex flex-wrap gap-4 text-sm text-slate-600">
+        <ul className="mb-4 flex flex-wrap gap-4 text-sm text-fg-soft">
           {series.map(({ tax, classes }) => (
             <li key={tax} className="flex items-center gap-2">
               <span className={`size-3 rounded-sm ${classes}`} aria-hidden />
@@ -54,7 +54,7 @@ export default function CollectionChart({
         ) : (
           <div className="flex gap-3">
             <div
-              className="relative w-14 shrink-0 text-right text-xs tabular-nums text-slate-400"
+              className="relative w-14 shrink-0 text-right text-xs tabular-nums text-fg-subtle"
               style={{ height: HEIGHT }}
             >
               {marks.map((m, i) => (
@@ -72,7 +72,7 @@ export default function CollectionChart({
                 {marks.map((m, i) => (
                   <div
                     key={m}
-                    className={`absolute inset-x-0 h-px ${i === 2 ? 'bg-slate-300' : 'bg-slate-100'}`}
+                    className={`absolute inset-x-0 h-px ${i === 2 ? 'bg-border-strong' : 'bg-surface-raised'}`}
                     style={{ top: (i * HEIGHT) / 2 }}
                   />
                 ))}
@@ -105,20 +105,18 @@ export default function CollectionChart({
                       })}
                       {isActive?.row === i && (
                         <div
-                          className={`pointer-events-none absolute bottom-full z-10 mb-2 w-48 ${i < rows.length / 2 ? 'left-0' : 'right-0'} rounded-lg border border-slate-200 bg-white p-3 text-left shadow-lg`}
+                          className={`pointer-events-none absolute bottom-full z-10 mb-2 w-48 ${i < rows.length / 2 ? 'left-0' : 'right-0'} rounded-lg border border-border bg-surface p-3 text-left shadow-lg`}
                         >
-                          <p className="text-xs text-slate-500">{f.label}</p>
+                          <p className="text-xs text-fg-muted">{f.label}</p>
                           {series.map(({ tax, classes }) => (
                             <div key={tax} className="mt-1 flex items-center gap-2">
                               <span className={`h-0.5 w-3 ${classes}`} aria-hidden />
                               <span
-                                className={`text-sm ${isActive.tax === tax ? 'font-semibold text-slate-900' : 'text-slate-700'}`}
+                                className={`text-sm ${isActive.tax === tax ? 'font-semibold text-fg-strong' : 'text-fg'}`}
                               >
                                 {formatPesos(f.values[tax])}
                               </span>
-                              <span className="ml-auto text-xs text-slate-500">
-                                {taxLabel[tax]}
-                              </span>
+                              <span className="ml-auto text-xs text-fg-muted">{taxLabel[tax]}</span>
                             </div>
                           ))}
                         </div>
@@ -127,7 +125,7 @@ export default function CollectionChart({
                   ))}
                 </div>
               </div>
-              <div className="mt-2 flex justify-around text-xs text-slate-500">
+              <div className="mt-2 flex justify-around text-xs text-fg-muted">
                 {rows.map((f) => (
                   <span key={f.label} className="min-w-0 max-w-14 flex-1 text-center">
                     {f.label}

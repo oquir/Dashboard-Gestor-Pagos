@@ -16,18 +16,18 @@ export default function DeclarationSignatures({ d }: DeclarationSignaturesProps)
       <dl className="space-y-4 p-5">
         <DataItem label="Declarante">
           {dec.name}
-          <span className="block text-xs tabular-nums text-slate-500">{documentFormat(dec)}</span>
+          <span className="block text-xs tabular-nums text-fg-muted">{documentFormat(dec)}</span>
         </DataItem>
         <DataItem label={c ? accountingPositionLabel[c.jobTitle] : 'Contador o revisor fiscal'}>
           {c ? (
             <>
               {c.name}
-              <span className="block text-xs tabular-nums text-slate-500">
+              <span className="block text-xs tabular-nums text-fg-muted">
                 {documentFormat(c)} · Tarjeta profesional {c.professionalCard}
               </span>
             </>
           ) : (
-            <span className="text-slate-500">No firma</span>
+            <span className="text-fg-muted">No firma</span>
           )}
         </DataItem>
       </dl>

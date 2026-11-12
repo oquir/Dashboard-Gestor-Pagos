@@ -29,14 +29,14 @@ export default function DeclarationValidations({
         {validations(d, reg, againstRit, corrected, penalty).map((v) => (
           <li key={v.text} className="flex items-start gap-2 text-sm">
             {v.ok ? (
-              <TickCircle className="mt-0.5 size-4 shrink-0 text-emerald-600" aria-label="Cumple" />
+              <TickCircle className="mt-0.5 size-4 shrink-0 text-secondary" aria-label="Cumple" />
             ) : (
               <AlertTriangle
-                className="mt-0.5 size-4 shrink-0 text-red-600"
+                className="mt-0.5 size-4 shrink-0 text-danger"
                 aria-label="Inconsistencia"
               />
             )}
-            <span className={v.ok ? 'text-slate-700' : 'font-medium text-red-700'}>{v.text}</span>
+            <span className={v.ok ? 'text-fg' : 'font-medium text-danger-fg'}>{v.text}</span>
           </li>
         ))}
       </ul>

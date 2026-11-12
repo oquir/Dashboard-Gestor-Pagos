@@ -23,7 +23,7 @@ export default function UsersTable({ users }: UsersTableProps) {
         columns={columns}
         rowId={(u) => u.id}
         name="usuarios"
-        rowClass={(u) => (u.isActive ? 'hover:bg-slate-50' : 'bg-slate-50 opacity-60')}
+        rowClass={(u) => (u.isActive ? 'hover:bg-surface-sunken' : 'bg-surface-sunken opacity-60')}
       />
       {viendo && (
         <UserDetail

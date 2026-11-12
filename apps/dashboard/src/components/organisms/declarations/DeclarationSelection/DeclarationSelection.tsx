@@ -9,8 +9,8 @@ export default function DeclarationSelection({
   if (declarations.length === 0) return null
 
   return (
-    <div className="flex flex-wrap items-center gap-3 border-b border-brand-100 bg-brand-50 px-4 py-2.5 text-sm">
-      <span className="font-medium text-brand-800">
+    <div className="flex flex-wrap items-center gap-3 border-b border-brand-border-soft bg-brand-surface px-4 py-2.5 text-sm">
+      <span className="font-medium text-brand-fg-strong">
         {declarations.length}{' '}
         {declarations.length === 1 ? 'declaración seleccionada' : 'declaraciones seleccionadas'}
       </span>

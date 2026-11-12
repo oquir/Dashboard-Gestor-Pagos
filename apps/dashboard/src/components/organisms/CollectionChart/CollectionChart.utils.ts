@@ -11,7 +11,7 @@ export const tableColumns = (series: Series[]) =>
     col.accessor('label', {
       header: 'Periodo',
       enableSorting: false,
-      meta: { classes: 'text-slate-700' },
+      meta: { classes: 'text-fg' },
     }),
     ...series.map(({ tax }) =>
       col.accessor((f) => f.values[tax], {

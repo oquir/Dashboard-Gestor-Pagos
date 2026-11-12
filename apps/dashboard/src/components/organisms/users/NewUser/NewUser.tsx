@@ -60,7 +60,7 @@ export default function NewUser({ onFinish }: NewUserProps) {
           municipalities={is1cero1 ? municipalities : undefined}
         />
       </div>
-      <div className="flex justify-end gap-2 border-t border-slate-100 px-5 py-3">
+      <div className="flex justify-end gap-2 border-t border-border-subtle px-5 py-3">
         <Button variant="secondary" onClick={onFinish}>
           Cancelar
         </Button>

@@ -29,7 +29,7 @@ export function auditLogColumns(municipalities: Municipality[]) {
           aria-label={`Ver el registro ${r.id}`}
           className={ROW_BUTTON_CLASS}
         >
-          <DocumentText className="size-4 text-brand-600" aria-hidden />
+          <DocumentText className="size-4 text-brand-fg" aria-hidden />
           {r.id}
         </Link>
       ),
@@ -40,8 +40,8 @@ export function auditLogColumns(municipalities: Municipality[]) {
       meta: { classes: 'whitespace-nowrap' },
       cell: ({ row: { original: r } }) => (
         <>
-          <p className="text-slate-900">{formatDate(r.dateTime.slice(0, 10))}</p>
-          <p className="flex items-center gap-1.5 text-xs tabular-nums text-slate-500">
+          <p className="text-fg-strong">{formatDate(r.dateTime.slice(0, 10))}</p>
+          <p className="flex items-center gap-1.5 text-xs tabular-nums text-fg-muted">
             {formatTime(r.dateTime)}
             {afterHours(r) && <Badge tone="alert">Fuera de horario</Badge>}
           </p>
@@ -54,11 +54,11 @@ export function auditLogColumns(municipalities: Municipality[]) {
       meta: { classes: 'whitespace-nowrap' },
       cell: ({ row: { original: r } }) => (
         <>
-          <p className="font-medium text-slate-900">{r.user.name}</p>
+          <p className="font-medium text-fg-strong">{r.user.name}</p>
           {r.user.role === '1cero1' ? (
             <Badge tone="info">1cero1</Badge>
           ) : (
-            <p className="text-xs text-slate-500">{roleLabel[r.user.role]}</p>
+            <p className="text-xs text-fg-muted">{roleLabel[r.user.role]}</p>
           )}
         </>
       ),
@@ -66,15 +66,15 @@ export function auditLogColumns(municipalities: Municipality[]) {
     col.accessor((r) => municipalityName(r, municipalities), {
       id: 'municipality',
       header: 'Municipio',
-      meta: { classes: 'whitespace-nowrap text-slate-700' },
+      meta: { classes: 'whitespace-nowrap text-fg' },
     }),
     col.accessor('action', {
       header: 'Acción',
       meta: { classes: 'min-w-64' },
       cell: ({ row: { original: r } }) => (
         <>
-          <p className="font-mono text-sm text-slate-900">{r.action}</p>
-          <p className="text-xs text-slate-500">
+          <p className="font-mono text-sm text-fg-strong">{r.action}</p>
+          <p className="text-xs text-fg-muted">
             {r.controller} · <span className="break-all font-mono">{r.endpoint}</span>
           </p>
         </>

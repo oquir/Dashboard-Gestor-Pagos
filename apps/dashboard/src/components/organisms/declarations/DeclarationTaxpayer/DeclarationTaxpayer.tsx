@@ -38,7 +38,7 @@ export default function DeclarationTaxpayer({
       <dl className={wide ? LIST_CLASS.wide : LIST_CLASS.narrow}>
         <DataItem label="Nombre o razón social">
           {reg ? (
-            <Link className="font-medium text-brand-700 hover:underline" to={`/rit/${reg.id}`}>
+            <Link className="font-medium text-brand-fg hover:underline" to={`/rit/${reg.id}`}>
               {c.name}
             </Link>
           ) : (

@@ -85,9 +85,9 @@ export default function MunicipalitySearch({ all = true }: MunicipalitySearchPro
           onKeyDown={typeText}
         />
         {open && (
-          <div className="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg">
+          <div className="absolute inset-x-0 top-full z-20 mt-1 overflow-hidden rounded-lg border border-border bg-surface shadow-lg">
             {options.length === 0 ? (
-              <p className="px-3 py-4 text-sm text-slate-500">Ningún municipio se llama así.</p>
+              <p className="px-3 py-4 text-sm text-fg-muted">Ningún municipio se llama así.</p>
             ) : (
               <ul
                 id={`${id}-opciones`}
@@ -101,7 +101,7 @@ export default function MunicipalitySearch({ all = true }: MunicipalitySearchPro
                     id={optionId(o.id)}
                     role="option"
                     aria-selected={i === highlighted}
-                    className={`flex cursor-pointer items-start gap-2 px-3 py-2 ${i === highlighted ? 'bg-brand-50' : ''}`}
+                    className={`flex cursor-pointer items-start gap-2 px-3 py-2 ${i === highlighted ? 'bg-brand-surface' : ''}`}
                     // Sin esto, el campo pierde el foco y la lista se cierra antes del clic.
                     onMouseDown={(e) => e.preventDefault()}
                     onMouseEnter={() => setHighlighted(i)}
@@ -109,16 +109,16 @@ export default function MunicipalitySearch({ all = true }: MunicipalitySearchPro
                   >
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
-                        <span className="truncate text-sm font-medium text-slate-900">
+                        <span className="truncate text-sm font-medium text-fg-strong">
                           {o.name}
                         </span>
                         {o.inactive && <Badge tone="neutral">Inactivo</Badge>}
                       </span>
-                      <span className="block truncate text-xs text-slate-500">{o.detail}</span>
+                      <span className="block truncate text-xs text-fg-muted">{o.detail}</span>
                     </span>
                     {o.id === selected && (
                       <>
-                        <TickCircle className="mt-0.5 size-4 shrink-0 text-brand-600" aria-hidden />
+                        <TickCircle className="mt-0.5 size-4 shrink-0 text-brand-fg" aria-hidden />
                         <span className="sr-only">(el que estás viendo)</span>
                       </>
                     )}
@@ -127,14 +127,14 @@ export default function MunicipalitySearch({ all = true }: MunicipalitySearchPro
               </ul>
             )}
             {more > 0 && (
-              <p className="border-t border-slate-100 px-3 py-2 text-xs text-slate-500">
+              <p className="border-t border-border-subtle px-3 py-2 text-xs text-fg-muted">
                 Hay {more} más: escribe más del nombre para encontrarlo.
               </p>
             )}
           </div>
         )}
       </div>
-      <p className="mt-2 text-xs text-slate-500">
+      <p className="mt-2 text-xs text-fg-muted">
         {municipalities.length} municipios en el aplicativo, {activeOnes} activos.
       </p>
     </Card>

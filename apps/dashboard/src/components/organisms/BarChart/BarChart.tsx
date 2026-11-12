@@ -28,24 +28,24 @@ export default function BarChart({ title, description, bars, format }: BarChartP
               onPointerLeave={() => setActive(null)}
               onFocus={() => setActive(i)}
               onBlur={() => setActive(null)}
-              className={`rounded outline-none transition-opacity focus-visible:ring-2 focus-visible:ring-brand-600 ${active !== null && active !== i ? 'opacity-50' : ''}`}
+              className={`rounded outline-none transition-opacity focus-visible:ring-2 focus-visible:ring-brand-border ${active !== null && active !== i ? 'opacity-50' : ''}`}
             >
               <div className="flex items-baseline justify-between gap-3 text-sm">
-                <span className="truncate text-slate-700">{b.label}</span>
+                <span className="truncate text-fg">{b.label}</span>
                 <span
-                  className="shrink-0 tabular-nums text-slate-900"
+                  className="shrink-0 tabular-nums text-fg-strong"
                   title={format === 'pesos' ? formatPesos(b.value) : undefined}
                 >
                   {text(b.value)}
-                  <span className="ml-1.5 text-xs text-slate-500">
+                  <span className="ml-1.5 text-xs text-fg-muted">
                     {percentage.format(b.value / total)}
                   </span>
                 </span>
               </div>
-              <div className="mt-1 h-2 rounded-full bg-slate-100">
+              <div className="mt-1 h-2 rounded-full bg-surface-raised">
                 {b.value > 0 && (
                   <div
-                    className={`h-2 min-w-1 rounded-full ${b.classes ?? 'bg-brand-500'}`}
+                    className={`h-2 min-w-1 rounded-full ${b.classes ?? 'bg-brand'}`}
                     style={{ width: `${(b.value / maximum) * 100}%` }}
                   />
                 )}

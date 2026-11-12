@@ -52,7 +52,7 @@ export default function Table<T extends RowData>({
             {table.getHeaderGroups().map((group) => (
               <tr
                 key={group.id}
-                className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500"
+                className="border-b border-border text-left text-xs uppercase tracking-wide text-fg-muted"
               >
                 {group.headers.map((h) => {
                   const right = h.column.columnDef.meta?.align === 'right'
@@ -69,7 +69,7 @@ export default function Table<T extends RowData>({
                         <button
                           type="button"
                           onClick={h.column.getToggleSortingHandler()}
-                          className={`inline-flex items-center gap-1 uppercase tracking-wide hover:text-slate-900 ${right ? 'flex-row-reverse' : ''}`}
+                          className={`inline-flex items-center gap-1 uppercase tracking-wide hover:text-fg-strong ${right ? 'flex-row-reverse' : ''}`}
                         >
                           <table.FlexRender header={h} />
                           {order === 'asc' ? (
@@ -89,9 +89,12 @@ export default function Table<T extends RowData>({
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border-subtle">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className={rowClass ? rowClass(row.original) : 'hover:bg-slate-50'}>
+              <tr
+                key={row.id}
+                className={rowClass ? rowClass(row.original) : 'hover:bg-surface-sunken'}
+              >
                 {row.getAllCells().map((cell) => {
                   const meta = cell.column.columnDef.meta
                   return (
@@ -110,7 +113,7 @@ export default function Table<T extends RowData>({
       </div>
 
       {(name || pageCount > 1 || sizes.length > 0) && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border-subtle px-5 py-3 text-xs text-fg-muted">
           <div className="flex flex-wrap items-center gap-3">
             {sizes.length > 0 && (
               <label className="flex items-center gap-2">

@@ -81,7 +81,7 @@ export default function PriorApproval({
             {formatDate(situation.limit)}
             {pending && (
               <span
-                className={`block text-xs ${days < 0 ? 'font-medium text-red-700' : 'text-slate-500'}`}
+                className={`block text-xs ${days < 0 ? 'font-medium text-danger-fg' : 'text-fg-muted'}`}
               >
                 {days > 1
                   ? `Quedan ${days} días hábiles`
@@ -94,7 +94,7 @@ export default function PriorApproval({
             )}
           </DataItem>
         </dl>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-fg-muted">
           Descuento, sanciones e intereses se liquidan con la fecha de radicación, aunque la
           aprobación llegue después
           {discount > 0
@@ -155,7 +155,7 @@ export default function PriorApproval({
           </div>
         )}
         {pending && !canResolve && (
-          <p className="text-sm text-slate-600">La aprobación la da la administración municipal.</p>
+          <p className="text-sm text-fg-soft">La aprobación la da la administración municipal.</p>
         )}
 
         {situation.receiptUntil && (

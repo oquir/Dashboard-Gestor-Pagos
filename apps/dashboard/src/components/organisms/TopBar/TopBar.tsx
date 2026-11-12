@@ -24,23 +24,23 @@ export default function TopBar({ openMenu }: TopBarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur sm:px-6">
+    <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b border-border bg-surface/90 px-4 py-3 backdrop-blur sm:px-6">
       <Button variant="ghost" className="lg:hidden" aria-label="Abrir menú" onClick={openMenu}>
         <Menu className="size-5" />
       </Button>
 
       {!can(user.role, 'canSeeAllMunicipalities') && (
         <div className="flex items-center gap-2 text-sm">
-          <MapPoint2 className="size-4 text-slate-400" aria-hidden />
-          <span className="font-medium text-slate-900">{municipality?.name}</span>
-          <span className="text-slate-500">· {municipality?.department}</span>
+          <MapPoint2 className="size-4 text-fg-subtle" aria-hidden />
+          <span className="font-medium text-fg-strong">{municipality?.name}</span>
+          <span className="text-fg-muted">· {municipality?.department}</span>
         </div>
       )}
 
       <div className="ml-auto flex items-center gap-2">
         <div className="hidden text-right sm:block">
-          <p className="text-sm font-medium text-slate-900">{fullName(user)}</p>
-          <p className="text-xs text-slate-500">{user.jobTitle}</p>
+          <p className="text-sm font-medium text-fg-strong">{fullName(user)}</p>
+          <p className="text-xs text-fg-muted">{user.jobTitle}</p>
         </div>
         <Badge tone={user.role === '1cero1' ? 'info' : 'neutral'}>{roleLabel[user.role]}</Badge>
         <Button variant="ghost" title="Reiniciar los datos de la demo" onClick={reset}>

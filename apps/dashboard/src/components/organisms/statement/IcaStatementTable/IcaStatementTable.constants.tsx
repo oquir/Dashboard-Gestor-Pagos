@@ -19,8 +19,8 @@ export const COLUMNS = col.columns([
       },
     }) => (
       <>
-        <p className="font-medium text-slate-900">{d.fiscalYear}</p>
-        <p className="text-xs text-slate-500">{declarationTypeLabel[d.kind]}</p>
+        <p className="font-medium text-fg-strong">{d.fiscalYear}</p>
+        <p className="text-xs text-fg-muted">{declarationTypeLabel[d.kind]}</p>
       </>
     ),
   }),
@@ -30,10 +30,10 @@ export const COLUMNS = col.columns([
   col.accessor((r) => r.balance, {
     id: 'balance',
     header: 'Saldo',
-    meta: { ...VALUE, classes: 'whitespace-nowrap tabular-nums font-medium text-slate-900' },
+    meta: { ...VALUE, classes: 'whitespace-nowrap tabular-nums font-medium text-fg-strong' },
     // Lo que aún no se puede pagar, o que no tiene valor, no es deuda.
     cell: ({ row: { original: r } }) =>
-      r.payable ? formatPesos(r.balance) : <span className="text-slate-400">—</span>,
+      r.payable ? formatPesos(r.balance) : <span className="text-fg-subtle">—</span>,
   }),
   statusColumn,
 ])

@@ -29,18 +29,18 @@ export default function FileList({
         }
       />
       {items.length === 0 ? (
-        <p className="p-5 text-sm text-slate-500">{empty}</p>
+        <p className="p-5 text-sm text-fg-muted">{empty}</p>
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {items.map(({ title, file }) => (
             <li key={title} className="flex items-center gap-3 px-5 py-3 text-sm">
               <Document
-                className={`size-5 shrink-0 ${file ? 'text-brand-600' : 'text-slate-300'}`}
+                className={`size-5 shrink-0 ${file ? 'text-brand-fg' : 'text-fg-subtle'}`}
                 aria-hidden
               />
               <div className="min-w-0 flex-1">
-                <p className={file ? 'text-slate-900' : 'text-red-700'}>{title}</p>
-                <p className="truncate text-xs text-slate-500">
+                <p className={file ? 'text-fg-strong' : 'text-danger-fg'}>{title}</p>
+                <p className="truncate text-xs text-fg-muted">
                   {file
                     ? `${file.name} · ${formatSize(file.size)} · ${formatDate(file.uploadDate)}`
                     : 'No cargado'}
@@ -50,7 +50,7 @@ export default function FileList({
                 <button
                   type="button"
                   onClick={() => downloadFile(file, title, context)}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-brand-700 hover:bg-brand-50"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-md px-2 py-1 text-brand-fg hover:bg-brand-surface"
                   aria-label={`Descargar ${title}`}
                 >
                   <Download className="size-4" aria-hidden /> Descargar

@@ -12,7 +12,7 @@ export const municipalityColumn = (municipalities: Municipality[]) =>
     {
       id: 'municipality',
       header: 'Municipio',
-      meta: { classes: 'whitespace-nowrap text-slate-700' },
+      meta: { classes: 'whitespace-nowrap text-fg' },
     },
   )
 
@@ -65,7 +65,7 @@ export const summonsColumn = (summonses: Summons[]) =>
       return e ? (
         <SummonsSummary e={e} />
       ) : (
-        <span className="text-xs text-slate-400">Sin emplazamiento</span>
+        <span className="text-xs text-fg-subtle">Sin emplazamiento</span>
       )
     },
   })

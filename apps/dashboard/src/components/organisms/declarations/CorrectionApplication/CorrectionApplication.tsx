@@ -53,7 +53,7 @@ export default function CorrectionApplication({
             {formatDate(situation.limit)}
             {toResolve && (
               <span
-                className={`block text-xs ${days <= 15 ? 'font-medium text-amber-700' : 'text-slate-500'}`}
+                className={`block text-xs ${days <= 15 ? 'font-medium text-warning-fg' : 'text-fg-muted'}`}
               >
                 {days > 1 ? `Quedan ${days} días` : days === 1 ? 'Queda 1 día' : 'Vence hoy'}
               </span>
@@ -67,7 +67,7 @@ export default function CorrectionApplication({
 
         {toResolve && canResolve && (
           <div className="space-y-3">
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-fg-muted">
               Si se acepta, reemplaza a {previous}. Si se rechaza, esa sigue vigente y el rechazo
               lleva una sanción del 20 % del menor valor que pide ({formatPesos(penalty)}), que
               impone la administración en el mismo acto, después de un proceso previo (Corte
@@ -101,7 +101,7 @@ export default function CorrectionApplication({
           </div>
         )}
         {toResolve && !canResolve && (
-          <p className="text-sm text-slate-600">La resuelve la administración municipal.</p>
+          <p className="text-sm text-fg-soft">La resuelve la administración municipal.</p>
         )}
 
         {situation.status === 'accepted' && (

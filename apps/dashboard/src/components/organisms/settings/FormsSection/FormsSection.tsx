@@ -54,11 +54,11 @@ export default function FormsSection({
         if (!canDisable)
           return (
             <div key={f}>
-              <p className="flex items-center gap-2 text-sm font-medium text-slate-700">
+              <p className="flex items-center gap-2 text-sm font-medium text-fg">
                 {formLabel[f]}
                 {d && <DisabledBadge disabled={d} />}
               </p>
-              <p className="text-xs text-slate-500">{HELP[f]}</p>
+              <p className="text-xs text-fg-muted">{HELP[f]}</p>
             </div>
           )
         return (
@@ -78,12 +78,12 @@ export default function FormsSection({
                 />
                 <button
                   type="button"
-                  className="text-xs font-medium text-brand-700 hover:underline"
+                  className="text-xs font-medium text-brand-fg hover:underline"
                   onClick={() => setRequesting(f)}
                 >
                   Cambiar motivo
                 </button>
-                {!d.reason && <span className="text-xs text-red-600">{errors[`motivo-${f}`]}</span>}
+                {!d.reason && <span className="text-xs text-danger">{errors[`motivo-${f}`]}</span>}
               </div>
             )}
           </div>
