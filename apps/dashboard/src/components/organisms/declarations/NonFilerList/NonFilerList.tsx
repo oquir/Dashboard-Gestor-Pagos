@@ -23,7 +23,6 @@ import {
   excelRow,
   filterNonFilers,
   yearOptions,
-  fromText,
   noCalendarText,
   withoutZerosText,
 } from './NonFilerList.utils'
@@ -95,9 +94,6 @@ export default function NonFilerList({ result, tax }: NonFilerListProps) {
 
   return (
     <div className="space-y-4">
-      <Notice tone="info" icon={InfoCircle}>
-        {fromText(municipalities.find((m) => m.id === municipalityId))}
-      </Notice>
       {result.withoutCalendar.length > 0 && (
         <Notice tone="alert" icon={Warning} role="alert">
           {noCalendarText(result.withoutCalendar, firstNames, municipalityId === null)}

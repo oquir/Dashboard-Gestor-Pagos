@@ -8,14 +8,12 @@ import {
   documentFormat,
   formatDate,
   normalize,
-  inProductionText,
   nonFilerId,
 } from '../../../../lib'
 import type {
   Declaration,
   Summons,
   SummonsStatus,
-  Municipality,
   NonFiler,
   NonFilersResult,
 } from '../../../../types'
@@ -42,16 +40,6 @@ export function filterNonFilers(nonFilers: NonFiler[], text: string, year: strin
         i.document.includes(query) ||
         i.ritNumber.includes(query)),
   )
-}
-
-/** Desde cuándo se revisa: lo anterior a la salida a producción de cada formulario está en otro sistema. */
-export function fromText(municipality: Municipality | undefined) {
-  if (!municipality)
-    return 'Se revisan los vencimientos desde que los formularios de cada municipio salieron a producción en el aplicativo. Lo anterior está en otro sistema.'
-  const from = inProductionText(municipality)
-  return from
-    ? `Se revisan los vencimientos desde ${from}, cuando los formularios de ${municipality.name} salieron a producción en el aplicativo. Lo anterior está en otro sistema.`
-    : `${municipality.name} no tiene formularios activos en el aplicativo, así que no hay vencimientos que revisar.`
 }
 
 /** Años sin calendario: sus omisos no se pueden revisar. Con todos los municipios, dice de cuál es cada año. */
