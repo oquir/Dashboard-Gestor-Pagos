@@ -13,7 +13,7 @@ Desde la raíz, con pnpm 12.18.0:
 
 ```sh
 pnpm install            # instala las dos apps
-pnpm dev                # arranca las dos a la vez
+pnpm dev                # arranca las dos a la vez (dashboard en :5173, orquestador en :5174)
 pnpm dev:dashboard      # solo el dashboard
 pnpm dev:formularios    # solo el orquestador
 pnpm build              # compila las dos
@@ -21,6 +21,8 @@ pnpm lint               # ESLint + chequeo de Prettier en las dos apps
 pnpm lint:fix           # ESLint con --fix + Prettier --write
 pnpm format             # Prettier --write
 ```
+
+El menú del dashboard le muestra a 1cero1 la opción **Formularios**, que abre el orquestador en una pestaña nueva. La dirección sale de `VITE_FORM_BUILDER_URL` y, sin ella, es `http://localhost:5174`. Los dos puertos están fijos (`strictPort`): si uno está ocupado, Vite falla en vez de moverse a otro y dejar el enlace roto.
 
 Cada app conserva su propio `pnpm-lock.yaml` (`sharedWorkspaceLockfile: false` en `pnpm-workspace.yaml`).
 
