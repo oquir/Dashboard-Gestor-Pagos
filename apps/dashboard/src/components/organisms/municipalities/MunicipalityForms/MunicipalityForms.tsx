@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import { taxLabel, disabledText, goLiveText, TAXES } from '../../../../lib'
+import { ArrowUpRight } from 'reicon-react'
+import { FORM_BUILDER_URL } from '../../../../constants'
+import { taxLabel, disabledText, goLiveText, can, useSession, TAXES } from '../../../../lib'
 import { useData } from '../../../../store'
 import type { Tax } from '../../../../types'
 import { Badge, Card, Switch } from '../../../atoms'
@@ -11,8 +13,11 @@ import type { MunicipalityFormsProps, FormOption } from './MunicipalityForms.typ
 /**
  * Matriz de los formularios del municipio: cuáles gestiona y, para cada uno, su revisión y lo que recibe en la ventanilla.
  * La primera vez que se activa un formulario se pide su fecha de salida a producción.
+ * De cada formulario que gestiona se abre el orquestador, en otra pestaña, para editarlo.
  */
 export default function MunicipalityForms({ municipality: m, pausas }: MunicipalityFormsProps) {
+  const { user } = useSession()
+  const canOpenBuilder = can(user?.role, 'openFormBuilder')
   const toggleTax = useData((s) => s.toggleTax)
   const enableForm = useData((s) => s.enableForm)
   /** El impuesto que se activa por primera vez, mientras se pide su fecha. */
@@ -90,6 +95,21 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                         <Badge tone="alert">Desactivado por el municipio</Badge>
                         <span className="mt-1 block text-amber-800">{disabledText(pausa)}</span>
                       </span>
+                    )}
+                    {manages && canOpenBuilder && (
+                      // Por ahora abre el orquestador sin contexto; después llevará el municipio y quizá el impuesto.
+                      <a
+                        href={FORM_BUILDER_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline"
+                      >
+                        Editar formulario
+                        <ArrowUpRight className="size-3.5" aria-hidden />
+                        <span className="sr-only">
+                          de {taxLabel[i]} (se abre en una pestaña nueva)
+                        </span>
+                      </a>
                     )}
                   </th>
                   <td className="px-3 py-3 text-center align-top">
