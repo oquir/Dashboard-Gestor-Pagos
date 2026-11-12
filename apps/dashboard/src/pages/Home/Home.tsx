@@ -174,8 +174,8 @@ export default function Home() {
         municipalities={withoutCalendar.municipalities}
         className="mb-6"
       />
-      {can(user?.role, 'canSeeUnremittedAlert') && (
-        <UnremittedAlert withholdings={unremitted} className="mb-6" />
+      {user && can(user.role, 'canSeeUnremittedAlert') && (
+        <UnremittedAlert withholdings={unremitted} userId={user.id} />
       )}
       <div className={`grid gap-4 sm:grid-cols-2 ${CARD_COLUMNS[cards]}`}>
         {withRitVisible && (
