@@ -5,7 +5,7 @@ import {
   FilterBar,
   SearchBox,
   Filter,
-  CheckboxFilter,
+  ToggleGroup,
   DateQueryBar,
   EmptyState,
   PageHeader,
@@ -247,19 +247,33 @@ export default function Declarations() {
             value={tax}
             change={setTax}
           />
-          {/* Solo aplican a las presentadas, y cada una sale si hay alguna declaración que la cumpla. */}
-          {view === 'filed' && withNoCalendar && (
-            <CheckboxFilter
-              label="Sin calendario cargado"
-              isChecked={noCalendarOnly}
-              change={setNoCalendarOnly}
-            />
-          )}
-          {view === 'filed' && withUnregistered && (
-            <CheckboxFilter
-              label="No inscritos en el RIT"
-              isChecked={unregisteredOnly}
-              change={setUnregisteredOnly}
+          {/* Solo aplican a las presentadas, y cada uno sale si hay alguna declaración que lo cumpla. */}
+          {view === 'filed' && (
+            <ToggleGroup
+              label="Mostrar solo"
+              className="sm:inline-flex"
+              options={[
+                ...(withNoCalendar
+                  ? [
+                      {
+                        text: 'Sin calendario',
+                        title: 'Solo las presentadas sin el calendario cargado',
+                        isActive: noCalendarOnly,
+                        change: setNoCalendarOnly,
+                      },
+                    ]
+                  : []),
+                ...(withUnregistered
+                  ? [
+                      {
+                        text: 'No inscritos',
+                        title: 'Solo las de contribuyentes no inscritos en el RIT',
+                        isActive: unregisteredOnly,
+                        change: setUnregisteredOnly,
+                      },
+                    ]
+                  : []),
+              ]}
             />
           )}
         </div>
