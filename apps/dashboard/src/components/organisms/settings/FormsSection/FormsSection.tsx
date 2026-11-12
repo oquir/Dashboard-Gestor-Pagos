@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { formLabel, formatDate, fullName, useSession } from '../../../../lib'
+import { formLabel, fullName, useSession } from '../../../../lib'
 import type { Form, DisabledForm } from '../../../../types'
 import { today } from '../../../../utils'
-import { Toggle, ReasonModal, Section } from '../../../molecules'
+import { DisabledNotice, Toggle, ReasonModal, Section } from '../../../molecules'
 import { HELP } from './FormsSection.constants'
 import type { FormsSectionProps } from './FormsSection.types'
 
@@ -47,32 +47,31 @@ export default function FormsSection({
           <div key={f} className="space-y-1.5">
             <Toggle
               label={formLabel[f]}
-              help={
-                !d
-                  ? HELP[f]
-                  : saved
-                    ? `Desactivado el ${formatDate(saved.date)} por ${saved.by}.`
-                    : 'Se desactiva al guardar los cambios.'
-              }
+              help={HELP[f]}
               value={!d}
               isDisabled={!editable}
               onChange={(isActive) => (isActive ? assign(f, undefined) : setRequesting(f))}
             />
             {d && (
               // Alineado con la etiqueta del interruptor.
-              <p className="pl-12 text-sm text-slate-600">
-                <span className="font-medium text-slate-700">Motivo:</span>{' '}
-                {d.reason || <span className="text-red-600">{errors[`motivo-${f}`]}</span>}
-                {editable && (
-                  <button
-                    type="button"
-                    className="ml-2 font-medium text-brand-700 hover:underline"
-                    onClick={() => setRequesting(f)}
-                  >
-                    Cambiar
-                  </button>
-                )}
-              </p>
+              <div className="ml-12">
+                <DisabledNotice
+                  disabled={d}
+                  meta={saved ? undefined : 'Se desactiva al guardar los cambios.'}
+                  missingReason={errors[`motivo-${f}`]}
+                  action={
+                    editable && (
+                      <button
+                        type="button"
+                        className="text-xs font-medium text-brand-700 hover:underline"
+                        onClick={() => setRequesting(f)}
+                      >
+                        Cambiar
+                      </button>
+                    )
+                  }
+                />
+              </div>
             )}
           </div>
         )
