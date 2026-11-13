@@ -10,4 +10,6 @@ export interface NavigationLink {
 
 export interface NavigationProps {
   onPick?: () => void
+  collapsed?: boolean
+  onExpand?: () => void
 }
