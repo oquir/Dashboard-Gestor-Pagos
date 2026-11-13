@@ -29,6 +29,14 @@ export default function ProcedureSection({ b, change, editable, withRit }: Proce
           </option>
         </Select>
       </Field>
+      <Toggle
+        label="Permitir declarar sin calendario"
+        help="Encendido: se reciben las declaraciones de un año gravable sin calendario cargado, y quedan marcadas."
+        info="Sin el calendario, la declaración no conoce su vencimiento: la sanción por extemporaneidad y los intereses pueden salir mal. Si lo apagas, el formulario no deja declarar un año gravable hasta que el municipio cargue su calendario en la página Calendario."
+        value={b.allowFilingWithoutCalendar}
+        isDisabled={!editable}
+        onChange={(v) => change({ allowFilingWithoutCalendar: v })}
+      />
       {withRit && (
         <>
           <Field label="Plazo para inscribirse en el RIT (meses desde el inicio de actividades)">
