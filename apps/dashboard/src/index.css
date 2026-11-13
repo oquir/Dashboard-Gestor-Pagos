@@ -63,7 +63,9 @@
   --ui-serie-reteica: oklch(67.1% 0.175 40.642); /* #eb6834 */
   --ui-serie-autorretencion: oklch(66.9% 0.141 162.111); /* #1baf7a */
 
+  /* IBM Plex Sans: cifras de ancho fijo y 0/O, 1/l bien distinguibles, para las tablas de montos. */
   font-family:
+    'IBM Plex Sans',
     system-ui,
     -apple-system,
     'Segoe UI',
