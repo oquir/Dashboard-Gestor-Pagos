@@ -245,6 +245,7 @@ export const SETTINGS: MunicipalityConfig[] = [
   {
     municipalityId: 'm1',
     zeroDeclaration: false,
+    allowFilingWithoutCalendar: true,
     withholdingPaymentInTwoMonths: true,
     automaticRitCancellation: false,
     hideCollectionFromOfficials: true,
@@ -337,6 +338,7 @@ export const SETTINGS: MunicipalityConfig[] = [
   {
     municipalityId: 'm2',
     zeroDeclaration: true,
+    allowFilingWithoutCalendar: true,
     withholdingPaymentInTwoMonths: true,
     automaticRitCancellation: false,
     hideCollectionFromOfficials: true,
@@ -464,6 +466,7 @@ export const SETTINGS: MunicipalityConfig[] = [
   {
     municipalityId: 'm3',
     zeroDeclaration: false,
+    allowFilingWithoutCalendar: true,
     withholdingPaymentInTwoMonths: true,
     automaticRitCancellation: false,
     hideCollectionFromOfficials: true,

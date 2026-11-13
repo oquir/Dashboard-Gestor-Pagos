@@ -459,6 +459,11 @@ export interface MunicipalityConfig {
   municipalityId: string
   zeroDeclaration: boolean
   /**
+   * Se reciben declaraciones de un año gravable cuyo calendario no se ha cargado (el dashboard las marca). Si está
+   * apagado, el formulario no deja presentarlas hasta que el municipio cargue el calendario.
+   */
+  allowFilingWithoutCalendar: boolean
+  /**
    * La ReteICA o AutoReteICA presentada a tiempo sin el pago total no queda ineficaz si se paga completa dentro de los
    * 2 meses siguientes al vencimiento (art. 580-1 del Estatuto Tributario).
    */
