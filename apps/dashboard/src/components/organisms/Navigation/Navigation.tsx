@@ -22,19 +22,21 @@ export default function Navigation({ onPick, collapsed, onExpand }: NavigationPr
           <NavLink
             to={a}
             end={a === '/'}
-            onClick={onPick}
-            // Contraído: el primer clic navega y el segundo reabre la barra.
-            onDoubleClick={onExpand}
+            onClick={(e) => {
+              // Contraído: un clic en la página en la que ya está reabre la barra; en las demás, solo navega.
+              if (collapsed && e.currentTarget.getAttribute('aria-current') === 'page') onExpand?.()
+              onPick?.()
+            }}
             aria-label={collapsed ? text : undefined}
             className={({ isActive }) =>
-              `flex h-9 items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              `flex h-10 items-center gap-3 rounded-lg px-3 py-2 text-[15px] font-medium transition-colors ${
                 isActive
                   ? 'bg-brand-surface text-brand-fg'
                   : 'text-fg-soft hover:bg-surface-raised hover:text-fg-strong'
               }`
             }
           >
-            <IconComponent className="size-4 flex-none" aria-hidden />
+            <IconComponent className="size-5 flex-none" aria-hidden />
             {!collapsed && text}
           </NavLink>
         </Tooltip>
