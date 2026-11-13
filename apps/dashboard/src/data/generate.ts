@@ -1754,8 +1754,9 @@ export function generateData(): Data {
     today,
   })
 
-  // Historia: el ICA anual de los años gravables 2016 a 2024, presentado y pagado, de quienes ya tenían actividad ese
-  // año. Vence el mismo día que el de 2025 y usa sus tarifas. Al final y con su propio azar, para no cambiar el resto.
+  // Historia: el ICA anual de los años gravables 2015 a 2024 (presentados de 2016 a 2025), presentado y pagado, de
+  // quienes ya tenían actividad ese año. Vence el mismo día que el de 2025 y usa sus tarifas. Al final y con su propio
+  // azar, para no cambiar el resto de los datos.
   const randomPast = createRandom(2016)
   for (const reg of registrations) {
     const municipality = MUNICIPALITIES.find((m) => m.id === reg.municipalityId)!
@@ -1767,9 +1768,10 @@ export function generateData(): Data {
       (a) => a.municipalityId === municipality.id && a.fiscalYear === 2025,
     )!.rates
     const isNatural = reg.personType === 'natural'
+    const registrationDate = reg.ritChanges.find((c) => c.kind === 'registration')?.date ?? ''
     const income2025 =
       (isNatural ? randomPast.integer(60, 900) : randomPast.integer(400, 18_000)) * 1_000_000
-    for (let fiscalYear = 2016; fiscalYear <= 2024; fiscalYear++) {
+    for (let fiscalYear = 2015; fiscalYear <= 2024; fiscalYear++) {
       if (reg.activitiesStartDate > `${fiscalYear}-12-31` || randomPast.prob(0.08)) continue
       const profile: IcaProfile = {
         // Los ingresos crecen cerca de un 6 % al año hasta 2025.
@@ -1784,6 +1786,8 @@ export function generateData(): Data {
       const dueDateItem = `${fiscalYear + 1}${icaDueDate(cfg, 2025, reg.document).slice(4)}`
       const daysLate = randomPast.prob(0.1) ? randomPast.integer(5, 90) : 0
       const filing = addDays(dueDateItem, daysLate > 0 ? daysLate : -randomPast.integer(1, 60))
+      // Quien aún no estaba inscrito en el RIT no pudo haber presentado: ese año no declara.
+      if (filing < registrationDate) continue
       const calc = calculateIca(profile, reg, cfg, rates, daysLate, 0)
       const id = `d${declarations.length + 1}`
       declarations.push({
