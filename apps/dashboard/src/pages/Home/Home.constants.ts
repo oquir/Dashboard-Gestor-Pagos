@@ -8,4 +8,6 @@ export const CARD_COLUMNS: Record<number, string> = {
   5: 'lg:grid-cols-3 xl:grid-cols-5',
   6: 'lg:grid-cols-3',
   7: 'xl:grid-cols-4',
+  8: 'xl:grid-cols-4',
+  9: 'lg:grid-cols-3',
 }

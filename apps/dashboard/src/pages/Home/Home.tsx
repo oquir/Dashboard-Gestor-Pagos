@@ -42,6 +42,8 @@ import {
   useUnremitted,
   useCorrectionApplication,
   useCanSeeCollection,
+  TAXES,
+  activeTax,
 } from '../../lib'
 import { useData } from '../../store'
 import type { Debt } from '../../types'
@@ -55,6 +57,7 @@ export default function Home() {
   const municipalities = useData((s) => s.municipalities)
   const settingsList = useData((s) => s.settingsList)
   const payments = useData((s) => s.payments)
+  const collectionHistory = useData((s) => s.collectionHistory)
   const approval = useApproval()
   const correction = useCorrectionApplication()
   const statusOf = usePaymentStatus()
@@ -80,6 +83,21 @@ export default function Home() {
     const collection = payments
       .filter((p) => byId.has(p.declarationId) && p.date.startsWith(String(CURRENT_YEAR)))
       .reduce((s, p) => s + p.value, 0)
+    // Lo recaudado en los años anteriores sale del histórico (solo de los impuestos activos), y se suma al del año en curso.
+    const isActive = activeTax(municipalities)
+    const history = ofMunicipality(collectionHistory, municipalityId).filter(
+      (r) => r.year < CURRENT_YEAR,
+    )
+    const previousYears = history.reduce(
+      (s, r) =>
+        s +
+        TAXES.reduce(
+          (t, i) => t + (isActive({ municipalityId: r.municipalityId, tax: i }) ? r.values[i] : 0),
+          0,
+        ),
+      0,
+    )
+    const totalCollected = previousYears + collection
     // Una declaración corregida se reemplaza por su corrección: se cuenta solo la vigente. La solicitud de corrección que
     // no se ha aceptado no cuenta: sigue vigente la que corrige.
     const outside = replaced(declarations, correction)
@@ -128,6 +146,7 @@ export default function Home() {
       unpaidBalance: balance(unpaid),
       incompletePaymentBalance: balance(incompletePayment),
       collection,
+      totalCollected,
       paidOnes,
       approvals,
       toApprove,
@@ -137,6 +156,7 @@ export default function Home() {
     allRegistrations,
     declarations,
     payments,
+    collectionHistory,
     municipalities,
     municipalityId,
     approval,
@@ -154,13 +174,13 @@ export default function Home() {
   const firstCorrection = data.correctionsToResolve[0]
   // Si al municipio se le acaba el plazo, se acepta sola: se avisa en ámbar desde 15 días antes.
   const correctionSoon = firstCorrection && dayDifference(today(), firstCorrection.c.limit) <= 15
-  // Con el RIT van dos tarjetas: las solicitudes por revisar y los omisos.
+  // Con el RIT van tres tarjetas: las inscripciones activas, las solicitudes por revisar y los omisos.
   const cards =
     2 +
-    2 * Number(withRitVisible) +
+    3 * Number(withRitVisible) +
     Number(withApproval) +
     Number(withCorrections) +
-    Number(canSeeCollection)
+    2 * Number(canSeeCollection)
   // Con un número impar de listas, la primera ocupa toda la fila para que las de deuda vayan juntas.
   const firstWide =
     (1 + Number(withRitVisible) + Number(withApproval)) % 2 === 1 ? 'lg:col-span-2' : ''
@@ -179,10 +199,18 @@ export default function Home() {
       <div className={`grid gap-4 sm:grid-cols-2 ${CARD_COLUMNS[cards]}`}>
         {withRitVisible && (
           <StatTile
+            label="Inscripciones activas"
+            value={String(data.activeItems)}
+            icon={<ClipboardList className="size-5" />}
+            detail="Contribuyentes inscritos y aprobados"
+          />
+        )}
+        {withRitVisible && (
+          <StatTile
             label="Solicitudes del RIT por revisar"
             value={String(data.pendingOnes.length)}
             icon={<ClipboardList className="size-5" />}
-            detail={`${data.activeItems} inscripciones activas`}
+            detail="Pendientes de aprobar o rechazar"
           />
         )}
         {withRitVisible && (
@@ -249,11 +277,20 @@ export default function Home() {
         )}
         {canSeeCollection && (
           <StatTile
-            label={`Recaudo ${CURRENT_YEAR}`}
+            label="Recaudo año actual"
             value={<Amount value={data.collection} />}
             icon={<Wallet className="size-5" />}
             isPositive
             detail={`${data.paidOnes} ${data.paidOnes === 1 ? 'declaración pagada' : 'declaraciones pagadas'}`}
+          />
+        )}
+        {canSeeCollection && (
+          <StatTile
+            label="Recaudo total histórico"
+            value={<Amount value={data.totalCollected} />}
+            icon={<Wallet className="size-5" />}
+            isPositive
+            detail="Todo lo recaudado con nosotros"
           />
         )}
         <StatTile
