@@ -8,7 +8,7 @@ import {
 } from 'reicon-react'
 import { useMemo } from 'react'
 import { Link } from 'react-router'
-import { StatTile } from '../../components/molecules'
+import { Amount, StatTile } from '../../components/molecules'
 import {
   CalendarAlert,
   UnremittedAlert,
@@ -20,7 +20,6 @@ import {
   PendingApplications,
 } from '../../components/organisms'
 import {
-  compactFormat,
   formatDate,
   can,
   correctionToResolve,
@@ -251,7 +250,7 @@ export default function Home() {
         {canSeeCollection && (
           <StatTile
             label={`Recaudo ${CURRENT_YEAR}`}
-            value={`$${compactFormat(data.collection)}`}
+            value={<Amount value={data.collection} />}
             icon={<Wallet className="size-5" />}
             isPositive
             detail={`${data.paidOnes} ${data.paidOnes === 1 ? 'declaración pagada' : 'declaraciones pagadas'}`}
@@ -263,7 +262,9 @@ export default function Home() {
           icon={<AlertTriangle className="size-5 text-danger" />}
           detail={
             data.unpaid.length > 0 ? (
-              <span className="text-danger-fg">${compactFormat(data.unpaidBalance)} por pagar</span>
+              <span className="text-danger-fg">
+                <Amount value={data.unpaidBalance} /> por pagar
+              </span>
             ) : (
               'Sin alertas'
             )
@@ -274,9 +275,13 @@ export default function Home() {
           value={String(data.incompletePayment.length)}
           icon={<AlertTriangle className="size-5 text-warning" />}
           detail={
-            data.incompletePayment.length > 0
-              ? `$${compactFormat(data.incompletePaymentBalance)} de saldo pendiente`
-              : 'Sin alertas'
+            data.incompletePayment.length > 0 ? (
+              <>
+                <Amount value={data.incompletePaymentBalance} /> de saldo pendiente
+              </>
+            ) : (
+              'Sin alertas'
+            )
           }
         />
       </div>

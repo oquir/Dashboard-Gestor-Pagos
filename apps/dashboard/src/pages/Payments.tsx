@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Notice, PageHeader, StatTile } from '../components/molecules'
+import { Amount, Notice, PageHeader, StatTile } from '../components/molecules'
 import {
   MunicipalitySearch,
   AsobancariaUpload,
@@ -11,7 +11,6 @@ import {
   ReceivedPaymentsTable,
 } from '../components/organisms'
 import {
-  compactFormat,
   can,
   currentCorrection,
   replaced,
@@ -114,13 +113,13 @@ export default function Payments() {
           <StatTile
             label="Recaudado en 2026"
             isPositive
-            value={`$${compactFormat(data.collection2026)}`}
+            value={<Amount value={data.collection2026} />}
             detail={`${data.received.length} pagos registrados`}
           />
         )}
         <StatTile
           label="Saldo pendiente de ICA anual"
-          value={`$${compactFormat(data.icaBalance)}`}
+          value={<Amount value={data.icaBalance} />}
           detail="Pagos parciales y declaraciones sin pago"
         />
         <StatTile
@@ -131,7 +130,7 @@ export default function Payments() {
               'Todo lo retenido está consignado'
             ) : (
               <>
-                ${compactFormat(data.unremittedBalance)} ·{' '}
+                <Amount value={data.unremittedBalance} /> ·{' '}
                 {data.overdueOnes > 0 ? (
                   <span className="text-danger-fg">
                     {data.overdueOnes === 1 ? '1 pasó' : `${data.overdueOnes} pasaron`} los 2 meses
