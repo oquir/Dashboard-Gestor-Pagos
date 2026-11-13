@@ -508,6 +508,6 @@ export const useData = create<StoreState>()(
         resetDemo: () => set({ ...generateData(), selectedMunicipality: null, dateQueries: {} }),
       }
     },
-    { name: 'gestor-pagos-demo', version: 47 },
+    { name: 'gestor-pagos-demo', version: 48 },
   ),
 )
