@@ -48,7 +48,8 @@ export const isCompacted = (value: number) => Math.abs(value) >= MILLION
 /**
  * Valor corto para las cards y las gráficas, sin "K" ni "mil" (la RAE no los recomienda en cifras): por debajo de un
  * millón va completo ("900.000"); desde ahí en millones con un decimal ("1,3 M", "1.500 M") y desde un billón
- * colombiano (10¹²) en billones ("2,3 billones"). Lleva espacio duro para que la unidad no se separe del número.
+ * colombiano (10¹², no el "billion" inglés) con B ("2,3 B"). Lleva espacio duro para que la unidad no se separe del
+ * número.
  */
 export function compactFormat(value: number) {
   if (!isCompacted(value)) return upToOneDecimal.format(Math.round(value))
@@ -56,7 +57,7 @@ export function compactFormat(value: number) {
   // 999.999.950.000 redondea a "1.000.000 M": ahí ya se lee en billones.
   if (Math.abs(millions) < MILLION) return `${upToOneDecimal.format(millions)}${NBSP}M`
   const billions = oneDecimal(value / BILLION)
-  return `${upToOneDecimal.format(billions)}${NBSP}${Math.abs(billions) === 1 ? 'billón' : 'billones'}`
+  return `${upToOneDecimal.format(billions)}${NBSP}B`
 }
 export const formatDate = (iso: string) => date.format(new Date(`${iso}T12:00:00`))
 /** Hora de un registro AAAA-MM-DDTHH:MM, como "1:12 a. m.". */
