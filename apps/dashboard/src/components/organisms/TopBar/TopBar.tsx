@@ -2,10 +2,17 @@ import { MapPoint2, Logout, Menu, RotateLeft } from 'reicon-react'
 import { roleLabel, fullName, can, useSession } from '../../../lib'
 import { useData } from '../../../store'
 import { Badge, Button } from '../../atoms'
+import { Tooltip } from '../../molecules'
+import SidebarIcon from './SidebarIcon'
 import type { TopBarProps } from './TopBar.types'
 
-/** El municipio del usuario (1cero1 elige el que ve en cada vista), el usuario en sesión y las acciones de la demo. */
-export default function TopBar({ openMenu }: TopBarProps) {
+/**
+ * El botón del menú, el municipio del usuario (1cero1 elige el que ve en cada vista), el usuario en sesión y las
+ * acciones de la demo. El botón del menú va siempre en la esquina izquierda: abre el cajón en pantallas angostas, y en
+ * las anchas contrae o abre el menú lateral. Mide lo mismo que el encabezado del menú (min-h-16) para que sus bordes
+ * queden en línea.
+ */
+export default function TopBar({ openMenu, navCollapsed, toggleNav }: TopBarProps) {
   const { user, municipalityId } = useSession()
   const municipalities = useData((s) => s.municipalities)
   const logOut = useData((s) => s.logOut)
@@ -14,6 +21,8 @@ export default function TopBar({ openMenu }: TopBarProps) {
   if (!user) return null
 
   const municipality = municipalities.find((m) => m.id === municipalityId)
+  const showsMunicipality = !can(user.role, 'canSeeAllMunicipalities')
+  const navLabel = navCollapsed ? 'Mostrar el menú' : 'Ocultar el menú'
   const reset = () => {
     if (
       window.confirm(
@@ -24,12 +33,23 @@ export default function TopBar({ openMenu }: TopBarProps) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex flex-wrap items-center gap-3 border-b border-border bg-surface/90 px-4 py-3 backdrop-blur sm:px-6">
+    <header className="sticky top-0 z-30 flex min-h-16 flex-wrap items-center gap-3 border-b border-border bg-surface/90 px-4 py-3 backdrop-blur sm:px-6">
       <Button variant="ghost" className="lg:hidden" aria-label="Abrir menú" onClick={openMenu}>
         <Menu className="size-5" />
       </Button>
+      <Tooltip content={navLabel} placement="bottom-start">
+        <Button
+          variant="ghost"
+          className="-ml-2 hidden px-2 lg:inline-flex"
+          aria-label={navLabel}
+          onClick={toggleNav}
+        >
+          <SidebarIcon open={!navCollapsed} className="size-5" />
+        </Button>
+      </Tooltip>
+      {showsMunicipality && <span className="hidden h-5 w-px bg-border lg:block" aria-hidden />}
 
-      {!can(user.role, 'canSeeAllMunicipalities') && (
+      {showsMunicipality && (
         <div className="flex items-center gap-2 text-sm">
           <MapPoint2 className="size-4 text-fg-subtle" aria-hidden />
           <span className="font-medium text-fg-strong">{municipality?.name}</span>

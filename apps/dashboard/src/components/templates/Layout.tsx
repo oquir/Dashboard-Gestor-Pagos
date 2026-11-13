@@ -26,14 +26,16 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen lg:flex">
-      <aside className={`hidden shrink-0 flex-col border-r border-slate-200 bg-white lg:flex ${
+      {/* El ancho se anima; overflow-hidden y whitespace-nowrap evitan que el texto salte de línea mientras cambia. */}
+      <aside
+        className={`hidden shrink-0 flex-col overflow-hidden whitespace-nowrap border-r border-slate-200 bg-white transition-[width] duration-300 ease-in-out lg:flex ${
           collapsed ? 'w-17' : 'w-64'
         }`}
       >
-        <Mark collapsed={collapsed} onCollapse={collapse} onExpand={expand} />
+        <Mark collapsed={collapsed} />
         <Navigation collapsed={collapsed} onExpand={expand} />
         {!collapsed && (
-          <p className="border-t border-slate-100 px-5 py-4 text-xs text-slate-400">
+          <p className="border-t border-slate-100 px-5 py-4 text-[13px] text-slate-400">
             Demo con datos simulados · sin API
           </p>
         )}
@@ -43,21 +45,29 @@ export default function Layout() {
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-slate-900/40" onClick={() => setMenuOpen(false)} />
           <aside className="relative flex h-full w-72 flex-col bg-white shadow-xl">
-            <div className="flex items-center justify-between pr-3">
-              <Mark />
-              <Button variant="ghost" aria-label="Cerrar menú" onClick={() => setMenuOpen(false)}>
-                <Xmark className="size-5" />
-              </Button>
-            </div>
+            <Mark
+              action={
+                <Button variant="ghost" aria-label="Cerrar menú" onClick={() => setMenuOpen(false)}>
+                  <Xmark className="size-5" />
+                </Button>
+              }
+            />
             <Navigation onPick={() => setMenuOpen(false)} />
           </aside>
         </div>
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar openMenu={() => setMenuOpen(true)} />
-        <main className={`mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:py-8 ${
-              collapsed ? 'lg:w-[calc(100%-11.75rem)]' : '' }`}>
+        <TopBar
+          openMenu={() => setMenuOpen(true)}
+          navCollapsed={collapsed}
+          toggleNav={collapsed ? expand : collapse}
+        />
+        <main
+          className={`mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:py-8 ${
+            collapsed ? 'lg:w-[calc(100%-11.75rem)]' : ''
+          }`}
+        >
           <Outlet />
         </main>
       </div>
