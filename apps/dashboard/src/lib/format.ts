@@ -28,13 +28,36 @@ const pesos = new Intl.NumberFormat('es-CO', {
   currency: 'COP',
   maximumFractionDigits: 0,
 })
-const compact = new Intl.NumberFormat('es-CO', { notation: 'compact', maximumFractionDigits: 1 })
+const upToOneDecimal = new Intl.NumberFormat('es-CO', {
+  maximumFractionDigits: 1,
+  useGrouping: 'always',
+})
 const date = new Intl.DateTimeFormat('es-CO', { day: '2-digit', month: 'short', year: 'numeric' })
 const hourMinutes = new Intl.DateTimeFormat('es-CO', { hour: 'numeric', minute: '2-digit' })
 const list = new Intl.ListFormat('es-CO', { type: 'conjunction' })
 
 export const formatPesos = (value: number) => pesos.format(value)
-export const compactFormat = (value: number) => compact.format(value)
+const MILLION = 1_000_000
+const BILLION = 1_000_000_000_000
+/** Espacio duro, para que la unidad no quede sola en otra línea. */
+const NBSP = String.fromCharCode(160)
+/** Redondea a un decimal con el mismo criterio para negativos: -1,25 M da -1,3 M, igual que 1,25 M da 1,3 M. */
+const oneDecimal = (n: number) => (Math.sign(n) * Math.round(Math.abs(n) * 10)) / 10
+/** Si compactFormat abrevia el valor; en ese caso conviene mostrar el exacto en un Tooltip. */
+export const isCompacted = (value: number) => Math.abs(value) >= MILLION
+/**
+ * Valor corto para las cards y las gráficas, sin "K" ni "mil" (la RAE no los recomienda en cifras): por debajo de un
+ * millón va completo ("900.000"); desde ahí en millones con un decimal ("1,3 M", "1.500 M") y desde un billón
+ * colombiano (10¹²) en billones ("2,3 billones"). Lleva espacio duro para que la unidad no se separe del número.
+ */
+export function compactFormat(value: number) {
+  if (!isCompacted(value)) return upToOneDecimal.format(Math.round(value))
+  const millions = oneDecimal(value / MILLION)
+  // 999.999.950.000 redondea a "1.000.000 M": ahí ya se lee en billones.
+  if (Math.abs(millions) < MILLION) return `${upToOneDecimal.format(millions)}${NBSP}M`
+  const billions = oneDecimal(value / BILLION)
+  return `${upToOneDecimal.format(billions)}${NBSP}${Math.abs(billions) === 1 ? 'billón' : 'billones'}`
+}
 export const formatDate = (iso: string) => date.format(new Date(`${iso}T12:00:00`))
 /** Hora de un registro AAAA-MM-DDTHH:MM, como "1:12 a. m.". */
 export const formatTime = (dateTime: string) => hourMinutes.format(new Date(`${dateTime}:00`))
