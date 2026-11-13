@@ -62,29 +62,29 @@ export default function ChecksInClearing({ checks, canResolve }: ChecksInClearin
       {checks.length === 0 ? (
         <EmptyState title="No hay cheques en canje" />
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {checks.map((row) => {
             const { c, d, name } = row
             return (
               <li key={c.id} className="space-y-3 px-5 py-4">
                 <div className="flex flex-wrap items-start justify-between gap-3 text-sm">
                   <div className="min-w-0">
-                    <p className="font-medium text-slate-900">{name}</p>
-                    <p className="text-slate-600">
+                    <p className="font-medium text-fg-strong">{name}</p>
+                    <p className="text-fg-soft">
                       Cheque {c.number}, {c.bank} · declaración{' '}
                       <Link
                         to={`/declaraciones/${d.id}`}
-                        className="font-medium text-slate-900 hover:text-brand-700"
+                        className="font-medium text-fg-strong hover:text-brand-fg"
                       >
                         {d.number}
                       </Link>
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-fg-muted">
                       Recibido el {formatDate(c.receiptDate)} por {c.receivedBy} · recibo de caja{' '}
                       {c.receipt}
                     </p>
                   </div>
-                  <p className="tabular-nums font-medium text-slate-900">{formatPesos(c.value)}</p>
+                  <p className="tabular-nums font-medium text-fg-strong">{formatPesos(c.value)}</p>
                 </div>
                 {canResolve && returning !== c.id && (
                   <div className="flex flex-wrap gap-2">

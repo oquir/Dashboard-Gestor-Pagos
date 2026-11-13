@@ -16,11 +16,11 @@ export const COLUMNS = col.columns([
       <>
         <Link
           to={`/rit/${i.id}`}
-          className="block truncate font-medium text-slate-900 hover:text-brand-700"
+          className="block truncate font-medium text-fg-strong hover:text-brand-fg"
         >
           {i.name}
         </Link>
-        <p className="truncate text-xs tabular-nums text-slate-500">
+        <p className="truncate text-xs tabular-nums text-fg-muted">
           {documentFormat(i)} · RIT {i.ritNumber}
           {i.status === 'cancelled' && ' · RIT cancelado'}
         </p>
@@ -33,8 +33,8 @@ export const COLUMNS = col.columns([
     meta: { classes: 'whitespace-nowrap' },
     cell: ({ row: { original: o } }) => (
       <>
-        <p className="text-slate-900">{taxLabel[o.tax]}</p>
-        <p className="text-xs text-slate-500">{periodLabel(o)}</p>
+        <p className="text-fg-strong">{taxLabel[o.tax]}</p>
+        <p className="text-xs text-fg-muted">{periodLabel(o)}</p>
       </>
     ),
   }),
@@ -43,8 +43,10 @@ export const COLUMNS = col.columns([
     meta: { classes: 'whitespace-nowrap' },
     cell: ({ getValue }) => (
       <>
-        <p className="text-slate-700">{formatDate(getValue())}</p>
-        <p className="text-xs text-red-700">{formatDaysAgo(dayDifference(getValue(), today()))}</p>
+        <p className="text-fg">{formatDate(getValue())}</p>
+        <p className="text-xs text-danger-fg">
+          {formatDaysAgo(dayDifference(getValue(), today()))}
+        </p>
       </>
     ),
   }),
@@ -58,8 +60,8 @@ export const COLUMNS = col.columns([
       },
     }) => (
       <>
-        <p className="truncate tabular-nums text-slate-700">{i.phone}</p>
-        <p className="truncate text-xs text-slate-500">{i.email}</p>
+        <p className="truncate tabular-nums text-fg">{i.phone}</p>
+        <p className="truncate text-xs text-fg-muted">{i.email}</p>
       </>
     ),
   }),

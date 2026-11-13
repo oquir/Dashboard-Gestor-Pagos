@@ -23,7 +23,6 @@ import {
   excelRow,
   filterNonFilers,
   yearOptions,
-  fromText,
   noCalendarText,
   withoutZerosText,
 } from './NonFilerList.utils'
@@ -95,9 +94,6 @@ export default function NonFilerList({ result, tax }: NonFilerListProps) {
 
   return (
     <div className="space-y-4">
-      <Notice tone="info" icon={InfoCircle}>
-        {fromText(municipalities.find((m) => m.id === municipalityId))}
-      </Notice>
       {result.withoutCalendar.length > 0 && (
         <Notice tone="alert" icon={Warning} role="alert">
           {noCalendarText(result.withoutCalendar, firstNames, municipalityId === null)}
@@ -141,8 +137,8 @@ export default function NonFilerList({ result, tax }: NonFilerListProps) {
           />
         </FilterBar>
         {canSummon && checkedItems.length > 0 && (
-          <div className="flex flex-wrap items-center gap-3 border-b border-brand-100 bg-brand-50 px-4 py-2.5 text-sm">
-            <span className="font-medium text-brand-800">
+          <div className="flex flex-wrap items-center gap-3 border-b border-brand-border-soft bg-brand-surface px-4 py-2.5 text-sm">
+            <span className="font-medium text-brand-fg-strong">
               {checkedItems.length}{' '}
               {checkedItems.length === 1 ? 'omiso seleccionado' : 'omisos seleccionados'}
             </span>

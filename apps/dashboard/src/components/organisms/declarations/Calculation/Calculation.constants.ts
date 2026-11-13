@@ -8,17 +8,17 @@ export const LINE_COLUMNS = col.columns([
   col.accessor('code', {
     header: 'Renglón',
     enableSorting: false,
-    meta: { classes: 'w-20 tabular-nums text-slate-500' },
+    meta: { classes: 'w-20 tabular-nums text-fg-muted' },
   }),
   col.accessor('concept', {
     header: 'Concepto',
     enableSorting: false,
-    meta: { classes: 'text-slate-700' },
+    meta: { classes: 'text-fg' },
   }),
   col.accessor('value', {
     header: 'Valor',
     enableSorting: false,
-    meta: { align: 'right', classes: 'whitespace-nowrap tabular-nums text-slate-900' },
+    meta: { align: 'right', classes: 'whitespace-nowrap tabular-nums text-fg-strong' },
     cell: ({ getValue }) => formatPesos(getValue()),
   }),
 ])

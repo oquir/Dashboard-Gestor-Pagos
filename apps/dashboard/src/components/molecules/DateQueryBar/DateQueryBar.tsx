@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
+import { InfoCircle } from 'reicon-react'
 import { Button, Card } from '../../atoms'
 import DateRange from '../DateRange'
+import Tooltip from '../Tooltip'
 import type { DateQueryBarProps } from './DateQueryBar.types'
 
 /**
@@ -20,14 +22,34 @@ export default function DateQueryBar({ query, consult, criterion }: DateQueryBar
 
   return (
     <Card className="mb-6 p-4">
-      <form className="flex flex-wrap items-start gap-3" onSubmit={submit}>
-        <DateRange from={from} to={to} changeFrom={setFrom} changeTo={setTo} />
-        {/* El margen alinea el botón con los campos, debajo de sus etiquetas. */}
-        <Button type="submit" variant="primary" className="mt-6" disabled={invalid || consulted}>
-          Consultar
-        </Button>
+      <form className="flex flex-col items-center gap-4" onSubmit={submit}>
+        {/* Dos campos medianos, lado a lado; en el celular, uno debajo del otro. */}
+        <div className="grid w-full max-w-xl gap-4 sm:grid-cols-2">
+          <DateRange from={from} to={to} changeFrom={setFrom} changeTo={setTo} />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            type="submit"
+            variant="primary"
+            className="min-w-40"
+            disabled={invalid || consulted}
+          >
+            Consultar
+          </Button>
+          {/* Con qué fecha se filtra: en un globo, para no ocupar espacio debajo del botón. */}
+          {criterion && (
+            <Tooltip content={criterion}>
+              <button
+                type="button"
+                aria-label="Con qué fecha se filtra"
+                className="rounded-full p-1 text-fg-subtle hover:text-fg-strong focus-visible:outline-2 focus-visible:outline-brand-border"
+              >
+                <InfoCircle className="size-5" aria-hidden />
+              </button>
+            </Tooltip>
+          )}
+        </div>
       </form>
-      <p className="mt-2 text-xs text-slate-500">{criterion}</p>
     </Card>
   )
 }

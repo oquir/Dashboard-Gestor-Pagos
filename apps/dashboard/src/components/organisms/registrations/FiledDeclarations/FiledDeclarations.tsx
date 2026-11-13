@@ -22,7 +22,7 @@ export default function FiledDeclarations({ declarations, simpleRegime }: FiledD
           }
         />
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {declarations.map((d) => (
             <LinkItem
               key={d.id}
@@ -30,7 +30,7 @@ export default function FiledDeclarations({ declarations, simpleRegime }: FiledD
               title={`${taxLabel[d.tax]} · ${periodLabel(d)}`}
               detail={`${d.number} · ${declarationTypeLabel[d.kind]} · presentada el ${formatDate(d.filingDate)}`}
               right={
-                <span className="whitespace-nowrap text-sm tabular-nums text-slate-700">
+                <span className="whitespace-nowrap text-sm tabular-nums text-fg">
                   {formatPesos(d.totalToPay)}
                 </span>
               }

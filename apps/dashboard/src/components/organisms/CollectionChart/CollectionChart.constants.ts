@@ -10,7 +10,7 @@ export const ALL = SERIES.map((s) => s.tax)
 
 export const VALUE = {
   align: 'right',
-  classes: 'whitespace-nowrap tabular-nums text-slate-900',
+  classes: 'whitespace-nowrap tabular-nums text-fg-strong',
 } as const
 
 export const HEIGHT = 220

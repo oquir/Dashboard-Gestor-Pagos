@@ -27,13 +27,13 @@ export default function UpcomingDueDates({
 
   return (
     <Card className={className}>
-      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+      <div className="flex items-center justify-between border-b border-border-subtle px-5 py-4">
         <div>
-          <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+          <h3 className="text-base font-semibold text-fg-strong flex items-center gap-2">
             <Calendar className="size-5 text-indigo-600" aria-hidden /> Próximos vencimientos
             tributarios
           </h3>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-fg-muted mt-0.5">
             Fechas límite de presentación y pago según el calendario municipal.
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function UpcomingDueDates({
       {upcoming.length === 0 ? (
         <EmptyState title="No hay vencimientos próximos registrados" />
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {upcoming.map((item) => {
             const isOverdue = item.daysUntil < 0
             // Con fechas por dígito, entre la primera y la última ya les venció a unos y a otros no.
@@ -60,15 +60,15 @@ export default function UpcomingDueDates({
             return (
               <li
                 key={item.id}
-                className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-slate-50"
+                className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-surface-sunken"
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-medium text-slate-900">{item.tax}</p>
-                    <span className="text-xs text-slate-400">•</span>
-                    <span className="text-xs text-slate-600 font-medium">{item.periodText}</span>
+                    <p className="truncate text-sm font-medium text-fg-strong">{item.tax}</p>
+                    <span className="text-xs text-fg-subtle">•</span>
+                    <span className="text-xs text-fg-soft font-medium">{item.periodText}</span>
                   </div>
-                  <p className="truncate text-xs text-slate-500 mt-0.5">
+                  <p className="truncate text-xs text-fg-muted mt-0.5">
                     {item.to
                       ? `Límite: del ${formatDate(item.date)} al ${formatDate(item.to)}, según el último dígito del NIT (sin DV)`
                       : `Límite: ${formatDate(item.date)}`}{' '}

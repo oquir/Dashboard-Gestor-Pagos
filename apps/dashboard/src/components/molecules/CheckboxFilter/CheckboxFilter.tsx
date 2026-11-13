@@ -7,7 +7,7 @@ import type { CheckboxFilterProps } from './CheckboxFilter.types'
  */
 export default function CheckboxFilter({ label, isChecked, change }: CheckboxFilterProps) {
   return (
-    <label className="inline-flex cursor-pointer select-none items-center gap-2 rounded-lg bg-white px-3 py-2 text-sm text-slate-700 ring-1 ring-inset ring-slate-300 transition-colors hover:bg-slate-50 has-checked:bg-brand-50 has-checked:text-brand-700 has-checked:ring-brand-600 has-focus-visible:ring-2 has-focus-visible:ring-brand-600">
+    <label className="inline-flex cursor-pointer select-none items-center gap-2 rounded-lg bg-surface px-3 py-2 text-sm text-fg ring-1 ring-inset ring-border-strong transition-colors hover:bg-surface-sunken has-checked:bg-brand-surface has-checked:text-brand-fg has-checked:ring-brand-border has-focus-visible:ring-2 has-focus-visible:ring-brand-border">
       <Checkbox
         className="rounded"
         checked={isChecked}

@@ -8,7 +8,7 @@ export default function FilePicker({
   ...props
 }: FilePickerProps) {
   return (
-    <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 focus-within:ring-2 focus-within:ring-brand-500 hover:border-brand-500 hover:text-brand-700">
+    <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-dashed border-border-strong bg-surface px-3 py-2 text-sm text-fg focus-within:ring-2 focus-within:ring-brand-border hover:border-brand-border hover:text-brand-fg">
       <IconComponent className="size-4" aria-hidden /> {text}
       <input type="file" className="sr-only" {...props} />
     </label>

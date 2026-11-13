@@ -24,7 +24,7 @@ export default function Mark({ collapsed, onCollapse, onExpand }: MarkProps) {
     )
   }
   return (
-      <div className="flex items-center gap-2 pl-3 pr-3 py-5">
+      <div className="flex items-center gap-2 px-3 py-5">
         {logo}
         <div>
           <p className="text-sm font-semibold text-slate-900">Gestor de Pagos</p>

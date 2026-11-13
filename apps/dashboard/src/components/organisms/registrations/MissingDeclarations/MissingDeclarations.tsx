@@ -38,16 +38,16 @@ export default function MissingDeclarations({ registration }: MissingDeclaration
       {theirs.length === 0 ? (
         <EmptyState title="Está al día" description="No le falta ninguna declaración vencida." />
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {theirs.map((o) => {
             const e = nonFilerSummons(o, summonses)
             return (
               <li key={nonFilerId(o)} className="flex items-start justify-between gap-3 px-5 py-3">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-900">
+                  <p className="truncate text-sm font-medium text-fg-strong">
                     {taxLabel[o.tax]} · {periodLabel(o)}
                   </p>
-                  <p className="truncate text-xs text-slate-500">
+                  <p className="truncate text-xs text-fg-muted">
                     Venció el {formatDate(o.dueDateItem)}
                   </p>
                   {e && <SummonsSummary e={e} className="mt-2" />}

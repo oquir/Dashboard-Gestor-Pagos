@@ -87,7 +87,7 @@ export default function UserDetail({ user: u, municipality, manageable, close }:
     <>
       <Button
         variant="ghost"
-        className="mr-auto text-red-600 hover:bg-red-50"
+        className="mr-auto text-danger hover:bg-danger-surface"
         onClick={() => setMode('remove')}
       >
         <Trash className="size-4" aria-hidden /> Eliminar

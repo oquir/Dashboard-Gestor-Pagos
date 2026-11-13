@@ -12,6 +12,10 @@ export interface DeclarationRow {
   document: string
   /** No lo tiene la solicitud de corrección que no se ha aceptado: no se paga. */
   payment?: PaymentStatus
+  /** Lo pagado de esta declaración. */
+  paidAmount: number
+  /** Una corrección vigente la reemplazó: ya no cuenta en las sumas. */
+  isReplaced: boolean
   /** Radicado de la declaración que corrige, si es una corrección. */
   corrects?: string
   /** La corrección baja el valor a pagar o sube el saldo a favor de la que corrige. */

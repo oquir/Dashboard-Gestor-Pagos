@@ -75,12 +75,12 @@ export default function PdfPreviewModal({ d, close }: PdfPreviewModalProps) {
       }
     >
       <div
-        className={`${expanded ? 'h-full' : 'h-[75vh]'} overflow-auto rounded-lg bg-slate-100 p-4`}
+        className={`${expanded ? 'h-full' : 'h-[75vh]'} overflow-auto rounded-lg bg-surface-raised p-4`}
       >
         {pdf ? (
           <PdfViewer pdf={pdf} title={`Declaración ${d.number}`} />
         ) : (
-          <p className="flex h-full items-center justify-center text-sm text-slate-500">
+          <p className="flex h-full items-center justify-center text-sm text-fg-muted">
             Generando PDF…
           </p>
         )}

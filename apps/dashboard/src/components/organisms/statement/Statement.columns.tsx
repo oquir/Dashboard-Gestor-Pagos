@@ -18,7 +18,7 @@ export const col = columnHelper<StatementRow>()
 
 export const VALUE = {
   align: 'right',
-  classes: 'whitespace-nowrap tabular-nums text-slate-700',
+  classes: 'whitespace-nowrap tabular-nums text-fg',
 } as const
 
 /** El radicado lleva al detalle de la declaración; debajo, su factura y su vencimiento. */
@@ -34,11 +34,11 @@ export const declarationColumn = col.accessor((r) => r.d.number, {
     <>
       <Link
         to={`/declaraciones/${d.id}`}
-        className="font-medium text-slate-900 hover:text-brand-700"
+        className="font-medium text-fg-strong hover:text-brand-fg"
       >
         {d.number}
       </Link>
-      <p className="text-xs tabular-nums text-slate-500">
+      <p className="text-xs tabular-nums text-fg-muted">
         Factura {d.invoiceNumber} · vence {formatDate(d.dueDate)}
       </p>
     </>
@@ -76,19 +76,19 @@ export const statusColumn = col.accessor((r) => paymentStatusLabel[r.status], {
           <Badge tone={paymentTone[r.status]}>{paymentStatusLabel[r.status]}</Badge>
         )}
         {r.inClearing > 0 && (
-          <p className="mt-1 whitespace-nowrap text-xs text-slate-500">
+          <p className="mt-1 whitespace-nowrap text-xs text-fg-muted">
             En canje {formatPesos(r.inClearing)}
           </p>
         )}
         {r.excess > 0 && (
-          <p className="mt-1 whitespace-nowrap text-xs text-slate-500">
+          <p className="mt-1 whitespace-nowrap text-xs text-fg-muted">
             Pago en exceso {formatPesos(r.excess)}
           </p>
         )}
         {r.pendingCorrection && (
           <Link
             to={`/declaraciones/${r.pendingCorrection.id}`}
-            className="mt-1 block whitespace-nowrap text-xs text-amber-700 hover:underline"
+            className="mt-1 block whitespace-nowrap text-xs text-warning-fg hover:underline"
           >
             Solicitud de corrección por resolver
           </Link>

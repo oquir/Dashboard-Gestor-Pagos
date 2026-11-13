@@ -24,7 +24,7 @@ export default function Calculation({ d }: CalculationProps) {
         data={d.lines}
         columns={LINE_COLUMNS}
         dense
-        rowClass={(r) => (TOTAL_LINES.has(r.code) ? 'bg-slate-50 font-semibold' : '')}
+        rowClass={(r) => (TOTAL_LINES.has(r.code) ? 'bg-surface-sunken font-semibold' : '')}
       />
     </Card>
   )

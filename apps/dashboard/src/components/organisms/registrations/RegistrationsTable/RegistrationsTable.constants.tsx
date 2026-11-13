@@ -25,7 +25,7 @@ export const COLUMNS = col.columns([
         aria-label={`Ver la inscripción ${i.ritNumber} de ${i.name}`}
         className={ROW_BUTTON_CLASS}
       >
-        <AddressCard className="size-4 text-brand-600" aria-hidden />
+        <AddressCard className="size-4 text-brand-fg" aria-hidden />
         {i.ritNumber}
       </Link>
     ),
@@ -34,17 +34,17 @@ export const COLUMNS = col.columns([
     header: 'Nombre o razón social',
     // Sin ancho mínimo, las razones sociales largas se partían en tres o cuatro líneas.
     meta: { classes: 'min-w-72' },
-    cell: ({ row: { original: i } }) => <p className="font-medium text-slate-900">{i.name}</p>,
+    cell: ({ row: { original: i } }) => <p className="font-medium text-fg-strong">{i.name}</p>,
   }),
   col.accessor((i) => documentFormat(i), {
     id: 'idDocument',
     header: 'Documento',
-    meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
+    meta: { classes: 'whitespace-nowrap tabular-nums text-fg' },
   }),
   col.accessor((i) => personTypeLabel[i.personType], {
     id: 'tipoPersona',
     header: 'Tipo de persona',
-    meta: { classes: 'whitespace-nowrap text-slate-700' },
+    meta: { classes: 'whitespace-nowrap text-fg' },
   }),
   col.display({
     id: 'capacities',
@@ -68,9 +68,9 @@ export const COLUMNS = col.columns([
       const t = lastProcedure(i)
       return (
         <>
-          <p className="text-slate-900">{ritChangeKindLabel[t.kind]}</p>
+          <p className="text-fg-strong">{ritChangeKindLabel[t.kind]}</p>
           <p
-            className={`text-xs ${t.status === 'pending' ? 'font-medium text-amber-700' : 'text-slate-500'}`}
+            className={`text-xs ${t.status === 'pending' ? 'font-medium text-warning-fg' : 'text-fg-muted'}`}
           >
             {ritChangeStatusLabel[t.status]} · {formatDate(t.date)}
           </p>

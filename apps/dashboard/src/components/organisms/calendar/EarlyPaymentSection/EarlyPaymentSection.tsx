@@ -110,19 +110,19 @@ export default function EarlyPaymentSection({ b, change, editable, errors }: Set
           </div>
 
           {fiscalYear === undefined ? (
-            <p className="text-sm text-slate-500">Aún no hay años gravables con descuento.</p>
+            <p className="text-sm text-fg-muted">Aún no hay años gravables con descuento.</p>
           ) : (
             <div className="space-y-2">
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-fg-muted">
                 El año gravable {fiscalYear} se declara en {fiscalYear + 1}. El descuento depende de
                 la fecha de pago; por fuera de estos tramos no hay descuento.
               </p>
               {tiers.length === 0 ? (
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-fg-muted">
                   Sin tramos: este año gravable no tiene descuento.
                 </p>
               ) : (
-                <div className={`${TIER_COLUMNS} text-xs font-medium text-slate-500`}>
+                <div className={`${TIER_COLUMNS} text-xs font-medium text-fg-muted`}>
                   <span>Pago desde</span>
                   <span>Pago hasta</span>
                   <span>Descuento (%)</span>
@@ -167,7 +167,7 @@ export default function EarlyPaymentSection({ b, change, editable, errors }: Set
                         </Button>
                       )}
                     </div>
-                    {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+                    {error && <p className="mt-1 text-xs text-danger">{error}</p>}
                   </div>
                 )
               })}

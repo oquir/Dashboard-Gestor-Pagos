@@ -18,6 +18,7 @@ export default function Table<T extends RowData>({
   dense = false,
   rowId,
   rowClass,
+  summary,
 }: TableProps<T>) {
   const table = useTable({
     features: features,
@@ -52,7 +53,7 @@ export default function Table<T extends RowData>({
             {table.getHeaderGroups().map((group) => (
               <tr
                 key={group.id}
-                className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-500"
+                className="border-b border-border text-left text-xs uppercase tracking-wide text-fg-muted"
               >
                 {group.headers.map((h) => {
                   const right = h.column.columnDef.meta?.align === 'right'
@@ -69,7 +70,7 @@ export default function Table<T extends RowData>({
                         <button
                           type="button"
                           onClick={h.column.getToggleSortingHandler()}
-                          className={`inline-flex items-center gap-1 uppercase tracking-wide hover:text-slate-900 ${right ? 'flex-row-reverse' : ''}`}
+                          className={`inline-flex items-center gap-1 uppercase tracking-wide hover:text-fg-strong ${right ? 'flex-row-reverse' : ''}`}
                         >
                           <table.FlexRender header={h} />
                           {order === 'asc' ? (
@@ -89,9 +90,12 @@ export default function Table<T extends RowData>({
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border-subtle">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className={rowClass ? rowClass(row.original) : 'hover:bg-slate-50'}>
+              <tr
+                key={row.id}
+                className={rowClass ? rowClass(row.original) : 'hover:bg-surface-sunken'}
+              >
                 {row.getAllCells().map((cell) => {
                   const meta = cell.column.columnDef.meta
                   return (
@@ -109,14 +113,15 @@ export default function Table<T extends RowData>({
         </table>
       </div>
 
-      {(name || pageCount > 1 || sizes.length > 0) && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-5 py-3 text-xs text-slate-500">
-          <div className="flex flex-wrap items-center gap-3">
+      {(name || pageCount > 1 || sizes.length > 0 || summary) && (
+        // Tres zonas: el tamaño de página y el conteo, los botones de página al centro y la suma a la derecha.
+        <div className="grid gap-3 border-t border-border-subtle px-5 py-3 text-xs text-fg-muted sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             {sizes.length > 0 && (
-              <label className="flex items-center gap-2">
-                Mostrar
+              <label className="flex items-center gap-1.5">
                 <Select
-                  className="w-auto! py-1! text-xs!"
+                  className="w-auto! py-0.5! pl-2! text-xs!"
+                  aria-label="Registros por página"
                   value={pageSize}
                   onChange={(e) => table.setPageSize(Number(e.target.value))}
                 >
@@ -126,15 +131,26 @@ export default function Table<T extends RowData>({
                     </option>
                   ))}
                 </Select>
-                registros
+                por página
               </label>
             )}
+            {sizes.length > 0 && <span aria-hidden className="h-4 w-px bg-border" />}
+            {/* Con varias páginas el rango basta; el nombre solo sale cuando cabe todo en una. */}
             <span>
-              {pageCount > 1 ? `${from}–${to} de ${total}` : total} {name}
+              {pageCount > 1 ? (
+                <>
+                  <b className="font-medium tabular-nums text-fg">
+                    {from}–{to}
+                  </b>{' '}
+                  de <span className="tabular-nums">{total}</span>
+                </>
+              ) : (
+                `${total} ${name ?? ''}`
+              )}
             </span>
           </div>
-          {pageCount > 1 && (
-            <nav aria-label="Paginación" className="flex items-center gap-1">
+          {pageCount > 1 ? (
+            <nav aria-label="Paginación" className="flex items-center justify-center gap-1">
               <Button
                 variant="ghost"
                 className="px-2 py-1"
@@ -166,7 +182,10 @@ export default function Table<T extends RowData>({
                 <ChevronRight className="size-4" />
               </Button>
             </nav>
+          ) : (
+            <div />
           )}
+          {summary && <div className="sm:justify-self-end">{summary}</div>}
         </div>
       )}
     </>

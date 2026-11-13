@@ -18,7 +18,7 @@ export default function AuditLogRequest({ r }: AuditLogRequestProps) {
         </DataItem>
         <DataItem label="Usuario">
           {r.user.name}
-          <span className="block text-xs text-slate-500">{roleLabel[r.user.role]}</span>
+          <span className="block text-xs text-fg-muted">{roleLabel[r.user.role]}</span>
         </DataItem>
         <DataItem label="Municipio">{municipalityName(r, municipalities)}</DataItem>
         <DataItem label="Controlador">{r.controller}</DataItem>

@@ -11,8 +11,8 @@ export const tableColumns = (columns: TableColumn[]) =>
         header: c.title,
         meta:
           c.format === 'pesos'
-            ? { align: 'right', classes: 'whitespace-nowrap tabular-nums text-slate-900' }
-            : { classes: 'whitespace-nowrap text-slate-700' },
+            ? { align: 'right', classes: 'whitespace-nowrap tabular-nums text-fg-strong' }
+            : { classes: 'whitespace-nowrap text-fg' },
         cell: ({ getValue }) => {
           const value = getValue()
           if (c.format === 'pesos') return formatPesos(Number(value))

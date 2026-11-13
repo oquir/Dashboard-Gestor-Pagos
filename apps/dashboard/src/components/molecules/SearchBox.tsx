@@ -12,7 +12,7 @@ export default function SearchBox({
   return (
     <div className={`relative ${className}`}>
       <IconComponent
-        className="pointer-events-none absolute left-2 top-1/2 size-5.5 -translate-y-1/2 text-slate-400"
+        className="pointer-events-none absolute left-2 top-1/2 size-5.5 -translate-y-1/2 text-fg-subtle"
         aria-hidden
       />
       <Input className="pl-9" {...props} />

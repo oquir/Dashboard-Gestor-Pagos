@@ -5,6 +5,22 @@ import type { MarkAction } from './DeclarationsTable.types'
 
 export const col = columnHelper<DeclarationRow>()
 
+/**
+ * Lo que suman las declaraciones de la tabla. Quedan fuera la solicitud de corrección sin aceptar (no se paga) y lo
+ * que una corrección vigente reemplazó (cuenta la corrección). La ineficaz, la que no tiene pago y la de pago parcial
+ * dejan su saldo en lo que falta por pagar; un pago de más no resta.
+ */
+export function amounts(rows: DeclarationRow[]) {
+  let total = 0
+  let paid = 0
+  for (const { d, payment, paidAmount, isReplaced } of rows) {
+    if (!payment || isReplaced) continue
+    total += d.totalToPay
+    paid += Math.min(paidAmount, d.totalToPay)
+  }
+  return { total, paid, pending: total - paid }
+}
+
 /** Casillas para elegir declaraciones; la del encabezado marca todas las filtradas, no solo la página. */
 export function selectionColumn(
   rows: DeclarationRow[],

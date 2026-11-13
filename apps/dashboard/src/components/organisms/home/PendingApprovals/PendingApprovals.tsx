@@ -37,7 +37,7 @@ export default function PendingApprovals({ approvals, className = '' }: PendingA
           }
         />
       ) : (
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border-subtle">
           {list.slice(0, 6).map(({ d, a }) => (
             <LinkItem
               key={d.id}
@@ -47,7 +47,7 @@ export default function PendingApprovals({ approvals, className = '' }: PendingA
               right={
                 <>
                   <Badge tone={approvalTone[a.status]}>{approvalStatusLabel[a.status]}</Badge>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="mt-1 text-xs text-fg-muted">
                     {awaitsApproval(a)
                       ? `Plazo: ${formatDate(a.limit)}`
                       : formatDate(a.date ?? a.limit)}

@@ -12,8 +12,8 @@ export const COLUMNS = col.columns([
       },
     }) => (
       <>
-        <p className="text-slate-900">{taxLabel[d.tax]}</p>
-        <p className="text-xs text-slate-500">{periodLabel(d)}</p>
+        <p className="text-fg-strong">{taxLabel[d.tax]}</p>
+        <p className="text-xs text-fg-muted">{periodLabel(d)}</p>
       </>
     ),
   }),

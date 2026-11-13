@@ -5,7 +5,7 @@ import {
   FilterBar,
   SearchBox,
   Filter,
-  CheckboxFilter,
+  ToggleGroup,
   DateQueryBar,
   EmptyState,
   PageHeader,
@@ -15,7 +15,6 @@ import {
   MunicipalitySearch,
   DeclarationsDownload,
   NonFilerList,
-  DeclarationSelection,
   DeclarationsTable,
 } from '../../components/organisms'
 import { APPROVAL_OPTIONS, CORRECTION_OPTIONS, CORRECTION_URL_VALUES } from '../../constants'
@@ -35,6 +34,8 @@ import {
   useDateQuery,
   useSession,
   useCorrectionApplication,
+  replaced,
+  totalPaid,
 } from '../../lib'
 import { useData } from '../../store'
 import type {
@@ -61,6 +62,7 @@ export default function Declarations() {
   const declarations = useDeclarations()
   const municipalities = useData((s) => s.municipalities)
   const settingsList = useData((s) => s.settingsList)
+  const payments = useData((s) => s.payments)
   const statusOf = usePaymentStatus()
   const approval = useApproval()
   const correction = useCorrectionApplication()
@@ -105,6 +107,7 @@ export default function Declarations() {
     const configByMunicipality = new Map(settingsList.map((c) => [c.municipalityId, c]))
     const inRit = withRit(municipalities)
     const inRange = declarations.filter((d) => inDateRange(d.filingDate, query))
+    const outside = replaced(declarations, correction)
     return inRange.map((d) => {
       const corrected = d.correctsId ? byId.get(d.correctsId) : undefined
       const situation = correction(d)
@@ -114,6 +117,8 @@ export default function Declarations() {
         document: documentFormat(d.taxpayer),
         // La solicitud de corrección que no se ha aceptado no se paga: su estado de pago no aplica.
         payment: currentCorrection(situation) ? statusOf(d) : undefined,
+        paidAmount: totalPaid(d.id, payments),
+        isReplaced: outside.has(d.id),
         corrects: corrected?.number,
         downward: isDownwardCorrection(d, corrected),
         correction: situation,
@@ -122,7 +127,7 @@ export default function Declarations() {
         unregistered: inRit(d) && !d.registrationId,
       }
     })
-  }, [declarations, municipalities, settingsList, statusOf, approval, correction, query])
+  }, [declarations, municipalities, settingsList, payments, statusOf, approval, correction, query])
 
   // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
   const withApproval = rows.some((f) => f.approval)
@@ -214,7 +219,7 @@ export default function Declarations() {
 
       {/* Vista e impuesto solo salen después de consultar: antes no hay qué separar ni contar. */}
       {query && (
-        <div className="mb-4 flex flex-wrap items-center gap-3">
+        <div className="mb-4 flex flex-wrap items-center justify-center gap-3">
           {withRitVisible && (
             <SegmentedControl
               label="Vista"
@@ -242,6 +247,35 @@ export default function Declarations() {
             value={tax}
             change={setTax}
           />
+          {/* Solo aplican a las presentadas, y cada uno sale si hay alguna declaración que lo cumpla. */}
+          {view === 'filed' && (
+            <ToggleGroup
+              label="Mostrar solo"
+              className="sm:inline-flex"
+              options={[
+                ...(withNoCalendar
+                  ? [
+                      {
+                        text: 'Sin calendario',
+                        title: 'Solo las presentadas sin el calendario cargado',
+                        isActive: noCalendarOnly,
+                        change: setNoCalendarOnly,
+                      },
+                    ]
+                  : []),
+                ...(withUnregistered
+                  ? [
+                      {
+                        text: 'No inscritos',
+                        title: 'Solo las de contribuyentes no inscritos en el RIT',
+                        isActive: unregisteredOnly,
+                        change: setUnregisteredOnly,
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+          )}
         </div>
       )}
 
@@ -294,26 +328,7 @@ export default function Declarations() {
                 change={setCorrectionFilter}
               />
             )}
-            {withNoCalendar && (
-              <CheckboxFilter
-                label="Sin calendario cargado"
-                isChecked={noCalendarOnly}
-                change={setNoCalendarOnly}
-              />
-            )}
-            {withUnregistered && (
-              <CheckboxFilter
-                label="No inscritos en el RIT"
-                isChecked={unregisteredOnly}
-                change={setUnregisteredOnly}
-              />
-            )}
           </FilterBar>
-
-          <DeclarationSelection
-            declarations={checkedOnes.map((f) => f.d)}
-            removeItem={() => setSelection(new Set())}
-          />
 
           <DeclarationsTable
             rows={filteredItems}

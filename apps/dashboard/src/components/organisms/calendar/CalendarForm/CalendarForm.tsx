@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { ALL_ACTIVE } from '../../../../constants'
 import { withUploads, calendarErrors, fullName, useSession } from '../../../../lib'
 import { useData } from '../../../../store'
@@ -21,10 +22,8 @@ export default function CalendarForm({ config, editable }: CalendarFormProps) {
     useData((s) => s.municipalities.find((m) => m.id === config.municipalityId)?.taxes) ??
     ALL_ACTIVE
   const [b, setB] = useState(config)
-  const [saved, setSaved] = useState(false)
   const change = (partial: Partial<MunicipalityConfig>) => {
     setB((current) => ({ ...current, ...partial }))
-    setSaved(false)
   }
 
   const errors = calendarErrors(b, taxes)
@@ -41,12 +40,7 @@ export default function CalendarForm({ config, editable }: CalendarFormProps) {
         <SaveBar
           modification={modification}
           hasErrors={Object.keys(errors).length > 0}
-          saved={saved}
-          savedMessage="Calendario guardado."
-          onDiscard={() => {
-            setB(config)
-            setSaved(false)
-          }}
+          onDiscard={() => setB(config)}
           onSave={() => {
             // Los años que se agregaron quedan cargados hoy: lo que se presentó antes queda marcado como presentado sin calendario.
             const taxCalendar = {
@@ -58,7 +52,7 @@ export default function CalendarForm({ config, editable }: CalendarFormProps) {
             }
             saveSettings({ ...config, taxCalendar, earlyPayment: b.earlyPayment })
             setB((current) => ({ ...current, taxCalendar }))
-            setSaved(true)
+            toast.success('Calendario guardado.')
           }}
         />
       )}

@@ -1,24 +1,68 @@
 @import 'tailwindcss';
 
-/* Color de marca: cambiarlo aquí cambia todo el aplicativo. */
-@theme {
-  --color-brand-50: #eef6ff;
-  --color-brand-100: #d9eaff;
-  --color-brand-200: #b6d5fb;
-  --color-brand-500: #2a78d6;
-  --color-brand-600: #1f66bd;
-  --color-brand-700: #1c5cab;
-  --color-brand-800: #184f95;
-  --color-brand-900: #0d366b;
-
-  /* Series de las gráficas (paleta validada para daltonismo). */
-  --color-serie-ica: #2a78d6;
-  --color-serie-reteica: #eb6834;
-  --color-serie-autorretencion: #1baf7a;
-}
-
+/* Colores por rol, en el mismo formato que el orquestador de formularios. Por ahora solo hay modo
+   claro: el día que llegue el oscuro, basta redefinir estos tokens bajo una clase .dark. Los
+   componentes usan las clases por rol (bg-surface, text-fg, border-border, bg-brand...), nunca la
+   paleta de Tailwind directamente. */
 :root {
   color-scheme: light;
+
+  --ui-surface: oklch(100% 0 0); /* white */
+  --ui-surface-sunken: oklch(98.4% 0.003 247.858); /* slate-50 */
+  --ui-surface-raised: oklch(96.8% 0.007 247.896); /* slate-100 */
+  --ui-surface-inset: oklch(92.9% 0.013 255.508); /* slate-200 */
+  --ui-field: oklch(100% 0 0); /* white */
+
+  --ui-border: oklch(92.9% 0.013 255.508); /* slate-200 */
+  --ui-border-strong: oklch(86.9% 0.022 252.894); /* slate-300 */
+  --ui-border-subtle: oklch(96.8% 0.007 247.896); /* slate-100 */
+
+  --ui-fg-strong: oklch(20.8% 0.042 265.755); /* slate-900 */
+  --ui-fg: oklch(37.2% 0.044 257.287); /* slate-700 */
+  --ui-fg-soft: oklch(44.6% 0.043 257.281); /* slate-600 */
+  --ui-fg-muted: oklch(55.4% 0.046 257.417); /* slate-500 */
+  --ui-fg-subtle: oklch(70.4% 0.04 256.788); /* slate-400 */
+
+  /* Azul de marca: el que el dashboard ya usaba, pasado a oklch. */
+  --ui-brand: oklch(51.6% 0.153 256.082); /* #1f66bd */
+  --ui-brand-hover: oklch(48% 0.142 256.133); /* #1c5cab */
+  --ui-brand-fg: oklch(48% 0.142 256.133); /* #1c5cab */
+  --ui-brand-fg-strong: oklch(43.3% 0.128 256.542); /* #184f95 */
+  --ui-brand-border: oklch(51.6% 0.153 256.082); /* #1f66bd */
+  --ui-brand-border-soft: oklch(86.3% 0.063 253.689); /* #b6d5fb */
+  --ui-brand-surface: oklch(97% 0.015 251.155); /* #eef6ff */
+  --ui-on-brand: oklch(100% 0 0); /* white */
+
+  /* Verde secundario: lo que confirma o suma (pagado, activo, aprobado, recaudo). */
+  --ui-secondary: oklch(59.6% 0.145 163.225); /* emerald-600 */
+  --ui-secondary-fg: oklch(43.2% 0.095 166.913); /* emerald-800 */
+  --ui-secondary-border: oklch(90.5% 0.093 164.15); /* emerald-200 */
+  --ui-secondary-surface: oklch(97.9% 0.021 166.113); /* emerald-50 */
+
+  --ui-danger: oklch(57.7% 0.245 27.325); /* red-600 */
+  --ui-danger-hover: oklch(50.5% 0.213 27.518); /* red-700 */
+  --ui-danger-fg: oklch(50.5% 0.213 27.518); /* red-700 */
+  --ui-danger-border: oklch(88.5% 0.062 18.334); /* red-200 */
+  --ui-danger-surface: oklch(97.1% 0.013 17.38); /* red-50 */
+
+  --ui-warning: oklch(66.6% 0.179 58.318); /* amber-600 */
+  --ui-warning-fg: oklch(47.3% 0.137 46.201); /* amber-800 */
+  --ui-warning-border: oklch(92.4% 0.12 95.746); /* amber-200 */
+  --ui-warning-surface: oklch(98.7% 0.022 95.277); /* amber-50 */
+
+  --ui-info: oklch(58.8% 0.158 241.966); /* sky-600 */
+
+  /* Globo oscuro sobre la página (motivo de desactivación) y velo de los modales. */
+  --ui-inverse: oklch(20.8% 0.042 265.755); /* slate-900 */
+  --ui-on-inverse: oklch(100% 0 0); /* white */
+  --ui-on-inverse-muted: oklch(86.9% 0.022 252.894); /* slate-300 */
+  --ui-overlay: color-mix(in oklab, oklch(20.8% 0.042 265.755) 40%, transparent); /* slate-900 */
+
+  /* Series de las gráficas (paleta validada para daltonismo). */
+  --ui-serie-ica: oklch(57.5% 0.163 255.532); /* #2a78d6 */
+  --ui-serie-reteica: oklch(67.1% 0.175 40.642); /* #eb6834 */
+  --ui-serie-autorretencion: oklch(66.9% 0.141 162.111); /* #1baf7a */
+
   font-family:
     system-ui,
     -apple-system,
@@ -27,8 +71,62 @@
     sans-serif;
 }
 
+@theme inline {
+  --color-surface: var(--ui-surface);
+  --color-surface-sunken: var(--ui-surface-sunken);
+  --color-surface-raised: var(--ui-surface-raised);
+  --color-surface-inset: var(--ui-surface-inset);
+  --color-field: var(--ui-field);
+
+  --color-border: var(--ui-border);
+  --color-border-strong: var(--ui-border-strong);
+  --color-border-subtle: var(--ui-border-subtle);
+
+  --color-fg-strong: var(--ui-fg-strong);
+  --color-fg: var(--ui-fg);
+  --color-fg-soft: var(--ui-fg-soft);
+  --color-fg-muted: var(--ui-fg-muted);
+  --color-fg-subtle: var(--ui-fg-subtle);
+
+  --color-brand: var(--ui-brand);
+  --color-brand-hover: var(--ui-brand-hover);
+  --color-brand-fg: var(--ui-brand-fg);
+  --color-brand-fg-strong: var(--ui-brand-fg-strong);
+  --color-brand-border: var(--ui-brand-border);
+  --color-brand-border-soft: var(--ui-brand-border-soft);
+  --color-brand-surface: var(--ui-brand-surface);
+  --color-on-brand: var(--ui-on-brand);
+
+  --color-secondary: var(--ui-secondary);
+  --color-secondary-fg: var(--ui-secondary-fg);
+  --color-secondary-border: var(--ui-secondary-border);
+  --color-secondary-surface: var(--ui-secondary-surface);
+
+  --color-danger: var(--ui-danger);
+  --color-danger-hover: var(--ui-danger-hover);
+  --color-danger-fg: var(--ui-danger-fg);
+  --color-danger-border: var(--ui-danger-border);
+  --color-danger-surface: var(--ui-danger-surface);
+
+  --color-warning: var(--ui-warning);
+  --color-warning-fg: var(--ui-warning-fg);
+  --color-warning-border: var(--ui-warning-border);
+  --color-warning-surface: var(--ui-warning-surface);
+
+  --color-info: var(--ui-info);
+
+  --color-inverse: var(--ui-inverse);
+  --color-on-inverse: var(--ui-on-inverse);
+  --color-on-inverse-muted: var(--ui-on-inverse-muted);
+  --color-overlay: var(--ui-overlay);
+
+  --color-serie-ica: var(--ui-serie-ica);
+  --color-serie-reteica: var(--ui-serie-reteica);
+  --color-serie-autorretencion: var(--ui-serie-autorretencion);
+}
+
 body {
   margin: 0;
-  background: var(--color-slate-50);
-  color: var(--color-slate-800);
+  background: var(--ui-surface-sunken);
+  color: var(--ui-fg-strong);
 }

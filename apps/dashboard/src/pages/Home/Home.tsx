@@ -174,8 +174,8 @@ export default function Home() {
         municipalities={withoutCalendar.municipalities}
         className="mb-6"
       />
-      {can(user?.role, 'canSeeUnremittedAlert') && (
-        <UnremittedAlert withholdings={unremitted} className="mb-6" />
+      {user && can(user.role, 'canSeeUnremittedAlert') && (
+        <UnremittedAlert withholdings={unremitted} userId={user.id} />
       )}
       <div className={`grid gap-4 sm:grid-cols-2 ${CARD_COLUMNS[cards]}`}>
         {withRitVisible && (
@@ -198,7 +198,7 @@ export default function Home() {
                   {nonFilers.length === 1 ? 'periodo vencido' : 'periodos vencidos'} sin declarar ·{' '}
                   <Link
                     to="/declaraciones?vista=omisos"
-                    className="font-medium text-brand-700 hover:underline"
+                    className="font-medium text-brand-fg hover:underline"
                   >
                     Ver la lista
                   </Link>
@@ -216,7 +216,7 @@ export default function Home() {
             icon={<Document className="size-5" />}
             detail={
               overdueOnes > 0 ? (
-                <span className="text-red-700">{overdueOnes} con el plazo vencido</span>
+                <span className="text-danger-fg">{overdueOnes} con el plazo vencido</span>
               ) : (
                 'Dentro del plazo'
               )
@@ -231,13 +231,13 @@ export default function Home() {
             detail={
               firstCorrection ? (
                 <>
-                  <span className={correctionSoon ? 'font-medium text-amber-700' : undefined}>
+                  <span className={correctionSoon ? 'font-medium text-warning-fg' : undefined}>
                     La primera vence el {formatDate(firstCorrection.c.limit)}
                   </span>{' '}
                   ·{' '}
                   <Link
                     to="/declaraciones?correccion=por_resolver"
-                    className="font-medium text-brand-700 hover:underline"
+                    className="font-medium text-brand-fg hover:underline"
                   >
                     Ver
                   </Link>
@@ -253,16 +253,17 @@ export default function Home() {
             label={`Recaudo ${CURRENT_YEAR}`}
             value={`$${compactFormat(data.collection)}`}
             icon={<Wallet className="size-5" />}
+            isPositive
             detail={`${data.paidOnes} ${data.paidOnes === 1 ? 'declaración pagada' : 'declaraciones pagadas'}`}
           />
         )}
         <StatTile
           label="Declaraciones no pagadas"
           value={String(data.unpaid.length)}
-          icon={<AlertTriangle className="size-5 text-red-600" />}
+          icon={<AlertTriangle className="size-5 text-danger" />}
           detail={
             data.unpaid.length > 0 ? (
-              <span className="text-red-700">${compactFormat(data.unpaidBalance)} por pagar</span>
+              <span className="text-danger-fg">${compactFormat(data.unpaidBalance)} por pagar</span>
             ) : (
               'Sin alertas'
             )
@@ -271,7 +272,7 @@ export default function Home() {
         <StatTile
           label="Declaraciones sin pagar el total de la deuda"
           value={String(data.incompletePayment.length)}
-          icon={<AlertTriangle className="size-5 text-amber-600" />}
+          icon={<AlertTriangle className="size-5 text-warning" />}
           detail={
             data.incompletePayment.length > 0
               ? `$${compactFormat(data.incompletePaymentBalance)} de saldo pendiente`

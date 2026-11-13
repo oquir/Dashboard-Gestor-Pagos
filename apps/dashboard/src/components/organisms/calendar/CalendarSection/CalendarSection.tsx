@@ -69,7 +69,7 @@ export default function CalendarSection({
       description="Fechas límite para presentar y pagar cada formulario. Se pueden agregar años pasados para corregir sus fechas."
     >
       <div className="space-y-4 sm:col-span-2">
-        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-slate-200 pb-4">
+        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
           <div className="flex flex-wrap items-end gap-3">
             {fiscalYear !== undefined && (
               <Field label="Año gravable">
@@ -120,7 +120,7 @@ export default function CalendarSection({
         )}
 
         {fiscalYear === undefined || !cal ? (
-          <p className="text-sm text-slate-500">Aún no hay ningún año gravable en el calendario.</p>
+          <p className="text-sm text-fg-muted">Aún no hay ningún año gravable en el calendario.</p>
         ) : (
           <div className="space-y-4">
             <Field
@@ -134,7 +134,7 @@ export default function CalendarSection({
                 placeholder="Ej.: Decreto 089 de 2026"
               />
             </Field>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-fg-muted">
               {cal.uploaded
                 ? `Cargado el ${formatDate(cal.uploaded.date)}${cal.uploaded.by ? ` por ${cal.uploaded.by}` : ''}. Las declaraciones de este año gravable presentadas antes quedan marcadas como presentadas sin calendario.`
                 : `Sin guardar: el año gravable ${fiscalYear} queda cargado cuando guardes.`}

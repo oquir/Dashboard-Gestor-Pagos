@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
-import { useSession } from '../../../../lib'
+import { registrationStatusLabel, registrationTone, useSession } from '../../../../lib'
 import { useData } from '../../../../store'
+import { Badge } from '../../../atoms'
 import Table from '../../Table'
 import { COLUMNS } from './RegistrationsTable.constants'
 import type { RegistrationsTableProps } from './RegistrationsTable.types'
-import { col, municipalityColumn } from './RegistrationsTable.utils'
+import { col, countByStatus, municipalityColumn } from './RegistrationsTable.utils'
 
 /** Inscritos en el RIT. Cuando 1cero1 mira todos los municipios, agrega la columna de municipio. */
 export default function RegistrationsTable({ registrations, total }: RegistrationsTableProps) {
@@ -18,6 +19,8 @@ export default function RegistrationsTable({ registrations, total }: Registratio
     [municipalityId, municipalities],
   )
 
+  const states = useMemo(() => countByStatus(registrations), [registrations])
+
   return (
     <Table
       data={registrations}
@@ -26,6 +29,18 @@ export default function RegistrationsTable({ registrations, total }: Registratio
       rowId={(i) => i.id}
       name={`inscripciones (de ${total})`}
       empty="No hay inscripciones con esos filtros"
+      summary={
+        <div className="flex flex-wrap items-center gap-1.5">
+          {/* Las activas siempre salen; los demás estados, solo si hay alguna. */}
+          {states
+            .filter(({ status, count }) => count > 0 || status === 'active')
+            .map(({ status, count }) => (
+              <Badge key={status} tone={registrationTone[status]}>
+                {registrationStatusLabel[status]} {count}
+              </Badge>
+            ))}
+        </div>
+      }
     />
   )
 }

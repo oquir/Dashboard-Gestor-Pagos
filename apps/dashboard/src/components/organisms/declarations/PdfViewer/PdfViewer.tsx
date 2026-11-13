@@ -36,7 +36,7 @@ export default function PdfViewer({ pdf, title }: PdfViewerProps) {
         canvas.height = viewport.height
         canvas.setAttribute('role', 'img')
         canvas.setAttribute('aria-label', `${title}, página ${n} de ${doc.numPages}`)
-        canvas.className = 'mx-auto block h-auto w-full max-w-5xl bg-white shadow-md'
+        canvas.className = 'mx-auto block h-auto w-full max-w-5xl bg-surface shadow-md'
         if (cancelled) return
         target.append(canvas)
         await page.render({ canvas, viewport }).promise
@@ -52,7 +52,7 @@ export default function PdfViewer({ pdf, title }: PdfViewerProps) {
   }, [pdf, title])
 
   if (failed) {
-    return <p className="py-8 text-center text-sm text-red-700">No se pudo mostrar el PDF.</p>
+    return <p className="py-8 text-center text-sm text-danger-fg">No se pudo mostrar el PDF.</p>
   }
   return <div ref={pages} className="flex flex-col gap-4" />
 }

@@ -40,7 +40,7 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
       />
       <div className="overflow-x-auto">
         <table className="w-full min-w-[36rem] text-sm">
-          <thead className="text-xs text-slate-500">
+          <thead className="text-xs text-fg-muted">
             <tr className="uppercase tracking-wide">
               <th rowSpan={2} scope="col" className="px-5 py-2 text-left align-bottom font-medium">
                 Formulario
@@ -57,19 +57,19 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                   key={g.title}
                   colSpan={g.options.length}
                   scope="colgroup"
-                  className="border-l border-slate-200 px-3 pt-2 text-center font-medium"
+                  className="border-l border-border px-3 pt-2 text-center font-medium"
                 >
                   {g.title}
                 </th>
               ))}
             </tr>
-            <tr className="border-b border-slate-200">
+            <tr className="border-b border-border">
               {GROUPS.map((g) =>
                 g.options.map((o, j) => (
                   <th
                     key={o.key}
                     scope="col"
-                    className={`px-3 pt-1 pb-2 text-center font-normal ${j === 0 ? 'border-l border-slate-200' : ''}`}
+                    className={`px-3 pt-1 pb-2 text-center font-normal ${j === 0 ? 'border-l border-border' : ''}`}
                   >
                     {o.text}
                   </th>
@@ -77,14 +77,14 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border-subtle">
             {TAXES.map((i) => {
               const manages = m.taxes[i]
               const pausa = manages ? pausas[i] : undefined
               return (
-                <tr key={i} className={manages ? '' : 'bg-slate-50/70'}>
+                <tr key={i} className={manages ? '' : 'bg-surface-sunken/70'}>
                   <th scope="row" className="px-5 py-3 text-left align-top font-medium">
-                    <span className={manages ? 'text-slate-900' : 'text-slate-500'}>
+                    <span className={manages ? 'text-fg-strong' : 'text-fg-muted'}>
                       {taxLabel[i]}
                     </span>
                     {pausa && (
@@ -92,7 +92,7 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                         <DisabledBadge disabled={pausa} />
                       </span>
                     )}
-                    <span className="mt-0.5 block text-xs font-normal text-slate-500">
+                    <span className="mt-0.5 block text-xs font-normal text-fg-muted">
                       {goLiveText(m.inProductionSince[i])}
                     </span>
                     {manages && canOpenBuilder && (
@@ -101,7 +101,7 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                         href={FORM_BUILDER_URL}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-brand-700 hover:underline"
+                        className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-brand-fg hover:underline"
                       >
                         Editar formulario
                         <ArrowUpRight className="size-3.5" aria-hidden />
@@ -124,7 +124,7 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                     g.options.map((o, j) => (
                       <td
                         key={o.key}
-                        className={`px-3 py-3 text-center align-top ${j === 0 ? 'border-l border-slate-100' : ''}`}
+                        className={`px-3 py-3 text-center align-top ${j === 0 ? 'border-l border-border-subtle' : ''}`}
                       >
                         {manages ? (
                           <Switch
@@ -139,7 +139,7 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                             onChange={() => toggle[o.key](m.id, i)}
                           />
                         ) : (
-                          <span className="text-slate-300">
+                          <span className="text-fg-subtle">
                             <span aria-hidden>—</span>
                             <span className="sr-only">
                               No aplica: el municipio no gestiona este formulario
@@ -155,11 +155,11 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
           </tbody>
         </table>
       </div>
-      <dl className="grid gap-x-6 gap-y-3 border-t border-slate-100 p-5 text-xs sm:grid-cols-2">
+      <dl className="grid gap-x-6 gap-y-3 border-t border-border-subtle p-5 text-xs sm:grid-cols-2">
         {LEGEND.map((l) => (
           <div key={l.searchTerm}>
-            <dt className="font-medium text-slate-700">{l.searchTerm}</dt>
-            <dd className="text-slate-500">{l.definition}</dd>
+            <dt className="font-medium text-fg">{l.searchTerm}</dt>
+            <dd className="text-fg-muted">{l.definition}</dd>
           </div>
         ))}
       </dl>

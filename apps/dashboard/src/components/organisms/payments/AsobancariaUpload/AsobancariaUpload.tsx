@@ -45,16 +45,16 @@ export default function AsobancariaUpload() {
       />
       <div className="space-y-4 p-5">
         <div>
-          <p className="mb-1 text-sm font-medium text-slate-700">Archivo</p>
+          <p className="mb-1 text-sm font-medium text-fg">Archivo</p>
           {file ? (
-            <p className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-700 ring-1 ring-slate-200">
-              <Document className="size-4 shrink-0 text-brand-600" aria-hidden />
+            <p className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-fg ring-1 ring-border">
+              <Document className="size-4 shrink-0 text-brand-fg" aria-hidden />
               <span className="min-w-0 flex-1 truncate">{file.name}</span>
               {!loading && (
                 <button
                   type="button"
                   onClick={() => setFile(null)}
-                  className="shrink-0 text-xs text-slate-500 hover:text-red-600"
+                  className="shrink-0 text-xs text-fg-muted hover:text-danger"
                 >
                   Quitar
                 </button>
@@ -75,13 +75,13 @@ export default function AsobancariaUpload() {
 
         {loading && (
           <div role="status">
-            <div className="h-2 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-2 overflow-hidden rounded-full bg-surface-raised">
               <div
-                className="h-full rounded-full bg-brand-600 transition-[width] duration-100"
+                className="h-full rounded-full bg-brand transition-[width] duration-100"
                 style={{ width: `${progress * 100}%` }}
               />
             </div>
-            <p className="mt-1.5 text-xs text-slate-500">
+            <p className="mt-1.5 text-xs text-fg-muted">
               {STEPS[Math.min(Math.floor(progress * STEPS.length), STEPS.length - 1)]}
             </p>
           </div>

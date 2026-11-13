@@ -14,9 +14,9 @@ export default function SentData({ r }: SentDataProps) {
       />
       <div className="p-5">
         {empty ? (
-          <p className="text-sm text-slate-500">La petición no envió datos.</p>
+          <p className="text-sm text-fg-muted">La petición no envió datos.</p>
         ) : (
-          <pre className="max-h-[32rem] overflow-auto rounded-md bg-slate-50 p-4 text-xs leading-relaxed text-slate-700">
+          <pre className="max-h-[32rem] overflow-auto rounded-md bg-surface-sunken p-4 text-xs leading-relaxed text-fg">
             {JSON.stringify(r.data, null, 2)}
           </pre>
         )}

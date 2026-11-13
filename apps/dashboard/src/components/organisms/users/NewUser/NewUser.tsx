@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { roleLabel, useSession } from '../../../../lib'
 import { useData } from '../../../../store'
 import type { User } from '../../../../types'
@@ -44,6 +45,7 @@ export default function NewUser({ onFinish }: NewUserProps) {
       isActive: true,
     }
     saveUser(newValue)
+    toast.success(`Se creó el usuario ${newValue.firstNames} ${newValue.lastNames}.`)
     onFinish()
   }
 
@@ -60,7 +62,7 @@ export default function NewUser({ onFinish }: NewUserProps) {
           municipalities={is1cero1 ? municipalities : undefined}
         />
       </div>
-      <div className="flex justify-end gap-2 border-t border-slate-100 px-5 py-3">
+      <div className="flex justify-end gap-2 border-t border-border-subtle px-5 py-3">
         <Button variant="secondary" onClick={onFinish}>
           Cancelar
         </Button>

@@ -11,14 +11,14 @@ import {
 import type { UnremittedRow } from '../../../../types'
 import { Badge } from '../../../atoms'
 
-const DATE = { classes: 'whitespace-nowrap tabular-nums text-slate-700' } as const
+const DATE = { classes: 'whitespace-nowrap tabular-nums text-fg' } as const
 
 const col = columnHelper<UnremittedRow>()
 
 export const COLUMNS = col.columns([
   col.accessor('name', {
     header: 'Contribuyente',
-    meta: { classes: 'max-w-64 truncate text-slate-900' },
+    meta: { classes: 'max-w-64 truncate text-fg-strong' },
   }),
   col.accessor((f) => f.d.number, {
     id: 'declaration',
@@ -32,11 +32,11 @@ export const COLUMNS = col.columns([
       <>
         <Link
           to={`/declaraciones/${d.id}`}
-          className="font-medium text-slate-900 hover:text-brand-700"
+          className="font-medium text-fg-strong hover:text-brand-fg"
         >
           {d.number}
         </Link>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-fg-muted">
           {taxLabel[d.tax]} · {periodLabel(d)}
         </p>
       </>
@@ -64,7 +64,7 @@ export const COLUMNS = col.columns([
     header: 'Sin consignar',
     meta: {
       align: 'right',
-      classes: 'whitespace-nowrap tabular-nums font-medium text-slate-900',
+      classes: 'whitespace-nowrap tabular-nums font-medium text-fg-strong',
     },
     cell: ({ getValue }) => formatPesos(getValue()),
   }),

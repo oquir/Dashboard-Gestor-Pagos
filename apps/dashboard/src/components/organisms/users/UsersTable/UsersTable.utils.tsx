@@ -26,7 +26,7 @@ export function userColumns(municipalities: Municipality[], canSee: (id: string)
           aria-label={`Ver a ${fullName(u)}`}
           title="Ver y editar"
           onClick={() => canSee(u.id)}
-          className="inline-flex size-8 items-center justify-center rounded-lg bg-white text-brand-600 shadow-sm ring-1 ring-inset ring-slate-300 transition-colors hover:bg-brand-50 hover:text-brand-700 hover:ring-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+          className="inline-flex size-8 items-center justify-center rounded-lg bg-surface text-brand-fg shadow-sm ring-1 ring-inset ring-border-strong transition-colors hover:bg-brand-surface hover:text-brand-fg hover:ring-brand-border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-border"
         >
           <UserEdit className="size-4" aria-hidden />
         </button>
@@ -37,8 +37,8 @@ export function userColumns(municipalities: Municipality[], canSee: (id: string)
       header: 'Nombre',
       cell: ({ row: { original: u } }) => (
         <>
-          <p className="font-medium text-slate-900">{fullName(u)}</p>
-          <p className="text-xs text-slate-500">
+          <p className="font-medium text-fg-strong">{fullName(u)}</p>
+          <p className="text-xs text-fg-muted">
             {u.jobTitle} · {u.email}
           </p>
         </>
@@ -54,7 +54,7 @@ export function userColumns(municipalities: Municipality[], canSee: (id: string)
     col.accessor((u) => municipalityName(u, municipalities), {
       id: 'municipality',
       header: 'Municipio',
-      meta: { classes: 'whitespace-nowrap text-slate-700' },
+      meta: { classes: 'whitespace-nowrap text-fg' },
     }),
     col.accessor((u) => (u.isActive ? 'Activo' : 'Inactivo'), {
       id: 'status',

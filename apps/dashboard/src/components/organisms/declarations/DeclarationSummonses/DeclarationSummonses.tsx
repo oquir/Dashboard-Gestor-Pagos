@@ -48,15 +48,15 @@ export default function DeclarationSummonses({ d, canRecord }: DeclarationSummon
       <div className="space-y-4 p-5">
         {prior && (
           <div>
-            <p className="text-sm font-medium text-slate-900">
+            <p className="text-sm font-medium text-fg-strong">
               {d.kind === 'correction' ? 'Corrige' : 'Se presentó'} después del{' '}
               {summonsTypeLabel[prior.kind].toLowerCase()}
             </p>
             {summoned && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-fg-muted">
                 Notificado sobre la{' '}
                 <Link
-                  className="font-medium text-brand-700 underline"
+                  className="font-medium text-brand-fg underline"
                   to={`/declaraciones/${summoned.id}`}
                 >
                   {summoned.number}
@@ -71,12 +71,12 @@ export default function DeclarationSummonses({ d, canRecord }: DeclarationSummon
           const response = summonsSituation(e, declarations, today()).response
           return (
             <div key={e.id}>
-              <p className="text-sm font-medium text-slate-900">{summonsTypeLabel[e.kind]}</p>
+              <p className="text-sm font-medium text-fg-strong">{summonsTypeLabel[e.kind]}</p>
               {response && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-fg-muted">
                   Lo respondió la corrección{' '}
                   <Link
-                    className="font-medium text-brand-700 underline"
+                    className="font-medium text-brand-fg underline"
                     to={`/declaraciones/${response.id}`}
                   >
                     {response.number}
@@ -89,7 +89,7 @@ export default function DeclarationSummonses({ d, canRecord }: DeclarationSummon
           )
         })}
         {!prior && own.length === 0 && (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-fg-muted">
             No tiene emplazamientos. Si el municipio le notificó uno para corregir, regístralo para
             que el aplicativo le liquide la sanción del art. 644, numeral 2.
           </p>

@@ -15,21 +15,21 @@ export default function ApplicationHeader({
   lateItem,
 }: ApplicationHeaderProps) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-brand-200 bg-brand-50 px-5 py-4">
+    <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-brand-border-soft bg-brand-surface px-5 py-4">
       <div>
-        <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-900">
+        <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-fg-strong">
           Formulario de {ritChangeKindLabel[application.kind].toLowerCase()} radicado el{' '}
           {formatDate(application.date)}
           <Badge tone={ritChangeTone[application.status]}>
             {ritChangeStatusLabel[application.status]}
           </Badge>
         </p>
-        <p className="mt-0.5 text-sm text-slate-600">
+        <p className="mt-0.5 text-sm text-fg-soft">
           Lo que diligenció el contribuyente
           {compared ? '. Se marca lo que cambió frente a la solicitud aprobada anterior.' : '.'}
         </p>
         {lateItem && (
-          <p className="mt-1 text-sm text-amber-800">
+          <p className="mt-1 text-sm text-warning-fg">
             Inscripción tardía: se radicó {lateItem.days === 1 ? '1 día' : `${lateItem.days} días`}{' '}
             después del plazo, que vencía el {formatDate(lateItem.limit)}. El municipio puede
             sancionarla según su estatuto.

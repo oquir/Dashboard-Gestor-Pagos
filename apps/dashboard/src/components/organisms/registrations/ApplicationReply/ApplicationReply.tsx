@@ -49,7 +49,7 @@ export default function ApplicationReply({
         </Field>
         <AttachDocuments files={files} onChange={setFiles} />
       </div>
-      <div className="flex flex-wrap gap-2 border-t border-slate-100 px-5 py-3">
+      <div className="flex flex-wrap gap-2 border-t border-border-subtle px-5 py-3">
         <Button variant="primary" disabled={sending} onClick={() => reply('approved')}>
           <TickCircle className="size-4" aria-hidden /> Aprobar
         </Button>

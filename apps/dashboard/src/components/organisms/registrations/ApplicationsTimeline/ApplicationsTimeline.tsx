@@ -26,10 +26,10 @@ export default function ApplicationsTimeline({
         description="Elige una para ver el formulario que diligenció el contribuyente."
       />
       <ol className="space-y-4 p-5">
-        <li className={`border-l-2 pl-2 ${application ? 'border-slate-200' : 'border-brand-600'}`}>
+        <li className={`border-l-2 pl-2 ${application ? 'border-border' : 'border-brand-border'}`}>
           <SelectableItem isActive={!application} onClick={() => pick(null)}>
-            <span className="block text-sm font-medium text-slate-900">Datos actuales</span>
-            <span className="mt-1 block text-xs text-slate-500">
+            <span className="block text-sm font-medium text-fg-strong">Datos actuales</span>
+            <span className="mt-1 block text-xs text-fg-muted">
               Cómo está hoy la ficha del inscrito.
             </span>
           </SelectableItem>
@@ -37,17 +37,17 @@ export default function ApplicationsTimeline({
         {ritChanges.map((n) => (
           <li
             key={n.id}
-            className={`border-l-2 pl-2 ${application === n ? 'border-brand-600' : 'border-slate-200'}`}
+            className={`border-l-2 pl-2 ${application === n ? 'border-brand-border' : 'border-border'}`}
           >
             <SelectableItem isActive={application === n} onClick={() => pick(n.id)}>
               <span className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-medium text-slate-900">
+                <span className="text-sm font-medium text-fg-strong">
                   {ritChangeKindLabel[n.kind]}
                 </span>
                 <Badge tone={ritChangeTone[n.status]}>{ritChangeStatusLabel[n.status]}</Badge>
               </span>
-              <span className="mt-1 block text-sm text-slate-600">{n.description}</span>
-              <span className="mt-1 block text-xs text-slate-500">
+              <span className="mt-1 block text-sm text-fg-soft">{n.description}</span>
+              <span className="mt-1 block text-xs text-fg-muted">
                 Radicada el {formatDate(n.date)}
                 {n.reviewedBy &&
                   n.reviewDate &&
@@ -57,7 +57,7 @@ export default function ApplicationsTimeline({
             <div className="px-2">
               <SentReply ritChange={n} registration={registration} />
               {n.kind === 'cancellation' && n.status === 'pending' && config && (
-                <p className="mt-1 text-xs text-amber-800">
+                <p className="mt-1 text-xs text-warning-fg">
                   {config.automaticRitCancellation
                     ? 'En este municipio la cancelación es automática al aprobar.'
                     : 'La administración debe verificar el cese antes de aprobar la cancelación.'}
@@ -66,7 +66,7 @@ export default function ApplicationsTimeline({
               {n.status === 'pending' && canReview && (
                 <a
                   href={`#respuesta-${n.id}`}
-                  className="mt-2 inline-block text-xs font-medium text-brand-700 hover:underline"
+                  className="mt-2 inline-block text-xs font-medium text-brand-fg hover:underline"
                 >
                   Responder solicitud
                 </a>

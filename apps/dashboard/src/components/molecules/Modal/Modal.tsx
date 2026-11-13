@@ -37,14 +37,14 @@ export default function Modal({
       }}
       // El clic en el fondo llega al propio <dialog>; el de adentro, a sus hijos.
       onClick={(e) => e.target === e.currentTarget && close()}
-      className={`${SIZE_CLASSES[size]} flex-col bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/40 open:flex`}
+      className={`${SIZE_CLASSES[size]} flex-col bg-surface p-0 text-fg-strong shadow-xl backdrop:bg-overlay open:flex`}
     >
-      <div className="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4">
+      <div className="flex items-start justify-between gap-4 border-b border-border-subtle px-5 py-4">
         <div>
-          <h2 id={titleId} className="text-base font-semibold text-slate-900">
+          <h2 id={titleId} className="text-base font-semibold text-fg-strong">
             {title}
           </h2>
-          {description && <p className="mt-0.5 text-sm text-slate-500">{description}</p>}
+          {description && <p className="mt-0.5 text-sm text-fg-muted">{description}</p>}
         </div>
         <div className="flex shrink-0 items-center gap-1">
           {actions}
@@ -60,7 +60,7 @@ export default function Modal({
       </div>
       <div className="min-h-0 flex-1 overflow-auto px-5 py-4">{children}</div>
       {footer && (
-        <div className="flex flex-wrap justify-end gap-2 border-t border-slate-100 px-5 py-3">
+        <div className="flex flex-wrap justify-end gap-2 border-t border-border-subtle px-5 py-3">
           {footer}
         </div>
       )}

@@ -8,11 +8,11 @@ export default function SelectableItem({ isActive, onClick, children }: Selectab
       type="button"
       onClick={onClick}
       aria-pressed={isActive}
-      className={`flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left focus-visible:outline-2 focus-visible:outline-brand-600 ${isActive ? 'bg-brand-50' : 'hover:bg-slate-50'}`}
+      className={`flex w-full items-start gap-2 rounded-md px-2 py-1.5 text-left focus-visible:outline-2 focus-visible:outline-brand-border ${isActive ? 'bg-brand-surface' : 'hover:bg-surface-sunken'}`}
     >
       <span className="min-w-0 flex-1">{children}</span>
       <ChevronRight
-        className={`mt-0.5 size-4 shrink-0 ${isActive ? 'text-brand-600' : 'text-slate-400'}`}
+        className={`mt-0.5 size-4 shrink-0 ${isActive ? 'text-brand-fg' : 'text-fg-subtle'}`}
         aria-hidden
       />
     </button>

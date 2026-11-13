@@ -1,5 +1,6 @@
-import { Document, DocumentDownload, TickCircle } from 'reicon-react'
+import { Document, DocumentDownload } from 'reicon-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { downloadTemplate, readTemplate } from '../../../../lib'
 import { useData } from '../../../../store'
 import { Button, Card } from '../../../atoms'
@@ -17,10 +18,8 @@ export default function ActivityUpload({
 }: ActivityUploadProps) {
   const loadActivities = useData((s) => s.loadActivities)
   const [errors, setErrors] = useState<string[]>([])
-  const [loaded, setLoaded] = useState<string | null>(null)
 
   const read = async (file: File) => {
-    setLoaded(null)
     const reading = await readTemplate(file)
     setErrors(reading.errors)
     changeView(reading.errors.length > 0 ? null : { file: file.name, rates: reading.rates })
@@ -29,7 +28,9 @@ export default function ActivityUpload({
   const confirm = () => {
     if (!view) return
     loadActivities(municipalityId, fiscalYear, view.rates, view.file)
-    setLoaded(`Se cargaron ${view.rates.length} actividades para el año gravable ${fiscalYear}.`)
+    toast.success(
+      `Se cargaron ${view.rates.length} actividades para el año gravable ${fiscalYear}.`,
+    )
     changeView(null)
   }
 
@@ -42,20 +43,18 @@ export default function ActivityUpload({
       <div className="space-y-4 p-5">
         <ol className="grid gap-4 sm:grid-cols-2">
           <li>
-            <p className="mb-1 text-sm font-medium text-slate-700">1. Descarga la plantilla</p>
+            <p className="mb-1 text-sm font-medium text-fg">1. Descarga la plantilla</p>
             <Button onClick={() => downloadTemplate(fiscalYear, base?.rates ?? [])}>
               <DocumentDownload className="size-4" aria-hidden /> Descargar plantilla
             </Button>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-fg-muted">
               {base
                 ? `Trae las ${base.rates.length} actividades de ${base.fiscalYear} para que ajustes lo que cambió.`
                 : 'Viene vacía, solo con los encabezados.'}
             </p>
           </li>
           <li>
-            <p className="mb-1 text-sm font-medium text-slate-700">
-              2. Carga el Excel diligenciado
-            </p>
+            <p className="mb-1 text-sm font-medium text-fg">2. Carga el Excel diligenciado</p>
             <FilePicker
               text="Elegir archivo .xlsx"
               accept=".xlsx"
@@ -82,7 +81,7 @@ export default function ActivityUpload({
         {view && (
           <div
             role="status"
-            className="flex flex-wrap items-center gap-3 rounded-lg bg-brand-50 px-4 py-3 text-sm text-brand-800"
+            className="flex flex-wrap items-center gap-3 rounded-lg bg-brand-surface px-4 py-3 text-sm text-brand-fg-strong"
           >
             <Document className="size-4 shrink-0" aria-hidden />
             <p className="min-w-0 flex-1">
@@ -100,12 +99,6 @@ export default function ActivityUpload({
               </Button>
             </div>
           </div>
-        )}
-
-        {loaded && (
-          <Notice tone="success" icon={TickCircle} role="status">
-            <p className="font-medium">{loaded}</p>
-          </Notice>
         )}
       </div>
     </Card>

@@ -1,58 +1,29 @@
-import { Danger } from 'reicon-react'
-import { Link } from 'react-router'
-import { compactFormat, formatDate, remittanceTerm } from '../../../../lib'
-import { Notice } from '../../../molecules'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router'
+import { toast } from 'sonner'
+import { ALERT_DURATION, ALERT_TOAST_ID } from './UnremittedAlert.constants'
 import type { UnremittedAlertProps } from './UnremittedAlert.types'
-import { balanceOf } from './UnremittedAlert.utils'
+import { unremittedMessage } from './UnremittedAlert.utils'
 
-/**
- * Alerta de Inicio cuando hay ReteICA o AutoReteICA sin consignar: en rojo si alguna ya pasó los 2 meses del art. 402
- * del Código Penal; en amarillo si todas siguen en plazo. Sin retenciones pendientes no se muestra.
- */
-export default function UnremittedAlert({ withholdings, className = '' }: UnremittedAlertProps) {
-  if (withholdings.length === 0) return null
-  const overdueOnes = withholdings.filter((r) => r.days < 0)
-  const onTime = withholdings.filter((r) => r.days >= 0)
-  const link = (
-    <Link to="/pagos" className="font-medium underline">
-      Ver en Pagos
-    </Link>
-  )
+// Usuarios a los que ya se les mostró el aviso. Vive en el módulo para que volver a Inicio no lo
+// repita; recargar la página, o entrar con otro usuario, lo vuelve a mostrar.
+const shownTo = new Set<string>()
 
-  if (overdueOnes.length > 0) {
-    return (
-      <div className={className}>
-        <Notice tone="danger" icon={Danger} role="alert">
-          <p className="font-medium">
-            {overdueOnes.length === 1
-              ? '1 retención pasó'
-              : `${overdueOnes.length} retenciones pasaron`}{' '}
-            los 2 meses sin consignarse (${compactFormat(balanceOf(overdueOnes))}).
-          </p>
-          <p className="mt-0.5">
-            No consignar lo retenido puede ser delito (art. 402 del Código Penal).
-            {onTime.length > 0 &&
-              ` ${onTime.length === 1 ? 'Otra sigue' : `Otras ${onTime.length} siguen`} en plazo.`}{' '}
-            {link}
-          </p>
-        </Notice>
-      </div>
-    )
-  }
+/** Al entrar a Inicio, un toast con las ReteICA y AutoReteICA sin consignar y el enlace a Pagos. No pinta nada. */
+export default function UnremittedAlert({ withholdings, userId }: UnremittedAlertProps) {
+  const navigate = useNavigate()
+  const message = unremittedMessage(withholdings)
 
-  const next = onTime[0]
-  return (
-    <div className={className}>
-      <Notice tone="alert" icon={Danger}>
-        <p className="font-medium">
-          {onTime.length === 1 ? '1 retención' : `${onTime.length} retenciones`} sin consignar ($
-          {compactFormat(balanceOf(onTime))}).
-        </p>
-        <p className="mt-0.5">
-          {onTime.length === 1 ? 'Su plazo vence' : 'El primer plazo vence'} el{' '}
-          {formatDate(next.limit)} ({remittanceTerm(next.days).toLowerCase()}). {link}
-        </p>
-      </Notice>
-    </div>
-  )
+  useEffect(() => {
+    if (!message || shownTo.has(userId)) return
+    shownTo.add(userId)
+    toast[message.tone](message.title, {
+      id: ALERT_TOAST_ID,
+      description: message.description,
+      duration: ALERT_DURATION,
+      action: { label: 'Ver en Pagos', onClick: () => navigate('/pagos') },
+    })
+  }, [message, userId, navigate])
+
+  return null
 }

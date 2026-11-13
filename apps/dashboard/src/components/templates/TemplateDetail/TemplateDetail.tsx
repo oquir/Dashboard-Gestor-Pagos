@@ -18,7 +18,7 @@ export default function TemplateDetail({
     <>
       <Link
         to={goBack.a}
-        className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-fg-muted hover:text-fg-strong"
       >
         <ArrowLeft className="size-4" aria-hidden /> {goBack.text}
       </Link>

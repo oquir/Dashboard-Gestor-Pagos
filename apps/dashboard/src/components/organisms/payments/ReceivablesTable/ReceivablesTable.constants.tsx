@@ -13,7 +13,7 @@ import { Badge } from '../../../atoms'
 
 const VALUE = {
   align: 'right',
-  classes: 'whitespace-nowrap tabular-nums text-slate-700',
+  classes: 'whitespace-nowrap tabular-nums text-fg',
 } as const
 
 const col = columnHelper<ReceivablesRow>()
@@ -27,7 +27,7 @@ export const COLUMNS = col.columns([
       <Link
         to={statementPath(f.d.municipalityId, f.d.taxpayer)}
         aria-label={`Ver el estado de cuenta de ${f.name}`}
-        className="font-medium text-slate-900 hover:text-brand-700"
+        className="font-medium text-fg-strong hover:text-brand-fg"
       >
         {f.name}
       </Link>
@@ -45,11 +45,11 @@ export const COLUMNS = col.columns([
       <>
         <Link
           to={`/declaraciones/${d.id}`}
-          className="font-medium text-slate-900 hover:text-brand-700"
+          className="font-medium text-fg-strong hover:text-brand-fg"
         >
           {d.number}
         </Link>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-fg-muted">
           {taxLabel[d.tax]} · {periodLabel(d)}
         </p>
       </>
@@ -58,7 +58,7 @@ export const COLUMNS = col.columns([
   col.accessor((f) => f.d.invoiceNumber, {
     id: 'invoice',
     header: 'N.º de factura',
-    meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
+    meta: { classes: 'whitespace-nowrap tabular-nums text-fg' },
   }),
   col.accessor((f) => f.d.totalToPay, {
     id: 'total',
@@ -76,7 +76,7 @@ export const COLUMNS = col.columns([
     header: 'Saldo',
     meta: {
       align: 'right',
-      classes: 'whitespace-nowrap tabular-nums font-medium text-slate-900',
+      classes: 'whitespace-nowrap tabular-nums font-medium text-fg-strong',
     },
     cell: ({ getValue }) => formatPesos(getValue()),
   }),

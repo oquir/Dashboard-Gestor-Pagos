@@ -34,7 +34,7 @@ export const NUMBER_COLUMN = col.accessor((f) => f.d.number, {
       aria-label={`Ver la declaración ${d.number}`}
       className={ROW_BUTTON_CLASS}
     >
-      <Document className="size-4 text-brand-600" aria-hidden />
+      <Document className="size-4 text-brand-fg" aria-hidden />
       {d.number}
     </Link>
   ),
@@ -45,7 +45,7 @@ export const invoiceColumn = (preview: (d: Declaration) => void) =>
   col.accessor((f) => f.d.invoiceNumber, {
     id: 'invoice',
     header: 'N.º de factura',
-    meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
+    meta: { classes: 'whitespace-nowrap tabular-nums text-fg' },
     cell: ({
       row: {
         original: { d },
@@ -56,9 +56,9 @@ export const invoiceColumn = (preview: (d: Declaration) => void) =>
         type="button"
         onClick={() => preview(d)}
         aria-label={`Ver la factura ${d.invoiceNumber}`}
-        className="group inline-flex cursor-pointer items-center gap-1.5 rounded tabular-nums text-slate-700 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600"
+        className="group inline-flex cursor-pointer items-center gap-1.5 rounded tabular-nums text-fg hover:text-fg-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-border"
       >
-        <DocumentText className="size-4 shrink-0 text-brand-600" aria-hidden />
+        <DocumentText className="size-4 shrink-0 text-danger" aria-hidden />
         <span
           data-text={d.invoiceNumber}
           className="inline-flex flex-col after:invisible after:block after:h-0 after:overflow-hidden after:font-bold after:content-[attr(data-text)] group-hover:font-bold group-focus-visible:font-bold"
@@ -80,10 +80,10 @@ export const COLUMNS = col.columns([
       },
     }) => (
       <>
-        <p className="text-slate-900">{declarationTypeText(d.kind, downward)}</p>
-        {corrects && <p className="text-xs tabular-nums text-slate-500">Corrige la {corrects}</p>}
+        <p className="text-fg-strong">{declarationTypeText(d.kind, downward)}</p>
+        {corrects && <p className="text-xs tabular-nums text-fg-muted">Corrige la {corrects}</p>}
         {d.closingDate && (
-          <p className="text-xs text-slate-500">Cierre: {formatDate(d.closingDate)}</p>
+          <p className="text-xs text-fg-muted">Cierre: {formatDate(d.closingDate)}</p>
         )}
         {c && (
           <div className="mt-1">
@@ -91,7 +91,7 @@ export const COLUMNS = col.columns([
               Solicitud {correctionStatusLabel[c.status].toLowerCase()}
             </Badge>
             {correctionToResolve(c) && (
-              <p className="mt-1 text-xs text-slate-500">Plazo: {formatDate(c.limit)}</p>
+              <p className="mt-1 text-xs text-fg-muted">Plazo: {formatDate(c.limit)}</p>
             )}
           </div>
         )}
@@ -103,15 +103,15 @@ export const COLUMNS = col.columns([
     meta: { classes: 'max-w-64' },
     cell: ({ row: { original: f } }) => (
       <>
-        <p className="truncate text-slate-700">{f.name}</p>
-        {f.unregistered && <p className="text-xs text-amber-700">No inscrito en el RIT</p>}
+        <p className="truncate text-fg">{f.name}</p>
+        {f.unregistered && <p className="text-xs text-warning-fg">No inscrito en el RIT</p>}
       </>
     ),
   }),
   col.accessor((f) => f.document, {
     id: 'idDocument',
     header: 'Documento',
-    meta: { classes: 'whitespace-nowrap tabular-nums text-slate-700' },
+    meta: { classes: 'whitespace-nowrap tabular-nums text-fg' },
   }),
   col.accessor((f) => `${f.d.tax}-${f.d.fiscalYear}-${f.d.period}`, {
     id: 'period',
@@ -123,8 +123,8 @@ export const COLUMNS = col.columns([
       },
     }) => (
       <>
-        <p className="text-slate-900">{taxLabel[d.tax]}</p>
-        <p className="text-xs text-slate-500">{periodLabel(d)}</p>
+        <p className="text-fg-strong">{taxLabel[d.tax]}</p>
+        <p className="text-xs text-fg-muted">{periodLabel(d)}</p>
       </>
     ),
   }),
@@ -138,19 +138,19 @@ export const COLUMNS = col.columns([
       },
     }) => (
       <>
-        <p className="text-slate-700">{formatDate(d.filingDate)}</p>
+        <p className="text-fg">{formatDate(d.filingDate)}</p>
         {/* Solo la inicial es extemporánea: la corrección se presenta después del vencimiento sin serlo. */}
         {d.kind === 'initial' && d.filingDate > d.dueDate && (
-          <p className="text-xs text-amber-700">Extemporánea</p>
+          <p className="text-xs text-warning-fg">Extemporánea</p>
         )}
-        {withoutCalendar && <p className="text-xs text-amber-700">Sin calendario cargado</p>}
+        {withoutCalendar && <p className="text-xs text-warning-fg">Sin calendario cargado</p>}
       </>
     ),
   }),
   col.accessor((f) => f.d.totalToPay, {
     id: 'total',
     header: 'Total a pagar',
-    meta: { align: 'right', classes: 'whitespace-nowrap tabular-nums text-slate-900' },
+    meta: { align: 'right', classes: 'whitespace-nowrap tabular-nums text-fg-strong' },
     cell: ({ getValue }) => formatPesos(getValue()),
   }),
   col.accessor((f) => (f.payment ? paymentStatusLabel[f.payment] : ''), {
@@ -161,7 +161,7 @@ export const COLUMNS = col.columns([
       f.payment ? (
         <Badge tone={paymentTone[f.payment]}>{paymentStatusLabel[f.payment]}</Badge>
       ) : (
-        <span className="text-slate-400">No aplica</span>
+        <span className="text-fg-subtle">No aplica</span>
       ),
   }),
 ])
@@ -181,15 +181,19 @@ export const APPROVAL_COLUMN = col.accessor(
         <>
           <Badge tone={approvalTone[a.status]}>{approvalStatusLabel[a.status]}</Badge>
           {awaitsApproval(a) && (
-            <p className="mt-1 whitespace-nowrap text-xs text-slate-500">
+            <p className="mt-1 whitespace-nowrap text-xs text-fg-muted">
               Plazo: {formatDate(a.limit)}
             </p>
           )}
         </>
       ) : (
-        <span className="text-slate-400">No aplica</span>
+        <span className="text-fg-subtle">No aplica</span>
       ),
   },
 )
 
 export const INITIAL_ORDER = [{ id: 'filing', desc: true }]
+
+/** Qué queda fuera de la suma del pie, para que no cuente dos veces el mismo periodo. */
+export const SUMMARY_NOTE =
+  'Sin las solicitudes de corrección sin aceptar ni las declaraciones que reemplazó una corrección.'
