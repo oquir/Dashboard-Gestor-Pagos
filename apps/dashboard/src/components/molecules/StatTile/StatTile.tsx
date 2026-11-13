@@ -15,11 +15,11 @@ export default function StatTile({
         {icon && <span className={isPositive ? 'text-secondary' : 'text-fg-subtle'}>{icon}</span>}
       </div>
       <p
-        className={`mt-2 text-3xl font-semibold ${isPositive ? 'text-secondary-fg' : 'text-fg-strong'}`}
+        className={`text-3xl self-center font-semibold ${isPositive ? 'text-secondary-fg' : 'text-fg-strong'}`}
       >
         {value}
       </p>
-      {detail && <div className="mt-1 text-sm text-fg-muted">{detail}</div>}
+      {detail && <div className="text-sm text-fg-muted">{detail}</div>}
     </Card>
   )
 }
