@@ -29,8 +29,8 @@ export default function AnnualCollection({ currentYear }: AnnualCollectionProps)
     () => visibleTaxes(municipalities, municipalityId),
     [municipalities, municipalityId],
   )
-  /** El año en curso y los tres anteriores. */
-  const years = [currentYear, currentYear - 1, currentYear - 2, currentYear - 3]
+  /** Los tres años anteriores y el año en curso, de menor a mayor. */
+  const years = [currentYear - 3, currentYear - 2, currentYear - 1, currentYear]
 
   const months = useMemo(() => {
     const rows: CollectionRow[] = MONTHS.map((label) => ({
