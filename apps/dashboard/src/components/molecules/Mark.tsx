@@ -18,8 +18,15 @@ export default function Mark({ collapsed, onCollapse, onExpand }: MarkProps) {
   )
   if (collapsed) {
     return (
-      <div className="flex items-center px-3 py-5" title="Doble clic para mostrar el menú" onDoubleClick={onExpand}>
+      <div className="group relative flex items-center px-3 py-5" onDoubleClick={onExpand}>
         {logo}
+        <button type="button" aria-label="Mostrar el menú" title="Mostrar el menú" onClick={onExpand} className="absolute inset-0 z-10 hidden items-center justify-center bg-white group-hover:flex" >
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M11.6801 14.62L14.2401 12.06L11.6801 9.5" stroke="#606060" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M4 12.0601H14.17" stroke="#606060" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M12 4C16.42 4 20 7 20 12C20 17 16.42 20 12 20" stroke="#606060" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </button>
       </div>
     )
   }
