@@ -15,6 +15,7 @@ export default function CollectionChart({
   rows,
   taxes = ALL,
   controls,
+  footer,
 }: CollectionChartProps) {
   const series = useMemo(() => SERIES.filter((s) => taxes.includes(s.tax)), [taxes])
   const columns = useMemo(() => tableColumns(series), [series])
@@ -135,6 +136,7 @@ export default function CollectionChart({
             </div>
           </div>
         )}
+        {footer && <div className="mt-4 flex justify-center">{footer}</div>}
       </div>
     </Card>
   )

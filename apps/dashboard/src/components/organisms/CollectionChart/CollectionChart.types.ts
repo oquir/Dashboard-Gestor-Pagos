@@ -18,6 +18,8 @@ export interface CollectionChartProps {
   rows: CollectionRow[]
   /** Impuestos que se muestran como series; por defecto, los tres. */
   taxes?: Tax[]
-  /** Controles extra del encabezado, como el selector de año. */
+  /** Controles extra del encabezado, como la periodicidad. */
   controls?: ReactNode
+  /** Controles debajo de la gráfica, como el selector de año. */
+  footer?: ReactNode
 }

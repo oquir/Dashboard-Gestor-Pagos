@@ -84,22 +84,22 @@ export default function AnnualCollection({ currentYear }: AnnualCollectionProps)
       rows={rows}
       taxes={visible}
       controls={
-        <>
-          <SegmentedControl
-            label="Periodicidad"
-            compact
-            options={VIEWS}
-            value={view}
-            change={setView}
-          />
-          <SegmentedControl
-            label="Año"
-            compact
-            options={years.map((a) => ({ value: a, text: String(a) }))}
-            value={year}
-            change={setYear}
-          />
-        </>
+        <SegmentedControl
+          label="Periodicidad"
+          compact
+          options={VIEWS}
+          value={view}
+          change={setView}
+        />
+      }
+      footer={
+        <SegmentedControl
+          label="Año"
+          compact
+          options={years.map((a) => ({ value: a, text: String(a) }))}
+          value={year}
+          change={setYear}
+        />
       }
     />
   )
