@@ -372,6 +372,16 @@ function accountingData(
   }
 }
 
+/**
+ * Azar propio de las inscripciones de 2026 y de las fechas de las declaraciones, para no cambiar el resto de los datos.
+ * generateData lo reinicia, para que cada vez salgan los mismos datos.
+ */
+let randomRecent = createRandom(2026)
+/** Inscripciones de 2026 que van: cada una cae en el mes siguiente, de enero a octubre. */
+let recentRegistrations = 0
+const inMonth = (year: number, month: number, day: number) =>
+  `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+
 function generateRegistration(az: Random, municipalityId: string, n: number): Registration {
   const id = `${municipalityId}-i${n}`
   const r = az.num()
@@ -389,10 +399,22 @@ function generateRegistration(az: Random, municipalityId: string, n: number): Re
   const e = az.num()
   const status: RegistrationStatus =
     e < 0.78 ? 'active' : e < 0.9 ? 'under_review' : e < 0.95 ? 'rejected' : 'cancelled'
-  const startDate =
+  const drawnStart =
     status === 'under_review'
       ? randomDate(az, '2026-07-01', '2026-10-15')
       : randomDate(az, '2008-01-01', '2024-06-30')
+  // La mitad de las activas y rechazadas se inscribieron en 2026, una por mes en orden, para que haya inscripciones
+  // todos los meses del año hasta la fecha de la demo.
+  const recentRegistration =
+    (status === 'active' || status === 'rejected') && randomRecent.prob(0.5)
+      ? smaller(
+          inMonth(2026, (recentRegistrations++ % 10) + 1, randomRecent.integer(1, 28)),
+          '2026-10-15',
+        )
+      : undefined
+  const startDate = recentRegistration
+    ? addDays(recentRegistration, -randomRecent.integer(5, 120))
+    : drawnStart
 
   const options = isNatural ? ACTIVITIES.filter((a) => a.sector !== 'financial') : ACTIVITIES
   const main = az.pick(options)
@@ -426,7 +448,8 @@ function generateRegistration(az: Random, municipalityId: string, n: number): Re
   )
   const reviewer = fullName(az.pick(reviewers))
   // Hasta 4 meses: con plazos de 2 y 3 meses, algunas de las recientes llegan tarde.
-  const registrationDate = addDays(startDate, az.integer(5, 120))
+  const drawnDelay = az.integer(5, 120)
+  const registrationDate = recentRegistration ?? addDays(startDate, drawnDelay)
   const ritChanges: RitChange[] = []
   const ritChange = (data: Omit<RitChange, 'id' | 'supports'>) =>
     ritChanges.push({ id: `${id}-n${ritChanges.length + 1}`, supports: [], ...data })
@@ -470,14 +493,17 @@ function generateRegistration(az: Random, municipalityId: string, n: number): Re
     if (az.prob(0.3)) {
       const date = randomDate(az, addDays(registrationDate, 90), '2026-01-31')
       const reasons = UPDATE_REASONS.filter((m) => !isNatural || !m.notForNaturalPersons)
-      ritChange({
-        kind: 'update',
-        date,
-        description: az.pick(reasons).reason,
-        status: 'approved',
-        reviewedBy: reviewer,
-        reviewDate: addDays(date, 5),
-      })
+      const reason = az.pick(reasons).reason
+      // Las inscritas en 2026 no alcanzan a tener una actualización antes de febrero.
+      if (!recentRegistration)
+        ritChange({
+          kind: 'update',
+          date,
+          description: reason,
+          status: 'approved',
+          reviewedBy: reviewer,
+          reviewDate: addDays(date, 5),
+        })
     }
     if (status === 'cancelled') {
       const date = randomDate(az, '2026-02-01', '2026-08-31')
@@ -1322,6 +1348,10 @@ export function generateData(): Data {
   /** Los ICA 2025 iniciales, para volver a liquidarlos en sus correcciones a la baja. Guardarlos no usa el azar. */
   const toCorrect = new Map<string, ToCorrect>()
   let sequence = 1
+  randomRecent = createRandom(2026)
+  recentRegistrations = 0
+  /** Cuántas declaraciones se han presentado tarde a propósito: cada una cae en el mes siguiente, hasta octubre. */
+  let lateFilings = 0
 
   // Con `registrar` en falso sortea el medio igual, pero no deja el pago: así no cambia el resto de los datos.
   const addPayment = (
@@ -1373,9 +1403,37 @@ export function generateData(): Data {
       // ICA anual, año gravable 2025.
       if (reg.status === 'active' && canFileIca && az.prob(0.9)) {
         const dueDateItem = icaDueDate(cfg, 2025, reg.document)
-        const daysLate = az.prob(0.12) ? az.integer(5, 120) : 0
+        const drawnLate = az.prob(0.12) ? az.integer(5, 120) : 0
+        const drawnEarly = drawnLate > 0 ? 0 : az.integer(1, 60)
+        // Con su propio azar se reparten más: unas desde enero y otras tarde, hasta la fecha de la demo, para que
+        // haya declaraciones todos los meses.
+        const spread = randomRecent.num()
+        const dueMonth = Number(dueDateItem.slice(5, 7))
+        const lateMonths = 10 - dueMonth
+        const lateDate =
+          spread < 0.25 && dueDateItem.startsWith('2026') && lateMonths > 0
+            ? smaller(
+                inMonth(
+                  2026,
+                  dueMonth + 1 + (lateFilings++ % lateMonths),
+                  randomRecent.integer(1, 28),
+                ),
+                DEMO_DATE,
+              )
+            : undefined
+        const daysLate = lateDate
+          ? dayDifference(dueDateItem, lateDate)
+          : Math.min(drawnLate, dayDifference(dueDateItem, DEMO_DATE))
+        const early = addDays(
+          dueDateItem,
+          -(spread > 0.7 ? randomRecent.integer(61, 120) : drawnEarly),
+        )
         const filing =
-          daysLate > 0 ? addDays(dueDateItem, daysLate) : addDays(dueDateItem, -az.integer(1, 60))
+          daysLate > 0
+            ? addDays(dueDateItem, daysLate)
+            : early < '2026-01-02'
+              ? '2026-01-02'
+              : early
         const pattern = az.prob(0.8) ? 'total' : az.prob(0.6) ? 'partial' : 'none'
         // Solo conserva el descuento quien paga todo y está a paz y salvo; el porcentaje sale del tramo de la fecha de pago.
         const discount =
