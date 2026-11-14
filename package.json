@@ -14,6 +14,9 @@
     "dev:dashboard": "pnpm --filter dashboard-gestor-pagos dev",
     "dev:formularios": "pnpm --filter form-orchestrator dev",
     "build": "pnpm --recursive build",
+    "preview": "pnpm --recursive --parallel preview",
+    "preview:dashboard": "pnpm --filter dashboard-gestor-pagos preview",
+    "preview:formularios": "pnpm --filter form-orchestrator preview",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint --fix . && prettier --write .",
     "format": "prettier --write ."

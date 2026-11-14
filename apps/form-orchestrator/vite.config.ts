@@ -7,4 +7,6 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   // Puerto fijo: el dashboard enlaza al orquestador, y sin esto se repartirían los puertos al azar.
   server: { port: 5174, strictPort: true },
+  // El preview usa el mismo puerto que dev, que es el que enlaza el dashboard.
+  preview: { port: 5174, strictPort: true },
 })

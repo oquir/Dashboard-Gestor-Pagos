@@ -17,6 +17,9 @@ pnpm dev                # arranca las dos a la vez (dashboard en :5173, orquesta
 pnpm dev:dashboard      # solo el dashboard
 pnpm dev:formularios    # solo el orquestador
 pnpm build              # compila las dos
+pnpm preview            # sirve lo compilado de las dos (mismos puertos que dev)
+pnpm preview:dashboard  # solo el dashboard compilado
+pnpm preview:formularios # solo el orquestador compilado
 pnpm lint               # ESLint + chequeo de Prettier en las dos apps
 pnpm lint:fix           # ESLint con --fix + Prettier --write
 pnpm format             # Prettier --write
