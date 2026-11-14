@@ -26,3 +26,5 @@ dist-ssr
 # Claude Code (configuración local de cada máquina)
 .claude/settings.local.json
 skills-lock.json
+**/.claude/skills
+.agents
