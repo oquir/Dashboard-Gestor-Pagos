@@ -26,7 +26,7 @@ export function JsonPreviewCanvas() {
     <div className="flex min-h-[70vh] flex-col gap-3 rounded-lg border-2 border-dashed border-slate-300 bg-white p-4 dark:border-neutral-700 dark:bg-neutral-900">
       <div className="flex items-center justify-between">
         <p className="text-xs text-slate-400 dark:text-neutral-500">
-          Se actualiza en vivo con cada cambio del formulario.
+          Se actualiza en vivo con cada cambio del formulario. Ctrl+F busca en todo el JSON.
         </p>
         <button
           type="button"
@@ -47,7 +47,11 @@ export function JsonPreviewCanvas() {
         </button>
       </div>
 
-      <JsonCode json={json} className="flex-1 rounded-md bg-slate-100 p-3 dark:bg-neutral-950" />
+      <JsonCode
+        json={json}
+        captureFind
+        className="flex-1 rounded-md bg-slate-100 p-3 dark:bg-neutral-950"
+      />
     </div>
   )
 }

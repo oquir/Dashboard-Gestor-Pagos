@@ -7,6 +7,7 @@ import {
   CANVAS_TOOLBAR_ICON_ACTION_CLASSES,
 } from '../../../constants/uiClasses'
 import { useFormHistory } from '../../../hooks/useFormHistory/useFormHistory'
+import { revealScrollBehavior } from '../../../lib'
 import { getBandElement, getRowElement } from '../../../lib/canvasDom/canvasDom'
 import { getActiveGroups, getActiveRows, useFormStore } from '../../../store/formStore'
 import type { CanvasRow, RepeatableGroup } from '../../../types/formStructure'
@@ -47,7 +48,11 @@ export function CanvasToolbar() {
         ? getRowElement(pendingReveal.id)
         : getBandElement(pendingReveal.id)
 
-    element?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+    element?.scrollIntoView({
+      block: 'nearest',
+      inline: 'nearest',
+      behavior: revealScrollBehavior(useFormStore.getState().isLowPerformance),
+    })
     // eslint-disable-next-line react-hooks/set-state-in-effect -- consume el reveal pendiente despues del commit
     setPendingReveal(null)
   }, [pendingReveal])

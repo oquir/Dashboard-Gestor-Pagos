@@ -48,7 +48,13 @@ import type { BurstGate, HistoryPastState, HistorySnapshot } from '../types/hist
 import type { CanvasTarget } from '../types/placement'
 import type { StateSlice } from '../types/store'
 import { createBanksSlice } from './banksSlice'
-import { NO_GROUPS, NO_ROWS, NO_SELECTION, THEME_STORAGE_KEY } from './formStore.constants'
+import {
+  NO_GROUPS,
+  NO_ROWS,
+  NO_SELECTION,
+  PERFORMANCE_STORAGE_KEY,
+  THEME_STORAGE_KEY,
+} from './formStore.constants'
 import {
   allFieldNames,
   allRows,
@@ -60,6 +66,7 @@ import {
   crossingNotice,
   findAnyField,
   getInitialDarkMode,
+  getInitialLowPerformance,
   mapFieldEverywhere,
   mapRowEverywhere,
   reconcileViewAfterHistory,
@@ -130,6 +137,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
   hoveredTransferTarget: null,
   transferNotice: null,
   isDarkMode: getInitialDarkMode(),
+  isLowPerformance: getInitialLowPerformance(),
   lastSavedAt: null,
   setDragPlacement: (placement) => set({ dragPlacement: placement }),
   setRowDropTarget: (target) => set({ rowDropTarget: target }),
@@ -159,6 +167,14 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
       const next = !state.isDarkMode
       window.localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light')
       return { isDarkMode: next }
+    }),
+  // Estado de vista como el tema: nunca entra al borrador, y por eso tampoco crea un paso de
+  // historial (sameDocument solo mira el documento).
+  toggleLowPerformance: () =>
+    set((state) => {
+      const next = !state.isLowPerformance
+      window.localStorage.setItem(PERFORMANCE_STORAGE_KEY, next ? 'low' : 'normal')
+      return { isLowPerformance: next }
     }),
   selectFieldAndEdit: (fieldId, tab) =>
     set({ selectedFieldIds: [fieldId], sidebarTab: tab, isSidebarOpen: true }),

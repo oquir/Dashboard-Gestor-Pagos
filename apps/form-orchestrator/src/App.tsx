@@ -5,6 +5,7 @@ import { SetupWizardModal } from './components/organisms'
 import { useAutosave } from './hooks'
 import { useDraftRecovery } from './hooks'
 import { useKeyboardShortcuts } from './hooks'
+import { usePerformanceClass } from './hooks'
 import { useThemeClass } from './hooks'
 import { useFormStore } from './store'
 import type { DraftRecovery } from './types'
@@ -14,6 +15,7 @@ function App() {
   const draftRecovery: DraftRecovery = useDraftRecovery()
 
   useThemeClass()
+  usePerformanceClass()
   useAutosave()
   useKeyboardShortcuts()
 

@@ -124,6 +124,44 @@ Settled:
 - **`[scrollbar-gutter:stable]` on `main`** — the root is sized from the port's width, so a vertical scrollbar that comes and goes would make that width oscillate against the `ResizeObserver`.
 - `contentRef` is a **callback ref kept in state**, and every observer and listener is keyed on the node: the document unmounts in the JSON/Payload views and has to be re-attached to the new node when it comes back.
 - The JSON and Payload views keep their plain `mx-auto max-w-5xl px-6 py-8` container — the free canvas is only for the canvas view.
+- **Entering JSON or Payload resets `main`'s scroll to the top** (`useViewModeScroll`, layout effect keyed on `canvasViewMode`). They share `main` with the free canvas, whose home leaves `scrollTop = panY` (half a port); without the reset those views opened that far down (reported by the user). Going back to the canvas needs nothing — it homes itself on mount.
+
+## Low-performance mode (`isLowPerformance`)
+
+A toggle for slow machines, asked for by the user (2026-11-13), built on the dark-mode mold: `isLowPerformance` in the store, its own `localStorage` key (`PERFORMANCE_STORAGE_KEY`, never in the draft or export), a `low-performance` class on `<html>` (`usePerformanceClass`), and a labelled switch at the **foot of the right panel** (`molecules/PerformanceModeSwitch/`, mounted by `RightSidebar` below its `flex-1` body, so it stays there under either tab). **With no stored choice it follows `prefers-reduced-motion`** (`getInitialLowPerformance`), which Chromium on Windows takes from the system's animation setting; the switch overrides it from then on.
+
+What it changes:
+
+- **CSS** (`index.css`): one rule sets every transition and animation duration and delay to `0s` under the class, `!important` so it also beats inline styles (the row-displacement transform transition). Safe because nothing waits on `transitionend`/`animationend` and there are no spinners. A `low-performance:` custom variant exists for one-offs — today only `filter-none` on the intro-modal's blurred decoration.
+  - **Zero duration, never `animation: none`.** The first version used `none`, and turning the mode off made the right panel slide in again, as if it reloaded (reported by the user): going from `none` back to `animate-right-panel-in` creates the animation anew and the browser replays it. With a zero duration the animation keeps existing; back at 220 ms it is long past its end and stays finished. Same for the collapsed chip.
+- **Wheel zoom coalesces to one apply per frame** (`useCanvasViewport`): deltas add up and `requestAnimationFrame` applies `wheelZoom` once with the sum. Off, the wheel is untouched — **the user's call: the normal mode was fine as it was**, the coalescing only belongs to this mode. `z(1−a)(1−b)` vs `z(1−a−b)` differ by a product of thousandths.
+- **A row drags as the compact chip**, not the `RowDragPreview` replica. `DragPreview` and `useDragAndDrop`'s `overlayModifiers` must share the condition, or the chip is drawn with the replica's offset instead of centered on the cursor.
+- **JS-requested smooth scrolls go instant** (`revealScrollBehavior`, `lib/performanceMode/`): CSS `scroll-behavior` doesn't override an explicit `behavior: 'smooth'`.
+
+Settled:
+
+- **The script editor is never swapped for the textarea fallback**, not even here (the user's call): colors and autocomplete stay. It was proposed and rejected.
+- **The switch lives in the right panel's foot, not in the left rail** — the rail was the first version; the user moved it. Its explanation is a line of text, not an `InfoHint`: that bubble opens downward and the aside's `overflow-hidden` would clip it at the foot. The collapsed chip doesn't carry it (the chip is Guardar/zoom/Simulador/Exportar only).
+- **No 10%-step wheel zoom** either: it was in the first proposal, but a trackpad pinch sends many small deltas and would hit the limits before the fingers lift (the reason `wheelZoom` is continuous). Coalescing alone caps the redraws.
+- Not a draft key and not history: toggling it never creates an undo step (`sameDocument` only looks at the document).
+
+## JSON view: virtual list and its own search (`JsonCode`)
+
+`JsonCode` (JSON view, Payload view, the simulator's result panels) paints **only the rows in view plus `JSON_ROW_OVERSCAN`**. The ICA template's JSON is ~2,200 lines; painting them all was ~12,500 DOM nodes rebuilt on every store change — the slowest view in the app, confirmed by the user. DOM side in `useJsonViewport` (range, reveal), state in `useJsonCode` (folding, search), pure parts in `lib/jsonCode` (`buildJsonSearchIndex`, `findJsonMatches`, `expandToLine`, `groupHighlightsByLine`, `longestRowLength`).
+
+Settled:
+
+- **Fixed row height** (`h-5` = `JSON_ROW_HEIGHT_PX`): the range is a division, nothing is measured. The list keeps the full height (`rows × 20 px`) and a top padding pushes the painted rows into place, so the native scroll and scrollbar are unchanged. Changing the row's height class means changing the constant.
+- **The range is computed against every clipping ancestor**, not a known scroller: in the canvas `main` scrolls and the list grows whole; in the simulator the box itself scrolls. Scroll is listened to on `document` in capture phase, so it catches whichever element moves.
+- **The list's `min-width` comes from the longest line in `ch`** (`longestRowLength`, folded suffix included) — measured on painted rows only, the horizontal scroll would change length while scrolling down.
+- **The box is not a scroll container** (overflow lives on the inner scroller) so the search bar's `sticky` anchors to `main`. The bar spans the box's full width (the user's call) and sits outside the list, so it doesn't scroll sideways with long lines. **It adapts with a container query (`@container` + `@xs:`), not screen breakpoints**: the same bar lives in the wide JSON view and in the simulator's narrow panel on a wide screen. Below `@xs` it drops the magnifier and shows `3/41` instead of `3 de 41`; the input (`min-w-0 flex-1`) is what shrinks, never the buttons.
+- **Ctrl+F opens the view's own search** because the browser's can't find unpainted rows (the user asked for it). The JSON and Payload views pass `captureFind` (they own the screen); the simulator's panel only takes Ctrl+F with the pointer or focus inside, so the form being filled next to it keeps the browser's.
+- **Search folds case and accents character by character** (`foldSearchText`): every folded char is one char, so positions map 1:1 back to the real text. A whole-string `normalize('NFD')` would split each accent and shift everything after it.
+- It searches the **whole JSON, collapsed parts included**; jumping to a hidden match opens its containers (`expandToLine`). The index is built only while the bar is open and rebuilt per JSON change (matches stay live, like the view).
+- A match can cross token segments (`"name": "` spans key, colon and value), so `renderTokens` cuts each segment's part separately; `<mark>` keys are the part's position.
+- **Reveal is two-step**: scroll the row to the middle by arithmetic (it may not be painted yet), then, once painted, `scrollIntoView` the current `<mark>` with `block: 'nearest'` for the horizontal part (compiled scripts make lines of 2,000+ chars). Each request carries a `token`, handled once — a live JSON change with the bar open doesn't jump the view again.
+- **The search input's ref travels outside the `search` object** (`searchInputRef`): inside it, the compiler's `react-hooks/refs` rule treats the whole object as a ref and rejects reading anything from it during render.
+- **Copy is unaffected** (it copies the full string). Mouse selection and the browser's find only reach painted rows — accepted.
 
 ## Canvas tools and floating toolbar (`canvasTool`, `CanvasToolbar`)
 
@@ -853,7 +891,7 @@ Both import cycles this shape produced are fixed the same way: implementation mo
   - `introModal.steps[]` — same minus `groups`.
   - `formScript` — the shared prelude.
   - `activeCanvas`: `{type: "formStep"|"introStep", stepId}`.
-  - UI state: `selectedFieldIds`, `canvasTool`, `isSidebarOpen`, `isRightSidebarOpen`, `sidebarTab`, `rightSidebarTab`, `canvasViewMode`, `canvasZoom`, `dragPlacement`, `rowDropTarget`, `rowDrag`, `draggingFieldId`, `hoveredTransferTarget`, `transferNotice`, `isDarkMode` (persisted separately), `lastSavedAt`.
+  - UI state: `selectedFieldIds`, `canvasTool`, `isSidebarOpen`, `isRightSidebarOpen`, `sidebarTab`, `rightSidebarTab`, `canvasViewMode`, `canvasZoom`, `dragPlacement`, `rowDropTarget`, `rowDrag`, `draggingFieldId`, `hoveredTransferTarget`, `transferNotice`, `isDarkMode` and `isLowPerformance` (each persisted separately), `lastSavedAt`.
   - `setupConfig` + the three banks (each own `localStorage` key, none in draft/export).
   - Selectors: `getActiveRows`, `getActiveGroups`, `getSelectedFieldId`, `findFieldById`, `getAllFields`, `findRowContainingField`, `findRowById`.
   - Row/field mutations apply uniformly via `mapRowEverywhere`/`mapFieldEverywhere`. Key actions: `addFieldToRow`, `moveField`, `removeFields`, `selectField`/`toggleFieldSelection`/`setFieldSelection`, `updateField`, `setFieldName`, `updateFieldValidations/Styles/FileConfig`, `updateFieldApiBinding`, `setFieldScript`, `setFormScript`, `setFieldRounding/Formatted/AllowsNegative/Decimals/LabelFor/Content`, `addFieldRule`/`updateFieldRule`/`removeFieldRule`/`reorderFieldRule`, `addFieldOption`/`removeFieldOption`/`updateFieldOptionLabel`, `setFieldEnableWhen`/`setFieldVisibleWhen`, `addRowToActiveCanvas`/`updateRowColumns`/`removeRow`/`moveRow`, `moveFieldsToStep`/`moveRowToStep`, `setCanvasTool`, `addGroupToActiveStep`/`addRowToGroup`/`updateGroup`/`removeGroup`, step actions, `restoreDraft`, `undo`/`redo`.

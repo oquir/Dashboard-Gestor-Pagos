@@ -22,7 +22,7 @@ import type { FormType } from '../types/setup'
 import type { StateSlice } from '../types/store'
 // Constructores, recorridos de todo el lienzo y arranque desde la plantilla.
 
-import { THEME_STORAGE_KEY } from './formStore.constants'
+import { PERFORMANCE_STORAGE_KEY, THEME_STORAGE_KEY } from './formStore.constants'
 
 // Vive aca y no en formStore.ts porque este archivo la necesita; formStore.ts la reexporta para
 // sus componentes de siempre, asi el ciclo de imports queda en un solo sentido.
@@ -111,6 +111,17 @@ export function getInitialDarkMode(): boolean {
   if (stored === 'light') return false
 
   return window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
+// Sin una eleccion guardada sigue a Windows: si ahi se apagaron las animaciones, el navegador lo
+// avisa con prefers-reduced-motion y la app arranca en bajo rendimiento. Despues manda el boton.
+export function getInitialLowPerformance(): boolean {
+  if (typeof window === 'undefined') return false
+  const stored = window.localStorage.getItem(PERFORMANCE_STORAGE_KEY)
+  if (stored === 'low') return true
+  if (stored === 'normal') return false
+
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 // Los tipos de formulario que no son industria y comercio arrancan en blanco: no hay plantilla,

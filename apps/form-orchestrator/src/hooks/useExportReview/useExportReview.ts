@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { getBandElement, getFieldElement, getRowElement } from '../../lib'
 import { downloadFormExport } from '../../lib'
 import { diagnoseForm } from '../../lib'
+import { revealScrollBehavior } from '../../lib'
 import { useFormStore } from '../../store'
 import type { FormProblem } from '../../types'
 import type { PendingReveal, UseExportReviewResult } from './useExportReview.types'
@@ -29,7 +30,11 @@ export function useExportReview(): UseExportReviewResult {
     if (pendingReveal.kind === 'field') element = getFieldElement(pendingReveal.id)
     if (pendingReveal.kind === 'row') element = getRowElement(pendingReveal.id)
 
-    element?.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' })
+    element?.scrollIntoView({
+      block: 'center',
+      inline: 'nearest',
+      behavior: revealScrollBehavior(useFormStore.getState().isLowPerformance),
+    })
     // eslint-disable-next-line react-hooks/set-state-in-effect -- consume el reveal pendiente despues del commit
     setPendingReveal(null)
   }, [pendingReveal])

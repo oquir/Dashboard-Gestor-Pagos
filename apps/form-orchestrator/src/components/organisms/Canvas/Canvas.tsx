@@ -1,5 +1,5 @@
 import { type PointerEvent, useState } from 'react'
-import { useCanvasViewport } from '../../../hooks'
+import { useCanvasViewport, useViewModeScroll } from '../../../hooks'
 import { getActiveGroups, getActiveRows, useFormStore } from '../../../store'
 import type { FieldContextMenuState } from '../../../types'
 import { CanvasRowsGrid } from '../CanvasRowsGrid'
@@ -18,6 +18,7 @@ export function Canvas() {
   const selectField = useFormStore((state) => state.selectField)
   const [contextMenu, setContextMenu] = useState<FieldContextMenuState | null>(null)
   const { contentRef, rootStyle, contentStyle } = useCanvasViewport()
+  useViewModeScroll(viewMode)
 
   const isIntro = activeCanvas.type === 'introStep'
 
@@ -68,7 +69,7 @@ export function Canvas() {
           <div className="relative flex min-h-[70vh] items-center justify-center overflow-hidden rounded-lg bg-slate-100 p-6 dark:bg-neutral-950">
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-5 select-none rounded-lg border-2 border-dashed border-slate-200 bg-white p-4 opacity-50 blur-[1.5px] dark:border-neutral-800 dark:bg-neutral-900"
+              className="pointer-events-none absolute inset-5 select-none rounded-lg border-2 border-dashed border-slate-200 bg-white p-4 opacity-50 blur-[1.5px] low-performance:filter-none dark:border-neutral-800 dark:bg-neutral-900"
             >
               <div className="flex flex-col gap-3">
                 <div className="h-9 w-1/3 rounded bg-slate-200 dark:bg-neutral-800" />

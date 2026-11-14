@@ -54,6 +54,9 @@ export interface FormState extends BanksSlice {
   sidebarTab: SidebarTab
   rightSidebarTab: RightSidebarTab
   isDarkMode: boolean
+  // Modo de bajo rendimiento: sin animaciones ni transiciones, la rueda del zoom redibuja una vez
+  // por cuadro y la fila se arrastra como una ficha. Ver usePerformanceClass.
+  isLowPerformance: boolean
   lastSavedAt: string | null
   dragPlacement: DragPlacement | null
   rowDropTarget: RowDropTarget | null
@@ -76,6 +79,7 @@ export interface FormState extends BanksSlice {
   setSidebarTab: (tab: SidebarTab) => void
   setRightSidebarTab: (tab: RightSidebarTab) => void
   toggleDarkMode: () => void
+  toggleLowPerformance: () => void
   markSaved: () => void
   selectFieldAndEdit: (fieldId: string, tab: SidebarTab) => void
   completeSetup: (config: {

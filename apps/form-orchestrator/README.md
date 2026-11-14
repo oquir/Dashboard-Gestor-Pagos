@@ -87,6 +87,27 @@ El lienzo va de **50% a 150%**. Se cambia con **Ctrl/Cmd+rueda** (continuo), con
 
 Solo escala el documento; los paneles, la barra flotante y el menú contextual se quedan a tamaño real. El ancla es el centro de la vista y no el cursor, porque el zoom también llega desde el teclado y el menú. No se guarda: al recargar vuelve a 100%.
 
+### Modo de bajo rendimiento
+
+Para equipos lentos. Se prende y se apaga con el interruptor **Bajo rendimiento**, al pie del panel derecho, y se guarda en el navegador como el tema. Sin una elección guardada sigue a Windows: si ahí están apagadas las animaciones, la app arranca con el modo prendido.
+
+Prendido:
+
+- **Sin animaciones ni transiciones** en toda la app (incluido el hueco que se abre al arrastrar una fila), y sin el desenfoque decorativo del modal de entrada.
+- **La rueda del zoom redibuja como mucho una vez por cuadro**: los eventos que llegan juntos se suman y el zoom se aplica una vez. Apagado, la rueda se comporta como siempre.
+- **Una fila se arrastra como una ficha** ("Fila · 3 campos") y no como la copia completa de la fila.
+- Los saltos de "Ir" en la revisión de exportar y de "+ Fila" no se deslizan: llegan directo.
+
+El editor de scripts no cambia: conserva los colores y el autocompletado en los dos modos.
+
+### Vista JSON: solo se pinta lo que se ve
+
+Las vistas **JSON** y **Payload** (y los paneles del simulador) pintan únicamente las líneas que están en pantalla, más un margen. Con la plantilla de ICA el JSON tiene unas 2.200 líneas, y pintarlas todas eran ~12.500 nodos que se rehacían con cada cambio del formulario; ahora son menos de 100. El scroll y su barra son los de siempre.
+
+Como el **Ctrl+F** del navegador no encuentra lo que no está pintado, la vista trae su propio buscador: **Ctrl+F** lo abre, **Enter / Shift+Enter** saltan a la siguiente / anterior y **Esc** lo cierra. Busca en el JSON entero, sin distinguir mayúsculas ni tildes ("ano" encuentra "Año"), también dentro de lo plegado, y saltar a una coincidencia escondida abre lo que la tapa. En el simulador solo se abre con el puntero o el foco sobre el panel, para no quitarle el Ctrl+F al formulario.
+
+El botón **Copiar** no cambia: copia el JSON completo, no lo que se ve. Seleccionar con el mouse, en cambio, solo alcanza las líneas pintadas.
+
 ### Deshacer y rehacer
 
 El historial guarda el documento junto con el paso activo y la selección de cada momento, así que deshacer vuelve a mostrar el cambio donde ocurrió: deshacer un "Mover a paso" devuelve los campos y también la vista al paso de origen.

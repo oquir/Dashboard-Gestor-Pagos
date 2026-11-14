@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
+/* Para lo puntual que el modo de bajo rendimiento quita y que no es una transicion ni una animacion
+   (el desenfoque decorativo del modal de entrada). Lo general va mas abajo, en una sola regla. */
+@custom-variant low-performance (&:where(.low-performance, .low-performance *));
 
 :root {
   --ui-surface: oklch(100% 0 0); /* white */
@@ -255,6 +258,24 @@
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
+}
+
+/* Modo de bajo rendimiento: la clase la pone usePerformanceClass en <html>. Deja en cero todas las
+   transiciones y animaciones, incluidas las de la fila que se abre paso al arrastrar y las que
+   llegan por style en linea (por eso el !important). Nada en la app espera un transitionend ni un
+   animationend, asi que cortarlas no deja a nadie esperando.
+
+   TRAMPA: duracion cero y no `animation: none`. Con none, al apagar el modo la animacion de entrada
+   del panel derecho (y la del chip plegado) volvia a existir y el navegador la arrancaba de nuevo:
+   el panel entraba deslizandose otra vez, como si se recargara. Con duracion cero la animacion
+   nunca deja de existir; al volver a 220ms ya va muy pasada de su final y no se repite. */
+.low-performance *,
+.low-performance *::before,
+.low-performance *::after {
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
 }
 
 @utility bg-dot-grid {

@@ -47,6 +47,7 @@ export function useDragAndDrop(): DragAndDropReturn {
   const setDraggingFieldId = useFormStore((state) => state.setDraggingFieldId)
   const setHoveredTransferTarget = useFormStore((state) => state.setHoveredTransferTarget)
   const hoveredTransferTarget = useFormStore((state) => state.hoveredTransferTarget)
+  const isLowPerformance = useFormStore((state) => state.isLowPerformance)
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null)
 
   // Todo esto va en refs y no en estado: se actualiza en cada movimiento del puntero y en cada
@@ -313,9 +314,10 @@ export function useDragAndDrop(): DragAndDropReturn {
     activeDrag,
     collisionDetection: pointerFirstCollision,
     // Sobre una pestana la previsualizacion se encoge a una ficha, y una ficha si se centra en el
-    // cursor: asi queda pegada al puntero en vez de flotando donde estaba el borde de la fila.
+    // cursor: asi queda pegada al puntero en vez de flotando donde estaba el borde de la fila. En
+    // bajo rendimiento es ficha todo el viaje (ver DragPreview), asi que tambien va centrada.
     overlayModifiers:
-      activeDrag?.source === 'canvas-row' && !hoveredTransferTarget
+      activeDrag?.source === 'canvas-row' && !hoveredTransferTarget && !isLowPerformance
         ? ROW_OVERLAY_MODIFIERS
         : OVERLAY_MODIFIERS,
     handleDragStart,

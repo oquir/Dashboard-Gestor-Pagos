@@ -10,3 +10,6 @@ export const NO_GROUPS: RepeatableGroup[] = []
 // al arreglo, y un [] nuevo en cada limpieza redibujaria todas las filas sin que nada cambie.
 export const NO_SELECTION: string[] = []
 export const THEME_STORAGE_KEY: string = 'form-orchestrator-theme'
+// Aparte del borrador, igual que el tema: es una preferencia del equipo donde se trabaja, no del
+// formulario.
+export const PERFORMANCE_STORAGE_KEY: string = 'form-orchestrator-performance'

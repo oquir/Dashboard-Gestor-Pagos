@@ -89,20 +89,47 @@ export function useCanvasViewport(): CanvasViewportReturn {
   // quiere acercar es el lienzo, no el cromo. Se escucha en el puerto y no en el documento para que
   // el gesto funcione tambien sobre el margen. El zoom se lee con getState para no volver a montar
   // el listener en cada rueda.
+  //
+  // En bajo rendimiento la rueda se junta: cada evento suma su delta y el zoom se aplica una sola vez
+  // por cuadro, con el total. Cada zoom redibuja el lienzo entero, y un trackpad manda varios eventos
+  // por cuadro; en un equipo lento eso encola redibujados que llegan tarde. Con la suma el resultado
+  // es practicamente el mismo -z(1 - a)(1 - b) contra z(1 - a - b), con a y b de milesimas- y si el
+  // equipo tarda en pintar, los eventos de ese rato se juntan solos en el siguiente cuadro.
   useEffect(() => {
     if (!port) return
+
+    let pendingDelta: number = 0
+    let frame: number | null = null
+
+    function applyPendingZoom(): void {
+      frame = null
+      const delta: number = pendingDelta
+      pendingDelta = 0
+
+      const state = useFormStore.getState()
+      state.setCanvasZoom(wheelZoom(state.canvasZoom, delta))
+    }
 
     function handleWheel(event: WheelEvent): void {
       if (!event.ctrlKey && !event.metaKey) return
       event.preventDefault()
 
       const state = useFormStore.getState()
-      state.setCanvasZoom(wheelZoom(state.canvasZoom, event.deltaY))
+      if (!state.isLowPerformance) {
+        state.setCanvasZoom(wheelZoom(state.canvasZoom, event.deltaY))
+        return
+      }
+
+      pendingDelta += event.deltaY
+      if (frame === null) frame = requestAnimationFrame(applyPendingZoom)
     }
 
     port.addEventListener('wheel', handleWheel, { passive: false })
 
-    return () => port.removeEventListener('wheel', handleWheel)
+    return () => {
+      port.removeEventListener('wheel', handleWheel)
+      if (frame !== null) cancelAnimationFrame(frame)
+    }
   }, [port])
 
   // Se mide con los rects de ANTES del cambio: en el momento de calcularlo el DOM todavia no tiene el
