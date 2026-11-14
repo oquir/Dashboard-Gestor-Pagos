@@ -16,7 +16,8 @@ export default function Navigation({ onPick, collapsed, onExpand }: NavigationPr
   )
 
   return (
-    <nav className="flex flex-1 flex-col gap-1 p-3">
+    // min-h-0 y overflow-y-auto: si la pantalla es baja, las opciones se desplazan dentro del menú en vez de cortarse.
+    <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3">
       {links.map(({ a, text, icon: IconComponent }) => (
         <Tooltip key={a} content={text} placement="right">
           <NavLink

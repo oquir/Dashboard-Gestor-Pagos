@@ -26,9 +26,10 @@ export default function Layout() {
 
   return (
     <div className="min-h-screen lg:flex">
-      {/* El ancho se anima; overflow-hidden y whitespace-nowrap evitan que el texto salte de línea mientras cambia. */}
+      {/* El ancho se anima; overflow-hidden y whitespace-nowrap evitan que el texto salte de línea mientras cambia.
+          Va fijo a la altura de la pantalla (sticky) para que no se vaya con el scroll de la página. */}
       <aside
-        className={`hidden shrink-0 flex-col overflow-hidden whitespace-nowrap border-r border-slate-200 bg-white transition-[width] duration-300 ease-in-out lg:flex ${
+        className={`hidden shrink-0 flex-col overflow-hidden whitespace-nowrap border-r border-slate-200 bg-white transition-[width] duration-300 ease-in-out lg:sticky lg:top-0 lg:flex lg:h-screen lg:self-start ${
           collapsed ? 'w-17' : 'w-64'
         }`}
       >
