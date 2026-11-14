@@ -3,7 +3,7 @@ import { withDate, withFrequency, withByDigit, frequencyLabel } from '../../../.
 import type { Frequency } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Notice, Field, Toggle } from '../../../molecules'
-import { WITHHOLDING_FREQUENCIES } from './DueDatesTable.constants'
+import { FREQUENCY_INFO, WITHHOLDING_FREQUENCIES } from './DueDatesTable.constants'
 import type { DueDatesTableProps } from './DueDatesTable.types'
 
 /**
@@ -30,7 +30,11 @@ export default function DueDatesTable({
           <p className="text-xs text-fg-muted">{description}</p>
         </div>
         {value.frequency !== 'annual' && (
-          <Field label="Periodicidad" help="Al cambiarla, las fechas quedan vacías.">
+          <Field
+            label="Periodicidad"
+            help="Al cambiarla, las fechas quedan vacías."
+            info={FREQUENCY_INFO}
+          >
             <Select
               disabled={!editable}
               value={value.frequency}

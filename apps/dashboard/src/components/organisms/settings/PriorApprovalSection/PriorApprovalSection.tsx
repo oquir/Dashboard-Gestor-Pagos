@@ -2,6 +2,7 @@ import { number, taxLabel } from '../../../../lib'
 import type { MunicipalityConfig } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Field, Section } from '../../../molecules'
+import { PRIOR_APPROVAL_INFO } from './PriorApprovalSection.constants'
 import type { PriorApprovalSectionProps } from './PriorApprovalSection.types'
 
 /** Plazos de la aprobación previa en los formularios donde 1cero1 la activó. */
@@ -36,7 +37,7 @@ export default function PriorApprovalSection({
           }
         />
       </Field>
-      <Field label="Si se vence el plazo sin revisión">
+      <Field label="Si se vence el plazo sin revisión" info={PRIOR_APPROVAL_INFO.onDue}>
         <Select
           disabled={!editable}
           value={approval.onDue}

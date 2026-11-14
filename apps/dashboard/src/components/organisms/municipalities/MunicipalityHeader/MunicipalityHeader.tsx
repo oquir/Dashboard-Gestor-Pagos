@@ -43,7 +43,10 @@ export default function MunicipalityHeader({
         </p>
       )}
       <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-border-subtle pt-4 sm:grid-cols-4">
-        <Figure label="Inscripciones activas">
+        <Figure
+          label="Inscripciones activas"
+          info="Inscritos en el RIT que no han cancelado su inscripción."
+        >
           {m.rit ? (
             c.activeItems
           ) : (

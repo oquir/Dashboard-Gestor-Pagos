@@ -1,13 +1,13 @@
 import { Plus, Xmark } from 'reicon-react'
 import { useState } from 'react'
-import { ONGOING_YEAR } from '../../../../constants'
+import { FISCAL_YEAR_INFO, ONGOING_YEAR } from '../../../../constants'
 import { newCalendar, taxLabel, formatDate, TAXES } from '../../../../lib'
 import { useData } from '../../../../store'
 import type { FiscalYearCalendar } from '../../../../types'
 import { Button, Input, Select } from '../../../atoms'
 import { Notice, Field, Section } from '../../../molecules'
 import DueDatesTable from '../DueDatesTable'
-import { FORM_DESCRIPTION } from './CalendarSection.constants'
+import { DECREE_INFO, FORM_DESCRIPTION } from './CalendarSection.constants'
 import type { CalendarSectionProps } from './CalendarSection.types'
 import {
   yearsToAdd,
@@ -72,7 +72,7 @@ export default function CalendarSection({
         <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
           <div className="flex flex-wrap items-end gap-3">
             {fiscalYear !== undefined && (
-              <Field label="Año gravable">
+              <Field label="Año gravable" info={FISCAL_YEAR_INFO}>
                 <Select
                   value={fiscalYear}
                   onChange={(e) => {
@@ -126,6 +126,7 @@ export default function CalendarSection({
             <Field
               label="Acto que fija el calendario"
               help={`Decreto o resolución del municipio para el año gravable ${fiscalYear}.`}
+              info={DECREE_INFO}
             >
               <Input
                 value={cal.decree ?? ''}

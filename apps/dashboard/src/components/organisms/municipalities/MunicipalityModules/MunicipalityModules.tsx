@@ -3,6 +3,7 @@ import { goLiveText } from '../../../../lib'
 import { useData } from '../../../../store'
 import { DisabledBadge, Toggle, Section } from '../../../molecules'
 import GoLiveModal from '../GoLiveModal'
+import { MODULE_INFO } from './MunicipalityModules.constants'
 import type { MunicipalityModulesProps } from './MunicipalityModules.types'
 
 /**
@@ -24,6 +25,7 @@ export default function MunicipalityModules({ municipality: m, pausas }: Municip
         <Toggle
           label="RIT en el aplicativo"
           help={`Inscripciones, actualizaciones y cancelaciones. ${goLiveText(m.inProductionSince.rit)}.`}
+          info={MODULE_INFO.rit}
           value={m.rit}
           onChange={() =>
             !m.rit && !m.inProductionSince.rit ? setRequesting(true) : toggleRit(m.id)
@@ -38,6 +40,7 @@ export default function MunicipalityModules({ municipality: m, pausas }: Municip
       <Toggle
         label="Carga de Asobancaria 2001"
         help="El municipio carga el recaudo de los pagos con código de barras, que el banco no notifica."
+        info={MODULE_INFO.asobancariaUpload}
         value={m.asobancariaUpload}
         onChange={() => toggleAsobancariaUpload(m.id)}
       />

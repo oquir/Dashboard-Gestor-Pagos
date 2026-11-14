@@ -1,6 +1,6 @@
 import { Plus, Xmark } from 'reicon-react'
 import { useState } from 'react'
-import { ONGOING_YEAR } from '../../../../constants'
+import { FISCAL_YEAR_INFO, ONGOING_YEAR } from '../../../../constants'
 import { number, newTier } from '../../../../lib'
 import type { SettingsEdit, EarlyPaymentTier } from '../../../../types'
 import { shiftYears } from '../../../../utils'
@@ -86,7 +86,7 @@ export default function EarlyPaymentSection({ b, change, editable, errors }: Set
         <div className="space-y-4 sm:col-span-2">
           <div className="flex flex-wrap items-end gap-3">
             {fiscalYear !== undefined && (
-              <Field label="Año gravable">
+              <Field label="Año gravable" info={FISCAL_YEAR_INFO}>
                 <Select value={fiscalYear} onChange={(e) => setPicked(Number(e.target.value))}>
                   {fiscalYears.map((v) => (
                     <option key={v} value={v}>

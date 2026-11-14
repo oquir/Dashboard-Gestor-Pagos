@@ -5,9 +5,9 @@ import { taxLabel, goLiveText, can, useSession, TAXES } from '../../../../lib'
 import { useData } from '../../../../store'
 import type { Tax } from '../../../../types'
 import { Card, Switch } from '../../../atoms'
-import { CardHeader, DisabledBadge } from '../../../molecules'
+import { CardHeader, DisabledBadge, InfoTip, Tooltip } from '../../../molecules'
 import GoLiveModal from '../GoLiveModal'
-import { GROUPS, LEGEND } from './MunicipalityForms.constants'
+import { COLUMN_INFO, GROUPS } from './MunicipalityForms.constants'
 import type { MunicipalityFormsProps, FormOption } from './MunicipalityForms.types'
 
 /**
@@ -31,6 +31,7 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
   // Sin el RIT en el aplicativo no hay contra qué validar.
   const checked = (key: FormOption, i: Tax) =>
     key === 'validateAgainstRit' ? m.rit && m.validateAgainstRit[i] : m[key][i]
+  const needsRit = (key: FormOption) => key === 'validateAgainstRit' && !m.rit
 
   return (
     <Card>
@@ -50,7 +51,10 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                 scope="col"
                 className="px-3 py-2 text-center align-bottom font-medium"
               >
-                Gestiona
+                <span className="inline-flex items-center gap-1">
+                  Gestiona
+                  <InfoTip label="Gestiona" content={COLUMN_INFO.manages} placement="bottom" />
+                </span>
               </th>
               {GROUPS.map((g) => (
                 <th
@@ -71,7 +75,10 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                     scope="col"
                     className={`px-3 pt-1 pb-2 text-center font-normal ${j === 0 ? 'border-l border-border' : ''}`}
                   >
-                    {o.text}
+                    <span className="inline-flex items-center gap-1">
+                      {o.text}
+                      <InfoTip label={o.text} content={COLUMN_INFO[o.key]} placement="bottom" />
+                    </span>
                   </th>
                 )),
               )}
@@ -127,17 +134,25 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                         className={`px-3 py-3 text-center align-top ${j === 0 ? 'border-l border-border-subtle' : ''}`}
                       >
                         {manages ? (
-                          <Switch
-                            checked={checked(o.key, i)}
-                            disabled={o.key === 'validateAgainstRit' && !m.rit}
-                            title={
-                              o.key === 'validateAgainstRit' && !m.rit
-                                ? 'Requiere el RIT en el aplicativo'
-                                : undefined
-                            }
-                            aria-label={`${o.text} en ${taxLabel[i]}`}
-                            onChange={() => toggle[o.key](m.id, i)}
-                          />
+                          needsRit(o.key) ? (
+                            // Un control deshabilitado no recibe eventos: el globo va en un span que sí se enfoca.
+                            <Tooltip content="Requiere el RIT en el aplicativo">
+                              <span tabIndex={0} className="inline-flex">
+                                <Switch
+                                  checked={false}
+                                  disabled
+                                  aria-label={`${o.text} en ${taxLabel[i]}`}
+                                  onChange={() => undefined}
+                                />
+                              </span>
+                            </Tooltip>
+                          ) : (
+                            <Switch
+                              checked={checked(o.key, i)}
+                              aria-label={`${o.text} en ${taxLabel[i]}`}
+                              onChange={() => toggle[o.key](m.id, i)}
+                            />
+                          )
                         ) : (
                           <span className="text-fg-subtle">
                             <span aria-hidden>—</span>
@@ -155,14 +170,6 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
           </tbody>
         </table>
       </div>
-      <dl className="grid gap-x-6 gap-y-3 border-t border-border-subtle p-5 text-xs sm:grid-cols-2">
-        {LEGEND.map((l) => (
-          <div key={l.searchTerm}>
-            <dt className="font-medium text-fg">{l.searchTerm}</dt>
-            <dd className="text-fg-muted">{l.definition}</dd>
-          </div>
-        ))}
-      </dl>
 
       {requesting && (
         <GoLiveModal

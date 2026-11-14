@@ -2,6 +2,7 @@ import { number } from '../../../../lib'
 import type { MunicipalityConfig } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Field, Toggle, Section } from '../../../molecules'
+import { PROCEDURE_INFO } from './ProcedureSection.constants'
 import type { ProcedureSectionProps } from './ProcedureSection.types'
 
 /** Corrección a la baja y, si el municipio tiene el RIT en el aplicativo, sus plazos y su cancelación. */
@@ -10,7 +11,8 @@ export default function ProcedureSection({ b, change, editable, withRit }: Proce
     <Section title={withRit ? 'Procedimiento y RIT' : 'Procedimiento'}>
       <Field
         label="Corrección a la baja"
-        help="Directa: el contribuyente presenta la corrección dentro del año siguiente al vencimiento y reemplaza a la anterior. Con solicitud: el municipio tiene 6 meses para aceptarla o rechazarla, y si no responde, se acepta sola. Aplica a lo que se radique desde el cambio."
+        help="Aplica a lo que se radique desde el cambio."
+        info={PROCEDURE_INFO.downwardCorrection}
       >
         <Select
           disabled={!editable}
@@ -39,7 +41,10 @@ export default function ProcedureSection({ b, change, editable, withRit }: Proce
       />
       {withRit && (
         <>
-          <Field label="Plazo para inscribirse en el RIT (meses desde el inicio de actividades)">
+          <Field
+            label="Plazo para inscribirse en el RIT (meses desde el inicio de actividades)"
+            info={PROCEDURE_INFO.registrationTermMonths}
+          >
             <Input
               type="number"
               min={0}
@@ -51,6 +56,7 @@ export default function ProcedureSection({ b, change, editable, withRit }: Proce
           <Toggle
             label="Cancelación automática del RIT"
             help="Si está apagado, la administración verifica el cese antes de aprobar la cancelación."
+            info={PROCEDURE_INFO.automaticRitCancellation}
             value={b.automaticRitCancellation}
             isDisabled={!editable}
             onChange={(v) => change({ automaticRitCancellation: v })}

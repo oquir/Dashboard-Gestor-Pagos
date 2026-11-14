@@ -1,8 +1,8 @@
-import { number, STATUTORY_PENALTIES } from '../../../../lib'
+import { number, formatPesos, STATUTORY_PENALTIES, UVT } from '../../../../lib'
 import type { SettingsEdit } from '../../../../types'
 import { Input } from '../../../atoms'
 import { Field, Section } from '../../../molecules'
-import { PENALTY_KEYS, PENALTY_LABELS, PENALTY_USE } from './PenaltiesSection.constants'
+import { PENALTY_INFO, PENALTY_KEYS, PENALTY_LABELS } from './PenaltiesSection.constants'
 
 /** Sanciones del municipio, con el máximo de ley de cada una. */
 export default function PenaltiesSection({ b, change, editable, errors }: SettingsEdit) {
@@ -15,9 +15,12 @@ export default function PenaltiesSection({ b, change, editable, errors }: Settin
         <Field
           key={key}
           label={PENALTY_LABELS[key]}
-          help={[`Máximo de ley: ${STATUTORY_PENALTIES[key]}`, PENALTY_USE[key]]
-            .filter(Boolean)
-            .join('. ')}
+          help={
+            key === 'minimumUvt'
+              ? `${formatPesos(b.penalties.minimumUvt * UVT)}. Máximo de ley: ${STATUTORY_PENALTIES[key]}`
+              : `Máximo de ley: ${STATUTORY_PENALTIES[key]}`
+          }
+          info={PENALTY_INFO[key]}
           error={errors[key]}
         >
           <Input

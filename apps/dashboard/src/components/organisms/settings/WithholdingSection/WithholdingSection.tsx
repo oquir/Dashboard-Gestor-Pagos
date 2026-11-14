@@ -2,6 +2,7 @@ import { number, formatPesos, UVT } from '../../../../lib'
 import type { MunicipalityConfig } from '../../../../types'
 import { Input, Select } from '../../../atoms'
 import { Field, Toggle, Section } from '../../../molecules'
+import { WITHHOLDING_INFO } from './WithholdingSection.constants'
 import type { WithholdingSectionProps } from './WithholdingSection.types'
 
 /** ReteICA y AutoReteICA: tarifas y bases mínimas. La periodicidad va en la página Calendario. Muestra solo lo que el municipio tiene activo. */
@@ -25,7 +26,7 @@ export default function WithholdingSection({
     >
       {taxes.reteica && (
         <>
-          <Field label="Tarifa de ReteICA">
+          <Field label="Tarifa de ReteICA" info={WITHHOLDING_INFO.reteicaModality}>
             <Select
               disabled={!editable}
               value={b.reteica.modality}
@@ -60,6 +61,7 @@ export default function WithholdingSection({
           <Field
             label="Base mínima de servicios (UVT)"
             help={formatPesos(b.reteica.minServiceBaseUvt * UVT)}
+            info={WITHHOLDING_INFO.minBase}
           >
             <Input
               type="number"
@@ -76,6 +78,7 @@ export default function WithholdingSection({
           <Field
             label="Base mínima de compras (UVT)"
             help={formatPesos(b.reteica.minPurchaseBaseUvt * UVT)}
+            info={WITHHOLDING_INFO.minBase}
           >
             <Input
               type="number"
@@ -91,7 +94,7 @@ export default function WithholdingSection({
       )}
       {taxes.selfWithholding && (
         <>
-          <Field label="Tarifa de AutoReteICA">
+          <Field label="Tarifa de AutoReteICA" info={WITHHOLDING_INFO.selfWithholdingModality}>
             <Select
               disabled={!editable}
               value={b.selfWithholding.modality}
@@ -129,13 +132,15 @@ export default function WithholdingSection({
       <Toggle
         label="Exige declaración en ceros"
         help="Si no, un agente sin retenciones en el periodo no declara y no se marca como omiso."
+        info={WITHHOLDING_INFO.zeroDeclaration}
         value={b.zeroDeclaration}
         isDisabled={!editable}
         onChange={(v) => change({ zeroDeclaration: v })}
       />
       <Toggle
         label="Plazo de 2 meses para pagar"
-        help="La declaración presentada a tiempo sin pago no queda ineficaz si se paga completa dentro de los 2 meses siguientes al vencimiento (art. 580-1 del Estatuto Tributario)."
+        help="La declaración presentada a tiempo no queda ineficaz si se paga completa dentro de los 2 meses siguientes al vencimiento."
+        info={WITHHOLDING_INFO.paymentInTwoMonths}
         value={b.withholdingPaymentInTwoMonths}
         isDisabled={!editable}
         onChange={(v) => change({ withholdingPaymentInTwoMonths: v })}

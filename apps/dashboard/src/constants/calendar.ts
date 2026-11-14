@@ -50,3 +50,7 @@ export const ALL_ACTIVE: Record<Tax, boolean> = {
   reteica: true,
   selfWithholding: true,
 }
+
+/** Globo de "Año gravable", que se repite en Vencimientos y en el descuento por pronto pago. */
+export const FISCAL_YEAR_INFO =
+  'El año de la actividad que se declara. El ICA de un año gravable se declara y se paga en el año siguiente; la ReteICA y la AutoReteICA se declaran por periodos (mensual, bimestral o trimestral).'
