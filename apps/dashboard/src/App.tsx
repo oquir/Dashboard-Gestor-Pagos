@@ -12,6 +12,7 @@ import RegistrationDetail from './pages/RegistrationDetail'
 import Registrations from './pages/Registrations'
 import Home from './pages/Home'
 import Login from './pages/Login'
+import LoginCredentials from './pages/LoginCredentials'
 import Municipalities from './pages/Municipalities'
 import Payments from './pages/Payments'
 import Reports from './pages/Reports'
@@ -22,6 +23,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/login/:userId" element={<LoginCredentials />} />
         <Route element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="rit" element={<Registrations />} />

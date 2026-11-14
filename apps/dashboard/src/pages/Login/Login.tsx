@@ -1,7 +1,7 @@
 import { Courthouse } from 'reicon-react'
 import { Navigate, useNavigate } from 'react-router'
 import { Badge, Card } from '../../components/atoms'
-import { roleLabel, fullName } from '../../lib'
+import { canLogIn, roleLabel, fullName } from '../../lib'
 import { useData } from '../../store'
 import { ROLE_DESCRIPTION, ORDER } from './Login.constants'
 
@@ -9,15 +9,11 @@ export default function Login() {
   const userId = useData((s) => s.userId)
   const users = useData((s) => s.users)
   const municipalities = useData((s) => s.municipalities)
-  const logIn = useData((s) => s.logIn)
   const navigate = useNavigate()
 
   if (userId) return <Navigate to="/" replace />
 
-  const enter = (id: string) => {
-    logIn(id)
-    navigate('/')
-  }
+  const enter = (id: string) => navigate(`/login/${id}`)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-surface to-surface-sunken px-4 py-12">
@@ -36,7 +32,8 @@ export default function Login() {
 
         <h2 className="mb-1 text-lg font-semibold text-fg-strong">Elige con qué usuario entrar</h2>
         <p className="mb-6 text-sm text-fg-muted">
-          No hay contraseñas: es una demo para validar cómo se verá el aplicativo con cada rol.
+          Después de elegir, ingresa con usuario y contraseña. Es una demo para validar cómo se verá
+          el aplicativo con cada rol.
         </p>
 
         <div className="space-y-8">
@@ -48,13 +45,7 @@ export default function Login() {
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {users
-                  .filter(
-                    (u) =>
-                      u.role === role &&
-                      u.isActive &&
-                      (u.municipalityId === null ||
-                        municipalities.find((m) => m.id === u.municipalityId)?.isActive),
-                  )
+                  .filter((u) => u.role === role && canLogIn(u, municipalities))
                   .map((u) => (
                     <button
                       key={u.id}
