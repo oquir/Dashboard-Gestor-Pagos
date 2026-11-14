@@ -26,6 +26,7 @@ import {
   isDownwardCorrection,
   withRit,
   visibleTaxes,
+  can,
   ritVisible,
   useApproval,
   useDeclarations,
@@ -58,7 +59,8 @@ import {
 } from './Declarations.constants'
 
 export default function Declarations() {
-  const { municipalityId } = useSession()
+  const { user, municipalityId } = useSession()
+  const canSeeAll = can(user?.role, 'canSeeAllMunicipalities')
   const declarations = useDeclarations()
   const municipalities = useData((s) => s.municipalities)
   const settingsList = useData((s) => s.settingsList)
@@ -210,12 +212,13 @@ export default function Declarations() {
         title="Declaraciones"
         description="ICA anual (formulario único nacional), retención (ReteICA) y autorretención (AutoReteICA). Las de ReteICA y AutoReteICA sin pago total son ineficaces."
       />
-      <MunicipalitySearch />
       <DateQueryBar
         query={query}
         consult={consult}
         criterion={view === 'nonFilers' ? CRITERION.nonFilers : CRITERION.filed}
-      />
+      >
+        {canSeeAll && <MunicipalitySearch inline />}
+      </DateQueryBar>
 
       {/* Vista e impuesto solo salen después de consultar: antes no hay qué separar ni contar. */}
       {query && (

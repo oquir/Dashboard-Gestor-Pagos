@@ -16,6 +16,7 @@ import {
   inDateRange,
   lastProcedure,
   lodgingDate,
+  can,
   withRit,
   ofMunicipality,
   ritVisible,
@@ -42,7 +43,8 @@ import {
 } from './Registrations.constants'
 
 export default function Registrations() {
-  const { municipalityId } = useSession()
+  const { user, municipalityId } = useSession()
+  const canSeeAll = can(user?.role, 'canSeeAllMunicipalities')
   const allItems = useData((s) => s.registrations)
   const municipalities = useData((s) => s.municipalities)
   const [text, setText] = useState('')
@@ -92,8 +94,9 @@ export default function Registrations() {
         title="Inscripciones"
         description="Registro de Información Tributaria: personas naturales, empresas y demás sujetos, con la calidad en que actúan."
       />
-      <MunicipalitySearch />
-      <DateQueryBar query={query} consult={consult} criterion={CRITERION} />
+      <DateQueryBar query={query} consult={consult} criterion={CRITERION}>
+        {canSeeAll && <MunicipalitySearch inline />}
+      </DateQueryBar>
 
       {!query ? (
         <Card>

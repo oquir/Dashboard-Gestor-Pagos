@@ -3,13 +3,14 @@ import { InfoCircle } from 'reicon-react'
 import { Button, Card } from '../../atoms'
 import DateRange from '../DateRange'
 import Tooltip from '../Tooltip'
+import { DATES_GRID, DATES_GRID_WITH_FIELD } from './DateQueryBar.constants'
 import type { DateQueryBarProps } from './DateQueryBar.types'
 
 /**
  * El rango de fechas que pide una página antes de mostrar los datos. Las fechas se escriben en borrador y la tabla solo
  * cambia al presionar Consultar.
  */
-export default function DateQueryBar({ query, consult, criterion }: DateQueryBarProps) {
+export default function DateQueryBar({ query, consult, criterion, children }: DateQueryBarProps) {
   const [from, setFrom] = useState(query?.from ?? '')
   const [to, setTo] = useState(query?.to ?? '')
   const invalid = !from || !to || from > to
@@ -23,8 +24,8 @@ export default function DateQueryBar({ query, consult, criterion }: DateQueryBar
   return (
     <Card className="mb-6 p-4">
       <form className="flex flex-col items-center gap-4" onSubmit={submit}>
-        {/* Dos campos medianos, lado a lado; en el celular, uno debajo del otro. */}
-        <div className="grid w-full max-w-xl gap-4 sm:grid-cols-2">
+        <div className={children ? DATES_GRID_WITH_FIELD : DATES_GRID}>
+          {children}
           <DateRange from={from} to={to} changeFrom={setFrom} changeTo={setTo} />
         </div>
         <div className="flex items-center gap-2">
