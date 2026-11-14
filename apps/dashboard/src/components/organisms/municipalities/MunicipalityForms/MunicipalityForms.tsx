@@ -13,7 +13,7 @@ import type { MunicipalityFormsProps, FormOption } from './MunicipalityForms.typ
 /**
  * Matriz de los formularios del municipio: cuáles gestiona y, para cada uno, su revisión y lo que recibe en la ventanilla.
  * La primera vez que se activa un formulario se pide su fecha de salida a producción.
- * De cada formulario que gestiona se abre el orquestador, en otra pestaña, para editarlo.
+ * De cada formulario que gestiona se abre FormMaker, en otra pestaña, para editarlo.
  */
 export default function MunicipalityForms({ municipality: m, pausas }: MunicipalityFormsProps) {
   const { user } = useSession()
@@ -96,7 +96,7 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                       {goLiveText(m.inProductionSince[i])}
                     </span>
                     {manages && canOpenBuilder && (
-                      // Por ahora abre el orquestador sin contexto; después llevará el municipio y quizá el impuesto.
+                      // Por ahora abre FormMaker sin contexto; después llevará el municipio y quizá el impuesto.
                       <a
                         href={FORM_BUILDER_URL}
                         target="_blank"

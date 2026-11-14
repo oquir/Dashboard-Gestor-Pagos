@@ -17,7 +17,7 @@ export type Permission =
   | 'canSeeAuditLog'
   /** Ver en Inicio la alerta de ReteICA y AutoReteICA sin consignar, que puede ser delito (art. 402 del Código Penal). */
   | 'canSeeUnremittedAlert'
-  /** Abrir el orquestador de formularios, donde se arma el formulario de cada municipio. */
+  /** Abrir FormMaker, donde se arma el formulario de cada municipio. */
   | 'openFormBuilder'
   /** Desactivar un formulario del municipio, con el motivo. */
   | 'disableForms'

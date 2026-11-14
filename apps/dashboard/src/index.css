@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-/* Colores por rol, en el mismo formato que el orquestador de formularios. Por ahora solo hay modo
+/* Colores por rol, en el mismo formato que FormMaker. Por ahora solo hay modo
    claro: el día que llegue el oscuro, basta redefinir estos tokens bajo una clase .dark. Los
    componentes usan las clases por rol (bg-surface, text-fg, border-border, bg-brand...), nunca la
    paleta de Tailwind directamente. */
