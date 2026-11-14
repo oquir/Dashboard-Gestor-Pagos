@@ -9,7 +9,8 @@ export const NO_GROUPS: RepeatableGroup[] = []
 // La seleccion vacia, por la misma razon aunque sea estado y no un selector: CanvasRow se suscribe
 // al arreglo, y un [] nuevo en cada limpieza redibujaria todas las filas sin que nada cambie.
 export const NO_SELECTION: string[] = []
+// Prefijo del nombre viejo (Form Orchestrator) a proposito: cambiarlo perderia lo ya guardado.
 export const THEME_STORAGE_KEY: string = 'form-orchestrator-theme'
 // Aparte del borrador, igual que el tema: es una preferencia del equipo donde se trabaja, no del
-// formulario.
+// formulario. Mismo prefijo viejo que el tema, por la misma razon.
 export const PERFORMANCE_STORAGE_KEY: string = 'form-orchestrator-performance'

@@ -1,3 +1,4 @@
+// Prefijo del nombre viejo (Form Orchestrator) a proposito: cambiarlo perderia lo ya guardado.
 export const DRAFT_KEY: string = 'form-orchestrator-draft'
 
 // Version de la forma del borrador. Sube cada vez que el store cambia de shape de manera que un

@@ -7,7 +7,7 @@ packages:
 #
 # - core-js solo imprime un mensaje de donaciones al instalarse; no necesita ejecutarse.
 # - esbuild sí lo necesita: baja el binario de su plataforma al instalar y sin
-#   eso no arranca. Entra por tsx, con el que el orquestador corre sus scripts de verificación.
+#   eso no arranca. Entra por tsx, con el que FormMaker corre sus scripts de verificación.
 allowBuilds:
   core-js: false
   esbuild: true

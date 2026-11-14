@@ -853,7 +853,7 @@ Settled:
 
 ## Architecture
 
-Visual drag-and-drop **step-by-step form builder** ("Form Orchestrator") that compiles its config to one structured JSON document.
+Visual drag-and-drop **step-by-step form builder** ("FormMaker", formerly "Form Orchestrator") that compiles its config to one structured JSON document.
 
 ### File layout conventions
 
