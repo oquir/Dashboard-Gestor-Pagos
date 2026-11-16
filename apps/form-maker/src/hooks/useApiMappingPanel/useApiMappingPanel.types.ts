@@ -1,5 +1,7 @@
 import type { CanvasField } from '../../types'
+import type { ConceptValueKind } from '../../types'
 import type { OptionsSetup } from '../../types'
+import type { PayloadDestination } from '../../types'
 import type { RepeatableGroup } from '../../types'
 import type { SchemaLeaf } from '../../types'
 
@@ -8,7 +10,8 @@ export interface UseApiMappingPanelParams {
 }
 
 export interface UseApiMappingPanelResult {
-  isExcluded: boolean
+  destination: PayloadDestination
+  disabledDestinations: Partial<Record<PayloadDestination, string>>
   path: string
   leaves: SchemaLeaf[]
   isOrphan: boolean
@@ -17,10 +20,14 @@ export interface UseApiMappingPanelResult {
   resolvedType: string | null
   group: RepeatableGroup | null
   awaitsGroupArrayPath: boolean
+  conceptId: number | undefined
+  conceptKind: ConceptValueKind | null
+  conceptClash: CanvasField | null
   dataSourceCandidates: CanvasField[]
   isAskingOptions: boolean
-  setIsAskingOptions: (value: boolean) => void
-  handleExcludedToggle: (checked: boolean) => void
+  handleDestinationChange: (destination: PayloadDestination) => void
   handleOptionsConfirm: (setup: OptionsSetup) => void
+  handleOptionsCancel: () => void
   handlePathChange: (nextPath: string) => void
+  handleConceptIdChange: (raw: string) => void
 }

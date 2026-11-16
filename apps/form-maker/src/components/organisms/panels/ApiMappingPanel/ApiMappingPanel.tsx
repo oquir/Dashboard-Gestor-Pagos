@@ -1,18 +1,16 @@
+import { CONCEPT_VALUE_KEY } from '../../../../constants/fieldConcept'
 import { useApiMappingPanel } from '../../../../hooks/useApiMappingPanel/useApiMappingPanel'
 import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
 import { allowsManualOptions, isOptionBasedField } from '../../../../lib/fieldOptions/fieldOptions'
 import type { CanvasField } from '../../../../types/field'
 import { ApiPathSelect } from '../../../molecules/ApiPathSelect/ApiPathSelect'
+import { LabeledInput } from '../../../molecules/LabeledInput/LabeledInput'
 import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
+import { PayloadDestinationSwitch } from '../../../molecules/PayloadDestinationSwitch/PayloadDestinationSwitch'
 import { FieldOptionsModal } from '../../FieldOptionsModal/FieldOptionsModal'
 import { FieldDataSourceEditor } from '../FieldDataSourceEditor/FieldDataSourceEditor'
 import {
-  DESTINATION_CHOICES,
   DESTINATION_DESCRIPTION,
-  DESTINATION_ITEM_ACTIVE_CLASSES,
-  DESTINATION_ITEM_BASE_CLASSES,
-  DESTINATION_ITEM_INACTIVE_CLASSES,
-  DESTINATION_TRACK_CLASSES,
   ERROR_CLASSES,
   EXCLUDED_HINT,
   HINT_CLASSES,
@@ -24,7 +22,8 @@ import {
 
 export function ApiMappingPanel({ field }: { field: CanvasField }) {
   const {
-    isExcluded,
+    destination,
+    disabledDestinations,
     path,
     leaves,
     isOrphan,
@@ -33,12 +32,16 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
     resolvedType,
     group,
     awaitsGroupArrayPath,
+    conceptId,
+    conceptKind,
+    conceptClash,
     dataSourceCandidates,
     isAskingOptions,
-    setIsAskingOptions,
-    handleExcludedToggle,
+    handleDestinationChange,
     handleOptionsConfirm,
+    handleOptionsCancel,
     handlePathChange,
+    handleConceptIdChange,
   } = useApiMappingPanel({ field })
 
   if (isPresentationalField(field.type)) {
@@ -52,40 +55,24 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
   return (
     <div className="flex flex-col gap-3">
       <PanelSection title="Envío a la API" description={DESTINATION_DESCRIPTION}>
-        <fieldset aria-label="Si el campo se envía a la API" className={DESTINATION_TRACK_CLASSES}>
-          {DESTINATION_CHOICES.map((choice) => {
-            const isActive: boolean = choice.sends !== isExcluded
+        <PayloadDestinationSwitch
+          destination={destination}
+          disabledReasons={disabledDestinations}
+          onChange={handleDestinationChange}
+        />
 
-            return (
-              <button
-                key={choice.label}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => {
-                  if (!isActive) handleExcludedToggle(!choice.sends)
-                }}
-                className={`${DESTINATION_ITEM_BASE_CLASSES} ${
-                  isActive ? DESTINATION_ITEM_ACTIVE_CLASSES : DESTINATION_ITEM_INACTIVE_CLASSES
-                }`}
-              >
-                {choice.label}
-              </button>
-            )
-          })}
-        </fieldset>
-
-        {isExcluded && (
+        {destination === 'excluded' && (
           <p className={HINT_CLASSES}>
             {EXCLUDED_HINT}
             {allowsManualOptions(field) && ` ${OPTIONS_DISCARD_HINT}`}
           </p>
         )}
 
-        {!isExcluded && !path && !awaitsGroupArrayPath && (
+        {destination === 'contract' && !path && !awaitsGroupArrayPath && (
           <p className={HINT_CLASSES}>{PENDING_PATH_HINT}</p>
         )}
 
-        {!isExcluded && group !== null && (
+        {destination === 'contract' && group !== null && (
           <p className={NOTE_CLASSES}>
             {awaitsGroupArrayPath
               ? `Este campo vive dentro del grupo repetible “${group.title}”. Elegí primero a qué arreglo del payload corresponde el grupo.`
@@ -93,7 +80,7 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
           </p>
         )}
 
-        {!isExcluded && !awaitsGroupArrayPath && (
+        {destination === 'contract' && !awaitsGroupArrayPath && (
           <>
             <ApiPathSelect
               path={path}
@@ -124,6 +111,44 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
             )}
           </>
         )}
+
+        {destination === 'concept' && (
+          <>
+            <LabeledInput
+              id="concept-id"
+              label="idConcepto"
+              type="number"
+              min={1}
+              step={1}
+              placeholder="Ej. 5"
+              value={conceptId ?? ''}
+              onChange={(event) => handleConceptIdChange(event.target.value)}
+            />
+
+            {conceptKind !== null && (
+              <p className={HINT_CLASSES}>
+                El id del concepto en la tabla de conceptos del backend. Viaja con tipo{' '}
+                <span className="font-semibold">{conceptKind}</span> en{' '}
+                <code className="font-mono">{CONCEPT_VALUE_KEY[conceptKind]}</code>.
+                {allowsManualOptions(field) &&
+                  ' Las opciones viajan por su texto; si lo pasás a Contrato, se descartan.'}
+              </p>
+            )}
+
+            {conceptId === undefined && (
+              <p className={ERROR_CLASSES}>
+                Falta el idConcepto: sin él, el formulario no se puede exportar.
+              </p>
+            )}
+
+            {conceptClash !== null && (
+              <p className={ERROR_CLASSES}>
+                El campo “{conceptClash.label}” ya usa el idConcepto {conceptId}: dos conceptos con
+                el mismo id se pisarían en el backend.
+              </p>
+            )}
+          </>
+        )}
       </PanelSection>
 
       {isOptionBasedField(field.type) && (
@@ -134,7 +159,7 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
         <FieldOptionsModal
           fieldTypeLabel={field.label}
           onConfirm={handleOptionsConfirm}
-          onCancel={() => setIsAskingOptions(false)}
+          onCancel={handleOptionsCancel}
         />
       )}
     </div>

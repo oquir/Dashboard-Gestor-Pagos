@@ -1,4 +1,5 @@
 import type {
+  ExportedApiBinding,
   ExportedCondition,
   ExportedGroupCheck,
   ExportedRepeatableGroup,
@@ -9,10 +10,18 @@ import type {
   ExportedValidations,
   ExportedValidationVariant,
 } from '../../types/exportForm'
-import type { CanvasField, CatalogFill, FieldCondition, FieldDataSource } from '../../types/field'
+import type {
+  ApiBinding,
+  CanvasField,
+  CatalogFill,
+  FieldCondition,
+  FieldDataSource,
+} from '../../types/field'
+import type { ConceptValueKind } from '../../types/fieldConcept'
 import type { CanvasRow, FormStep, RepeatableGroup } from '../../types/formStructure'
 import { resolveFieldStyles, resolveRowStyles } from '../cssStyles/cssStyles'
 import { affixOf } from '../fieldAffix/fieldAffix'
+import { conceptKindOf } from '../fieldConcept/fieldConcept'
 import { operatorTakesList, parseConditionList } from '../fieldCondition/fieldCondition'
 import {
   exportableDateFormat,
@@ -141,6 +150,16 @@ export function resolveRules(
   }))
 }
 
+// El tipo de dato del concepto se calcula al salir y no se guarda: lo decide el tipo del campo. Un
+// campo sin valor que mandar -uno presentacional- no sale como concepto.
+function resolveApiBinding(field: CanvasField): ExportedApiBinding | undefined {
+  const binding: ApiBinding | undefined = field.apiBinding
+  if (binding?.kind !== 'concept') return binding
+
+  const tipo: ConceptValueKind | null = conceptKindOf(field.type)
+  return tipo === null ? undefined : { ...binding, tipo }
+}
+
 export function resolveDataSource(
   field: CanvasField,
   names: Map<string, string>,
@@ -194,7 +213,7 @@ export function mapRows(
       alwaysDisabled: field.alwaysDisabled,
       enableWhen: resolveCondition(field.enableWhen, names),
       visibleWhen: resolveCondition(field.visibleWhen, names),
-      apiBinding: field.apiBinding,
+      apiBinding: resolveApiBinding(field),
       dataSource: resolveDataSource(field, names),
       labelFor: field.labelFor ? (names.get(field.labelFor) ?? field.labelFor) : undefined,
       content: field.content,
