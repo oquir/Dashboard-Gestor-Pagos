@@ -5,45 +5,83 @@
 > - por qué se hace y cómo encaja con el back (§1);
 > - lo decidido y lo que falta por decidir (§2);
 > - la lista de lo que falta, en el orden en que conviene hacerlo (§3);
-> - lo que se sabe de las plantillas que hoy se hacen a mano (§4);
-> - dónde se engancha cada cosa en el código de FormMaker (§5).
+> - lo que se sabe de las plantillas que hoy se hacen a mano y del back que las convierte (§4);
+> - dónde se engancha cada cosa en el código de FormMaker (§5);
+> - lo que se le pide al back, que el usuario no desarrolla (§7).
 >
 > **Cómo se usa**: al terminar un punto de §3, marcarlo `[x]`, tacharlo con `~~…~~` y anotar la fecha y el commit, por ejemplo `- [x] ~~Tipos del diseño~~ (2026-11-20, abc1234)`. Lo que se decida pasa a la tabla de §2.1 con su fecha. No se borra nada: lo tachado le sirve a la auditoría.
 >
-> **Estado: en planeación, no empezado.** Escrito el 2026-11-15. Lo que dice sobre el código es de esa fecha: antes de usarlo, verificar que siga igual.
+> **Estado: en planeación, no empezado.** Escrito el 2026-11-15 y puesto al día el 2026-11-16. Lo que dice sobre el código es de esas fechas: antes de usarlo, verificar que siga igual.
 
 ## 1. Contexto
 
 - **El problema.** Cada municipio pide el PDF de la declaración con su propio formato. En el ICA no hay tanto lío, porque está estandarizado en el Formulario Único Nacional (FUN), pero la ReteICA y la autorretención no tienen estándar: cada municipio manda el suyo. Hoy cada PDF se hace a mano en HTML con `<table>` (lo más compatible con todo, también con los correos), con imágenes para los escudos, las banderas, los eslóganes y los textos verticales. Es lo que más tiempo toma.
 - **Por qué empezar por el PDF.** El deber ser es diseñar primero el formulario y después el PDF, pero los municipios siempre salen con cosas raras en el PDF, así que en la práctica el usuario empieza por ahí.
-- **La idea.** Una zona nueva en FormMaker para diseñar el PDF del formulario. Produce HTML con variables `{Variable}` y guarda el diseño, para volver a abrirlo.
-- **Cómo encaja con el back.** El back recibe el formulario del municipio, **solo reemplaza las variables** (no arma filas repetidas) y convierte el HTML a PDF. **Todavía no se sabe qué librería usará** para convertirlo.
-- **Fallo conocido.** El back no pinta el HTML igual que el navegador. Por eso abrir una plantilla en Chrome no sirve para validarla, y es un fallo que hay que solucionar (§2.2).
+- **La idea.** Una zona nueva en FormMaker para diseñar el PDF del formulario. Produce un `.html` con variables `{variable}`, que es a la vez el resultado y la fuente del diseño (§2.1).
+- **Cómo encaja con el back.** El back recibe la declaración, reemplaza las variables y convierte el HTML a PDF con **SelectPdf** (§4.6).
+  - En la ReteICA y la autorretención, el back solo reemplaza variables. **El back del ICA además arma bloques de HTML** (actividades, renglones opcionales, numeración), así que lo de "solo reemplaza" vale para el diseño nuevo, no para el ICA de hoy (§4.6).
+- **El usuario no desarrolla el back.** Todo lo que haya que cambiar allá es una propuesta para quien lo maneja (§7), no algo que se haga desde aquí.
+- **Funciona solo en el front.** FormMaker no tiene back ni base de datos, y no se prende el back ni para probar.
+  - No hace peticiones HTTP: lo que algún día irá a un endpoint, hoy se descarga y se abre como archivo.
+  - La vista previa también la pinta FormMaker (§2.1).
+- **Fallo conocido.** El back no pinta el HTML igual que el navegador, así que abrir una plantilla en Chrome no sirve para validarla. La causa ya se encontró (§4.6):
+  - convierte en papel tabloide (11 × 17 pulgadas), con una ventana de 1960 px que luego encoge;
+  - usa el motor WebKit viejo de SelectPdf.
 - **Advertencia del usuario: esto va a ser muy difícil.** Cada PDF nuevo de un municipio trae un formato impredecible y un "machetazo" distinto en HTML para replicarlo. El diseñador no puede prometer cubrirlo todo; por eso las reglas de §2.1.
 
 ## 2. Decisiones
 
 ### 2.1 Tomadas
 
-| Punto                                  | Decisión                                                                                                                     | Por qué                                                                                                                  |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Sintaxis de las variables (2026-11-15) | **Llave sencilla `{Var}`**                                                                                                   | Es lo que el back reemplaza y lo que usan las 22 plantillas actuales                                                     |
-| Filas repetidas (2026-11-15)           | **Se exportan como ranuras numeradas**: se diseña una fila y sale copiada como `{CodigoSecundaria1}` … `{CodigoSecundariaN}` | El back solo reemplaza variables; no arma filas. Las plantillas de hoy ya lo hacen así, a mano                           |
-| Columnas (2026-11-15)                  | **`colspan` sin máximo y sin rejilla impuesta**                                                                              | Replicar el PDF del municipio a veces exige machetazos                                                                   |
-| Escape para lo imprevisto (2026-11-15) | **HTML libre por celda o por bloque**                                                                                        | El diseñador nunca puede ser peor que hacerlo a mano: lo que el editor visual no sepa hacer, se escribe en HTML como hoy |
-| Componentes (2026-11-15)               | **Solo se vuelve componente el machetazo que se repite**: texto vertical, casilla, NIT con DV, firmas, código de barras      | Lo raro de un solo municipio se queda en HTML libre                                                                      |
-| Orden de trabajo (2026-11-15)          | **Se puede empezar por el PDF**, con variables sueltas, y conectarlas con los campos después                                 | Es como trabaja el usuario (§1)                                                                                          |
-| Dónde vive (2026-11-15)                | **Dentro de FormMaker, como lienzo propio del proyecto**, no como una vista más                                              | Se guarda y se exporta con el formulario, y la vista previa puede usar los valores del simulador                         |
+| Punto                                        | Decisión                                                                                                                                                                                                                                                                                                                                                                                                   | Por qué                                                                                                                                                                                                                                                                                                                                        |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sintaxis de las variables (2026-11-15)       | **Llave sencilla `{Var}`**                                                                                                                                                                                                                                                                                                                                                                                 | Es lo que el back reemplaza y lo que usan las 22 plantillas actuales                                                                                                                                                                                                                                                                           |
+| Filas repetidas (2026-11-15)                 | **Se exportan como ranuras numeradas**: se diseña una fila y sale copiada como `{CodigoSecundaria1}` … `{CodigoSecundariaN}`                                                                                                                                                                                                                                                                               | El back de la ReteICA solo reemplaza variables; no arma filas. Las plantillas de hoy ya lo hacen así, a mano                                                                                                                                                                                                                                   |
+| Columnas (2026-11-15)                        | **`colspan` sin máximo y sin rejilla impuesta**                                                                                                                                                                                                                                                                                                                                                            | Replicar el PDF del municipio a veces exige machetazos                                                                                                                                                                                                                                                                                         |
+| Escape para lo imprevisto (2026-11-15)       | **HTML libre por celda o por bloque**                                                                                                                                                                                                                                                                                                                                                                      | El diseñador nunca puede ser peor que hacerlo a mano: lo que el editor visual no sepa hacer, se escribe en HTML como hoy                                                                                                                                                                                                                       |
+| Componentes (2026-11-15)                     | **Solo se vuelve componente el machetazo que se repite**: texto vertical, casilla, NIT con DV, firmas, código de barras, QR y sello                                                                                                                                                                                                                                                                        | Lo raro de un solo municipio se queda en HTML libre                                                                                                                                                                                                                                                                                            |
+| Orden de trabajo (2026-11-15)                | **Se puede empezar por el PDF**, con variables sueltas, y conectarlas con los campos después                                                                                                                                                                                                                                                                                                               | Es como trabaja el usuario (§1)                                                                                                                                                                                                                                                                                                                |
+| Dónde vive (2026-11-15)                      | **Dentro de FormMaker, como lienzo propio del proyecto**, no como una vista más                                                                                                                                                                                                                                                                                                                            | Se diseña junto a su formulario, y la vista previa puede usar los valores del simulador                                                                                                                                                                                                                                                        |
+| Nombres de las variables (2026-11-16)        | **Los mismos nombres de los campos, en snake_case y con llave sencilla**: `{total_impuesto_a_cargo}`. El back aprende los nombres nuevos                                                                                                                                                                                                                                                                   | Acaba con los ~315 nombres sueltos y une el PDF con el formulario. La convención de las variables derivadas sigue abierta (§2.2, punto 1)                                                                                                                                                                                                      |
+| Variables libres mientras tanto (2026-11-16) | **Se puede escribir cualquier `{Var}` a mano**, aunque no corresponda a un campo                                                                                                                                                                                                                                                                                                                           | Muchas veces toca hacer machetazos con las variables, porque ninguna lista cubre todas las posibilidades. El usuario lo arreglará de una vez en otra sesión (§2.2, punto 1)                                                                                                                                                                    |
+| Papel (2026-11-16)                           | **Carta** (816 px de ancho a 96 px por pulgada)                                                                                                                                                                                                                                                                                                                                                            | El estándar del usuario. El back del ICA hoy convierte en tabloide (§4.6), pero va a cambiar al contrato de §7.2: el diseñador no imita el tabloide                                                                                                                                                                                            |
+| Perfil de conversión (2026-11-16)            | **Uno solo: carta, `WebPageWidth = 778` y márgenes de 5 mm.** Vive como constante en un solo lugar de FormMaker, y la vista previa pinta el HTML a 778 px                                                                                                                                                                                                                                                  | Es el contrato que el back va a adoptar (§7.2). Si allá termina con otro número, se cambia en un solo sitio                                                                                                                                                                                                                                    |
+| Solo front (2026-11-16)                      | **La vista previa, publicar (descargar) y abrir (archivo local) funcionan sin back**                                                                                                                                                                                                                                                                                                                       | El back no se prende para esto, ni para probar                                                                                                                                                                                                                                                                                                 |
+| Márgenes (2026-11-16)                        | **Mínimo 5 mm en cada página y en los cuatro lados**; más allá, el diseño decide                                                                                                                                                                                                                                                                                                                           | Hay municipios que piden contenido casi hasta el pie de la primera página y que roce los bordes izquierdo y derecho, para que las cosas se vean más grandes. Los 5 mm son el estándar que queda, y cubren la zona que la impresora no imprime                                                                                                  |
+| Páginas (2026-11-16)                         | **Un PDF puede tener más de una hoja**                                                                                                                                                                                                                                                                                                                                                                     | Hay declaraciones de dos hojas. SelectPdf Community corta en 5 páginas por PDF (§4.6)                                                                                                                                                                                                                                                          |
+| Imágenes (2026-11-16)                        | **Se aceptan URL y base64; se prefiere la URL.** Las imágenes las suben ellos por su lado al servidor de imágenes, y en FormMaker solo se pega la URL o el base64: FormMaker no sube imágenes                                                                                                                                                                                                              | La URL no infla el HTML; el base64 lo traen las plantillas de hoy y sirve para lo que no tiene dónde alojarse                                                                                                                                                                                                                                  |
+| Imágenes inmutables (2026-11-16)             | **Una URL publicada nunca se sobreescribe**: una imagen nueva es un archivo nuevo, con su propia URL                                                                                                                                                                                                                                                                                                       | Las declaraciones son un histórico. Por ejemplo, un municipio pasó del azul y amarillo al morado con el alcalde nuevo, y ese cambio dice en qué periodo de gobierno se presentó cada declaración. Regenerar una declaración vieja es excepcional (el municipio pide algo que antes no estaba, o un error propio) y no debe cambiarle la imagen |
+| Saneo del HTML libre (2026-11-16)            | **Lista blanca propia** (como `serializeRichText`), **vista previa en un `<iframe sandbox>` sin scripts** y **`<style>` libre permitido**                                                                                                                                                                                                                                                                  | El `<style>` libre sirve para un cambio puntual sin tener que inventar una clase para la plantilla de la declaración                                                                                                                                                                                                                           |
+| El `.html` es la única fuente (2026-11-16)   | **El diseño se guarda como su propio `.html`**, sin JSON aparte y nunca dentro del JSON del formulario. Los componentes se marcan con atributos `data-fm-*`, que SelectPdf ignora: el sello, la casilla y el texto vertical, que guarda su texto original en un atributo porque sale como PNG. Reabrir es leer el HTML con el mismo lector tolerante que importa las plantillas viejas                     | El usuario no quiere guardarlo en el JSON. Con una sola fuente no hay un segundo archivo que se desincronice                                                                                                                                                                                                                                   |
+| Barra lateral amena (2026-11-16)             | **Casi todo se hace desde una barra lateral sencilla**, pensada para quien apenas sabe programar; clases y estilos en línea quedan para quien los necesite                                                                                                                                                                                                                                                 | La idea principal del usuario: que sea ameno y sencillo                                                                                                                                                                                                                                                                                        |
+| Flujo de trabajo (2026-11-16)                | **Guardado automático local, vista previa y un botón para publicar.** Más adelante "Subir" mandará el `.html` a un endpoint del API, que lo guardará en un servidor FTP, y al entrar al PDF de un formulario FormMaker preguntará si ese municipio, en ese impuesto, ya tiene uno. **Mientras no haya back, no se hacen peticiones**: publicar es descargar el `.html` y traerlo es abrir un `.html` local | Así lo trabaja el usuario: un cambio chico es entrar al formulario, abrir su PDF, ajustarlo y subirlo. Hoy no hay back ni base de datos                                                                                                                                                                                                        |
+| Municipio e impuesto (2026-11-16)            | **Se entra desde el `tax-filing-manager`** (el dashboard): ahí se elige el municipio y el impuesto, y un clic abre FormMaker sabiendo los dos                                                                                                                                                                                                                                                              | Es por donde el equipo entra a los municipios desde el principio                                                                                                                                                                                                                                                                               |
+| Versiones de las plantillas (2026-11-16)     | **Se guardan las versiones anteriores**, con el nombre `<codigo_municipio>_<impuesto>_v<N>.html`. `N` sube de uno en uno y nunca se reutiliza. **Producción usa siempre la de `N` más alto.** Se guardan las **últimas 10**: al llegar la 11, se borra la más vieja. Mientras no haya back, la descarga ya sale con ese nombre, y quien descarga lleva el número                                           | Los HTML pesan poco, y una versión anterior permite deshacer una subida equivocada. Las declaraciones ya emitidas no dependen de ninguna versión, porque cada una queda guardada como PDF (§4.6)                                                                                                                                               |
+| Vista previa (2026-11-16)                    | **La hace FormMaker**, con el perfil de carta (ver "Perfil de conversión")                                                                                                                                                                                                                                                                                                                                 | No hay back que la haga y el usuario no lo puede tocar. Un endpoint de vista previa exacta queda como propuesta para el back (§7)                                                                                                                                                                                                              |
+| QR (2026-11-16)                              | **Lo genera el back**, igual que el código de barras: el diseñador solo reserva un `<img src="{…}">`                                                                                                                                                                                                                                                                                                       | Qué codifica lo define el back con cada municipio, y no le cambia nada al diseñador. Todavía no lo ha pedido ningún municipio (§4.3)                                                                                                                                                                                                           |
+| Sellos (2026-11-16)                          | **Componente de sello**: la imagen del sello de la entidad con una variable encima (hoy `{FechaGuardado}`), centrada o en la posición que se elija                                                                                                                                                                                                                                                         | Se repite en 6 plantillas (§4.3): cumple la regla de "solo el machetazo que se repite"                                                                                                                                                                                                                                                         |
+| Deshacer (2026-11-16)                        | **Historial propio**, separado del zundo del formulario (un `temporal` aparte)                                                                                                                                                                                                                                                                                                                             | Un historial conjunto no tiene sentido: deshacer en el PDF no debe tocar el formulario, ni al revés                                                                                                                                                                                                                                            |
+| Cambios en el back (2026-11-16)              | **Se dejan anotados como propuesta** (§7)                                                                                                                                                                                                                                                                                                                                                                  | El usuario no desarrolla el back y no puede tocar nada allá                                                                                                                                                                                                                                                                                    |
 
 ### 2.2 Abiertas
 
-1. **Nombres de las variables.** Hoy se llaman como las reemplaza el back (`{TotalImpuestoCargo}`, `{RazonSocial}`), no como los campos del formulario (`total_impuesto_a_cargo`). Mantenerlos no le cambia nada al back; unificarlos con los campos acaba con los ~315 nombres sueltos (§4.2), pero obliga al back a aprender los nombres nuevos. El usuario la dejó abierta el 2026-11-15.
-2. **Librería del back y acuerdo de página.** Falta saber con qué librería convertirá el back y fijar con él el tamaño del papel (carta, A4 u oficio), los márgenes y el ancho con que convierte. Ese ancho es el contrato entre el diseñador y el back, y pesa más que la librería: si se diseña a ~740 px y el convertidor imagina una ventana más ancha y la encoge, el navegador y el PDF nunca coinciden (§4.5).
-3. **Vista previa.** Lo ideal es que la genere el mismo back, con un endpoint que convierta la plantilla con datos de prueba: así lo que se ve es lo que sale. Imitar el ancho en el navegador sirve de borrador, pero no quita las diferencias propias del motor. Depende del punto 2.
-4. **Imágenes.** Incrustadas en base64, como casi todas hoy, o por URL, como tres plantillas que las piden a `autoliquidables.1cero1.com/HtmlToPdf/<NIT>/`. Además, el borrador vive en una sola llave de `localStorage` (unos 5 MB por origen): con escudos en base64 se puede llenar. ¿IndexedDB para las imágenes?
-5. **Saneo del HTML libre.** FormMaker nunca guarda HTML en `rich_text`: lo guarda estructurado y su serializador es el sanitizador, porque un HTML guardado es marcado ejecutable ("Presentational fields" en `CLAUDE.md`). El HTML libre del PDF rompe esa regla a propósito; hay que decidir cómo sanearlo (sin `<script>` ni atributos `on*`) y mostrar la vista previa en un iframe aislado (`sandbox`).
-6. **Deshacer.** Si el diseño del PDF entra al historial de zundo junto con el formulario o lleva el suyo.
-7. **Cómo viaja el HTML.** Como una llave más del JSON exportado o como un archivo `.html` aparte. Se acuerda con el back.
+Reescrita el 2026-11-16; lo que se decidió pasó a §2.1.
+
+1. **Inventario y convención de nombres: en espera, a propuesta del usuario**, que lo arreglará de una vez en otra sesión. Mientras tanto se pueden escribir variables a mano (§2.1). La base ya está decidida (`{nombre_del_campo}`); falta cómo se llaman:
+   - las casillas, una por opción (¿`{tipo_documento_nit}`?);
+   - las ranuras numeradas (¿`{codigo_actividad_1}`?);
+   - las variables que pone el back y no un campo: `{Code}`, `{FechaGuardado}`, `{NroRadicado}` y el QR (§4.2);
+   - cómo se traducen los nombres viejos al importar las 22 plantillas.
+2. **Saltos de página.** **Propuesta**: el diseñador muestra una guía en cada fin de hoja (unos 1018 px útiles de alto en carta con 5 mm, §4.5) e inserta saltos manuales con `page-break-before`, que SelectPdf respeta. Lo que no quepa fluye a la hoja siguiente.
+3. **Cómo llega el municipio y el impuesto desde el `tax-filing-manager`.** Las dos apps viven en el monorepo, pero se sirven por separado.
+   - **Propuesta**: el clic abre FormMaker con `?municipio=<codigo>&impuesto=<tipo>` en la URL, y FormMaker los muestra en la cabecera de la zona PDF y los usa para nombrar la descarga.
+   - Sin base de datos, FormMaker no puede traer el formulario ni el PDF de ese municipio por sí solo: por ahora se abren desde archivo.
+4. **Los bloques que arma el back del ICA** (§4.6). Con una plantilla por municipio, casi todos se vuelven decisiones de diseño:
+   - los renglones opcionales (sobretasa de seguridad, juegos, estampilla, pagos recibidos) y el periodo anual se incluyen o no en la plantilla de cada municipio;
+   - la numeración `{N}`, `{ColspanAnual}` y `{RowspanDeclarionPrivada}` desaparecen, porque el diseño ya las sabe;
+   - las actividades pasan a ranuras numeradas.
+
+   Eso le cambia al back cómo llena el ICA (§7).
 
 ## 3. Lo que falta
 
@@ -51,25 +89,37 @@ En el orden en que conviene hacerlo. Cada punto se hace en su versión mínima.
 
 ### 3.0 Antes de escribir código
 
-- [ ] Decidir los nombres de las variables (§2.2, punto 1).
-- [ ] Saber qué librería usará el back y fijar el acuerdo de página: tamaño, márgenes y ancho (§2.2, punto 2).
-- [ ] Hacer el inventario único de variables: juntar los ~315 nombres de las plantillas (§4.2) en una sola lista, con lo que significa cada uno y cuáles son sinónimos o errores. Esa lista se acuerda con el back, que es quien reemplaza.
-- [ ] Decidir cómo viajan y dónde se guardan las imágenes (§2.2, punto 4).
+- [x] ~~Decidir los nombres de las variables~~ (2026-11-16, sin commit de código: `{nombre_del_campo}`, §2.1).
+- [x] ~~Saber qué librería usa el back~~ (2026-11-16: SelectPdf, §4.6).
+- [x] ~~Decidir el saneo del HTML libre~~ (2026-11-16: lista blanca, iframe aislado, `<style>` libre, §2.1).
+- [x] ~~Decidir cómo se reabre el diseño~~ (2026-11-16: el `.html` es la única fuente, §2.1).
+- [x] ~~Decidir cómo llegan las imágenes~~ (2026-11-16: se suben por fuera y se pega la URL o el base64, §2.1).
+- [x] ~~Elegir el perfil de conversión con que se empieza~~ (2026-11-16: carta, `WebPageWidth = 778` y 5 mm; el back cambiará, §2.1).
+- [x] ~~Conseguir la configuración del back de la ReteICA y la autorretención~~ (2026-11-16: todavía no existe; cuando se cree, usará el mismo contrato de carta, §7.2).
+- [x] ~~Confirmar el esquema de versiones y su límite~~ (2026-11-16: `_v<N>`, las últimas 10, producción usa la más alta, §2.1).
+- [ ] **En espera (usuario):** el inventario único de variables. Consiste en juntar los ~315 nombres de las plantillas (§4.2) en una sola lista, con lo que significa cada uno y cuáles son sinónimos o errores, y fijar la convención de las variables derivadas (§2.2, punto 1).
+- [ ] Entregarle §7 a quien maneja el back.
 
 ### 3.1 La zona y el modelo
 
-- [ ] Tipos del diseño en `src/types/`: la página (tamaño y márgenes), las filas y las celdas, con `colspan`, `rowspan`, bordes, alineación, fondo y contenido.
-- [ ] Guardarlo en el store y en el borrador: subir `DRAFT_SCHEMA_VERSION` (hoy 7) con su paso de migración, y agregar su línea en `persistence.schema.ts`, porque Zod descarta en silencio las llaves que no conoce.
+- [ ] Perfil de conversión de carta como constante única en `src/constants/` (§2.1).
+- [ ] Tipos del diseño en `src/types/`: la página (márgenes de al menos 5 mm, saltos), las filas y las celdas, con `colspan`, `rowspan`, bordes, alineación, fondo y contenido.
+- [ ] Guardado automático local del diseño, en su propia llave y no en el borrador del formulario, así que no hace falta subir `DRAFT_SCHEMA_VERSION`. Si el base64 de las imágenes no cabe en `localStorage` (unos 5 MB por origen), se pasa a IndexedDB.
 - [ ] Entrada "Diseñar PDF" en el panel derecho, como un tercer tipo de lienzo (hoy `CanvasTarget` es `formStep | introStep`).
+- [ ] Leer `municipio` e `impuesto` de la URL cuando se entra desde el `tax-filing-manager` (§2.2, punto 3).
 - [ ] Que el diseñador sea un chunk perezoso, como `FormSimulator`: fuera de los índices de nivel y de `lib/index.ts`.
 
 ### 3.2 El editor
 
+- [ ] Barra lateral amena (§2.1), para quien apenas programa. Tiene controles para lo común (tamaño de letra, negrilla, alineación, bordes, fondo, anchos) y un campo de clases y otro de estilos en línea para quien los necesite.
+- [ ] Guías de fin de hoja y salto de página manual (§2.2, punto 2).
 - [ ] Tabla editable: agregar y quitar filas y columnas, combinar y dividir celdas, cambiar anchos.
-- [ ] Contenido de cada celda: texto fijo con formato, una variable `{Var}`, o los dos mezclados.
-- [ ] HTML libre por celda o por bloque, con su saneo (§2.2, punto 5).
+- [ ] Contenido de cada celda: texto fijo con formato, una variable `{Var}` (elegida de una lista o escrita a mano, §2.1), o los dos mezclados.
+- [ ] HTML libre por celda o por bloque, `<style>` incluido, con su saneo por lista blanca (§2.1).
+  - Del CSS se quitan `@import`, `expression(`, `behavior` y los `url(javascript:…)`.
+  - Se quitan `<script>`, `<iframe>`, `<object>`, `<embed>`, `<link>`, `<meta>`, `<form>`, los atributos `on*` y los `javascript:`.
 - [ ] Tablas dentro de celdas: las plantillas de hoy anidan hasta 4 niveles, sobre todo para dibujar casillas.
-- [ ] Deshacer, rehacer y Ctrl+S, como en el formulario (§2.2, punto 6).
+- [ ] Deshacer, rehacer y Ctrl+S, como en el formulario, pero con un historial zundo propio del diseño (§2.1).
 
 ### 3.3 Componentes para los machetazos que se repiten
 
@@ -78,22 +128,25 @@ En el orden en que conviene hacerlo. Cada punto se hace en su versión mínima.
 - [ ] Caja de NIT con DV.
 - [ ] Bloque de firmas: declarante y contador o revisor fiscal, con documento y tarjeta profesional.
 - [ ] Código de barras: `<img src="{Code}">`, cuya imagen pone el back.
+- [ ] Código QR, con el mismo molde que el código de barras: un `<img src="{…}">` cuya imagen genera el back (§2.1).
+- [ ] Sello: la imagen del sello de la entidad con una variable superpuesta (hoy `{FechaGuardado}`), centrada o en la posición que se elija (§4.3). Mientras el back siga en WebKit, se exporta también con `-webkit-transform`.
 - [ ] Fila repetible que se exporta como ranuras numeradas (§2.1). El ICA usa 15 actividades, el mismo máximo del grupo repetible de la plantilla ICA (`DEFAULT_GROUP_MAX`).
-- [ ] Imágenes por municipio: se suben una vez, se reducen, se pasan a PNG o JPG (sin WebP) y las comparten la ReteICA y la autorretención del mismo municipio.
+- [ ] Imágenes por municipio, elegidas por URL o base64 (§2.1), con un aviso si una imagen pesa mucho más de lo que se muestra, o si es WebP.
 
 ### 3.4 Variables y formulario
 
-- [ ] Elegir las variables de la lista de §3.0, no escribirlas a mano.
+- [ ] Ofrecer las variables del formulario en una lista, sin impedir las escritas a mano (§2.1).
 - [ ] Conectar cada variable con un campo del formulario cuando exista, con los mismos nombres que ya usan el export y los editores (`useKnownFieldNames`).
-- [ ] Vista previa con los valores del simulador: `buildFormExport` y `resolveRuntime` ya calculan todos los renglones, sin depender del back.
-- [ ] Avisos en la revisión de Exportar (`diagnoseForm`): una variable que ningún campo llena, un renglón calculado que no sale en el PDF, `${}` o llaves sueltas, etiquetas sin cerrar en el HTML libre.
+- [ ] Vista previa con los valores del simulador, pintada con el perfil de carta (§2.1): `buildFormExport` y `resolveRuntime` ya calculan todos los renglones, sin depender del back.
+- [ ] Avisos al publicar: una variable que ningún campo llena, un renglón calculado que no sale en el PDF, `${}` o llaves sueltas, etiquetas sin cerrar en el HTML libre. Son avisos, no bloqueos, porque las variables escritas a mano son legítimas.
 
-### 3.5 Exportar e importar
+### 3.5 Publicar, abrir e importar
 
-- [ ] Exportar el HTML final con `{Var}`: bien formado, solo tablas, estilos en línea, sin scripts ni flex ni grid, con el `@page` acordado.
-- [ ] Guardar el diseño en `builderDraft`, para que el archivo del proyecto lo vuelva a abrir con `Abrir…`.
-- [ ] Decidir si `projectMeta.requires` declara lo que usa el PDF.
-- [ ] Importar una plantilla HTML existente al diseñador, con un parser que tolere etiquetas sin cerrar. Empezar por `ICA/PdfICA.html`, la más limpia (§4.1).
+- [ ] Generar el HTML final con `{Var}`: bien formado, solo con tablas, sin scripts ni flex ni grid, con los `data-fm-*` de los componentes (§2.1).
+- [ ] Publicar: **por ahora, descargar el `.html`** con el nombre versionado (§2.1), con `N` uno más que la versión abierta. Cuando exista el endpoint, el botón "Subir" lo manda al API y de ahí al FTP. Nunca va dentro del JSON.
+- [ ] Abrir: **por ahora, un `.html` local**, leído con el lector tolerante. Si se eligen varias versiones del mismo municipio e impuesto, la vigente es la de `N` más alto. Cuando exista el endpoint, al entrar al PDF se pregunta al API si ese municipio, en ese impuesto, ya tiene uno: si existe se trae, y si no se empieza en blanco.
+- [x] ~~Decidir si `projectMeta.requires` declara lo que usa el PDF~~ (2026-11-16: no aplica, el HTML no viaja en el JSON).
+- [ ] Importar una plantilla HTML existente, con un lector que tolere etiquetas sin cerrar. Empezar por `ICA/PdfICA.html`, la más limpia (§4.1).
 - [ ] Importar las 21 de ReteICA y autorretención.
 
 ### 3.6 Documentación
@@ -124,7 +177,7 @@ Análisis del 2026-11-15 sobre las 22 plantillas que hoy se hacen a mano.
   - una con tilde: `{AÑO}`.
 - **Casillas como variables**: `Corr`/`Ini`, `CC`/`NIT`/`CE`/`TI`, los 12 meses, los 6 bimestres, `Efect`/`Cheq`/`enLinea`, `SI`/`NO`. El back pone la X en una y deja vacías las demás.
 - **Ranuras numeradas**: `CodigoSecundaria1..7`, `TarifaXMilSecundaria1..7` e `Impuesto1..8` en retención (8 actividades); en ICA, la principal más `Secundaria1` a `Secundaria14` (15).
-- `{Code}` es el `src` de la imagen del código de barras, en 6 plantillas.
+- **Variables que pone el back, no un campo**: `{Code}` (7 usos, el `src` de la imagen del código de barras), `{FechaGuardado}` (12) y `{NroRadicado}` (13; por ejemplo, `Nro. Formulario: 2026-{NroRadicado}` en TAU).
 - **Fallo visible**: `PdfAutoretencionCAR` tiene tres `${}` vacíos que salen impresos tal cual.
 
 ### 4.3 Imágenes
@@ -137,6 +190,11 @@ Análisis del 2026-11-15 sobre las 22 plantillas que hoy se hacen a mano.
 - El resto son escudos, banderas, logos y eslóganes. Algunas pesan de más: el escudo de PT mide 1920×2677 (157 KB) para mostrarse a 200×250, y TOR trae un WebP de 202 KB para mostrarse a 100×100.
 - 8 imágenes se repiten entre la ReteICA y la autorretención del mismo municipio (CAR, PT, SJ, TAU, VDG).
 - Tres plantillas (autorretención PC, ReteICA LD y VDG) piden imágenes por URL a `autoliquidables.1cero1.com/HtmlToPdf/<NIT>/…`.
+- **Sellos de la entidad con la fecha encima** (revisado el 2026-11-16) en 6 plantillas: ReteICA y autorretención de TAU, ReteICA LD, ReteICA CAR, y ReteICA y autorretención de VDG.
+  - Todos usan la misma técnica: un PNG del sello (de 230 a 350 px de alto) y encima `{FechaGuardado}` en un `<span>` con `position: absolute; top: 50–52%; left: 50%; transform: translate(-50%, -50%)`, letra de 22 a 35 px, negrilla, `white-space: nowrap`.
+  - En TAU la imagen además sube por encima de su celda (`top: -153px`).
+  - De ahí sale el componente de sello (§2.1).
+- **QR**: ninguna plantilla tiene uno todavía. El ICA solo deja la caja "ESPACIO PARA CÓDIGO QR" (`ICA/PdfICA.html`). En otros municipios, el QR sirve para pagar (Medellín), para firmar en el portal (Palmira) o para verificar la autenticidad de un documento oficial. No hay un estándar para el QR de una declaración.
 
 ### 4.4 Estructura
 
@@ -149,30 +207,111 @@ Análisis del 2026-11-15 sobre las 22 plantillas que hoy se hacen a mano.
 ### 4.5 Tamaños y la diferencia con el navegador
 
 - **Señal de un convertidor más ancho**: letras de 25 a 50 px e imágenes de hasta 595 px de alto, que en una hoja A4 del navegador (unos 794 px de ancho) se ven gigantes. Las plantillas están pensadas para un convertidor que pinta la página mucho más ancha y luego la encoge.
+- **La causa, confirmada en el back el 2026-11-16** (§4.6): el ICA se pinta en una ventana de 1960 px y se encoge a una hoja tabloide de 11 pulgadas de ancho. Cada px CSS queda en unos 0,38 pt, en lugar de 0,75 pt, así que una letra de 25 px sale de unos 9,6 pt.
 - **Papel en Colombia**: carta (21,6 × 27,9 cm) y oficio (21,6 × 33 cm), con el mismo ancho.
   - El formulario 350 de la DIAN (versión 2009) es carta: 612 × 792 pt. El PDF del dashboard también (`apps/tax-filing-manager/src/lib/declarationPdf.ts`, `format: 'letter'`).
   - A4 es 6 mm más angosta y 18 mm más alta que carta: una copia en A4 de un PDF en carta arranca con otras proporciones.
-- **En píxeles** (CSS cuenta 96 px por pulgada): carta y oficio miden 816 px de ancho, unos 740 útiles con márgenes de 1 cm; A4 mide 794 px, unos 718 útiles.
+- **En píxeles** (CSS cuenta 96 px por pulgada):
+  - carta y oficio miden 816 px de ancho, **778 útiles con las márgenes de 5 mm decididas**;
+  - el alto útil de una hoja carta con esas márgenes es de unos 1018 px;
+  - A4 mide 794 px de ancho.
+
+### 4.6 El back que convierte (revisado el 2026-11-16)
+
+Solo lectura, en `C:\Users\tomas\OneDrive\Documents\Autoliquidables\GestorPagosWeb` (ruta dada por el usuario). **Ahí solo está el ICA.** La ReteICA y la autorretención no se generan en `ApiAutoliquidable` ni en `ApiGestorPagosWeb`: las convierte otro back, que no está en este PC.
+
+- **Librería**: `Select.HtmlToPdf.NetCore` 22.2.0, en `ApiAutoliquidable/Autoliquidables.Service/Autoliquidables.Service.csproj`. Es la edición Community de SelectPdf: gratis, con un tope de 5 páginas por PDF. **Ese paquete solo funciona en Windows** (§7).
+- **Conversión** (`GenerarPDFDeclaracionICA`, en `Autoliquidables.Service/Code/AutoliquidableServices.cs`):
+  - `PdfPageSize.Letter11x17`: tabloide, no carta.
+  - `Portrait`.
+  - `WebPageWidth = 1960`.
+  - Márgenes de 20 pt en los cuatro lados.
+  - `ConvertHtmlString(body, "")`, sin URL base: las imágenes por URL tienen que ser absolutas.
+  - No fija el motor, así que usa el WebKit que trae SelectPdf por defecto.
+- **Plantilla**: una sola para todos los municipios, en la ruta de `Carpetas:RutaICAGenerico` (`appsettings`). Se lee del disco en cada declaración.
+- **Llenado** (`CrearArchivoDeclarionICA`): `body.Replace("{Var}", …)`, variable por variable. Los números salen con `ToString("N0", es-CO)`, sin decimales y con punto de miles, así que llegan ya formateados. Además, **arma HTML**:
+  - `{BloqueActividadesPrincipales}` y `{BloqueActividadesAdicionales}`: filas `<tr>` construidas con un `StringBuilder`.
+  - `{Bloque}`: los renglones opcionales de sobretasa de seguridad, juegos permitidos y estampilla, cada uno si el municipio lo tiene.
+  - `{BloquePagosRecibidos}` y `{PeriodoAnual}`.
+  - `{TipoDeclaracion}`, `{TipoDocumento}`, `{TipoSancion}` y `{TipoPersona}`: celdas con la X ya puesta.
+  - `{ColspanAnual}` y `{RowspanDeclarionPrivada}`: atributos de estructura calculados, el segundo sube con cada renglón opcional.
+  - `{N}`: numera los renglones con un contador que arranca en 20 (`Regex.Replace`).
+- **Código de barras** (`CrearCodigoBarras`, en `Common.Service/Code/CommonServices.cs`): GS1-128 con los identificadores de recaudo (415) código EAN del municipio, (8020) radicado + documento, (3900) total a pagar y (96) fecha de vencimiento. Usa `System.Drawing` (`Font`), sale como `data:image/png;base64,…` y llena `{Code}`. No hay QR en ninguna parte.
+- **Cada declaración se guarda como PDF**, en `Carpetas:RutaDeclaraciones/<CodigoMunicipio>/<CodigoMunicipio>_<IdDeclaracion>_<Prefijo><Radicado>.pdf`, con la ruta en la base de datos (`ActualizarRutaArchivoPDF`). Luego se envía por correo. Por eso cambiar una plantilla no toca las declaraciones ya emitidas; solo las afecta una regeneración.
+- **Despliegue**: `ApiAutoliquidable/Dockerfile` usa `mcr.microsoft.com/dotnet/aspnet:6.0`, una imagen Linux, y los 18 proyectos de las dos APIs apuntan a `net6.0`. `compose.yml` corre el contenedor con `ASPNETCORE_ENVIRONMENT=Development`.
+- **Error encontrado (sin corregir, es del back)**: `{Sanciones}` se llena con `obj.TotalIngresosNacionales` (línea ~379), no con la sanción.
 
 ## 5. Dónde se engancha en el código
 
 FormMaker al 2026-11-15. Rutas relativas a `apps/form-maker/`.
 
-| Qué                                                              | Dónde                                                                                                                                                                                                             |
-| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Lienzo activo (hoy, pasos del formulario y del modal de entrada) | `CanvasTarget` en `src/types/placement.ts`; `activeCanvas` y `setActiveCanvas` en `src/store/formStore.ts`; `CanvasTabs`; `src/lib/stepNavigation/`                                                               |
-| Vistas del lienzo y pestañas del panel derecho                   | `CanvasViewMode` y `RightSidebarTab` en `src/types/ui.ts`; `VIEW_MODE_TABS` en `src/constants/canvasView.ts`; `organisms/RightSidebar/`                                                                           |
-| Borrador en `localStorage`                                       | `buildDraftPayload`, `saveDraft`, `loadDraft` y `parseDraft` en `src/lib/persistence/persistence.ts`; `DRAFT_SCHEMA_VERSION` en `persistence.constants.ts`; `persistence.schema.ts` y `persistence.migrations.ts` |
-| Exportar y abrir el archivo del proyecto                         | `buildFormExport` y `downloadFormExport` (que agrega `builderDraft`) en `src/lib/exportForm/exportForm.ts`; `readProjectFile` en `src/lib/projectFile/`; `ProjectImportModal`                                     |
-| Revisión antes de exportar                                       | `diagnoseForm` en `src/lib/formDiagnostics/`; `useExportReview`; `ExportReviewModal`                                                                                                                              |
-| Lo que un formulario le pide al consumidor                       | `collectRequires` en `src/lib/formRequires/`                                                                                                                                                                      |
-| Valores calculados para la vista previa                          | `buildRuntimeModel` y `resolveRuntime` en `src/lib/formRuntime/formRuntime.ts`; `useFormPreview`; `FormSimulator` (chunk perezoso)                                                                                |
-| Nombres de campos conocidos                                      | `useKnownFieldNames` en `src/hooks/useKnownFieldNames/`                                                                                                                                                           |
-| Precedente de contenido seguro                                   | `serializeRichText` y `safeHref` en `src/lib/richText/`                                                                                                                                                           |
-| Máximo de actividades del grupo repetible                        | `DEFAULT_GROUP_MAX` en `src/lib/repeatableGroup/repeatableGroup.constants.ts`                                                                                                                                     |
-| Frontera de los chunks perezosos                                 | El encabezado de `src/lib/index.ts`; "File layout conventions" en `CLAUDE.md`                                                                                                                                     |
+| Qué                                                                    | Dónde                                                                                                                                                      |
+| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lienzo activo (hoy, pasos del formulario y del modal de entrada)       | `CanvasTarget` en `src/types/placement.ts`; `activeCanvas` y `setActiveCanvas` en `src/store/formStore.ts`; `CanvasTabs`; `src/lib/stepNavigation/`        |
+| Vistas del lienzo y pestañas del panel derecho                         | `CanvasViewMode` y `RightSidebarTab` en `src/types/ui.ts`; `VIEW_MODE_TABS` en `src/constants/canvasView.ts`; `organisms/RightSidebar/`                    |
+| Borrador en `localStorage` (el diseño **no** entra aquí, §3.1)         | `buildDraftPayload`, `saveDraft`, `loadDraft` y `parseDraft` en `src/lib/persistence/persistence.ts`; `DRAFT_SCHEMA_VERSION` en `persistence.constants.ts` |
+| Llaves propias de `localStorage`, el molde para el guardado del diseño | Los bancos del simulador (`src/lib/valoresBank/`, `src/lib/maxDatesBank/`) y `store/banksSlice.ts`                                                         |
+| Leer un archivo local                                                  | `readProjectFile` en `src/lib/projectFile/`; `ProjectFilePicker`; `ProjectImportModal`                                                                     |
+| Revisión antes de exportar                                             | `diagnoseForm` en `src/lib/formDiagnostics/`; `useExportReview`; `ExportReviewModal`                                                                       |
+| Valores calculados para la vista previa                                | `buildRuntimeModel` y `resolveRuntime` en `src/lib/formRuntime/formRuntime.ts`; `useFormPreview`; `FormSimulator` (chunk perezoso)                         |
+| Nombres de campos conocidos                                            | `useKnownFieldNames` en `src/hooks/useKnownFieldNames/`                                                                                                    |
+| Precedente de contenido seguro                                         | `serializeRichText` y `safeHref` en `src/lib/richText/`                                                                                                    |
+| Máximo de actividades del grupo repetible                              | `DEFAULT_GROUP_MAX` en `src/lib/repeatableGroup/repeatableGroup.constants.ts`                                                                              |
+| Frontera de los chunks perezosos                                       | El encabezado de `src/lib/index.ts`; "File layout conventions" en `CLAUDE.md`                                                                              |
 
 ## 6. Para retomar
 
-- **Estado**: en planeación. Al 2026-11-15 no se ha escrito código de esta zona.
-- **Siguiente paso**: §3.0, empezando por el acuerdo de página con el back y la decisión de los nombres de las variables.
+- **Estado**: en planeación. Al 2026-11-16 no se ha escrito código de esta zona.
+  - Ese día se decidió casi todo lo de §2.1 y se revisó el back del ICA (§4.6).
+  - De ahí salió la lista para el back (§7), incluida su seguridad: hace poco hubo una brecha.
+- **Siguiente paso**:
+  - **§3.1 ya se puede empezar**, cuando el usuario lo pida. No espera al back, que nunca se prende para esto, ni al inventario de variables.
+  - Lo único pendiente de §3.0 es el inventario (en espera del usuario) y entregarle §7 al back.
+
+## 7. Lo que se le pide al back
+
+El usuario no desarrolla el back: esta lista es para entregársela a quien lo maneja. Revisada el 2026-11-16 sobre `GestorPagosWeb`, solo leyendo. Las versiones "más recientes" son las de esa fecha: verificarlas en NuGet antes de fijarlas.
+
+### 7.1 Seguridad (hace poco hubo una brecha)
+
+1. **Salir de .NET 6.** Los 18 proyectos de las dos APIs y las imágenes de Docker usan `net6.0` / `aspnet:6.0`, sin parches de seguridad desde el 12 de noviembre de 2024. .NET 8 y 9 también salieron de soporte, el 10 de noviembre de 2026. **El destino es .NET 10 (LTS, con soporte hasta noviembre de 2028).** Según el usuario (2026-11-16), la migración ya va, poco a poco, para no romper nada.
+2. **Actualizar MailKit/MimeKit.** `MailKit` 4.7.1.1 está afectado por **CVE-2026-41319** (inyección en la respuesta de STARTTLS, que permite bajar el mecanismo SASL), corregido en MailKit 4.16.0. Su MimeKit está afectado por **CVE-2026-30227** (inyección de CRLF en el sobre SMTP), corregido en MimeKit 4.15.1.
+3. **Revisar el entorno de producción.** `compose.yml` fija `ASPNETCORE_ENVIRONMENT=Development`, pero ese contenedor es solo de pruebas, no de despliegue (usuario, 2026-11-16). Queda como recordatorio de que producción no corra en `Development`. Además, los servicios devuelven `ex.ToString()` en `Message`: si eso llega al cliente, expone trazas internas (rutas, consultas, versiones). Hay que revisar si Swagger queda expuesto en ese modo.
+4. **FTP cifrado.** Si las plantillas van a vivir en un servidor FTP (§2.1), que sea **SFTP o FTPS**: el FTP plano manda el usuario y la clave sin cifrar.
+5. **Convertidor sin JavaScript y con salida a internet restringida.** SelectPdf ejecuta JS por defecto, así que un script colado en una plantilla correría en el servidor. Hay que apagarlo y limitar las URL que el convertidor puede pedir al servidor de imágenes, para que una plantilla no pueda sondear la red interna. FormMaker ya sanea por su lado (§2.1); esto es la segunda barrera.
+6. `Microsoft.AspNetCore.Http` 2.3.0 es un paquete de la época de ASP.NET Core 2.x. En .NET 6 o posterior ya viene en el framework y se puede quitar.
+
+### 7.2 La librería de PDF
+
+1. **Pasar a `SelectPdf.HtmlToPdf.Universal`** (26.5.0 al 2026-11-16), con `SelectPdf.HtmlToPdf.Linux` para Docker. Es el sucesor multiplataforma de `Select.HtmlToPdf.NetCore`, sigue siendo Community (gratis, hasta 5 páginas) y conserva las mismas clases, así que el cambio de código es mecánico.
+   - **Usa solo Chromium** (CEF 146 o más nuevo), que es lo más reciente y lo que se sigue parchando. Los motores WebKit y Blink no existen en ese paquete.
+   - **Arregla también el fallo de §1**: Chromium pinta como el navegador, así que la vista previa de FormMaker queda casi igual al PDF.
+   - Hay que probar las plantillas después del cambio: el motor es otro.
+2. **Los PDF no se pueden generar en el contenedor de pruebas.**
+   - `Select.HtmlToPdf.NetCore` solo funciona en Windows: en Linux falla buscando `kernel32.dll`.
+   - El contenedor es Linux (`aspnet:6.0`).
+   - `System.Drawing.Common`, que usa el código de barras, tampoco funciona fuera de Windows desde .NET 6.
+
+   El usuario no lo sabía y lo van a revisar (2026-11-16). `SelectPdf.HtmlToPdf.Linux` (punto 1) lo resuelve para la conversión; el código de barras necesita además una librería que no dependa de `System.Drawing`.
+
+3. **El contrato de conversión de carta**, que el usuario aceptó el 2026-11-16 y el back va a aplicar (§2.1, "Perfil de conversión"):
+   - `PdfPageSize.Letter`, en lugar del tabloide `Letter11x17`;
+   - márgenes de 5 mm (≈ 14 pt) en los cuatro lados; una margen mayor la pone el diseño, como relleno dentro del HTML;
+   - `WebPageWidth = 778`, el ancho útil de carta en px CSS (816 − 2 × 19), para que 1 px CSS sea 0,75 pt y lo que se ve al 100 % sea lo que sale.
+
+   Al aplicarlo, las plantillas vigentes se escalan por ≈ 0,4 (778 / 1960).
+
+4. **Endpoints para el flujo de §2.1**:
+   - subir el `.html`, con el esquema de versiones de §2.1: `_v<N>`, las últimas 10, y producción usa siempre la más alta;
+   - preguntar si un municipio, en un impuesto, tiene plantilla, y traerla;
+   - opcional: una vista previa exacta, que convierta la plantilla con datos de prueba y devuelva el PDF.
+5. **Los bloques del ICA** (§2.2, punto 4): con plantillas por municipio, el back deja de armar HTML y solo reemplaza variables.
+6. **Corregir `{Sanciones}`**, que hoy se llena con `TotalIngresosNacionales` (§4.6).
+7. **La conversión de la ReteICA y la autorretención todavía no existe** (usuario, 2026-11-16). Cuando se cree, que use el mismo contrato de carta del punto 3.
+
+### 7.3 Fuentes
+
+- [.NET 8 y 9: fin de soporte el 10 de noviembre de 2026](https://devblogs.microsoft.com/dotnet/dotnet-8-9-end-of-support/) y [política de soporte de .NET](https://dotnet.microsoft.com/platform/support/policy)
+- [CVE-2026-41319 (MailKit)](https://advisories.gitlab.com/nuget/mailkit/CVE-2026-41319/) y [CVE-2026-30227 (MimeKit)](https://app.opencve.io/cve/CVE-2026-30227)
+- [SelectPdf.HtmlToPdf.Universal en NuGet](https://www.nuget.org/packages/SelectPdf.HtmlToPdf.Universal), [SelectPdf.HtmlToPdf.Linux](https://www.nuget.org/packages/SelectPdf.HtmlToPdf.Linux/) y [la instalación de SelectPdf](https://selectpdf.com/html-to-pdf/docs/html/Installation.htm)
+- [SelectPdf v26.2, motor Chromium (CEF)](https://selectpdf.com/selectpdf-v26-2-released-with-new-chromium-cef-rendering-engine-and-full-azure-web-apps-support/) y [Community Edition](https://selectpdf.com/community-edition/)
