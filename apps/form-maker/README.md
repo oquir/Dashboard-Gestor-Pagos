@@ -4,6 +4,8 @@ Constructor visual de formularios paso a paso ("step-by-step form builder") con 
 
 El caso de uso que guía el diseño es el **autoliquidable de Industria y Comercio (ICA)**: ocho pasos, cálculos encadenados entre renglones y un bloque repetible de actividades económicas. La plantilla de ICA viene armada por defecto.
 
+> **En planeación: el diseñador de PDF.** Lo decidido, lo que falta por decidir y la lista de pendientes están en [`docs/Pendientes-PDF.md`](docs/Pendientes-PDF.md). Los puntos se tachan a medida que se terminan.
+
 ## Stack
 
 - **React 19** + **TypeScript** + **Vite 8**
