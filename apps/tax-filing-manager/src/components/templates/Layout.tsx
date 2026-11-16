@@ -6,7 +6,7 @@ import { Button } from '../atoms'
 import { Mark } from '../molecules'
 import { TopBar, Navigation } from '../organisms'
 
-const COLLAPSED_KEY = 'gestor-pagos:nav-collapsed'
+const COLLAPSED_KEY = 'tax-filing-manager:nav-collapsed'
 
 /** Estructura de las páginas con sesión: menú lateral (cajón en pantallas angostas), barra superior y contenido. */
 export default function Layout() {

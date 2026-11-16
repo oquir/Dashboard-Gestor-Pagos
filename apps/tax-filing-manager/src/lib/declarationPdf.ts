@@ -253,7 +253,7 @@ function draw(doc: jsPDF, d: Declaration, source: PdfFont) {
     style(false, 8, GRAY)
     doc.text(
       clean(
-        `Copia de la declaración ${d.number} · Generada por el Gestor de Pagos el ${generated}`,
+        `Copia de la declaración ${d.number} · Generada por el Gestor Autoliquidables el ${generated}`,
       ),
       MARGIN,
       792 - 30,

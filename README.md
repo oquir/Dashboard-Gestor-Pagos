@@ -1,11 +1,11 @@
-# Gestor de Pagos (monorepo)
+# Gestor Autoliquidables (monorepo)
 
 Dos aplicaciones de 1cero1 en un solo repositorio:
 
-| Carpeta           | Qué es                                                                                      | Historial anterior                                      |
-| ----------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `apps/dashboard`  | Dashboard Gestor de Pagos: RIT, declaraciones, pagos y configuración de cada municipio      | Este mismo repositorio (`oquir/Dashboard-Gestor-Pagos`) |
-| `apps/form-maker` | FormMaker (antes Form Orchestrator): arma el formulario de cada municipio y exporta su JSON | `oquir/Form-Orchestrator`                               |
+| Carpeta                   | Qué es                                                                                        | Historial anterior                                      |
+| ------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `apps/tax-filing-manager` | Dashboard Gestor Autoliquidables: RIT, declaraciones, pagos y configuración de cada municipio | Este mismo repositorio (`oquir/Dashboard-Gestor-Pagos`) |
+| `apps/form-maker`         | FormMaker (antes Form Orchestrator): arma el formulario de cada municipio y exporta su JSON   | `oquir/Form-Orchestrator`                               |
 
 ## Comandos
 

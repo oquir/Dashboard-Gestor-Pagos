@@ -23,7 +23,7 @@ export default function Login() {
             <Courthouse className="size-6" aria-hidden />
           </span>
           <div>
-            <h1 className="text-2xl font-semibold text-fg-strong">Gestor de Pagos</h1>
+            <h1 className="text-2xl font-semibold text-fg-strong">Gestor Autoliquidables</h1>
             <p className="text-sm text-fg-muted">
               Industria y comercio, ReteICA, AutoReteICA y RIT · demo con datos simulados
             </p>

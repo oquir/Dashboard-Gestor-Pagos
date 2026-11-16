@@ -40,7 +40,7 @@ export default function LoginCredentials() {
           <span className="flex size-11 items-center justify-center rounded-xl bg-brand text-on-brand">
             <Courthouse className="size-6" aria-hidden />
           </span>
-          <h1 className="text-2xl font-semibold text-fg-strong">Gestor de Pagos</h1>
+          <h1 className="text-2xl font-semibold text-fg-strong">Gestor Autoliquidables</h1>
         </div>
 
         <Card className="p-6">

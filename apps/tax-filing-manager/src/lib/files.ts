@@ -12,7 +12,7 @@ export function formatSize(bytes: number) {
 }
 
 // Sin API, los archivos que se cargan en la demo se guardan en IndexedDB, en este navegador.
-const BASE = 'gestor-pagos-archivos'
+const BASE = 'tax-filing-manager-files'
 const STORAGE = 'archivos'
 
 function openBase() {

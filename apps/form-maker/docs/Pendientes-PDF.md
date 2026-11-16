@@ -150,7 +150,7 @@ Análisis del 2026-11-15 sobre las 22 plantillas que hoy se hacen a mano.
 
 - **Señal de un convertidor más ancho**: letras de 25 a 50 px e imágenes de hasta 595 px de alto, que en una hoja A4 del navegador (unos 794 px de ancho) se ven gigantes. Las plantillas están pensadas para un convertidor que pinta la página mucho más ancha y luego la encoge.
 - **Papel en Colombia**: carta (21,6 × 27,9 cm) y oficio (21,6 × 33 cm), con el mismo ancho.
-  - El formulario 350 de la DIAN (versión 2009) es carta: 612 × 792 pt. El PDF del dashboard también (`apps/dashboard/src/lib/declarationPdf.ts`, `format: 'letter'`).
+  - El formulario 350 de la DIAN (versión 2009) es carta: 612 × 792 pt. El PDF del dashboard también (`apps/tax-filing-manager/src/lib/declarationPdf.ts`, `format: 'letter'`).
   - A4 es 6 mm más angosta y 18 mm más alta que carta: una copia en A4 de un PDF en carta arranca con otras proporciones.
 - **En píxeles** (CSS cuenta 96 px por pulgada): carta y oficio miden 816 px de ancho, unos 740 útiles con márgenes de 1 cm; A4 mide 794 px, unos 718 útiles.
 

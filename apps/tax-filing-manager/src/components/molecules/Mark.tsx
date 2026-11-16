@@ -20,7 +20,7 @@ export default function Mark({ collapsed = false, action }: MarkProps) {
       </span>
       {!collapsed && (
         <p className="whitespace-nowrap text-[15px] font-semibold text-fg-strong">
-          Gestor de Pagos
+          Gestor Autoliquidables
         </p>
       )}
       {action && <span className="ml-auto">{action}</span>}

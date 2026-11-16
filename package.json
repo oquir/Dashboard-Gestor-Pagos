@@ -1,5 +1,5 @@
 {
-  "name": "gestor-pagos-monorepo",
+  "name": "tax-filing-manager-monorepo",
   "private": true,
   "type": "module",
   "devEngines": {
@@ -11,11 +11,11 @@
   },
   "scripts": {
     "dev": "pnpm --recursive --parallel dev",
-    "dev:dashboard": "pnpm --filter dashboard-gestor-pagos dev",
+    "dev:dashboard": "pnpm --filter tax-filing-manager-dashboard dev",
     "dev:formularios": "pnpm --filter form-maker dev",
     "build": "pnpm --recursive build",
     "preview": "pnpm --recursive --parallel preview",
-    "preview:dashboard": "pnpm --filter dashboard-gestor-pagos preview",
+    "preview:dashboard": "pnpm --filter tax-filing-manager-dashboard preview",
     "preview:formularios": "pnpm --filter form-maker preview",
     "lint": "eslint . && prettier --check .",
     "lint:fix": "eslint --fix . && prettier --write .",
