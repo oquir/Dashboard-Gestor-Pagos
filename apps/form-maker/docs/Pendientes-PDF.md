@@ -110,12 +110,12 @@ Nada de §3.0 frena el código: el inventario de variables y el entregable del b
 
 ### 3.1 La zona y el modelo
 
-- [ ] Perfil de conversión de carta como constante única en `src/constants/` (§2.1).
-- [ ] Tipos del diseño en `src/types/`: el documento (margen extra por lado, sobre los 5 mm fijos del back) y sus hojas, las filas y las celdas, con `colspan`, `rowspan`, bordes, alineación, fondo y contenido.
-- [ ] Guardado automático local del diseño, en su propia llave y no en el borrador del formulario, así que no hace falta subir `DRAFT_SCHEMA_VERSION`. Si el base64 de las imágenes no cabe en `localStorage` (unos 5 MB por origen), se pasa a IndexedDB.
-- [ ] Entrada "Diseñar PDF" en el panel derecho, como un tercer tipo de lienzo (hoy `CanvasTarget` es `formStep | introStep`).
-- [ ] Una plantilla por impuesto: elegirla con `setupConfig.formType`, guardarla en su propia llave por impuesto y dejar un parámetro opcional (URL u objeto) para cuando se sepa cómo llega (§2.1, "Una plantilla por impuesto").
-- [ ] Que el diseñador sea un chunk perezoso, como `FormSimulator`: fuera de los índices de nivel y de `lib/index.ts`.
+- [x] ~~Perfil de conversión de carta como constante única en `src/constants/` (§2.1).~~ (2026-11-17: `src/constants/pdfDesign.ts`.)
+- [x] ~~Tipos del diseño en `src/types/`: el documento (margen extra por lado, sobre los 5 mm fijos del back) y sus hojas, las filas y las celdas, con `colspan`, `rowspan`, bordes, alineación, fondo y contenido.~~ (2026-11-17: `src/types/pdfDesign.ts`. El contenido de la celda es texto con `{Var}`; el HTML libre entra en §3.2.)
+- [x] ~~Guardado automático local del diseño, en su propia llave y no en el borrador del formulario, así que no hace falta subir `DRAFT_SCHEMA_VERSION`.~~ (2026-11-17: `lib/pdfDesignBank` y `usePdfDesignAutosave`, 800 ms después del último cambio.) Si el base64 de las imágenes no cabe en `localStorage` (unos 5 MB por origen), se pasa a IndexedDB: por ahora el cupo lleno solo avisa.
+- [x] ~~Entrada "Diseñar PDF" en el panel derecho, como un tercer tipo de lienzo (hoy `CanvasTarget` es `formStep | introStep`).~~ (2026-11-17: botón en el bloque "PDF de la declaración" de Proyecto.) **Cambio**: no es un tercer `CanvasTarget` sino una pantalla completa como el simulador (`isPdfDesignerOpen`). `CanvasTarget` se lee en unos 57 sitios que suponen filas y campos, y entra al historial del formulario; un tercer tipo caía en las ramas de "modal de entrada".
+- [x] ~~Una plantilla por impuesto: elegirla con `setupConfig.formType`, guardarla en su propia llave por impuesto y dejar un parámetro opcional (URL u objeto) para cuando se sepa cómo llega (§2.1, "Una plantilla por impuesto").~~ (2026-11-17: llave `form-orchestrator-pdf-<impuesto>`; `?impuesto=` en la URL gana si es un impuesto conocido.)
+- [x] ~~Que el diseñador sea un chunk perezoso, como `FormSimulator`: fuera de los índices de nivel y de `lib/index.ts`.~~ (2026-11-17: `PdfDesigner-*.js`, unos 8 kB; verificado que el chunk inicial no trae su store ni su guardado.)
 
 ### 3.2 El editor
 
@@ -277,11 +277,11 @@ FormMaker al 2026-11-15. Rutas relativas a `apps/form-maker/`.
 
 ## 6. Para retomar
 
-- **Estado**: en planeación. Al 2026-11-16 no se ha escrito código de esta zona.
-  - Ese día se decidió casi todo lo de §2.1 y se revisó el back del ICA (§4.6).
+- **Estado**: §3.1 hecha el 2026-11-17. El diseñador abre a pantalla completa, muestra las hojas de carta con sus guías y guarda solo, pero todavía no se puede editar nada.
+  - El 2026-11-16 se decidió casi todo lo de §2.1 y se revisó el back del ICA (§4.6).
   - De ahí salió la lista para el back (§7), incluida su seguridad: hace poco hubo una brecha.
 - **Siguiente paso**:
-  - **§3.1 ya se puede empezar**, cuando el usuario lo pida. No espera al back, que nunca se prende para esto, ni al inventario de variables.
+  - **§3.2, el editor**: la barra lateral, el margen extra, las hojas con su aviso de "no cabe" y la tabla editable. El store del diseño (`store/pdfDesignStore.ts`) ya existe; ahí se le monta su propio `temporal` de zundo.
   - El inventario de variables y el entregable del back quedan para el final (§3.7).
 
 ## 7. Lo que se le pide al back

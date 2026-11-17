@@ -486,6 +486,15 @@ Cosas que conviene saber:
 - **`search_select` abre un buscador en un modal** en vez de un `<select>`: 425 actividades por 15 repeticiones serían miles de opciones montadas de entrada.
 - Va detrás de un `React.lazy`: el simulador y sus datos de prueba no se descargan hasta abrirlo.
 
+### Diseñador de PDF (en construcción)
+
+El botón **Diseñar PDF**, en el bloque "PDF de la declaración" de la pestaña Proyecto, abre a pantalla completa la plantilla del PDF de la declaración. Hoy muestra las hojas de carta con sus guías y guarda solo; editarlas llega en la siguiente fase. El plan completo, con lo decidido y lo que falta, está en [`docs/Pendientes-PDF.md`](docs/Pendientes-PDF.md).
+
+- **Una plantilla por impuesto**, no por formulario ni por municipio: dos formularios de autorretención comparten la misma. El impuesto sale del formulario abierto, salvo que la URL traiga `?impuesto=<tipo>` con uno conocido.
+- **Se guarda en el navegador**, en una llave por impuesto (`form-orchestrator-pdf-<impuesto>`), poco después de cada cambio y al volver al formulario. Nunca entra al borrador ni al JSON exportado. Si no cabe (unos 5 MB, casi siempre por imágenes en base64), lo avisa en la cabecera.
+- **Carta, con 5 mm fijos del back**, que convierte con una ventana de 778 px. Un margen mayor lo pone el diseño: la guía gris son los 5 mm del back y la naranja, el margen extra.
+- Tiene su propio store, aparte del formulario, y va detrás de un `React.lazy`, como el simulador.
+
 ### Exportación
 
 `src/lib/exportForm/` (`downloadFormExport`/`buildFormExport`) serializa todo a un único JSON descargable: `projectMeta`, `setupConfig.introModal` y `formSchema` (`gridBaseColumns`, `prelude` y `steps[]`), cada step con sus `rows[].fields[]` y sus `groups[]`.
