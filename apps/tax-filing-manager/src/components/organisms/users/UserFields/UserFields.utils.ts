@@ -1,5 +1,5 @@
 import type { User } from '../../../../types'
-import { EMAIL_PATTERN } from './UserFields.constants'
+import { EMAIL_PATTERN } from '../../../../constants'
 import type { UserData } from './UserFields.types'
 
 export function userErrors(d: UserData) {
