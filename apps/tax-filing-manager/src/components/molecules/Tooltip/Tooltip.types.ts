@@ -10,4 +10,6 @@ export interface TooltipProps {
   placement?: Placement
   /** Clases extra del globo, por ejemplo un ancho fijo. */
   className?: string
+  /** Si está en true, el globo no sale; el elemento se pinta igual. Por ejemplo, el menú extendido ya muestra el texto. */
+  disabled?: boolean
 }

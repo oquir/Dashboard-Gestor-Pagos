@@ -26,6 +26,7 @@ export default function Tooltip({
   children,
   placement = 'top',
   className = '',
+  disabled = false,
 }: TooltipProps) {
   const [isOpen, setIsOpen] = useState(false)
   // Los elementos van en estado y no con los refs de Floating UI: la regla react-hooks/refs no deja leerlos al pintar.
@@ -33,7 +34,8 @@ export default function Tooltip({
   const [floating, setFloating] = useState<HTMLElement | null>(null)
   const { floatingStyles, context } = useFloating({
     elements: { reference, floating },
-    open: isOpen,
+    // Con disabled se cierra aunque estuviera abierto, por ejemplo al extender el menú con el globo a la vista.
+    open: isOpen && !disabled,
     onOpenChange: setIsOpen,
     placement,
     strategy: 'fixed',
@@ -41,12 +43,12 @@ export default function Tooltip({
     middleware: [offset(OFFSET), flip(), shift({ padding: VIEWPORT_PADDING })],
   })
   const { getReferenceProps, getFloatingProps } = useInteractions([
-    useHover(context, { mouseOnly: true, delay: { open: OPEN_DELAY } }),
-    useFocus(context),
+    useHover(context, { enabled: !disabled, mouseOnly: true, delay: { open: OPEN_DELAY } }),
+    useFocus(context, { enabled: !disabled }),
     // En pantallas táctiles no hay hover: tocarlo lo abre y lo cierra.
-    useClick(context, { ignoreMouse: true }),
-    useDismiss(context),
-    useRole(context, { role: 'tooltip' }),
+    useClick(context, { enabled: !disabled, ignoreMouse: true }),
+    useDismiss(context, { enabled: !disabled }),
+    useRole(context, { enabled: !disabled, role: 'tooltip' }),
   ])
   const { isMounted, styles } = useTransitionStyles(context, { duration: FADE_DURATION })
 
