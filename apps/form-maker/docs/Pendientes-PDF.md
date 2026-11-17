@@ -119,16 +119,19 @@ Nada de §3.0 frena el código: el inventario de variables y el entregable del b
 
 ### 3.2 El editor
 
-- [ ] Barra lateral amena (§2.1), para quien apenas programa. Tiene controles para lo común (tamaño de letra, negrilla, alineación, bordes, fondo, anchos) y un campo de clases y otro de estilos en línea para quien los necesite.
-- [ ] Hojas como bloques propios, con salto manual entre ellas, guía de fin de hoja que descuenta el margen extra y aviso cuando el contenido no cabe (§2.1, "Hojas").
-- [ ] Control de margen extra en la barra lateral, con el total real a la vista (§2.1, "Margen extra").
-- [ ] Tabla editable: agregar y quitar filas y columnas, combinar y dividir celdas, cambiar anchos.
-- [ ] Contenido de cada celda: texto fijo con formato, una variable `{Var}` (elegida de una lista o escrita a mano, §2.1), o los dos mezclados.
-- [ ] HTML libre por celda o por bloque, `<style>` incluido, con su saneo por lista blanca (§2.1).
+Hecha el 2026-11-17. El modelo cambió: la hoja pasa de una tabla a una lista de bloques (tablas y HTML libre) y la celda, de texto a contenido. El guardado sube a la versión 2, con migración desde la 1.
+
+- [x] ~~Barra lateral amena (§2.1), para quien apenas programa. Tiene controles para lo común (tamaño de letra, negrilla, alineación, bordes, fondo, anchos) y un campo de clases y otro de estilos en línea para quien los necesite.~~ (2026-11-17: `pdf/PdfSidebar` y sus paneles. El estilo se aplica a todas las celdas seleccionadas; clases y estilos en línea van en "Avanzado".)
+- [x] ~~Hojas como bloques propios, con salto manual entre ellas, guía de fin de hoja que descuenta el margen extra y aviso cuando el contenido no cabe (§2.1, "Hojas").~~ (2026-11-17: lo que no cabe se recorta en la guía y la hoja dice cuántos px sobran.)
+- [x] ~~Control de margen extra en la barra lateral, con el total real a la vista (§2.1, "Margen extra").~~ (2026-11-17)
+- [x] ~~Tabla editable: agregar y quitar filas y columnas, combinar y dividir celdas, cambiar anchos.~~ (2026-11-17: `lib/pdfTable`. Combinar toma el rectángulo de Shift+clic; los anchos y altos se escriben en px. Arrastrar bordes para cambiar anchos no está.)
+- [x] ~~Contenido de cada celda: texto fijo con formato, una variable `{Var}` (elegida de una lista o escrita a mano, §2.1), o los dos mezclados.~~ (2026-11-17: se escribe a mano y el lienzo resalta las `{Var}`. La lista de variables es de §3.4.)
+- [x] ~~HTML libre por celda o por bloque, `<style>` incluido, con su saneo por lista blanca (§2.1).~~ (2026-11-17: `lib/pdfHtml`, un lector propio que reescribe la salida desde cero.)
   - Del CSS se quitan `@import`, `expression(`, `behavior` y los `url(javascript:…)`.
   - Se quitan `<script>`, `<iframe>`, `<object>`, `<embed>`, `<link>`, `<meta>`, `<form>`, los atributos `on*` y los `javascript:`.
-- [ ] Tablas dentro de celdas: las plantillas de hoy anidan hasta 4 niveles, sobre todo para dibujar casillas.
-- [ ] Deshacer, rehacer y Ctrl+S, como en el formulario, pero con un historial zundo propio del diseño (§2.1).
+  - **El lienzo vive en un shadow root**: así el `<style>` del autor solo alcanza a las hojas y no a FormMaker, y como todas las hojas comparten el mismo root, vale en todas, igual que en el HTML final.
+- [x] ~~Tablas dentro de celdas: las plantillas de hoy anidan hasta 4 niveles, sobre todo para dibujar casillas.~~ (2026-11-17: `PDF_MAX_TABLE_DEPTH = 4`.)
+- [x] ~~Deshacer, rehacer y Ctrl+S, como en el formulario, pero con un historial zundo propio del diseño (§2.1).~~ (2026-11-17: un `temporal` aparte en `pdfDesignStore`, con las mismas ráfagas de 500 ms y el mismo tope de 100 pasos.)
 
 ### 3.3 Componentes para los machetazos que se repiten
 
@@ -277,11 +280,12 @@ FormMaker al 2026-11-15. Rutas relativas a `apps/form-maker/`.
 
 ## 6. Para retomar
 
-- **Estado**: §3.1 hecha el 2026-11-17. El diseñador abre a pantalla completa, muestra las hojas de carta con sus guías y guarda solo, pero todavía no se puede editar nada.
+- **Estado**: §3.1 y §3.2 hechas el 2026-11-17. El diseñador ya edita: hojas, tablas con filas, columnas, celdas combinadas y anidadas hasta 4 niveles, HTML libre saneado, margen extra, deshacer propio y guardado solo. Todavía no publica ni importa (§3.5), no tiene componentes (§3.3) y no ofrece la lista de variables (§3.4).
   - El 2026-11-16 se decidió casi todo lo de §2.1 y se revisó el back del ICA (§4.6).
   - De ahí salió la lista para el back (§7), incluida su seguridad: hace poco hubo una brecha.
 - **Siguiente paso**:
-  - **§3.2, el editor**: la barra lateral, el margen extra, las hojas con su aviso de "no cabe" y la tabla editable. El store del diseño (`store/pdfDesignStore.ts`) ya existe; ahí se le monta su propio `temporal` de zundo.
+  - **§3.3, los componentes** (texto vertical, casilla, NIT con DV, firmas, código de barras, QR, sello, fila repetible e imágenes), o adelantar §3.5 (generar y descargar el `.html`) para poder probar una plantilla en el back cuanto antes. Lo decide el usuario.
+  - Para generar el HTML final: `tableStyleMap` y `cellStyleMap` (`lib/pdfDesign`) dicen cómo se pinta cada tabla y cada celda en el lienzo. El generador tiene que emitir lo mismo, `table-layout: fixed` incluido, o el lienzo y el PDF no coinciden.
   - El inventario de variables y el entregable del back quedan para el final (§3.7).
 
 ## 7. Lo que se le pide al back

@@ -488,7 +488,15 @@ Cosas que conviene saber:
 
 ### Diseñador de PDF (en construcción)
 
-El botón **Diseñar PDF**, en el bloque "PDF de la declaración" de la pestaña Proyecto, abre a pantalla completa la plantilla del PDF de la declaración. Hoy muestra las hojas de carta con sus guías y guarda solo; editarlas llega en la siguiente fase. El plan completo, con lo decidido y lo que falta, está en [`docs/Pendientes-PDF.md`](docs/Pendientes-PDF.md).
+El botón **Diseñar PDF**, en el bloque "PDF de la declaración" de la pestaña Proyecto, abre a pantalla completa la plantilla del PDF de la declaración: la barra lateral a la izquierda y las hojas de carta a la derecha. Todavía no publica ni importa el `.html`. El plan completo, con lo decidido y lo que falta, está en [`docs/Pendientes-PDF.md`](docs/Pendientes-PDF.md).
+
+Cómo se arma:
+
+- **Hojas y bloques.** Cada hoja es una página aparte, y lleva tablas y bloques de HTML libre, uno debajo del otro. Lo que no cabe en una hoja no pasa solo a la siguiente: se recorta en la guía y la hoja avisa cuántos px sobran.
+- **Tablas.** Clic en una celda la selecciona y Shift+clic en otra selecciona el rectángulo entre las dos. Desde el panel se agregan y quitan filas y columnas junto a la celda, se combina el rectángulo o se divide una celda combinada, y se fijan el ancho de la columna y el alto de la fila en px.
+- **Celdas.** Llevan texto fijo con `{variables}` mezcladas (el lienzo las resalta), HTML libre o una tabla adentro, hasta 4 niveles. Letra, negrilla, cursiva, alineación, bordes y fondo se aplican a todas las celdas seleccionadas; clases y estilos en línea van en "Avanzado".
+- **HTML libre, saneado.** Se quitan scripts, iframes, formularios, eventos (`onclick`…) y enlaces `javascript:`; se permite `<style>`. Las hojas se pintan dentro de un shadow root, así que ese `<style>` cambia las hojas y no el resto de FormMaker.
+- **Deshacer propio.** Ctrl+Z / Ctrl+Y y los botones de la cabecera deshacen el PDF, no el formulario. Ctrl+S guarda ya mismo.
 
 - **Una plantilla por impuesto**, no por formulario ni por municipio: dos formularios de autorretención comparten la misma. El impuesto sale del formulario abierto, salvo que la URL traiga `?impuesto=<tipo>` con uno conocido.
 - **Se guarda en el navegador**, en una llave por impuesto (`form-orchestrator-pdf-<impuesto>`), poco después de cada cambio y al volver al formulario. Nunca entra al borrador ni al JSON exportado. Si no cabe (unos 5 MB, casi siempre por imágenes en base64), lo avisa en la cabecera.
