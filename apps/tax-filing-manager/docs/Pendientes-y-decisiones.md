@@ -95,7 +95,13 @@ Lista revisada con el usuario el 2026-11-15. Ya no trae lo implementado ni lo de
 ### 2.2 Para el final
 
 11. **Rediseño de todo el aplicativo**, para que se vea como la versión de producción.
-12. **Lo último**: pasarle a FormMaker el municipio elegido (decidido) y quizá el impuesto (ICA, ReteICA o AutoReteICA) al abrirlo desde Municipios. Hoy abre sin contexto porque FormMaker aún no los recibe.
+12. **Antes de las pruebas**: pasarle a FormMaker el municipio elegido (decidido) y quizá el impuesto (ICA, ReteICA o AutoReteICA) al abrirlo desde Municipios. Hoy abre sin contexto porque FormMaker aún no los recibe.
+13. **Lo último: pruebas unitarias con Vitest** (decidido el 2026-11-16), solo de la lógica de `src/lib/` y de los datos de la demo, que salen con semilla fija. Las reglas del mock le sirven al back de especificación: dicen qué tiene que dar cada caso. La fecha se fija con `vi.setSystemTime`, porque varias funciones usan `today()`. Lo mínimo:
+    - `calendar.ts`: vencimientos por último dígito sin el DV, periodos mensual, bimestral y trimestral, y años pasados sin pronto pago;
+    - `rules.ts`: corrección a la baja, sanción por extemporaneidad, plazo de 2 meses de la retención y días hábiles;
+    - `nonFilers.ts`: ningún omiso antes de la salida a producción ni en un municipio sin RIT;
+    - lo que siempre deben cumplir los datos de la demo, por ejemplo que Garzón no tenga inscripciones;
+    - sin pruebas de pantallas: el rediseño (punto 11) las tiraría.
 
 ### 2.3 Lo que no hace falta en el mock
 
