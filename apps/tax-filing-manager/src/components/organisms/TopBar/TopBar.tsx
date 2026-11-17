@@ -1,4 +1,5 @@
 import { MapPoint2, Logout, Menu, RotateLeft } from 'reicon-react'
+import { RESET_DEMO_CONFIRMATION } from '../../../constants'
 import { roleLabel, fullName, can, useSession } from '../../../lib'
 import { useData } from '../../../store'
 import { Badge, Button } from '../../atoms'
@@ -24,12 +25,7 @@ export default function TopBar({ openMenu, navCollapsed, toggleNav }: TopBarProp
   const showsMunicipality = !can(user.role, 'canSeeAllMunicipalities')
   const navLabel = navCollapsed ? 'Mostrar el menú' : 'Ocultar el menú'
   const reset = () => {
-    if (
-      window.confirm(
-        '¿Reiniciar la demo? Se pierden los cambios hechos y vuelven los datos originales.',
-      )
-    )
-      resetDemo()
+    if (window.confirm(RESET_DEMO_CONFIRMATION)) resetDemo()
   }
 
   return (
