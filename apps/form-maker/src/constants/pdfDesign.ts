@@ -44,3 +44,21 @@ export const PDF_DEFAULT_FONT: PdfFontFamily = 'Arial'
 
 // px; con el perfil de carta son 8,25 pt, letra corriente de formulario. Cada celda puede cambiarla.
 export const PDF_DEFAULT_FONT_SIZE: number = 11
+
+// Resguardo a cada lado del contenido de la hoja. Una tabla con bordes colapsados pinta su borde de
+// la orilla mitad adentro y mitad afuera: a lo ancho exacto de la hoja, la mitad de afuera caia en
+// el pixel 778, que el lienzo recorta y el convertidor no pinta, y el borde derecho desaparecia.
+export const PDF_EDGE_GUARD_PX: number = 1
+
+// El zoom del lienzo del PDF. Llega mas lejos que el del formulario (150 %): una declaracion de una
+// hoja va en letra de 8 px y hay que poder leerla. Solo cambia como se ve, nunca el diseño.
+export const PDF_ZOOM_MIN: number = 0.5
+
+export const PDF_ZOOM_MAX: number = 3
+
+export const PDF_ZOOM_STEP: number = 0.25
+
+export const PDF_ZOOM_PRESETS: number[] = [0.5, 0.75, 1, 1.25, 1.5, 2, 3]
+
+// Cuanto acerca cada px de rueda con Ctrl (el mismo factor que el lienzo del formulario).
+export const PDF_ZOOM_WHEEL_FACTOR: number = 0.002

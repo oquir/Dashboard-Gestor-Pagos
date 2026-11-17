@@ -80,6 +80,42 @@ export const RAW_TEXT_TAGS: ReadonlySet<string> = new Set([
 
 export const VOID_TAGS: ReadonlySet<string> = new Set(['br', 'hr', 'img', 'col'])
 
+// Para el lector tolerante (parsePdfHtml): que cierra sola cada apertura.
+export const CELL_TAGS: ReadonlySet<string> = new Set(['td', 'th'])
+
+export const SECTION_TAGS: ReadonlySet<string> = new Set(['thead', 'tbody', 'tfoot'])
+
+// Sus cierres solo se detienen en la tabla: "</tr>" cierra tambien la celda que quedo abierta.
+export const TABLE_PARTS: ReadonlySet<string> = new Set([
+  'td',
+  'th',
+  'tr',
+  'thead',
+  'tbody',
+  'tfoot',
+  'caption',
+  'colgroup',
+])
+
+// Un cierre comun no cruza estos: "</span>" dentro de una celda no cierra nada de afuera.
+export const TABLE_SCOPE: ReadonlySet<string> = new Set(['td', 'th', 'table', 'caption'])
+
+export const BLOCK_CLOSES_P: ReadonlySet<string> = new Set([
+  'p',
+  'div',
+  'table',
+  'ul',
+  'ol',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'hr',
+  'center',
+])
+
 export const ALLOWED_ATTRIBUTES: ReadonlySet<string> = new Set([
   'class',
   'style',

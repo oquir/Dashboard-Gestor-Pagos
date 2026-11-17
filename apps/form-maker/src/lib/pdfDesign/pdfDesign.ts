@@ -3,12 +3,17 @@ import {
   FORM_TYPES,
   PDF_DEFAULT_FONT,
   PDF_DEFAULT_FONT_SIZE,
+  PDF_EDGE_GUARD_PX,
   PDF_FONT_OPTIONS,
   PDF_MAX_EXTRA_MARGIN_MM,
   PDF_NO_EXTRA_MARGINS,
   PDF_PX_PER_MM,
   PDF_SHEET_HEIGHT_PX,
   PDF_WEB_PAGE_WIDTH_PX,
+  PDF_ZOOM_MAX,
+  PDF_ZOOM_MIN,
+  PDF_ZOOM_STEP,
+  PDF_ZOOM_WHEEL_FACTOR,
 } from '../../constants'
 import type {
   CssStyleMap,
@@ -73,7 +78,7 @@ export function normalizeMargins(margins: PdfMargins): PdfMargins {
 // los 778 px y en el alto de la hoja.
 export function contentBox(margins: PdfMargins): PdfContentBox {
   return {
-    width: PDF_WEB_PAGE_WIDTH_PX - mmToPx(margins.left + margins.right),
+    width: PDF_WEB_PAGE_WIDTH_PX - mmToPx(margins.left + margins.right) - 2 * PDF_EDGE_GUARD_PX,
     height: PDF_SHEET_HEIGHT_PX - mmToPx(margins.top + margins.bottom),
   }
 }
@@ -105,6 +110,47 @@ export function cellStyleMap(cell: PdfCell): CssStyleMap {
   if (cell.borders?.left) map.borderLeft = PDF_CELL_BORDER
 
   return { ...map, ...parseCssText(sanitizeCss(cell.style ?? '')) }
+}
+
+// La letra de todo el documento. line-height va explicito: el lienzo vive dentro de FormMaker y
+// heredaria su 1.5, mientras que el convertidor arranca en normal; sin el, las filas del lienzo
+// saldrian mas altas que en el PDF.
+export function documentStyleMap(design: PdfDesign): CssStyleMap {
+  return {
+    fontFamily: fontStack(design.fontFamily),
+    fontSize: `${design.fontSize}px`,
+    lineHeight: 'normal',
+    color: '#000',
+  }
+}
+
+// El zoom del lienzo, siempre dentro del rango y sin colas de coma flotante (1.2500000001).
+export function clampPdfZoom(zoom: number): number {
+  if (!Number.isFinite(zoom)) return 1
+  const clamped: number = Math.min(PDF_ZOOM_MAX, Math.max(PDF_ZOOM_MIN, zoom))
+  return Math.round(clamped * 100) / 100
+}
+
+// Los botones y Ctrl +/- saltan al siguiente multiplo del paso, no suman 25 % a lo que haya: tras
+// acercar con la rueda a 113 %, "+" lleva a 125 % y no a 138 %.
+export function stepPdfZoom(zoom: number, direction: 1 | -1): number {
+  const steps: number = zoom / PDF_ZOOM_STEP
+  const next: number = direction === 1 ? Math.floor(steps + 1e-9) + 1 : Math.ceil(steps - 1e-9) - 1
+  return clampPdfZoom(next * PDF_ZOOM_STEP)
+}
+
+// La rueda es continua: proporcional al zoom de ahora, para que se sienta igual de lejos que de cerca.
+export function wheelPdfZoom(zoom: number, deltaY: number): number {
+  return clampPdfZoom(zoom * (1 - deltaY * PDF_ZOOM_WHEEL_FACTOR))
+}
+
+// El relleno de los lados del contenido de cada hoja (PDF_EDGE_GUARD_PX): el lienzo y el generador
+// lo toman de aca, o el borde derecho volveria a perderse en uno de los dos.
+export function sheetEdgeStyleMap(): CssStyleMap {
+  return {
+    paddingLeft: `${PDF_EDGE_GUARD_PX}px`,
+    paddingRight: `${PDF_EDGE_GUARD_PX}px`,
+  }
 }
 
 export function fontStack(family: PdfFontFamily): string {

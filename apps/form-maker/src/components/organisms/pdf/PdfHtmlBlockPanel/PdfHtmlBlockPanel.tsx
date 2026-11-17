@@ -3,7 +3,7 @@ import {
   PANEL_DANGER_LINK_CLASSES,
   TEXTAREA_CLASSES,
 } from '../../../../constants'
-import { findBlock } from '../../../../lib/pdfDesignEdit'
+import { canMoveBlock, findBlock } from '../../../../lib/pdfDesignEdit'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { PanelSection } from '../../../molecules'
 
@@ -21,8 +21,6 @@ export function PdfHtmlBlockPanel() {
   if (!location || location.block.kind !== 'html') return null
 
   const block = location.block
-  const blocks = design.sheets.find((sheet) => sheet.id === location.sheetId)?.blocks ?? []
-  const index: number = blocks.findIndex((item) => item.id === block.id)
 
   return (
     <PanelSection
@@ -41,7 +39,7 @@ export function PdfHtmlBlockPanel() {
         <button
           type="button"
           onClick={() => moveBlock(block.id, -1)}
-          disabled={index <= 0}
+          disabled={!canMoveBlock(design, block.id, -1)}
           className={PANEL_BUTTON_CLASSES}
         >
           Subir
@@ -49,7 +47,7 @@ export function PdfHtmlBlockPanel() {
         <button
           type="button"
           onClick={() => moveBlock(block.id, 1)}
-          disabled={index >= blocks.length - 1}
+          disabled={!canMoveBlock(design, block.id, 1)}
           className={PANEL_BUTTON_CLASSES}
         >
           Bajar

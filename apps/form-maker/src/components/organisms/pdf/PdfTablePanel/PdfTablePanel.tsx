@@ -4,7 +4,7 @@ import {
   PANEL_DANGER_LINK_CLASSES,
   TEXTAREA_CLASSES,
 } from '../../../../constants'
-import { findCell } from '../../../../lib/pdfDesignEdit'
+import { canMoveBlock, findCell } from '../../../../lib/pdfDesignEdit'
 import { canMerge, canSplit, findPlaced, placeCells } from '../../../../lib/pdfTable'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { Label } from '../../../atoms'
@@ -38,9 +38,6 @@ export function PdfTablePanel() {
   const column: number = findPlaced(table, cell.id)?.col ?? 0
   const row = table.rows.find((item) => item.cells.some((candidate) => candidate.id === cell.id))
   const isLoose: boolean = location.depth === 1
-  const sheetBlocks = design.sheets.find((sheet) => sheet.id === location.sheetId)?.blocks ?? []
-  const blockIndex: number = sheetBlocks.findIndex((block) => block.id === table.id)
-  const blockCount: number = sheetBlocks.length
 
   return (
     <PanelSection
@@ -171,7 +168,7 @@ export function PdfTablePanel() {
             <button
               type="button"
               onClick={() => moveBlock(table.id, -1)}
-              disabled={blockIndex <= 0}
+              disabled={!canMoveBlock(design, table.id, -1)}
               className={PANEL_BUTTON_CLASSES}
             >
               Subir
@@ -179,7 +176,7 @@ export function PdfTablePanel() {
             <button
               type="button"
               onClick={() => moveBlock(table.id, 1)}
-              disabled={blockIndex < 0 || blockIndex >= blockCount - 1}
+              disabled={!canMoveBlock(design, table.id, 1)}
               className={PANEL_BUTTON_CLASSES}
             >
               Bajar

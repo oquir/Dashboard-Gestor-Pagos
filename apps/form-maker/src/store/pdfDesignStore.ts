@@ -2,8 +2,9 @@ import { type TemporalState, temporal, type ZundoOptions } from 'zundo'
 import { create, type Mutate, type StateCreator, type StoreApi, type UseBoundStore } from 'zustand'
 import { HISTORY_BURST_MS, HISTORY_LIMIT } from '../constants'
 import { createBurstGate } from '../lib/history'
-import { createBlankDesign, normalizeMargins } from '../lib/pdfDesign'
+import { clampPdfZoom, createBlankDesign, normalizeMargins } from '../lib/pdfDesign'
 import { loadPdfDesign } from '../lib/pdfDesignBank'
+import { factoryPdfDesign } from '../lib/pdfTemplates'
 import * as edit from '../lib/pdfDesignEdit'
 import * as table from '../lib/pdfTable'
 import type {
@@ -69,21 +70,47 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
   activeSheetId: null,
   lastSavedAt: null,
   saveError: null,
+  publishedVersion: null,
+  zoom: 1,
+
+  setZoom: (zoom) =>
+    set((state) => {
+      const next: number = clampPdfZoom(zoom)
+      return next === state.zoom ? state : { zoom: next }
+    }),
 
   openDesign: (taxType) => {
     if (get().design?.taxType === taxType) return
 
+    // Sin nada guardado arranca con la plantilla de fabrica del impuesto, si tiene (hoy el ICA).
     const stored: StoredPdfDesign | null = loadPdfDesign(taxType)
-    const design: PdfDesign = stored ? stored.design : createBlankDesign(taxType)
+    const design: PdfDesign = stored
+      ? stored.design
+      : (factoryPdfDesign(taxType) ?? createBlankDesign(taxType))
     set({
       design,
       selection: null,
       activeSheetId: design.sheets[0].id,
       lastSavedAt: stored ? stored.savedAt : null,
       saveError: null,
+      publishedVersion: stored?.version ?? null,
     })
     clearPdfHistory()
   },
+
+  // Un archivo de otro impuesto nunca llega aca: lib/pdfFile lo rechaza al leerlo.
+  loadDesign: (design, version) =>
+    set((state) => {
+      if (!state.design || design.taxType !== state.design.taxType) return state
+      return {
+        design,
+        selection: null,
+        activeSheetId: design.sheets[0].id,
+        publishedVersion: version ?? state.publishedVersion,
+      }
+    }),
+
+  markPublished: (version) => set({ publishedVersion: version }),
 
   setMargins: (updates) =>
     editDesign(set, (design) => {
@@ -149,8 +176,14 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
       return design === state.design ? state : reconcilePdfView({ ...state, design })
     }),
 
+  // La hoja activa sigue al bloque: si paso a otra hoja, lo nuevo se agrega alla.
   moveBlock: (blockId, offset) =>
-    editDesign(set, (design) => edit.moveBlock(design, blockId, offset)),
+    set((state) => {
+      if (!state.design) return state
+      const design: PdfDesign = edit.moveBlock(state.design, blockId, offset)
+      if (design === state.design) return state
+      return { design, activeSheetId: edit.sheetOf(design, blockId) ?? state.activeSheetId }
+    }),
 
   setHtmlBlock: (blockId, html) =>
     editDesign(set, (design) => edit.setHtmlBlock(design, blockId, html)),

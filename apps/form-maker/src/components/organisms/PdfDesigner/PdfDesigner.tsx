@@ -1,18 +1,22 @@
-import { useEffect, useMemo } from 'react'
-import { ArrowLeft, Moon, Redo, Sun, Undo } from 'reicon-react'
+import { useEffect, useMemo, useRef } from 'react'
+import { ArrowLeft, DirectSend2, FolderOpen, Moon, Redo, Sun, Undo } from 'reicon-react'
 import { useStore } from 'zustand'
 import { usePdfDesignAutosave } from '../../../hooks/usePdfDesignAutosave'
 import { usePdfDesignerShortcuts } from '../../../hooks/usePdfDesignerShortcuts'
+import { usePdfFile } from '../../../hooks/usePdfFile'
 import { readPdfEntryParams, resolvePdfTaxType, taxTypeLabel } from '../../../lib/pdfDesign'
 import { useFormStore } from '../../../store'
 import { usePdfDesignStore } from '../../../store/pdfDesignStore'
 import type { PdfTaxType } from '../../../types'
 import { Tooltip } from '../../atoms'
 import { PdfCanvas } from '../pdf/PdfCanvas'
+import { PdfFileNotice } from '../pdf/PdfFileNotice'
 import { PdfSidebar } from '../pdf/PdfSidebar'
+import { PdfZoomControl } from '../pdf/PdfZoomControl'
 import {
   EXIT_BUTTON_CLASSES,
   ICON_BUTTON_CLASSES,
+  PUBLISH_BUTTON_CLASSES,
   STATUS_DOT_CLASSES,
 } from './PdfDesigner.constants'
 import { savedStatus } from './PdfDesigner.utils'
@@ -29,7 +33,10 @@ export function PdfDesigner() {
   const design = usePdfDesignStore((state) => state.design)
   const lastSavedAt = usePdfDesignStore((state) => state.lastSavedAt)
   const saveError = usePdfDesignStore((state) => state.saveError)
+  const publishedVersion = usePdfDesignStore((state) => state.publishedVersion)
   const openDesign = usePdfDesignStore((state) => state.openDesign)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const { notice, dismissNotice, publish, openFiles } = usePdfFile()
   const undo = usePdfDesignStore((state) => state.undo)
   const redo = usePdfDesignStore((state) => state.redo)
   const canUndo: boolean = useStore(
@@ -63,7 +70,8 @@ export function PdfDesigner() {
         <div className="min-w-0">
           <h1 className="text-base font-semibold text-fg-strong">Diseñar PDF</h1>
           <p className="truncate text-xs text-fg-muted">
-            {taxType ? `${taxTypeLabel(taxType)} · ` : ''}Carta · 5 mm de margen del back
+            {taxType ? `${taxTypeLabel(taxType)} · ` : ''}Carta · 5 mm de margen del back ·{' '}
+            {publishedVersion ? `Última versión: ${publishedVersion}` : 'Sin publicar'}
           </p>
         </div>
 
@@ -108,6 +116,40 @@ export function PdfDesigner() {
               </span>
             </Tooltip>
           </div>
+          {isReady && <PdfZoomControl />}
+          {isReady && (
+            <div className="flex items-center gap-1.5">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".html,.htm,text/html"
+                multiple
+                className="hidden"
+                onChange={(event) => {
+                  const input: HTMLInputElement = event.currentTarget
+                  void openFiles(input.files).finally(() => {
+                    input.value = ''
+                  })
+                }}
+              />
+              <Tooltip content="Abre un .html de FormMaker o una plantilla hecha a mano. Con varios, vale el de versión más alta.">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className={EXIT_BUTTON_CLASSES}
+                >
+                  <FolderOpen size={14} />
+                  Abrir…
+                </button>
+              </Tooltip>
+              <Tooltip content="Descarga el .html con el número de versión siguiente">
+                <button type="button" onClick={publish} className={PUBLISH_BUTTON_CLASSES}>
+                  <DirectSend2 size={13} />
+                  Publicar v{(publishedVersion ?? 0) + 1}
+                </button>
+              </Tooltip>
+            </div>
+          )}
           <Tooltip content={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}>
             <button
               type="button"
@@ -128,6 +170,8 @@ export function PdfDesigner() {
           </button>
         </div>
       </header>
+
+      {notice && <PdfFileNotice notice={notice} onDismiss={dismissNotice} />}
 
       {!taxType && (
         <p className="mx-auto mt-16 max-w-md px-6 text-center text-sm text-fg-muted">

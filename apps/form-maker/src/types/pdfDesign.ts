@@ -133,11 +133,43 @@ export interface PdfDesign {
   sheets: PdfSheet[]
 }
 
-// Lo que se guarda en localStorage, una llave por impuesto.
+// Lo que se guarda en localStorage, una llave por impuesto. `version` es la ultima publicada o
+// abierta de archivo (la N de <impuesto>_v<N>.html); ausente si nunca se publico.
 export interface StoredPdfDesign {
   schemaVersion: number
   savedAt: string
   design: PdfDesign
+  version?: number
+}
+
+// El arbol del lector tolerante (lib/pdfHtml). El texto va como venia, escapado; los atributos, ya
+// decodificados.
+export interface PdfHtmlElement {
+  type: 'element'
+  name: string
+  attributes: [string, string][]
+  children: PdfHtmlNode[]
+}
+
+export type PdfHtmlNode = PdfHtmlElement | { type: 'text'; text: string }
+
+// Lo que sale de leer un .html: un diseño de FormMaker (se reabre tal cual) o una plantilla vieja
+// hecha a mano (entra entera en la hoja 1). `warnings` es lo que conviene revisar.
+export type PdfFileRead =
+  | {
+      ok: true
+      source: 'formmaker' | 'legacy'
+      design: PdfDesign
+      version: number | null
+      warnings: string[]
+    }
+  | { ok: false; error: string }
+
+// El aviso que deja abrir o publicar, arriba del lienzo hasta que se cierra.
+export interface PdfFileNotice {
+  tone: 'info' | 'error'
+  title: string
+  details: string[]
 }
 
 // Por donde puede llegar el impuesto desde afuera (hoy la URL; mañana quiza un objeto del

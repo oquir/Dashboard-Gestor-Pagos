@@ -6,7 +6,7 @@ import {
   SAVE_FAILED_MESSAGE,
 } from './pdfDesignBank.constants'
 import { migratePdfDesign } from './pdfDesignBank.migrations'
-import { storedPdfDesignSchema } from './pdfDesignBank.schema'
+import { pdfDesignSchema, storedPdfDesignSchema } from './pdfDesignBank.schema'
 
 // El guardado local del diseño del PDF: una llave de localStorage por impuesto. Es la copia de
 // trabajo; lo que se publica es el .html (docs/Pendientes-PDF.md §2.1). Ni persistence ni
@@ -42,11 +42,23 @@ export function loadPdfDesign(taxType: PdfTaxType): StoredPdfDesign | null {
   }
 }
 
+// El mismo esquema que el guardado, para el diseño que sale de leer un .html (lib/pdfFile): asi un
+// archivo editado a mano no mete en el store una forma que el guardado despues rechazaria.
+export function parsePdfDesign(value: unknown): PdfDesign | null {
+  const parsed = pdfDesignSchema.safeParse(value)
+  return parsed.success ? parsed.data : null
+}
+
 // Nunca lanza: el autoguardado corre en un temporizador y un error ahi no lo atrapa nadie. El
 // caso que importa es el cupo lleno, que llega con las imagenes en base64.
-export function savePdfDesign(design: PdfDesign, now: Date = new Date()): PdfSaveResult {
+export function savePdfDesign(
+  design: PdfDesign,
+  now: Date = new Date(),
+  version: number | null = null,
+): PdfSaveResult {
   const savedAt: string = now.toISOString()
   const stored: StoredPdfDesign = { schemaVersion: PDF_DESIGN_SCHEMA_VERSION, savedAt, design }
+  if (version !== null) stored.version = version
 
   try {
     localStorage.setItem(pdfDesignKey(design.taxType), JSON.stringify(stored))

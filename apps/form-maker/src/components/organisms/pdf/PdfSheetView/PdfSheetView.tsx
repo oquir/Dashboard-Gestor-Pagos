@@ -1,11 +1,18 @@
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import { PDF_CANVAS_CLASS } from '../../../../constants'
-import { contentBox, fontStack, mmToPx } from '../../../../lib/pdfDesign'
+import { contentBox, documentStyleMap, mmToPx, sheetEdgeStyleMap } from '../../../../lib/pdfDesign'
 import { sanitizePdfHtml } from '../../../../lib/pdfHtml'
 import type { PdfContentBox } from '../../../../types'
 import { PdfTableView } from '../PdfTableView'
-import type { PdfSheetViewProps } from './PdfSheetView.types'
-import { BACK_MARGIN_PX, PAPER_SIZE } from './PdfSheetView.constants'
+import type { PdfSheetViewProps, SheetOverflow } from './PdfSheetView.types'
+import { measureSheetOverflow } from './PdfSheetView.utils'
+import {
+  BACK_MARGIN_PX,
+  NO_OVERFLOW,
+  PAPER_HEIGHT_PX,
+  PAPER_SIZE,
+  PAPER_WIDTH_PX,
+} from './PdfSheetView.constants'
 
 // Una hoja de carta tal como la pondra el back, dentro del shadow root del lienzo (sus clases las
 // define PdfCanvas). El papel es blanco y la letra negra tambien en modo oscuro: es papel. Dos
@@ -19,6 +26,7 @@ export function PdfSheetView({
   index,
   total,
   isActive,
+  zoom,
   selectedIds,
   selectedBlockId,
   onActivate,
@@ -26,87 +34,107 @@ export function PdfSheetView({
   onSelectBlock,
 }: PdfSheetViewProps) {
   const flowRef = useRef<HTMLDivElement | null>(null)
-  const [overflow, setOverflow] = useState<number>(0)
+  const [overflow, setOverflow] = useState<SheetOverflow>(NO_OVERFLOW)
   const box: PdfContentBox = contentBox(design.margins)
   const hasExtraMargin: boolean = Object.values(design.margins).some((mm) => mm > 0)
 
+  // Se observa la hoja y cada bloque: una tabla puede ensancharse sin que la hoja cambie de alto.
   useEffect(() => {
     const flow: HTMLDivElement | null = flowRef.current
     if (!flow) return
 
-    // Medio pixel de tolerancia: el redondeo de los px de mm no es un desborde.
-    const observer = new ResizeObserver(() =>
-      setOverflow(Math.max(0, Math.ceil(flow.offsetHeight - box.height - 0.5))),
-    )
+    const observer = new ResizeObserver(() => {
+      const next: SheetOverflow = measureSheetOverflow(flow, box.height)
+      setOverflow((current) =>
+        current.bottom === next.bottom && current.right === next.right ? current : next,
+      )
+    })
     observer.observe(flow)
+    for (const child of Array.from(flow.children)) observer.observe(child)
     return () => observer.disconnect()
-  }, [box.height])
+  }, [box.height, sheet.blocks])
+
+  const overflows: boolean = overflow.bottom > 0 || overflow.right > 0
 
   const contentStyle: CSSProperties = {
     top: mmToPx(design.margins.top),
     right: mmToPx(design.margins.right),
     bottom: mmToPx(design.margins.bottom),
     left: mmToPx(design.margins.left),
-    fontFamily: fontStack(design.fontFamily),
-    fontSize: design.fontSize,
+    ...documentStyleMap(design),
   }
   const contentClass: string = [
     PDF_CANVAS_CLASS.content,
     hasExtraMargin ? PDF_CANVAS_CLASS.extra : '',
-    overflow > 0 ? PDF_CANVAS_CLASS.overflow : '',
+    overflows ? PDF_CANVAS_CLASS.overflow : '',
   ]
     .filter(Boolean)
     .join(' ')
 
+  // El zoom escala el papel con transform, que no cambia sus medidas: el aviso de "No cabe" sigue
+  // midiendo px de verdad. La caja de afuera si toma el tamaño escalado, para que el scroll y la
+  // separacion entre hojas acompañen. A 100 % no se emite transform (crearia un contexto propio).
+  const paperStyle: CSSProperties =
+    zoom === 1 ? PAPER_SIZE : { ...PAPER_SIZE, transform: `scale(${zoom})`, transformOrigin: '0 0' }
+
   return (
     <section className={PDF_CANVAS_CLASS.sheet}>
-      <div
-        className={`${PDF_CANVAS_CLASS.paper} ${isActive ? PDF_CANVAS_CLASS.active : ''}`}
-        style={PAPER_SIZE}
-        onClick={onActivate}
-      >
-        <div className={PDF_CANVAS_CLASS.back} style={{ inset: BACK_MARGIN_PX }}>
-          <div className={contentClass} style={contentStyle}>
-            <div ref={flowRef} className={PDF_CANVAS_CLASS.flow}>
-              {sheet.blocks.map((block) =>
-                block.kind === 'table' ? (
-                  <PdfTableView
-                    key={block.id}
-                    table={block}
-                    selectedIds={selectedIds}
-                    onSelectCell={onSelectCell}
-                  />
-                ) : (
-                  <div
-                    key={block.id}
-                    className={`${PDF_CANVAS_CLASS.html} ${
-                      selectedBlockId === block.id ? PDF_CANVAS_CLASS.selected : ''
-                    }`}
-                    onClick={(event) => {
-                      event.stopPropagation()
-                      onSelectBlock(block.id)
-                    }}
-                    dangerouslySetInnerHTML={{ __html: sanitizePdfHtml(block.html) }}
-                  />
-                ),
-              )}
+      <div style={{ width: PAPER_WIDTH_PX * zoom, height: PAPER_HEIGHT_PX * zoom }}>
+        <div
+          className={`${PDF_CANVAS_CLASS.paper} ${isActive ? PDF_CANVAS_CLASS.active : ''}`}
+          style={paperStyle}
+          onClick={onActivate}
+        >
+          <div className={PDF_CANVAS_CLASS.back} style={{ inset: BACK_MARGIN_PX }}>
+            <div className={contentClass} style={contentStyle}>
+              <div ref={flowRef} className={PDF_CANVAS_CLASS.flow} style={sheetEdgeStyleMap()}>
+                {sheet.blocks.map((block) =>
+                  block.kind === 'table' ? (
+                    <PdfTableView
+                      key={block.id}
+                      table={block}
+                      selectedIds={selectedIds}
+                      onSelectCell={onSelectCell}
+                    />
+                  ) : (
+                    <div
+                      key={block.id}
+                      className={`${PDF_CANVAS_CLASS.html} ${
+                        selectedBlockId === block.id ? PDF_CANVAS_CLASS.selected : ''
+                      }`}
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        onSelectBlock(block.id)
+                      }}
+                      dangerouslySetInnerHTML={{ __html: sanitizePdfHtml(block.html) }}
+                    />
+                  ),
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {sheet.blocks.length === 0 && (
-          <p className={PDF_CANVAS_CLASS.empty}>
-            Hoja vacía: agrega una tabla o un bloque de HTML desde el panel
-          </p>
-        )}
+          {sheet.blocks.length === 0 && (
+            <p className={PDF_CANVAS_CLASS.empty}>
+              Hoja vacía: agrega una tabla o un bloque de HTML desde el panel
+            </p>
+          )}
+        </div>
       </div>
 
       <p className={PDF_CANVAS_CLASS.caption}>
         Hoja {index + 1} de {total}
-        {overflow > 0 && (
+        {overflow.bottom > 0 && (
           <span className={PDF_CANVAS_CLASS.warning}>
             {' '}
-            · No cabe: sobran {overflow} px. Pasa algo a otra hoja o achica el margen.
+            · No cabe: sobran {overflow.bottom} px. Pasa algo a otra hoja o achica el margen.
+          </span>
+        )}
+        {overflow.right > 0 && (
+          <span className={PDF_CANVAS_CLASS.warning}>
+            {' '}
+            · Se sale por la derecha: sobran {overflow.right} px y se pierde el borde. Achica el
+            ancho de una columna.
           </span>
         )}
       </p>

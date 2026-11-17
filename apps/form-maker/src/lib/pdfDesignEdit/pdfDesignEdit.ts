@@ -182,20 +182,45 @@ export function removeBlock(design: PdfDesign, blockId: string): PdfDesign {
   }))
 }
 
+// Sube o baja un bloque. En el borde de su hoja pasa a la vecina -- al final de la anterior o al
+// principio de la siguiente --, asi el orden del documento se mantiene: es como se parte en hojas
+// una plantilla vieja que entro entera en la hoja 1. En el borde del documento no hace nada.
 export function moveBlock(design: PdfDesign, blockId: string, offset: -1 | 1): PdfDesign {
-  const location = findBlock(design, blockId)
-  if (!location) return design
+  const sheetIndex: number = design.sheets.findIndex((sheet) =>
+    sheet.blocks.some((block) => block.id === blockId),
+  )
+  if (sheetIndex === -1) return design
 
-  return mapSheet(design, location.sheetId, (sheet) => {
-    const from: number = sheet.blocks.findIndex((block) => block.id === blockId)
-    const to: number = from + offset
-    if (to < 0 || to >= sheet.blocks.length) return sheet
+  const sheet: PdfSheet = design.sheets[sheetIndex]
+  const from: number = sheet.blocks.findIndex((block) => block.id === blockId)
+  const to: number = from + offset
 
+  if (to >= 0 && to < sheet.blocks.length) {
     const blocks: PdfBlock[] = [...sheet.blocks]
     const [moved] = blocks.splice(from, 1)
     blocks.splice(to, 0, moved)
-    return { ...sheet, blocks }
+    return mapSheet(design, sheet.id, (current) => ({ ...current, blocks }))
+  }
+
+  const neighbor: PdfSheet | undefined = design.sheets[sheetIndex + offset]
+  if (!neighbor) return design
+
+  const moved: PdfBlock = sheet.blocks[from]
+  const sheets: PdfSheet[] = design.sheets.map((current) => {
+    if (current.id === sheet.id)
+      return { ...current, blocks: current.blocks.filter((block) => block.id !== blockId) }
+    if (current.id === neighbor.id)
+      return {
+        ...current,
+        blocks: offset === 1 ? [moved, ...current.blocks] : [...current.blocks, moved],
+      }
+    return current
   })
+  return { ...design, sheets }
+}
+
+export function canMoveBlock(design: PdfDesign, blockId: string, offset: -1 | 1): boolean {
+  return moveBlock(design, blockId, offset) !== design
 }
 
 export function setHtmlBlock(design: PdfDesign, blockId: string, html: string): PdfDesign {

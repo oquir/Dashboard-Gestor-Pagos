@@ -91,4 +91,5 @@ export const storedPdfDesignSchema = z.object({
   schemaVersion: z.number().int(),
   savedAt: z.string(),
   design: pdfDesignSchema,
+  version: z.number().int().positive().optional(),
 })

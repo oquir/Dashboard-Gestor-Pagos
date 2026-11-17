@@ -1,6 +1,6 @@
 // Hooks del builder. useFormPreview, usePreviewNavigation y usePreviewSearchSelect no estan:
 // solo los usa el simulador, que se carga con React.lazy. Tampoco usePdfDesignAutosave ni
-// usePdfDesignerShortcuts, que son del diseñador de PDF (otro chunk perezoso). Entre hooks se
+// usePdfDesignerShortcuts ni usePdfFile, que son del diseñador de PDF (otro chunk perezoso). Entre hooks se
 // importa por la carpeta.
 export * from './useApiMappingPanel'
 export * from './useAutosave'

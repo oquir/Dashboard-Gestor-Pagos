@@ -1,9 +1,11 @@
 import {
+  PANEL_BUTTON_CLASSES,
   PDF_BACK_MARGIN_MM,
   PDF_FONT_OPTIONS,
   PDF_MAX_EXTRA_MARGIN_MM,
   SELECT_CLASSES,
 } from '../../../../constants'
+import { factoryPdfDesign, hasFactoryPdfDesign } from '../../../../lib/pdfTemplates'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import type { PdfFontFamily, PdfMargins } from '../../../../types'
 import { Label } from '../../../atoms'
@@ -18,6 +20,7 @@ export function PdfDocumentPanel() {
   const setMargins = usePdfDesignStore((state) => state.setMargins)
   const setFontFamily = usePdfDesignStore((state) => state.setFontFamily)
   const setFontSize = usePdfDesignStore((state) => state.setFontSize)
+  const loadDesign = usePdfDesignStore((state) => state.loadDesign)
   if (!design) return null
 
   return (
@@ -82,6 +85,24 @@ export function PdfDocumentPanel() {
           ))}
         </div>
       </PanelSection>
+
+      {hasFactoryPdfDesign(design.taxType) && (
+        <PanelSection
+          title="Plantilla de fábrica"
+          description="El formulario único nacional en una hoja carta, con las variables que hoy llena el back. Reemplaza el diseño de ahora; Ctrl+Z lo devuelve."
+        >
+          <button
+            type="button"
+            onClick={() => {
+              const factory = factoryPdfDesign(design.taxType)
+              if (factory) loadDesign(factory, null)
+            }}
+            className={`${PANEL_BUTTON_CLASSES} self-start`}
+          >
+            Cargar la plantilla de fábrica
+          </button>
+        </PanelSection>
+      )}
     </>
   )
 }

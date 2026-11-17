@@ -23,6 +23,12 @@ export interface PdfDesignState {
   lastSavedAt: string | null
   // El ultimo autoguardado que fallo (cupo lleno, sobre todo). Se limpia al guardar bien.
   saveError: string | null
+  // La N de la ultima version publicada o abierta de archivo; la proxima publicacion es N + 1.
+  // Fuera del historial a proposito: deshacer no puede hacer que se repita una N.
+  publishedVersion: number | null
+  // Zoom del lienzo (1 = 100 %). Vista pura: no entra al historial, no se guarda y no toca el diseño.
+  zoom: number
+  setZoom: (zoom: number) => void
   // Trae lo guardado de ese impuesto o empieza en blanco, y vacia el historial. Reabrir el mismo no
   // hace nada.
   openDesign: (taxType: PdfTaxType) => void
@@ -33,7 +39,12 @@ export interface PdfDesignState {
   removeSheet: (sheetId: string) => void
   setActiveSheet: (sheetId: string) => void
   addBlock: (kind: PdfBlock['kind']) => void
+  // Reemplaza el diseño por uno leido de un .html. Es un paso de deshacer: Ctrl+Z vuelve al de antes.
+  // La version no vuelve (ver publishedVersion).
+  loadDesign: (design: PdfDesign, version: number | null) => void
+  markPublished: (version: number) => void
   removeBlock: (blockId: string) => void
+  // En el borde de una hoja pasa a la vecina: al final de la anterior o al principio de la siguiente.
   moveBlock: (blockId: string, offset: -1 | 1) => void
   setHtmlBlock: (blockId: string, html: string) => void
   // extend: Shift+clic, agranda la seleccion dentro de la misma tabla.

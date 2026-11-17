@@ -1,11 +1,13 @@
 import { useEffect } from 'react'
+import { stepPdfZoom } from '../../lib/pdfDesign'
 import { savePdfDesign } from '../../lib/pdfDesignBank'
 import { usePdfDesignStore } from '../../store/pdfDesignStore'
 import type { PdfDesignState, PdfSaveResult } from '../../types'
 import { isEditableTarget } from './usePdfDesignerShortcuts.utils'
 
 // Los atajos del diseñador de PDF, mientras esta montado: Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z sobre el
-// historial del PDF (no el del formulario), Ctrl+S guarda ya mismo y Escape suelta la seleccion. Los
+// historial del PDF (no el del formulario), Ctrl+S guarda ya mismo, Ctrl + / - / 0 hacen zoom en el
+// lienzo y Escape suelta la seleccion. Los
 // del formulario se apagan con el diseñador abierto (useKeyboardShortcuts).
 //
 // Dentro de un input o un textarea, Ctrl+Z es el deshacer del texto: el del diseño no se mete a
@@ -37,6 +39,20 @@ export function usePdfDesignerShortcuts(): void {
         event.preventDefault()
         if (key === 'y' || event.shiftKey) state.redo()
         else state.undo()
+        return
+      }
+
+      // El zoom del lienzo le gana al del navegador, como en el formulario: "=" ademas de "+"
+      // porque sin Shift es lo que reporta esa tecla.
+      if (key === '+' || key === '=') {
+        event.preventDefault()
+        state.setZoom(stepPdfZoom(state.zoom, 1))
+      } else if (key === '-') {
+        event.preventDefault()
+        state.setZoom(stepPdfZoom(state.zoom, -1))
+      } else if (key === '0') {
+        event.preventDefault()
+        state.setZoom(1)
       }
     }
 

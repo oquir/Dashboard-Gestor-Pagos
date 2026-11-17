@@ -1,3 +1,4 @@
+import type { PdfHtmlElement, PdfHtmlNode } from '../../types'
 import {
   ALLOWED_ATTRIBUTES,
   ALLOWED_TAGS,
@@ -9,7 +10,15 @@ import {
   VARIABLE_ONLY,
   VOID_TAGS,
 } from './pdfHtml.constants'
-import { decodeEntities, escapeAttribute, escapeText, readTag, type Tag } from './pdfHtml.utils'
+import {
+  closeElement,
+  closeImplied,
+  decodeEntities,
+  escapeAttribute,
+  escapeText,
+  readTag,
+  type Tag,
+} from './pdfHtml.utils'
 
 // El saneo del HTML libre del PDF (docs/Pendientes-PDF.md §2.1): lista blanca propia, como
 // serializeRichText, pero sobre texto y no sobre el DOM, por dos razones: corre igual en un script
@@ -94,6 +103,120 @@ export function sanitizePdfHtml(html: string): string {
   return out
 }
 
+// El lector tolerante: arma el arbol de un HTML YA SANEADO, cerrando lo que la plantilla dejo
+// abierto como lo haria el navegador -- una <td> cierra la anterior, una <tr> cierra su fila, un
+// cierre que no tiene apertura se ignora. No agrega lo que falta (ni <tbody> ni <tr> implicitos):
+// lo que se lee se vuelve a escribir en el mismo lugar. El texto queda como venia (escapado) y los
+// atributos ya decodificados. Nunca lanza.
+export function parsePdfHtml(html: string): PdfHtmlNode[] {
+  const root: PdfHtmlElement = { type: 'element', name: '#root', attributes: [], children: [] }
+  const stack: PdfHtmlElement[] = [root]
+  let index: number = 0
+
+  while (index < html.length) {
+    const lt: number = html.indexOf('<', index)
+    const textEnd: number = lt === -1 ? html.length : lt
+    if (textEnd > index) appendText(stack[stack.length - 1], html.slice(index, textEnd))
+    if (lt === -1) break
+
+    if (html.startsWith('<!--', lt)) {
+      const end: number = html.indexOf('-->', lt + 4)
+      index = end === -1 ? html.length : end + 3
+      continue
+    }
+    if (html[lt + 1] === '!' || html[lt + 1] === '?') {
+      const end: number = html.indexOf('>', lt)
+      index = end === -1 ? html.length : end + 1
+      continue
+    }
+
+    const tag: Tag | null = readTag(html, lt)
+    if (!tag) {
+      appendText(stack[stack.length - 1], '&lt;')
+      index = lt + 1
+      continue
+    }
+    index = tag.end
+
+    if (tag.closing) {
+      closeElement(stack, tag.name)
+      continue
+    }
+
+    closeImplied(stack, tag.name)
+    const element: PdfHtmlElement = {
+      type: 'element',
+      name: tag.name,
+      attributes: tag.attributes.map(([name, value]) => [name, decodeEntities(value)]),
+      children: [],
+    }
+    stack[stack.length - 1].children.push(element)
+
+    if (RAW_TEXT_TAGS.has(tag.name)) {
+      const close: number = html.toLowerCase().indexOf(`</${tag.name}`, index)
+      const body: string = html.slice(index, close === -1 ? html.length : close)
+      if (body) element.children.push({ type: 'text', text: body })
+      const closeEnd: number = close === -1 ? html.length : html.indexOf('>', close)
+      index = closeEnd === -1 ? html.length : closeEnd + 1
+      continue
+    }
+
+    // "<div/>" en HTML no se cierra solo: solo las vacias de verdad no llevan hijos.
+    if (!VOID_TAGS.has(tag.name)) stack.push(element)
+  }
+
+  return root.children
+}
+
+export function serializePdfHtml(nodes: PdfHtmlNode[]): string {
+  let out: string = ''
+  for (const node of nodes) {
+    if (node.type === 'text') {
+      out += node.text
+      continue
+    }
+    const attributes: string = node.attributes
+      .map(([name, value]) => ` ${name}="${escapeAttribute(value)}"`)
+      .join('')
+    out += `<${node.name}${attributes}>`
+    if (VOID_TAGS.has(node.name)) continue
+    out += `${serializePdfHtml(node.children)}</${node.name}>`
+  }
+  return out
+}
+
+// Saneado y con todas sus etiquetas cerradas: lo que el generador del .html final mete en una celda
+// o un bloque. Sin esto, un <table> sin cerrar del HTML libre se tragaria el resto del documento.
+export function normalizePdfHtml(html: string): string {
+  return serializePdfHtml(parsePdfHtml(sanitizePdfHtml(html)))
+}
+
+// El texto que se ve, decodificado (sin etiquetas; un <br> cuenta como salto de linea).
+export function pdfHtmlText(nodes: PdfHtmlNode[]): string {
+  let out: string = ''
+  for (const node of nodes) {
+    if (node.type === 'text') out += decodeEntities(node.text)
+    else if (node.name === 'br') out += '\n'
+    else if (!RAW_TEXT_TAGS.has(node.name)) out += pdfHtmlText(node.children)
+  }
+  return out
+}
+
+// Texto del autor que va como texto: todo "&" se escapa, tambien el de un "&nbsp;" escrito a mano,
+// que es lo que la persona tecleo y no una entidad.
+export function escapePdfText(text: string): string {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+export function escapePdfAttribute(value: string): string {
+  return escapeAttribute(value)
+}
+
+export function pdfHtmlAttribute(node: PdfHtmlNode, name: string): string | null {
+  if (node.type !== 'element') return null
+  return node.attributes.find(([attribute]) => attribute === name)?.[1] ?? null
+}
+
 // El CSS de un atributo style o de un campo "Estilos en línea". Quita lo que ejecuta o trae algo de
 // afuera: @import, expression(), behavior y -moz-binding (motores viejos) y cualquier url() que no
 // sea una imagen http(s), una data:image o una {Var}. Los comentarios se quitan antes, para que no
@@ -107,6 +230,13 @@ export function sanitizeCss(css: string): string {
     .replace(/url\s*\(\s*(['"]?)(.*?)\1\s*\)/gi, (match: string, _quote: string, url: string) =>
       isSafeCssUrl(url) ? match : 'none',
     )
+}
+
+// Dos textos seguidos se juntan en un nodo: asi un "<" suelto no parte la frase en dos.
+function appendText(parent: PdfHtmlElement, text: string): void {
+  const last: PdfHtmlNode | undefined = parent.children[parent.children.length - 1]
+  if (last?.type === 'text') last.text += text
+  else parent.children.push({ type: 'text', text })
 }
 
 function sanitizeStyleSheet(css: string): string {
