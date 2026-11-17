@@ -51,6 +51,7 @@ export function Sidebar() {
         }}
         isDarkMode={isDarkMode}
         onToggleDarkMode={toggleDarkMode}
+        isCollapsed={!isSidebarOpen}
       />
 
       <section

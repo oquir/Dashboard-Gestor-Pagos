@@ -962,6 +962,7 @@ Both import cycles this shape produced are fixed the same way: implementation mo
 - Tailwind v4 (`@tailwindcss/vite`), no CSS-in-JS, class-based dark mode — every new surface needs `dark:` variants
 - `uuid` for ids
 - `reicon-react` for icons (not lucide/heroicons)
+- `@floating-ui/react` (exact `0.27.20`, same as the dashboard) for the builder's own UI tooltips: `molecules/Tooltip`, a port of the dashboard's. **Not `field.tooltip`** (form content that gets exported). Its bubble is `bg-inverse text-on-inverse`, tokens that flip with `.dark`. The left rail names its icons with it **only while the panel is collapsed** (`isCollapsed={!isSidebarOpen}`; open, the panel header already names the tab). Rendered `fixed`, so no ancestor may set `transform`/`filter`/`will-change`.
 - `@codemirror/*` + `@lezer/highlight` for the script editor — picked over Monaco (spec's original ask) for weight, since TS diagnostics aren't needed (script is JS). Only loads behind `ScriptInput`'s `React.lazy`.
 
 ### Code style

@@ -41,6 +41,10 @@
   --ui-success: oklch(59.6% 0.145 163.225); /* emerald-600 */
   --ui-info: oklch(58.8% 0.158 241.966); /* sky-600 */
 
+  /* Globo de los tooltips de la interfaz: invertido respecto al fondo, oscuro en claro y claro en oscuro. */
+  --ui-inverse: oklch(20.8% 0.042 265.755); /* slate-900 */
+  --ui-on-inverse: oklch(100% 0 0); /* white */
+
   /* Coloreado del editor de scripts. Va como tokens y no dentro del tema de CodeMirror para que
      el modo oscuro salga por el mismo camino que el resto de la app. */
   --ui-code-keyword: oklch(54.1% 0.281 293.009); /* violet-600 */
@@ -103,6 +107,9 @@
 
   --ui-success: oklch(76.5% 0.177 163.223); /* emerald-400 */
   --ui-info: oklch(74.6% 0.16 232.661); /* sky-400 */
+
+  --ui-inverse: oklch(97% 0 0); /* neutral-100 */
+  --ui-on-inverse: oklch(20.5% 0 0); /* neutral-900 */
 
   --ui-code-keyword: oklch(70.2% 0.183 293.541); /* violet-400 */
   --ui-code-string: oklch(76.5% 0.177 163.223); /* emerald-400 */
@@ -201,6 +208,8 @@
 
   --color-success: var(--ui-success);
   --color-info: var(--ui-info);
+  --color-inverse: var(--ui-inverse);
+  --color-on-inverse: var(--ui-on-inverse);
 }
 
 /* Malla de puntos del lienzo: un punto por baldosa de 22px, centrado. A 11px de cada borde no hay
