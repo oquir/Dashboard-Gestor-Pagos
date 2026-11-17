@@ -7,6 +7,11 @@
       "name": "pnpm",
       "version": "12.18.0",
       "onFail": "error"
+    },
+    "runtime": {
+      "name": "node",
+      "version": ">=24",
+      "onFail": "error"
     }
   },
   "scripts": {

@@ -9,7 +9,7 @@ Dos aplicaciones de 1cero1 en un solo repositorio:
 
 ## Comandos
 
-Desde la raíz, con pnpm 12.18.0:
+Desde la raíz, con Node 24 o más nuevo y pnpm 12.18.0 (los dos los exige `devEngines`):
 
 ```sh
 pnpm install            # instala las dos apps

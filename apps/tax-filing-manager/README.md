@@ -6,7 +6,7 @@ El dashboard con el que los municipios y 1cero1 gestionan las declaraciones de i
 
 ## Cómo correrlo
 
-Con pnpm 12.18.0, desde esta carpeta:
+Con Node 24 o más nuevo y pnpm 12.18.0, desde esta carpeta:
 
 ```sh
 pnpm install   # dependencias de esta app (tiene su propio pnpm-lock.yaml)

@@ -40,7 +40,7 @@ Roles (`Role` en `src/types/domain.ts`): `1cero1` (el proveedor, ve todos los mu
 
 ## Comandos
 
-pnpm **12.18.0**: la raíz del monorepo la exige en `devEngines`, con `onFail: error`.
+Node **24 o más nuevo** y pnpm **12.18.0**: la raíz del monorepo los exige en `devEngines`, con `onFail: error`.
 
 - `pnpm dev`: servidor de Vite en el puerto 5173.
 - `pnpm build`: `tsc -b` y luego `vite build`.
