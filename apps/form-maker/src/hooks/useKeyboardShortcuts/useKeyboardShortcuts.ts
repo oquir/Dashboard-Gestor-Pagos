@@ -85,7 +85,8 @@ export function useKeyboardShortcuts() {
 
       if (key === 's') {
         event.preventDefault()
-        if (!state.setupConfig.isComplete) return
+        // Con el diseñador de PDF abierto, Ctrl+S guarda el PDF (usePdfDesignerShortcuts).
+        if (!state.setupConfig.isComplete || state.isPdfDesignerOpen) return
 
         saveDraft({
           formSteps: state.formSteps,

@@ -19,6 +19,13 @@ export const PDF_PX_PER_MM: number =
 export const PDF_SHEET_HEIGHT_PX: number =
   (PDF_PAPER_HEIGHT_MM - 2 * PDF_BACK_MARGIN_MM) * PDF_PX_PER_MM
 
+// Tablas dentro de celdas, hasta este nivel (la suelta en la hoja es el 1). Las plantillas a mano
+// llegan a 4, sobre todo para dibujar casillas; mas hondo ya no se puede editar con el mouse.
+export const PDF_MAX_TABLE_DEPTH: number = 4
+
+// Tamaño de una tabla nueva: columnas x filas.
+export const PDF_NEW_TABLE_SIZE: { columns: number; rows: number } = { columns: 2, rows: 2 }
+
 // Tope del margen extra por lado. Mas que esto ya no es un margen sino media hoja en blanco.
 export const PDF_MAX_EXTRA_MARGIN_MM: number = 40
 

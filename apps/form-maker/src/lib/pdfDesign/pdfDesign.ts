@@ -11,26 +11,29 @@ import {
   PDF_WEB_PAGE_WIDTH_PX,
 } from '../../constants'
 import type {
+  CssStyleMap,
   FormType,
+  PdfCell,
   PdfContentBox,
   PdfDesign,
   PdfEntryParams,
   PdfFontFamily,
   PdfMargins,
   PdfSheet,
+  PdfTable,
   PdfTaxType,
 } from '../../types'
-import { MARGIN_STEP_MM, TAX_PARAM } from './pdfDesign.constants'
+import { parseCssText } from '../cssStyles'
+import { sanitizeCss } from '../pdfHtml'
+import { MARGIN_STEP_MM, PDF_CELL_BORDER, PDF_CELL_PADDING, TAX_PARAM } from './pdfDesign.constants'
 
 // Reglas puras del diseño del PDF: medidas de la hoja, el diseño en blanco y de que impuesto es.
 // Sin React ni store. Solo lo usa el diseñador, que se carga con React.lazy: por eso no esta en
 // lib/index.ts y se importa por su carpeta.
 
+// Una hoja nueva no trae nada: la primera tabla o el primer bloque de HTML los agrega el autor.
 export function createBlankSheet(): PdfSheet {
-  return {
-    id: uuidv4(),
-    rows: [{ id: uuidv4(), cells: [{ id: uuidv4(), colSpan: 1, rowSpan: 1, text: '' }] }],
-  }
+  return { id: uuidv4(), blocks: [] }
 }
 
 export function createBlankDesign(taxType: PdfTaxType): PdfDesign {
@@ -73,6 +76,35 @@ export function contentBox(margins: PdfMargins): PdfContentBox {
     width: PDF_WEB_PAGE_WIDTH_PX - mmToPx(margins.left + margins.right),
     height: PDF_SHEET_HEIGHT_PX - mmToPx(margins.top + margins.bottom),
   }
+}
+
+// El CSS de una tabla: lo fijo del diseñador y, encima, lo que el autor escribio en "Estilos en
+// línea" (gana el texto libre, como en el resto de FormMaker). table-layout fixed para que los anchos
+// de columna en px se respeten y las columnas sin ancho se repartan el resto. El generador del HTML
+// final (§3.5) tiene que emitir lo mismo, o el lienzo y el PDF no coinciden.
+export function tableStyleMap(table: PdfTable): CssStyleMap {
+  return {
+    borderCollapse: 'collapse',
+    width: '100%',
+    tableLayout: 'fixed',
+    ...parseCssText(sanitizeCss(table.style ?? '')),
+  }
+}
+
+export function cellStyleMap(cell: PdfCell): CssStyleMap {
+  const map: CssStyleMap = { padding: PDF_CELL_PADDING }
+  if (cell.fontSize !== undefined) map.fontSize = `${cell.fontSize}px`
+  if (cell.bold) map.fontWeight = 'bold'
+  if (cell.italic) map.fontStyle = 'italic'
+  if (cell.align) map.textAlign = cell.align
+  map.verticalAlign = cell.verticalAlign ?? 'top'
+  if (cell.backgroundColor) map.backgroundColor = cell.backgroundColor
+  if (cell.borders?.top) map.borderTop = PDF_CELL_BORDER
+  if (cell.borders?.right) map.borderRight = PDF_CELL_BORDER
+  if (cell.borders?.bottom) map.borderBottom = PDF_CELL_BORDER
+  if (cell.borders?.left) map.borderLeft = PDF_CELL_BORDER
+
+  return { ...map, ...parseCssText(sanitizeCss(cell.style ?? '')) }
 }
 
 export function fontStack(family: PdfFontFamily): string {

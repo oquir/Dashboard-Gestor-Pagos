@@ -5,6 +5,7 @@ import {
   QUOTA_MESSAGE,
   SAVE_FAILED_MESSAGE,
 } from './pdfDesignBank.constants'
+import { migratePdfDesign } from './pdfDesignBank.migrations'
 import { storedPdfDesignSchema } from './pdfDesignBank.schema'
 
 // El guardado local del diseño del PDF: una llave de localStorage por impuesto. Es la copia de
@@ -28,7 +29,9 @@ export function loadPdfDesign(taxType: PdfTaxType): StoredPdfDesign | null {
   if (!raw) return null
 
   try {
-    const parsed = storedPdfDesignSchema.safeParse(JSON.parse(raw))
+    // Migrar antes de validar: al reves, se descartaria justo lo que la migracion puede salvar.
+    const migrated: unknown = migratePdfDesign(JSON.parse(raw), PDF_DESIGN_SCHEMA_VERSION)
+    const parsed = storedPdfDesignSchema.safeParse(migrated)
     if (!parsed.success) return null
     if (parsed.data.schemaVersion !== PDF_DESIGN_SCHEMA_VERSION) return null
     if (parsed.data.design.taxType !== taxType) return null

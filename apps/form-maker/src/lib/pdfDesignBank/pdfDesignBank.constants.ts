@@ -3,7 +3,8 @@
 export const PDF_DESIGN_KEY_PREFIX: string = 'form-orchestrator-pdf-'
 
 // Sube con cada cambio de forma del diseño guardado, junto con su paso de migracion.
-export const PDF_DESIGN_SCHEMA_VERSION: number = 1
+// 2 (2026-11-17): la hoja pasa de una tabla a una lista de bloques; la celda, de texto a contenido.
+export const PDF_DESIGN_SCHEMA_VERSION: number = 2
 
 export const QUOTA_MESSAGE: string =
   'No cupo en el almacenamiento del navegador (unos 5 MB). Las imágenes en base64 son lo que más pesa: pásalas a URL.'

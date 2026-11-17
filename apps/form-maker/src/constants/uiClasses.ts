@@ -98,3 +98,14 @@ export const SWITCH_ITEM_ACTIVE_CLASSES: string =
   'bg-surface font-semibold text-fg-strong shadow-sm dark:bg-surface-inset'
 
 export const SWITCH_ITEM_INACTIVE_CLASSES: string = 'font-medium text-fg-muted hover:text-fg-strong'
+
+// Los botones chicos de los paneles del diseñador de PDF (agregar fila, combinar, negrilla…).
+// Contorno y no relleno: son muchos juntos, y con fondo la barra se volveria una pared de botones.
+export const PANEL_BUTTON_CLASSES: string =
+  'flex h-7 items-center justify-center gap-1 rounded-md border border-border px-2 text-[11px] font-medium text-fg-soft transition-colors hover:cursor-pointer hover:border-border-strong hover:text-fg-strong disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:text-fg-soft'
+
+// Un boton de alternar (negrilla, alineacion) cuando esta puesto.
+export const PANEL_BUTTON_ON_CLASSES: string = 'border-brand-border bg-brand-surface text-brand-fg'
+
+export const PANEL_DANGER_LINK_CLASSES: string =
+  'text-[11px] font-medium text-danger hover:cursor-pointer hover:underline disabled:cursor-not-allowed disabled:opacity-40 disabled:no-underline'

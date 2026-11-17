@@ -34,22 +34,52 @@ export interface PdfCellBorders {
   left: boolean
 }
 
-// Una celda de <table>. Las medidas van en px (la hoja mide 778 px de ancho util); lo opcional
-// ausente hereda de la tabla.
+// Lo que lleva una celda: texto fijo con {Var} mezcladas donde haga falta ("Año {periodo_anio}"),
+// HTML libre para lo que el editor no sepa hacer, o una tabla adentro (hasta 4 niveles, como las
+// plantillas a mano que dibujan casillas).
+export type PdfCellContent =
+  | { kind: 'text'; text: string }
+  | { kind: 'html'; html: string }
+  | { kind: 'table'; table: PdfTable }
+
+export type PdfCellContentKind = PdfCellContent['kind']
+
+// Una celda de <table>. Medidas en px (la hoja mide 778 px de ancho util); lo opcional ausente
+// hereda de la tabla. className y style son el escape para quien sabe CSS: style es texto CSS en
+// linea, saneado al pintar y al publicar.
 export interface PdfCell {
   id: string
   colSpan: number
   rowSpan: number
-  // Texto fijo con {Var} mezcladas donde haga falta: "Año gravable {periodo_anio}".
-  text: string
-  width?: number
+  content: PdfCellContent
   fontSize?: number
   bold?: boolean
+  italic?: boolean
   align?: PdfTextAlign
   verticalAlign?: PdfVerticalAlign
   backgroundColor?: string
   borders?: PdfCellBorders
+  className?: string
+  style?: string
 }
+
+// Lo que la barra lateral cambia de una celda. Una clave con undefined la borra (vuelve a heredar).
+export type PdfCellStylePatch = Partial<
+  Pick<
+    PdfCell,
+    | 'fontSize'
+    | 'bold'
+    | 'italic'
+    | 'align'
+    | 'verticalAlign'
+    | 'backgroundColor'
+    | 'borders'
+    | 'className'
+    | 'style'
+  >
+>
+
+export type PdfTableStylePatch = Partial<Pick<PdfTable, 'className' | 'style'>>
 
 export interface PdfRow {
   id: string
@@ -57,11 +87,41 @@ export interface PdfRow {
   cells: PdfCell[]
 }
 
+// Las columnas existen aparte de las celdas para guardar su ancho: con colspan, ninguna celda dice
+// por si sola cuanto mide una columna. Sin ancho, el navegador reparte.
+export interface PdfColumn {
+  id: string
+  width?: number
+}
+
+// Una tabla, suelta en la hoja o dentro de una celda. Las filas siguen el modelo de HTML: cada celda
+// aparece una vez, en la fila donde empieza, y su rowSpan y colSpan dicen cuanto ocupa.
+export interface PdfTable {
+  id: string
+  columns: PdfColumn[]
+  rows: PdfRow[]
+  className?: string
+  style?: string
+}
+
+export interface PdfTableBlock extends PdfTable {
+  kind: 'table'
+}
+
+// HTML libre a nivel de hoja: el escape para lo que no es una tabla, incluido un <style> propio.
+export interface PdfHtmlBlock {
+  kind: 'html'
+  id: string
+  html: string
+}
+
+export type PdfBlock = PdfTableBlock | PdfHtmlBlock
+
 // Cada hoja es su propio bloque, con salto manual entre una y otra. Lo que no cabe no se corre a
 // la siguiente: el diseñador avisa.
 export interface PdfSheet {
   id: string
-  rows: PdfRow[]
+  blocks: PdfBlock[]
 }
 
 export interface PdfDesign {
@@ -94,3 +154,35 @@ export interface PdfContentBox {
 }
 
 export type PdfSaveResult = { ok: true; savedAt: string } | { ok: false; error: string }
+
+// Que esta seleccionado en el lienzo. Celdas: un rectangulo dentro de UNA tabla, de la celda ancla
+// a la del foco (Shift+clic); combinar usa ese rectangulo. Bloque: un bloque de HTML libre.
+export type PdfSelection =
+  | { kind: 'cells'; tableId: string; anchorCellId: string; focusCellId: string }
+  | { kind: 'block'; blockId: string }
+
+// Un rectangulo de la rejilla de una tabla, en indices de fila y columna, ambos lados incluidos.
+export interface PdfGridRect {
+  top: number
+  left: number
+  bottom: number
+  right: number
+}
+
+// Una celda ubicada en la rejilla: donde empieza. Sus spans dicen hasta donde llega.
+export interface PdfPlacedCell {
+  cell: PdfCell
+  row: number
+  col: number
+}
+
+export type PdfRowPosition = 'above' | 'below'
+
+export type PdfColumnPosition = 'left' | 'right'
+
+// Donde vive una tabla dentro del diseño: en que hoja y a que profundidad (1 = suelta en la hoja).
+export interface PdfTableLocation {
+  table: PdfTable
+  sheetId: string
+  depth: number
+}
