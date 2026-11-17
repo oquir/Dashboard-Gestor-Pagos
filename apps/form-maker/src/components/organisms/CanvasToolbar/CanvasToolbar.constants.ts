@@ -28,6 +28,11 @@ export const TOOL_BUTTON_ACTIVE_CLASSES: string = 'bg-brand text-on-brand'
 export const TOOL_BUTTON_INACTIVE_CLASSES: string =
   'text-fg-muted hover:bg-surface-raised hover:text-fg-strong dark:hover:bg-surface-inset'
 
+// Bajo rendimiento prendido: tinte de marca y no el naranja lleno de la herramienta activa. No es
+// una herramienta (no cambia lo que hace un clic) y no debe leerse como una cuarta.
+export const PERFORMANCE_ON_CLASSES: string =
+  'bg-brand-surface text-brand-fg hover:bg-brand-surface'
+
 export const TOOLBAR_DANGER_CLASSES: string =
   'flex h-8 w-8 items-center justify-center rounded-lg text-fg-muted transition-colors hover:cursor-pointer hover:bg-danger-surface hover:text-danger'
 

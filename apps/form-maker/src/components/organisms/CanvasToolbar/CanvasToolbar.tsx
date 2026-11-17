@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Layers, Plus, Redo, Trash6, Undo, Xmark } from 'reicon-react'
+import { Layers, Plus, Redo, SpeedLow, Trash6, Undo, Xmark } from 'reicon-react'
 import { CANVAS_TOOLS } from '../../../constants/canvasTool'
 import {
   CANVAS_TOOLBAR_ACTION_CLASSES,
@@ -13,6 +13,7 @@ import { getActiveGroups, getActiveRows, useFormStore } from '../../../store/for
 import type { CanvasRow, RepeatableGroup } from '../../../types/formStructure'
 import { MoveToStepMenu } from '../MoveToStepMenu/MoveToStepMenu'
 import {
+  PERFORMANCE_ON_CLASSES,
   SELECTION_COUNT_CLASSES,
   TOOL_BUTTON_ACTIVE_CLASSES,
   TOOL_BUTTON_BASE_CLASSES,
@@ -36,6 +37,8 @@ export function CanvasToolbar() {
   const selectField = useFormStore((state) => state.selectField)
   const removeFields = useFormStore((state) => state.removeFields)
   const moveFieldsToStep = useFormStore((state) => state.moveFieldsToStep)
+  const isLowPerformance = useFormStore((state) => state.isLowPerformance)
+  const toggleLowPerformance = useFormStore((state) => state.toggleLowPerformance)
   const { canUndo, canRedo, undo, redo } = useFormHistory()
   // Lo agregado cae al final del paso, que con la barra flotando puede quedar lejos de lo que se
   // esta mirando. La vista se lleva hasta ahi despues del commit, cuando el nodo nuevo ya existe.
@@ -163,6 +166,28 @@ export function CanvasToolbar() {
           </span>
         </Tooltip>
       </div>
+
+      <span aria-hidden className={CANVAS_TOOLBAR_DIVIDER_CLASSES} />
+
+      <Tooltip
+        content={
+          isLowPerformance
+            ? 'Bajo rendimiento: prendido. Clic para apagarlo'
+            : 'Bajo rendimiento: para equipos lentos, quita animaciones y aligera el zoom con la rueda y el arrastre de filas'
+        }
+      >
+        <button
+          type="button"
+          onClick={() => toggleLowPerformance()}
+          aria-pressed={isLowPerformance}
+          aria-label="Modo de bajo rendimiento"
+          className={`${TOOL_BUTTON_BASE_CLASSES} ${
+            isLowPerformance ? PERFORMANCE_ON_CLASSES : TOOL_BUTTON_INACTIVE_CLASSES
+          }`}
+        >
+          <SpeedLow size={16} />
+        </button>
+      </Tooltip>
 
       {selectedFieldIds.length > 1 && (
         <>

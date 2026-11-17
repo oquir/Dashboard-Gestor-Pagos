@@ -4,7 +4,6 @@ import type { RightSidebarTab } from '../../../types/ui'
 import { CanvasZoomControl } from '../../molecules/CanvasZoomControl/CanvasZoomControl'
 import { FormSummary } from '../../molecules/FormSummary/FormSummary'
 import { PanelBlock } from '../../molecules/PanelBlock/PanelBlock'
-import { PerformanceModeSwitch } from '../../molecules'
 import { RightPanelToggle } from '../../molecules/RightPanelToggle/RightPanelToggle'
 import { TransferNotice } from '../../molecules/TransferNotice/TransferNotice'
 import { ViewModeSwitch } from '../../molecules/ViewModeSwitch/ViewModeSwitch'
@@ -152,10 +151,6 @@ export function RightSidebar() {
           </>
         )}
       </div>
-
-      {/* Fuera del cuerpo y debajo de el: el cuerpo es flex-1, asi que esto queda pegado al pie con
-          cualquiera de las dos pestañas, y es de la app entera, no de una seccion. */}
-      <PerformanceModeSwitch />
 
       {isImportOpen && <ProjectImportModal onClose={() => setImportOpen(false)} />}
     </div>
