@@ -16,6 +16,7 @@ import {
 } from './RepeatableGroupBand.constants'
 import type { RepeatableGroupBandProps } from './RepeatableGroupBand.types'
 import { buildGroupSummary } from './RepeatableGroupBand.utils'
+import { Tooltip } from '../../atoms'
 
 export function RepeatableGroupBand({
   group,
@@ -144,14 +145,15 @@ export function RepeatableGroupBand({
 
           {/* Disolver vive aca dentro y ya no al lado de "+ Fila": es destructivo y estaba a
               veinte pixeles de la accion que mas se usa, con el mismo tamaño. */}
-          <button
-            type="button"
-            onClick={() => removeGroup(group.id)}
-            title="Disolver el grupo (las filas se quedan)"
-            className={BAND_DISSOLVE_CLASSES}
-          >
-            Disolver el grupo
-          </button>
+          <Tooltip content="Disolver el grupo (las filas se quedan)">
+            <button
+              type="button"
+              onClick={() => removeGroup(group.id)}
+              className={BAND_DISSOLVE_CLASSES}
+            >
+              Disolver el grupo
+            </button>
+          </Tooltip>
         </div>
       )}
 

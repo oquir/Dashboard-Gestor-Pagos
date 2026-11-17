@@ -4,7 +4,6 @@ export const HIDDEN_STEP_DESCRIPTION: string =
 export const HIDDEN_STEP_NOTE: string =
   'Oculto: no se muestra ni se navega, pero sus campos calculan y viajan en el payload.'
 
-// relative ancla la burbuja del (i) a la fila: toma su ancho, el del bloque.
-export const OPTION_ROW_CLASSES: string = 'relative flex items-center justify-between gap-2'
+export const OPTION_ROW_CLASSES: string = 'flex items-center justify-between gap-2'
 
 export const OPTION_CONTROL_CLASSES: string = 'flex items-center gap-2'

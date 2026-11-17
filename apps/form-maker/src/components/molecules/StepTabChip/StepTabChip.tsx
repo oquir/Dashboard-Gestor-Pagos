@@ -1,3 +1,4 @@
+import { Tooltip } from '../../atoms/Tooltip'
 import { useDroppable } from '@dnd-kit/core'
 import { useEffect, useRef } from 'react'
 import { Xmark } from 'reicon-react'
@@ -36,7 +37,7 @@ export function StepTabChip({
   // marca y su halo, no por expandirse con el titulo. Expandirla movia la grilla entera cada vez
   // que se cambiaba de paso -- justo lo que no puede pasar mientras se apunta a una de estas
   // pestanas con una fila colgando del puntero. El titulo vive en el bloque "Paso activo" y sigue
-  // a un hover de distancia en el title nativo.
+  // a un hover de distancia, en el Tooltip.
   const chipClasses: string = active
     ? 'bg-brand text-on-brand ring-[3px] ring-brand/20'
     : 'bg-surface-raised text-fg-muted hover:bg-surface-inset hover:text-fg-strong'
@@ -46,30 +47,33 @@ export function StepTabChip({
       ref={setNodeRef}
       className={`relative shrink-0 rounded-md ${transferClasses(transferState, isOver)} ${className}`}
     >
-      <button
-        ref={buttonRef}
-        type="button"
-        onClick={onSelect}
-        title={`${label}\n${STEP_NAVIGATION_HINT}`}
-        aria-label={label}
-        aria-current={active ? 'step' : undefined}
-        className={`flex h-7 w-7 items-center justify-center rounded-md text-[11px] font-semibold tabular-nums transition-colors hover:cursor-pointer ${chipClasses}`}
-      >
-        {index}
-      </button>
+      <Tooltip content={`${label}\n${STEP_NAVIGATION_HINT}`} className="whitespace-pre-line">
+        <button
+          ref={buttonRef}
+          type="button"
+          onClick={onSelect}
+          aria-label={label}
+          aria-current={active ? 'step' : undefined}
+          className={`flex h-7 w-7 items-center justify-center rounded-md text-[11px] font-semibold tabular-nums transition-colors hover:cursor-pointer ${chipClasses}`}
+        >
+          {index}
+        </button>
+      </Tooltip>
 
       {active && onRemove && (
-        <button
-          type="button"
-          title={removeTitle}
-          onClick={(e) => {
-            e.stopPropagation()
-            onRemove()
-          }}
-          className="-right-1.5 -top-1.5 absolute flex h-4 w-4 items-center justify-center rounded-full border border-border bg-surface text-fg-subtle shadow-sm transition-colors hover:border-danger-soft hover:text-danger hover:cursor-pointer"
-        >
-          <Xmark size={removeIconSize} weight="Filled" />
-        </button>
+        <Tooltip content={removeTitle}>
+          <button
+            type="button"
+            aria-label={removeTitle}
+            onClick={(e) => {
+              e.stopPropagation()
+              onRemove()
+            }}
+            className="-right-1.5 -top-1.5 absolute flex h-4 w-4 items-center justify-center rounded-full border border-border bg-surface text-fg-subtle shadow-sm transition-colors hover:border-danger-soft hover:text-danger hover:cursor-pointer"
+          >
+            <Xmark size={removeIconSize} weight="Filled" />
+          </button>
+        </Tooltip>
       )}
     </div>
   )

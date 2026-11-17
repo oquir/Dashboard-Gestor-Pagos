@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import { Xmark } from 'reicon-react'
+import { Tooltip } from '../Tooltip'
 import {
   BODY_CLASSES,
   CLOSE_BUTTON_CLASSES,
@@ -46,15 +47,16 @@ export function ModalShell({
           </div>
 
           {onClose && (
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Cerrar"
-              title="Cerrar"
-              className={CLOSE_BUTTON_CLASSES}
-            >
-              <Xmark size={16} />
-            </button>
+            <Tooltip content="Cerrar">
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Cerrar"
+                className={CLOSE_BUTTON_CLASSES}
+              >
+                <Xmark size={16} />
+              </button>
+            </Tooltip>
           )}
         </header>
 

@@ -12,6 +12,7 @@ import {
 } from './MoveToStepMenu.constants'
 import type { MoveTargetSection, MoveToStepMenuProps } from './MoveToStepMenu.types'
 import { buildMoveSections } from './MoveToStepMenu.utils'
+import { Tooltip } from '../../atoms'
 
 export function MoveToStepMenu({ onSelect }: MoveToStepMenuProps) {
   const formSteps = useFormStore((state) => state.formSteps)
@@ -31,18 +32,21 @@ export function MoveToStepMenu({ onSelect }: MoveToStepMenuProps) {
 
   return (
     <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setIsOpen((open) => !open)}
-        disabled={sections.length === 0}
-        aria-haspopup="menu"
-        aria-expanded={isOpen}
-        title="Mover los campos seleccionados a otro paso"
-        className={CANVAS_TOOLBAR_ACTION_CLASSES}
-      >
-        Mover a paso
-        <AngleDown2 size={12} />
-      </button>
+      <Tooltip content="Mover los campos seleccionados a otro paso">
+        <span className="inline-flex">
+          <button
+            type="button"
+            onClick={() => setIsOpen((open) => !open)}
+            disabled={sections.length === 0}
+            aria-haspopup="menu"
+            aria-expanded={isOpen}
+            className={CANVAS_TOOLBAR_ACTION_CLASSES}
+          >
+            Mover a paso
+            <AngleDown2 size={12} />
+          </button>
+        </span>
+      </Tooltip>
 
       {isOpen && (
         <div className={MENU_CLASSES}>

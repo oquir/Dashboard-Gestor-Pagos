@@ -3,7 +3,7 @@ import { Palette } from 'reicon-react'
 import { ROW_TOOLBAR_ICON_ITEM_CLASSES, ROW_TOOLBAR_POPOVER_CLASSES } from '../../../constants'
 import { useClickOutside } from '../../../hooks'
 import { useFormStore } from '../../../store'
-import { Label } from '../../atoms'
+import { Label, Tooltip } from '../../atoms'
 import { Textarea } from '../../atoms'
 import { TwoColumnFieldGroup } from '../../atoms'
 import { CssValidationHint } from '../../molecules'
@@ -22,14 +22,16 @@ export function RowStylesMenu({ rowId, styles, isOpen, onToggle, onClose }: RowS
 
   return (
     <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={onToggle}
-        title="Estilos de la fila"
-        className={ROW_TOOLBAR_ICON_ITEM_CLASSES}
-      >
-        <Palette size={12} />
-      </button>
+      <Tooltip content="Estilos de la fila">
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label="Estilos de la fila"
+          className={ROW_TOOLBAR_ICON_ITEM_CLASSES}
+        >
+          <Palette size={12} />
+        </button>
+      </Tooltip>
       {isOpen && (
         <div className={`${ROW_TOOLBAR_POPOVER_CLASSES} gap-3`}>
           <div className="flex flex-col gap-1">

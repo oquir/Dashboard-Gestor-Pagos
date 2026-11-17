@@ -11,8 +11,7 @@ export function PanelSection({ title, description, aside, children }: PanelSecti
     // claro la tarjeta es blanca como el panel y la separa solo el borde: border-strong, porque el
     // border normal (slate-200) sobre blanco casi no se ve.
     <section className="flex flex-col gap-3 rounded-lg border border-border-strong bg-surface p-3 dark:border-border dark:bg-black/25">
-      {/* relative ancla la burbuja de la descripcion: toma el ancho de esta fila, el de la tarjeta. */}
-      <div className="relative flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2">
         <h3 className="text-[10px] font-semibold uppercase tracking-wider text-fg-subtle">
           {title}
         </h3>

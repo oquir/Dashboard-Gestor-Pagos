@@ -12,6 +12,7 @@ import { FieldDragHandle } from '../../atoms/FieldDragHandle/FieldDragHandle'
 import { FieldResizeHandle } from '../../atoms/FieldResizeHandle/FieldResizeHandle'
 import { FieldTypeBadge } from '../../atoms/FieldTypeBadge/FieldTypeBadge'
 import { IconButton } from '../../atoms/IconButton/IconButton'
+import { Tooltip } from '../../atoms/Tooltip'
 import { FieldPreviewControl } from '../FieldPreviewControl/FieldPreviewControl'
 import { TooltipBubble } from '../TooltipBubble/TooltipBubble'
 import {
@@ -116,12 +117,9 @@ export function CanvasFieldChip({
             >
               <div className="flex w-min min-w-0 grow items-center gap-1">
                 {linkedLabel ? (
-                  <p
-                    title={`La etiqueta la aporta "${linkedLabel.label}"`}
-                    className="text-sm font-medium italic text-fg-muted"
-                  >
-                    {linkedLabel.label}
-                  </p>
+                  <Tooltip content={`La etiqueta la aporta "${linkedLabel.label}"`}>
+                    <p className="text-sm font-medium italic text-fg-muted">{linkedLabel.label}</p>
+                  </Tooltip>
                 ) : (
                   <p className="text-sm font-medium text-slate-700 dark:text-neutral-200">
                     {field.label}
@@ -130,7 +128,7 @@ export function CanvasFieldChip({
                 {showTooltip && <InfoCircle size={12} className="shrink-0 text-fg-subtle" />}
               </div>
               {/* Iconos monocromos y sin fondo: eran tres pildoras de tres colores que le disputaban
-                el naranja a la seleccion. El detalle sigue en el title y en el panel de logica.
+                el naranja a la seleccion. El detalle sale en un Tooltip y esta en el panel de logica.
                 Se ven solo si caben al lado de la palabra mas larga del nombre: el nombre mide eso
                 (w-min) al repartir el renglon, y si no queda lugar el flex-wrap baja los iconos a
                 una segunda linea de alto cero, que el overflow-hidden de arriba no deja ver. Cada
@@ -138,22 +136,25 @@ export function CanvasFieldChip({
               <div className="ml-auto h-0 shrink-0">
                 <div className="flex h-5 items-center gap-1.5">
                   {field.visibleWhen && (
-                    <span title="Visibilidad condicional" className={STATE_ICON_CLASSES}>
-                      <Eye size={11} weight="Filled" />
-                    </span>
+                    <Tooltip content="Visibilidad condicional">
+                      <span className={STATE_ICON_CLASSES}>
+                        <Eye size={11} weight="Filled" />
+                      </span>
+                    </Tooltip>
                   )}
                   {field.alwaysDisabled && (
-                    <span
-                      title="Siempre deshabilitado (solo lectura)"
-                      className={STATE_ICON_CLASSES}
-                    >
-                      <Lock size={11} weight="Filled" />
-                    </span>
+                    <Tooltip content="Siempre deshabilitado (solo lectura)">
+                      <span className={STATE_ICON_CLASSES}>
+                        <Lock size={11} weight="Filled" />
+                      </span>
+                    </Tooltip>
                   )}
                   {!field.alwaysDisabled && field.enableWhen && (
-                    <span title="Habilitación condicional" className={STATE_ICON_CLASSES}>
-                      <BranchDown size={11} weight="Filled" />
-                    </span>
+                    <Tooltip content="Habilitación condicional">
+                      <span className={STATE_ICON_CLASSES}>
+                        <BranchDown size={11} weight="Filled" />
+                      </span>
+                    </Tooltip>
                   )}
                   <FieldTypeBadge type={field.type} />
                 </div>
@@ -171,14 +172,15 @@ export function CanvasFieldChip({
             </span>
           )}
           {DestinationIcon && (
-            <span
-              role="img"
-              aria-label={destinationTitle}
-              title={destinationTitle}
-              className={`${DESTINATION_SYMBOL_CLASSES} ${DESTINATION_COLOR_CLASSES[destination]}`}
-            >
-              <DestinationIcon size={12} />
-            </span>
+            <Tooltip content={destinationTitle}>
+              <span
+                role="img"
+                aria-label={destinationTitle}
+                className={`${DESTINATION_SYMBOL_CLASSES} ${DESTINATION_COLOR_CLASSES[destination]}`}
+              >
+                <DestinationIcon size={12} />
+              </span>
+            </Tooltip>
           )}
         </button>
         {showTooltip && field.tooltip && <TooltipBubble tooltip={field.tooltip} />}

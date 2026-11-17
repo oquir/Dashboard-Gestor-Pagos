@@ -2,8 +2,8 @@ import { SpeedLow } from 'reicon-react'
 import { useFormStore } from '../../../store'
 import { ToggleSwitch } from '../../atoms'
 
-// Pie del panel derecho. La explicacion va a la vista y no en un InfoHint: la burbuja de ese abre
-// hacia abajo, y al pie del panel la recortaria el overflow-hidden del aside.
+// Pie del panel derecho. La explicacion va a la vista y no en un InfoHint, por decision de diseno:
+// es una linea que se lee de corrido, no una ayuda que se pide.
 export function PerformanceModeSwitch() {
   const isLowPerformance = useFormStore((state) => state.isLowPerformance)
   const toggleLowPerformance = useFormStore((state) => state.toggleLowPerformance)

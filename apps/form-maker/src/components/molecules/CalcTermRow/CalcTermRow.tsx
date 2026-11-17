@@ -13,6 +13,7 @@ import {
   SIGN_TRACK_CLASSES,
 } from './CalcTermRow.constants'
 import type { CalcTermRowProps } from './CalcTermRow.types'
+import { Tooltip } from '../../atoms'
 
 export function CalcTermRow({
   term,
@@ -28,19 +29,20 @@ export function CalcTermRow({
     <li className={ROW_CLASSES}>
       <fieldset aria-label={`Signo del campo ${position}`} className={SIGN_TRACK_CLASSES}>
         {CALC_SIGN_CHOICES.map((choice) => (
-          <button
-            key={choice.sign}
-            type="button"
-            aria-pressed={term.sign === choice.sign}
-            aria-label={choice.label}
-            title={choice.label}
-            onClick={() => onSignChange(choice.sign)}
-            className={`${SIGN_ITEM_BASE_CLASSES} ${
-              term.sign === choice.sign ? SIGN_ITEM_ACTIVE_CLASSES : SIGN_ITEM_INACTIVE_CLASSES
-            }`}
-          >
-            {choice.symbol}
-          </button>
+          <Tooltip content={choice.label}>
+            <button
+              key={choice.sign}
+              type="button"
+              aria-pressed={term.sign === choice.sign}
+              aria-label={choice.label}
+              onClick={() => onSignChange(choice.sign)}
+              className={`${SIGN_ITEM_BASE_CLASSES} ${
+                term.sign === choice.sign ? SIGN_ITEM_ACTIVE_CLASSES : SIGN_ITEM_INACTIVE_CLASSES
+              }`}
+            >
+              {choice.symbol}
+            </button>
+          </Tooltip>
         ))}
       </fieldset>
 

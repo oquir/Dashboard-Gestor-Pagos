@@ -5,6 +5,7 @@ import type { FormPreviewApi } from '../../../types'
 import { PreviewForm } from '../preview/PreviewForm'
 import { PreviewResults } from '../preview/PreviewResults'
 import { EXIT_BUTTON_CLASSES, ICON_BUTTON_CLASSES } from './FormSimulator.constants'
+import { Tooltip } from '../../atoms'
 
 export function FormSimulator() {
   const preview: FormPreviewApi = useFormPreview()
@@ -23,15 +24,16 @@ export function FormSimulator() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={toggleDarkMode}
-            title={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}
-            aria-label={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}
-            className={ICON_BUTTON_CLASSES}
-          >
-            {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
+          <Tooltip content={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}>
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              aria-label={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}
+              className={ICON_BUTTON_CLASSES}
+            >
+              {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+          </Tooltip>
           <button
             type="button"
             onClick={() => setSimulatorOpen(false)}

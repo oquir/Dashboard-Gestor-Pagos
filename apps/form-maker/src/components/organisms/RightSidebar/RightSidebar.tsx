@@ -23,6 +23,7 @@ import {
   PANEL_TAB_INACTIVE_CLASSES,
   TABS,
 } from './RightSidebar.constants'
+import { Tooltip } from '../../atoms'
 
 export function RightSidebar() {
   const formSteps = useFormStore((state) => state.formSteps)
@@ -112,14 +113,15 @@ export function RightSidebar() {
             <PanelBlock
               title="Formulario"
               action={
-                <button
-                  type="button"
-                  onClick={() => setImportOpen(true)}
-                  title="Abrir un formulario exportado"
-                  className={OPEN_PROJECT_BUTTON_CLASSES}
-                >
-                  Abrir…
-                </button>
+                <Tooltip content="Abrir un formulario exportado">
+                  <button
+                    type="button"
+                    onClick={() => setImportOpen(true)}
+                    className={OPEN_PROJECT_BUTTON_CLASSES}
+                  >
+                    Abrir…
+                  </button>
+                </Tooltip>
               }
             >
               <FormSummary />

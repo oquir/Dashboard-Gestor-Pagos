@@ -1,5 +1,5 @@
 ﻿import { Moon, Sun } from 'reicon-react'
-import { Tooltip } from '../Tooltip'
+import { Tooltip } from '../../atoms'
 import type { SidebarTabRailProps } from './SidebarTabRail.types'
 
 export function SidebarTabRail({

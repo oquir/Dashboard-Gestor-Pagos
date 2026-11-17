@@ -1,5 +1,6 @@
 import { useFieldScriptEditor } from '../../../../hooks/useFieldScriptEditor/useFieldScriptEditor'
 import { Button } from '../../../atoms/Button/Button'
+import { Tooltip } from '../../../atoms/Tooltip'
 import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
 import { ScriptInput } from '../../../molecules/ScriptInput/ScriptInput'
 import { SimpleCalcModal } from '../../SimpleCalcModal/SimpleCalcModal'
@@ -75,9 +76,9 @@ export function FieldScriptEditor({ field, candidates }: FieldScriptEditorProps)
           <span className={HINT_CLASSES}>Lee estos campos:</span>
           <ul className="flex list-none flex-wrap gap-1">
             {dependencies.map((dependency) => (
-              <li key={dependency.id} className={READS_CLASSES} title={dependency.label}>
-                {dependency.name}
-              </li>
+              <Tooltip key={dependency.id} content={dependency.label}>
+                <li className={READS_CLASSES}>{dependency.name}</li>
+              </Tooltip>
             ))}
           </ul>
         </div>

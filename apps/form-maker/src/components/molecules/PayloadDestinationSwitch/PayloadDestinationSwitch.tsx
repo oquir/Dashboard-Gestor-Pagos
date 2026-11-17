@@ -1,3 +1,4 @@
+import { Tooltip } from '../../atoms/Tooltip'
 import {
   SWITCH_ITEM_ACTIVE_CLASSES,
   SWITCH_ITEM_BASE_CLASSES,
@@ -22,19 +23,21 @@ export function PayloadDestinationSwitch({
         const disabledReason: string | undefined = disabledReasons[item.destination]
 
         return (
-          <button
-            key={item.destination}
-            type="button"
-            onClick={() => onChange(item.destination)}
-            disabled={disabledReason !== undefined}
-            title={disabledReason ?? item.hint}
-            aria-pressed={isActive}
-            className={`${SWITCH_ITEM_BASE_CLASSES} ${SWITCH_ITEM_DISABLED_CLASSES} ${
-              isActive ? SWITCH_ITEM_ACTIVE_CLASSES : SWITCH_ITEM_INACTIVE_CLASSES
-            }`}
-          >
-            {item.label}
-          </button>
+          <Tooltip key={item.destination} content={disabledReason ?? item.hint}>
+            <span className="flex flex-1">
+              <button
+                type="button"
+                onClick={() => onChange(item.destination)}
+                disabled={disabledReason !== undefined}
+                aria-pressed={isActive}
+                className={`${SWITCH_ITEM_BASE_CLASSES} ${SWITCH_ITEM_DISABLED_CLASSES} ${
+                  isActive ? SWITCH_ITEM_ACTIVE_CLASSES : SWITCH_ITEM_INACTIVE_CLASSES
+                }`}
+              >
+                {item.label}
+              </button>
+            </span>
+          </Tooltip>
         )
       })}
     </div>

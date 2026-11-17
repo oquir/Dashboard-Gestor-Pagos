@@ -3,6 +3,7 @@ import { useExportReview } from '../../../hooks/useExportReview/useExportReview'
 import { ExportReviewModal } from '../ExportReviewModal/ExportReviewModal'
 import { EXPORT_BUTTON_CLASSES } from './ExportButton.constants'
 import type { ExportButtonProps } from './ExportButton.types'
+import { Tooltip } from '../../atoms'
 
 const LABEL: string = 'Revisar el formulario y descargarlo como JSON'
 
@@ -14,16 +15,17 @@ export function ExportButton({ iconOnly = false }: ExportButtonProps) {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={requestExport}
-        title={LABEL}
-        aria-label={iconOnly ? LABEL : undefined}
-        className={EXPORT_BUTTON_CLASSES}
-      >
-        <DirectSend2 size={13} />
-        {!iconOnly && 'Exportar'}
-      </button>
+      <Tooltip content={LABEL}>
+        <button
+          type="button"
+          onClick={requestExport}
+          aria-label={iconOnly ? LABEL : undefined}
+          className={EXPORT_BUTTON_CLASSES}
+        >
+          <DirectSend2 size={13} />
+          {!iconOnly && 'Exportar'}
+        </button>
+      </Tooltip>
 
       {problems && (
         <ExportReviewModal

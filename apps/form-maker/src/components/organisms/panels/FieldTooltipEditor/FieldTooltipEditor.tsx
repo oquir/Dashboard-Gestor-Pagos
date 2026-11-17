@@ -1,7 +1,7 @@
 import { TOOLTIP_POSITIONS } from '../../../../constants'
 import { useFormStore } from '../../../../store'
 import type { FieldTooltip } from '../../../../types'
-import { Label } from '../../../atoms'
+import { Label, Tooltip } from '../../../atoms'
 import { Textarea } from '../../../atoms'
 import { ToggleSwitch } from '../../../atoms'
 import { CssValidationHint } from '../../../molecules'
@@ -50,17 +50,18 @@ export function FieldTooltipEditor({ field }: FieldTooltipEditorProps) {
 
                 return (
                   <li key={position}>
-                    <button
-                      type="button"
-                      onClick={() => updateFieldTooltip(field.id, { position })}
-                      title={`Mostrar ${option.label.toLowerCase()} del campo`}
-                      className={`${POSITION_BUTTON_CLASSES} ${
-                        isActive ? POSITION_ACTIVE_CLASSES : POSITION_IDLE_CLASSES
-                      }`}
-                    >
-                      <Icon size={14} />
-                      {option.label}
-                    </button>
+                    <Tooltip content={`Mostrar ${option.label.toLowerCase()} del campo`}>
+                      <button
+                        type="button"
+                        onClick={() => updateFieldTooltip(field.id, { position })}
+                        className={`${POSITION_BUTTON_CLASSES} ${
+                          isActive ? POSITION_ACTIVE_CLASSES : POSITION_IDLE_CLASSES
+                        }`}
+                      >
+                        <Icon size={14} />
+                        {option.label}
+                      </button>
+                    </Tooltip>
                   </li>
                 )
               })}
