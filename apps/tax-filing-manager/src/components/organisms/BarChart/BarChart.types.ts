@@ -6,4 +6,5 @@ export interface BarChartProps {
   bars: Bar[]
   /** Cantidad de registros o suma en pesos. */
   format: ChartFormat
+  className?: string
 }

@@ -45,8 +45,8 @@ export default function BarChart({ title, description, bars, format }: BarChartP
               <div className="mt-1 h-2 rounded-full bg-surface-raised">
                 {b.value > 0 && (
                   <div
-                    className={`h-2 min-w-1 rounded-full ${b.classes ?? 'bg-brand'}`}
-                    style={{ width: `${(b.value / maximum) * 100}%` }}
+                    className={`h-2 min-w-1 rounded-full ${b.color ? '' : (b.classes ?? 'bg-brand')}`}
+                    style={{ width: `${(b.value / maximum) * 100}%`, background: b.color }}
                   />
                 )}
               </div>

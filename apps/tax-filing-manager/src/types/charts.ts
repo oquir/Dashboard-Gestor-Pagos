@@ -6,6 +6,7 @@ export interface Bar {
   value: number
   /** Color de la barra; por defecto, el de la marca. */
   classes?: string
+  color?: string
 }
 
 /** Cantidad de registros o suma en pesos. */

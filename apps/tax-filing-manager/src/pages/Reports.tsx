@@ -1,11 +1,17 @@
-import { useMemo, useState } from 'react'
+import {  useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
 import { Field, Filter, PageHeader, DateRange, SegmentedControl } from '../components/molecules'
-import { MunicipalitySearch, BarChart, ReportTable } from '../components/organisms'
+import {
+  MunicipalitySearch,
+  BarChart,
+  ReportTable,
+  MonthlyCollectionLineChart,
+} from '../components/organisms'
 import { APPROVAL_OPTIONS } from '../constants'
 import {
   can,
   buildReports,
+  buildMonthlyCollection,
   REPORTS,
   ritVisible,
   useApproval,
@@ -18,6 +24,8 @@ import type { ReportId } from '../lib'
 import { useData } from '../store'
 import type { ApprovalFilter } from '../types'
 import { today } from '../utils'
+
+type ReportMode = 'specific' | 'general'
 
 export default function Reports() {
   const { user, municipalityId } = useSession()
@@ -36,6 +44,21 @@ export default function Reports() {
   // Columna y filtro de aprobación solo si hay declaraciones con aprobación previa; si no, el filtro elegido no aplica.
   const withApproval = declarations.some((d) => d.approval)
   const approvalStatus = withApproval ? approvalFilter : ''
+
+  // El Reporte general solo lo ve 1cero1 y solo cuando tiene elegido "Todos los municipios".
+  const [mode, setMode] = useState<ReportMode>('specific')
+  const withGeneralReport = user?.role === '1cero1' && municipalityId === null
+
+  const generalCollection = useMemo(
+    () =>
+      buildMonthlyCollection({
+        declarations,
+        payments,
+        municipalities,
+        year: Number(today().slice(0, 4)),
+      }),
+    [declarations, payments, municipalities],
+  )
 
   // El RIT solo existe donde el municipio lo tiene en el aplicativo.
   const withRitVisible = ritVisible(municipalities, municipalityId)
@@ -77,6 +100,7 @@ export default function Reports() {
   if (!can(user?.role, 'canSeeReports')) return <Navigate to="/" replace />
 
   const { rows, charts } = data[report.id]
+  const isGeneral = withGeneralReport && mode === 'general'
 
   return (
     <>
@@ -86,61 +110,103 @@ export default function Reports() {
       />
       <MunicipalitySearch />
 
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <SegmentedControl
-          label="Reporte"
-          className="sm:inline-flex"
-          options={reports.map((r) => ({
-            value: r.id,
-            text: r.tab,
-            count: data[r.id].rows.length,
-          }))}
-          value={report.id}
-          change={setTab}
-        />
+      {withGeneralReport && (
+        <div className="mb-6">
+          <SegmentedControl
+            label="Tipo de reporte"
+            className="flex w-full [&>button]:flex-1"
+            options={[
+              { value: 'specific', text: 'Reporte específico' },
+              { value: 'general', text: 'Reporte general' },
+            ]}
+            value={mode}
+            change={setMode}
+          />
+        </div>
+      )}
 
-        {report.byDates ? (
-          <div className="flex flex-wrap items-start gap-3">
-            <DateRange from={from} to={to} changeFrom={setFrom} changeTo={setTo} />
-            {report.id === 'declarations' && withApproval && (
-              <Field label="Aprobación">
-                <Filter
-                  label="Aprobación"
-                  options={APPROVAL_OPTIONS}
-                  value={approvalStatus}
-                  change={setApprovalFilter}
-                />
-              </Field>
+      {isGeneral ? (
+        /* Reporte general */
+        <div className="grid w-full gap-6">
+          <BarChart
+            className="w-full max-w-none"
+            title="Recaudo por municipio"
+            description="Total del año en curso, de mayor a menor."
+            format="pesos"
+            bars={generalCollection.map((m) => ({
+              label: m.name,
+              value: m.total,
+              color: m.color,
+            }))}
+          />
+          <div className="min-w-0">
+            <MonthlyCollectionLineChart
+              title="Evolución mensual del recaudo"
+              description="Pagos del año en curso por mes."
+              series={generalCollection}
+            />
+          </div>
+        </div>
+      ) : (
+        /* Reporte específico */
+        <>
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+            <SegmentedControl
+              label="Reporte"
+              className="sm:inline-flex"
+              options={reports.map((r) => ({
+                value: r.id,
+                text: r.tab,
+                count: data[r.id].rows.length,
+              }))}
+              value={report.id}
+              change={setTab}
+            />
+
+            {report.byDates ? (
+              <div className="flex flex-wrap items-start gap-3">
+                <DateRange from={from} to={to} changeFrom={setFrom} changeTo={setTo} />
+                {report.id === 'declarations' && withApproval && (
+                  <Field label="Aprobación">
+                    <Filter
+                      label="Aprobación"
+                      options={APPROVAL_OPTIONS}
+                      value={approvalStatus}
+                      change={setApprovalFilter}
+                    />
+                  </Field>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-fg-muted">Datos al día de hoy.</p>
             )}
           </div>
-        ) : (
-          <p className="text-sm text-fg-muted">Datos al día de hoy.</p>
-        )}
-      </div>
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {charts.map((g) => (
-          <BarChart
-            key={g.title}
-            title={g.title}
-            description={g.description}
-            format={g.format}
-            bars={g.bars}
-          />
-        ))}
-      </div>
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {charts.map((g) => (
+              <BarChart
+                key={g.title}
+                title={g.title}
+                description={g.description}
+                format={g.format}
+                bars={g.bars}
+              />
+            ))}
+          </div>
 
-      <div className="mt-6">
-        <ReportTable
-          key={report.id}
-          report={report}
-          rows={rows}
-          withoutApproval={report.id === 'declarations' && !withApproval}
-          from={from}
-          to={to}
-          invalidRange={invalidRange}
-        />
-      </div>
+          <div className="mt-6">
+            <ReportTable
+              key={report.id}
+              report={report}
+              rows={rows}
+              withoutApproval={report.id === 'declarations' && !withApproval}
+              from={from}
+              to={to}
+              invalidRange={invalidRange}
+            />
+          </div>
+        </>
+      )}
     </>
   )
 }

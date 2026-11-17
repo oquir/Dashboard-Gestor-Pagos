@@ -14,3 +14,19 @@ export const SERIES_CLASS: Record<Tax, string> = {
   reteica: 'bg-serie-reteica',
   selfWithholding: 'bg-serie-autorretencion',
 }
+
+/** Colores del Reporte general: uno por municipio, el mismo en las barras y en las líneas. */
+export const MUNICIPALITY_COLORS = [
+  'var(--ui-serie-ica)',
+  'var(--ui-serie-reteica)',
+  'var(--ui-serie-autorretencion)',
+  '#8b5cf6',
+  '#f59e0b',
+  '#ec4899',
+  '#14b8a6',
+  '#ef4444',
+] as const
+
+/** Color del municipio i-ésimo; el módulo evita repetir tono si algún día hay más municipios. */
+export const municipalityColor = (index: number) =>
+  MUNICIPALITY_COLORS[index % MUNICIPALITY_COLORS.length]
