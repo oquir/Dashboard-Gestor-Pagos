@@ -29,9 +29,8 @@ export function CalcTermRow({
     <li className={ROW_CLASSES}>
       <fieldset aria-label={`Signo del campo ${position}`} className={SIGN_TRACK_CLASSES}>
         {CALC_SIGN_CHOICES.map((choice) => (
-          <Tooltip content={choice.label}>
+          <Tooltip key={choice.sign} content={choice.label}>
             <button
-              key={choice.sign}
               type="button"
               aria-pressed={term.sign === choice.sign}
               aria-label={choice.label}

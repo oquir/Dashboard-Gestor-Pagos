@@ -19,9 +19,8 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
     <div className="flex flex-col gap-1.5">
       <div className={TOOLBAR_CLASSES}>
         {FORMAT_BUTTONS.map((button) => (
-          <Tooltip content={button.title}>
+          <Tooltip key={button.command} content={button.title}>
             <button
-              key={button.command}
               type="button"
               onClick={() => editor.runCommand(button.command)}
               className={TOOL_BUTTON_CLASSES}

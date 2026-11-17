@@ -86,9 +86,8 @@ export function CanvasToolbar() {
           const isActive: boolean = canvasTool === item.tool
 
           return (
-            <Tooltip content={`${item.label} (${item.shortcut})`}>
+            <Tooltip key={item.tool} content={`${item.label} (${item.shortcut})`}>
               <button
-                key={item.tool}
                 type="button"
                 onClick={() => setCanvasTool(item.tool)}
                 aria-pressed={isActive}
