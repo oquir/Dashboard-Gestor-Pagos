@@ -2,6 +2,7 @@ import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { lazy, Suspense } from 'react'
 import { useDragAndDrop } from '../../../hooks/useDragAndDrop/useDragAndDrop'
 import { useFormStore } from '../../../store/formStore'
+import { ErrorBoundary } from '../../atoms/ErrorBoundary/ErrorBoundary'
 import { SimulatorLoading } from '../../atoms/SimulatorLoading/SimulatorLoading'
 import { AppLayout } from '../../layout/AppLayout'
 import { DragPreview } from '../../molecules/DragPreview/DragPreview'
@@ -10,6 +11,7 @@ import { CanvasToolbar } from '../CanvasToolbar/CanvasToolbar'
 import { CollapsedRightSidebar } from '../CollapsedRightSidebar/CollapsedRightSidebar'
 import { RightSidebar } from '../RightSidebar/RightSidebar'
 import { Sidebar } from '../Sidebar/Sidebar'
+import { SimulatorCrashScreen } from '../SimulatorCrashScreen/SimulatorCrashScreen'
 import { OVERLAY_STYLE } from './FormBuilder.constants'
 
 // El simulador se carga aparte: es la unica puerta a los catalogos de mentira y al zod que hidrata
@@ -31,12 +33,16 @@ export function FormBuilder() {
   } = useDragAndDrop()
   const isSimulatorOpen = useFormStore((state) => state.isSimulatorOpen)
 
-  // El simulador se lleva la pantalla entera: sin sidebar, sin lienzo y sin drag and drop.
+  // El simulador se lleva la pantalla entera: sin sidebar, sin lienzo y sin drag and drop. Tiene
+  // su propia frontera de errores, por dentro de la de toda la app: si falla, se vuelve al editor
+  // sin recargar. Como solo existe mientras el simulador esta abierto, al reabrirlo empieza limpia.
   if (isSimulatorOpen) {
     return (
-      <Suspense fallback={<SimulatorLoading />}>
-        <FormSimulator />
-      </Suspense>
+      <ErrorBoundary fallback={(message) => <SimulatorCrashScreen message={message} />}>
+        <Suspense fallback={<SimulatorLoading />}>
+          <FormSimulator />
+        </Suspense>
+      </ErrorBoundary>
     )
   }
 

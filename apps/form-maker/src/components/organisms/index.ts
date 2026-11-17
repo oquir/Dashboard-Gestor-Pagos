@@ -1,6 +1,7 @@
 // Organismos: secciones completas del builder. FormSimulator y preview/ no estan: se cargan
 // con React.lazy y reexportarlos aca los meteria en el chunk inicial. Entre organismos se
 // importa por la ruta, no desde este indice.
+export * from './AppCrashScreen'
 export * from './Canvas'
 export * from './CanvasRow'
 export * from './CanvasRowsGrid'
@@ -30,4 +31,5 @@ export * from './SetupWizardModal'
 export * from './Sidebar'
 export * from './SimpleCalcModal'
 export * from './SimulatorButton'
+export * from './SimulatorCrashScreen'
 export * from './StepTitleEditor'
