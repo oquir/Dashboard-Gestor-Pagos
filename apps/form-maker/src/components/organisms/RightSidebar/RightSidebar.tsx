@@ -10,6 +10,7 @@ import { TransferNotice } from '../../molecules/TransferNotice/TransferNotice'
 import { ViewModeSwitch } from '../../molecules/ViewModeSwitch/ViewModeSwitch'
 import { CanvasTabs } from '../CanvasTabs/CanvasTabs'
 import { ExportButton } from '../ExportButton/ExportButton'
+import { PdfDesignerButton } from '../PdfDesignerButton/PdfDesignerButton'
 import { ProjectImportModal } from '../ProjectImportModal/ProjectImportModal'
 import { SaveButton } from '../SaveButton/SaveButton'
 import { SimulatorButton } from '../SimulatorButton/SimulatorButton'
@@ -125,6 +126,10 @@ export function RightSidebar() {
               }
             >
               <FormSummary />
+            </PanelBlock>
+
+            <PanelBlock title="PDF de la declaración">
+              <PdfDesignerButton />
             </PanelBlock>
           </>
         )}

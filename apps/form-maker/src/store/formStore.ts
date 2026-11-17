@@ -126,6 +126,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
   isSidebarOpen: true,
   isRightSidebarOpen: true,
   isSimulatorOpen: false,
+  isPdfDesignerOpen: false,
   canvasZoom: ZOOM_DEFAULT,
   canvasViewMode: 'canvas',
   sidebarTab: 'fields',
@@ -154,6 +155,9 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
   // subarboles distintos. Es estado de vista, igual que sidebarTab.
   setCanvasViewMode: (mode) => set({ canvasViewMode: mode }),
   setSimulatorOpen: (open) => set({ isSimulatorOpen: open }),
+  // El diseñador de PDF es un lienzo propio, no un paso mas: no entra en activeCanvas, cuyo
+  // CanvasTarget supone filas y campos en cada lectura. Su diseño vive en usePdfDesignStore.
+  setPdfDesignerOpen: (open) => set({ isPdfDesignerOpen: open }),
   // Recorta aca y no en cada llamante: la rueda manda valores continuos y los atajos de teclado no
   // saben del rango.
   setCanvasZoom: (zoom) => set({ canvasZoom: clampZoom(zoom) }),

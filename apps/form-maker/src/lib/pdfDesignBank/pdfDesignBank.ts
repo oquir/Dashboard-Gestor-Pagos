@@ -1,0 +1,55 @@
+import type { PdfDesign, PdfSaveResult, PdfTaxType, StoredPdfDesign } from '../../types'
+import {
+  PDF_DESIGN_KEY_PREFIX,
+  PDF_DESIGN_SCHEMA_VERSION,
+  QUOTA_MESSAGE,
+  SAVE_FAILED_MESSAGE,
+} from './pdfDesignBank.constants'
+import { storedPdfDesignSchema } from './pdfDesignBank.schema'
+
+// El guardado local del diseño del PDF: una llave de localStorage por impuesto. Es la copia de
+// trabajo; lo que se publica es el .html (docs/Pendientes-PDF.md §2.1). Ni persistence ni
+// exportForm nombran este modulo, asi que el diseño no se filtra al borrador ni al JSON.
+// Solo lo usa el diseñador (chunk perezoso): fuera de lib/index.ts.
+
+export function pdfDesignKey(taxType: PdfTaxType): string {
+  return `${PDF_DESIGN_KEY_PREFIX}${taxType}`
+}
+
+// null cuando no hay nada guardado, o cuando lo guardado no se puede leer: otra version, otra
+// forma o de otro impuesto. El diseñador empieza entonces en blanco.
+export function loadPdfDesign(taxType: PdfTaxType): StoredPdfDesign | null {
+  let raw: string | null
+  try {
+    raw = localStorage.getItem(pdfDesignKey(taxType))
+  } catch {
+    return null
+  }
+  if (!raw) return null
+
+  try {
+    const parsed = storedPdfDesignSchema.safeParse(JSON.parse(raw))
+    if (!parsed.success) return null
+    if (parsed.data.schemaVersion !== PDF_DESIGN_SCHEMA_VERSION) return null
+    if (parsed.data.design.taxType !== taxType) return null
+
+    return parsed.data
+  } catch {
+    return null
+  }
+}
+
+// Nunca lanza: el autoguardado corre en un temporizador y un error ahi no lo atrapa nadie. El
+// caso que importa es el cupo lleno, que llega con las imagenes en base64.
+export function savePdfDesign(design: PdfDesign, now: Date = new Date()): PdfSaveResult {
+  const savedAt: string = now.toISOString()
+  const stored: StoredPdfDesign = { schemaVersion: PDF_DESIGN_SCHEMA_VERSION, savedAt, design }
+
+  try {
+    localStorage.setItem(pdfDesignKey(design.taxType), JSON.stringify(stored))
+    return { ok: true, savedAt }
+  } catch (error) {
+    const isQuota: boolean = error instanceof DOMException && error.name === 'QuotaExceededError'
+    return { ok: false, error: isQuota ? QUOTA_MESSAGE : SAVE_FAILED_MESSAGE }
+  }
+}

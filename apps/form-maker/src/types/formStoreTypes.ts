@@ -49,6 +49,7 @@ export interface FormState extends BanksSlice {
   isSidebarOpen: boolean
   isRightSidebarOpen: boolean
   isSimulatorOpen: boolean
+  isPdfDesignerOpen: boolean
   canvasZoom: number
   canvasViewMode: CanvasViewMode
   sidebarTab: SidebarTab
@@ -74,6 +75,7 @@ export interface FormState extends BanksSlice {
   setRightSidebarOpen: (open: boolean) => void
   setCanvasViewMode: (mode: CanvasViewMode) => void
   setSimulatorOpen: (open: boolean) => void
+  setPdfDesignerOpen: (open: boolean) => void
   setCanvasZoom: (zoom: number) => void
   setCanvasTool: (tool: CanvasTool) => void
   setSidebarTab: (tab: SidebarTab) => void
