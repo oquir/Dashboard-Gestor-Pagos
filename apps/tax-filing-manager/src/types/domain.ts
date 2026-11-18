@@ -2,12 +2,20 @@
 
 export type Role = '1cero1' | 'municipality_admin' | 'official'
 
+export type Bank = 'BANCOLOMBIA' | 'FINTECH' | 'VANTI'
+
 export interface Municipality {
   id: string
   name: string
   department: string
   daneCode: string
   isActive: boolean
+  bank: Bank
+  nit: string
+  dv: string
+  email: string
+  provider: number
+  color: string
   /**
    * Fecha de salida a producción de cada formulario: desde ahí el aplicativo lo recibe; lo anterior quedó en otro sistema.
    * Los omisos de cada impuesto se revisan desde su fecha, y la del RIT decide si se puede juzgar una inscripción tardía.

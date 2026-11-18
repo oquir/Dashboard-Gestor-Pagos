@@ -52,6 +52,8 @@ export const REQUESTS = {
     'CambiarModulo',
     'PATCH /api/municipios/{municipioId}/modulos',
   ),
+  createMunicipality: request('Municipios', 'CrearMunicipio', 'POST /api/municipios'),
+  editMunicipality: request('Municipios', 'EditarMunicipio', 'PUT /api/municipios/{municipioId}'),
   recordTellerPayment: request('Pagos', 'RegistrarPagoVentanilla', 'POST /api/pagos/ventanilla'),
   receiveCheck: request('Pagos', 'RecibirCheque', 'POST /api/pagos/cheques'),
   confirmCheck: request('Pagos', 'ConfirmarCheque', 'PUT /api/pagos/cheques/{id}/confirmar'),

@@ -57,6 +57,8 @@ export { default as MunicipalityHeader } from './municipalities/MunicipalityHead
 export { default as MunicipalityForms } from './municipalities/MunicipalityForms'
 export { default as GoLiveModal } from './municipalities/GoLiveModal'
 export { default as MunicipalityModules } from './municipalities/MunicipalityModules'
+export { default as CreateMunicipality } from './municipalities/CreateMunicipality'
+export { default as EditMunicipality } from './municipalities/EditMunicipality'
 
 export { default as AsobancariaUpload } from './payments/AsobancariaUpload'
 export { default as ChecksInClearing } from './payments/ChecksInClearing'

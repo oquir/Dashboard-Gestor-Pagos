@@ -1,8 +1,9 @@
-import type { Municipality, PausasMunicipio } from '../../../../types'
+import type { MunicipalitySwitches, PausasMunicipio } from '../../../../types'
 
-export interface MunicipalityFormsProps {
-  municipality: Municipality
+export interface MunicipalityModulesProps {
+  switches: MunicipalitySwitches
   pausas: PausasMunicipio
+  change: (partial: Partial<MunicipalitySwitches>) => void
 }
 
 /** Lo que se activa por formulario, además de gestionarlo. */

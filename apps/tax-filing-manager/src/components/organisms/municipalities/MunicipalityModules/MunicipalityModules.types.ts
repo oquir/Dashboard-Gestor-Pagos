@@ -1,6 +1,7 @@
-import type { Municipality, PausasMunicipio } from '../../../../types'
+import type { MunicipalitySwitches, PausasMunicipio } from '../../../../types'
 
 export interface MunicipalityModulesProps {
-  municipality: Municipality
+  switches: MunicipalitySwitches
   pausas: PausasMunicipio
+  change: (partial: Partial<MunicipalitySwitches>) => void
 }

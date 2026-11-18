@@ -1,11 +1,13 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Navigate } from 'react-router'
+import { Button } from '../components/atoms'
+import { Plus } from 'reicon-react'
 import { PickMunicipality, PageHeader } from '../components/molecules'
 import {
+  CreateMunicipality,
+  EditMunicipality,
   MunicipalitySearch,
   MunicipalityHeader,
-  MunicipalityForms,
-  MunicipalityModules,
 } from '../components/organisms'
 import { can, activeTax, useSession } from '../lib'
 import { useData } from '../store'
@@ -13,6 +15,7 @@ import type { MunicipalityFigures } from '../types'
 
 export default function Municipalities() {
   const { user, municipalityId } = useSession()
+  const [creating, setCreating] = useState(false)
   const municipalities = useData((s) => s.municipalities)
   const registrations = useData((s) => s.registrations)
   const declarations = useData((s) => s.declarations)
@@ -41,6 +44,7 @@ export default function Municipalities() {
   }, [municipalityId, municipalities, registrations, declarations, payments, users])
 
   if (!can(user?.role, 'manageMunicipalities')) return <Navigate to="/" replace />
+  if (creating) return <CreateMunicipality onFinish={() => setCreating(false)} />
 
   const pausas = settingsList.find((c) => c.municipalityId === municipalityId)?.disabledForms ?? {}
 
@@ -49,17 +53,21 @@ export default function Municipalities() {
       <PageHeader
         title="Municipios"
         description="Los municipios que usan el aplicativo. Busca uno por su nombre para ver sus cifras y activar lo que gestiona. Desactivar un municipio le quita el acceso a sus usuarios."
+        actions={
+          <Button variant="primary" onClick={() => setCreating(true)}>
+            <Plus className="size-4" aria-hidden /> Crear municipio
+          </Button>
+        }
       />
       <MunicipalitySearch all={false} />
       <div className="space-y-6">
         {m && figures ? (
           <>
             <MunicipalityHeader municipality={m} figures={figures} />
-            <MunicipalityModules municipality={m} pausas={pausas} />
-            <MunicipalityForms municipality={m} pausas={pausas} />
+            <EditMunicipality key={m.id} municipality={m} pausas={pausas} />
           </>
         ) : (
-          <PickMunicipality description="Búscalo por su nombre para ver sus cifras y activar lo que gestiona." />
+          <PickMunicipality description="Búscalo por su nombre para ver sus cifras." />
         )}
       </div>
     </>

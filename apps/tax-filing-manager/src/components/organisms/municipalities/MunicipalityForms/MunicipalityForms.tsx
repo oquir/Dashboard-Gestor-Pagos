@@ -2,36 +2,32 @@ import { useState } from 'react'
 import { ArrowUpRight } from 'reicon-react'
 import { FORM_BUILDER_URL } from '../../../../constants'
 import { taxLabel, goLiveText, can, useSession, TAXES } from '../../../../lib'
-import { useData } from '../../../../store'
 import type { Tax } from '../../../../types'
 import { Card, Switch } from '../../../atoms'
 import { CardHeader, DisabledBadge, InfoTip, Tooltip } from '../../../molecules'
 import GoLiveModal from '../GoLiveModal'
 import { COLUMN_INFO, GROUPS } from './MunicipalityForms.constants'
-import type { MunicipalityFormsProps, FormOption } from './MunicipalityForms.types'
+import type { MunicipalityModulesProps, FormOption } from './MunicipalityForms.types'
 
 /**
  * Matriz de los formularios del municipio: cuáles gestiona y, para cada uno, su revisión y lo que recibe en la ventanilla.
  * La primera vez que se activa un formulario se pide su fecha de salida a producción.
  * De cada formulario que gestiona se abre FormMaker, en otra pestaña, para editarlo.
  */
-export default function MunicipalityForms({ municipality: m, pausas }: MunicipalityFormsProps) {
+export default function MunicipalityForms({
+  switches: sw,
+  pausas,
+  change,
+}: MunicipalityModulesProps) {
   const { user } = useSession()
   const canOpenBuilder = can(user?.role, 'openFormBuilder')
-  const toggleTax = useData((s) => s.toggleTax)
-  const enableForm = useData((s) => s.enableForm)
   /** El impuesto que se activa por primera vez, mientras se pide su fecha. */
   const [requesting, setRequesting] = useState<Tax | null>(null)
-  const toggle: Record<FormOption, (municipalityId: string, tax: Tax) => void> = {
-    validateAgainstRit: useData((s) => s.toggleRitValidation),
-    priorApproval: useData((s) => s.togglePriorApproval),
-    cashPayment: useData((s) => s.toggleCashPayment),
-    checkPayment: useData((s) => s.toggleCheckPayment),
-  }
+
   // Sin el RIT en el aplicativo no hay contra qué validar.
   const checked = (key: FormOption, i: Tax) =>
-    key === 'validateAgainstRit' ? m.rit && m.validateAgainstRit[i] : m[key][i]
-  const needsRit = (key: FormOption) => key === 'validateAgainstRit' && !m.rit
+    key === 'validateAgainstRit' ? sw.rit && sw.validateAgainstRit[i] : sw[key][i]
+  const needsRit = (key: FormOption) => key === 'validateAgainstRit' && !sw.rit
 
   return (
     <Card>
@@ -86,7 +82,7 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
           </thead>
           <tbody className="divide-y divide-border-subtle">
             {TAXES.map((i) => {
-              const manages = m.taxes[i]
+              const manages = sw.taxes[i]
               const pausa = manages ? pausas[i] : undefined
               return (
                 <tr key={i} className={manages ? '' : 'bg-surface-sunken/70'}>
@@ -100,7 +96,7 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                       </span>
                     )}
                     <span className="mt-0.5 block text-xs font-normal text-fg-muted">
-                      {goLiveText(m.inProductionSince[i])}
+                      {goLiveText(sw.inProductionSince[i])}
                     </span>
                     {manages && canOpenBuilder && (
                       // Por ahora abre FormMaker sin contexto; después llevará el municipio y quizá el impuesto.
@@ -123,7 +119,9 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                       checked={manages}
                       aria-label={`Gestiona ${taxLabel[i]}`}
                       onChange={() =>
-                        !manages && !m.inProductionSince[i] ? setRequesting(i) : toggleTax(m.id, i)
+                        !manages && !sw.inProductionSince[i]
+                          ? setRequesting(i)
+                          : change({ taxes: { ...sw.taxes, [i]: !manages } })
                       }
                     />
                   </td>
@@ -150,7 +148,9 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
                             <Switch
                               checked={checked(o.key, i)}
                               aria-label={`${o.text} en ${taxLabel[i]}`}
-                              onChange={() => toggle[o.key](m.id, i)}
+                              onChange={() =>
+                                change({ [o.key]: { ...sw[o.key], [i]: !sw[o.key][i] } })
+                              }
                             />
                           )
                         ) : (
@@ -175,7 +175,10 @@ export default function MunicipalityForms({ municipality: m, pausas }: Municipal
         <GoLiveModal
           form={requesting}
           onConfirm={(date) => {
-            enableForm(m.id, requesting, date)
+            change({
+              taxes: { ...sw.taxes, [requesting]: true },
+              inProductionSince: { ...sw.inProductionSince, [requesting]: date },
+            })
             setRequesting(null)
           }}
           close={() => setRequesting(null)}

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { goLiveText } from '../../../../lib'
-import { useData } from '../../../../store'
 import { DisabledBadge, Toggle, Section } from '../../../molecules'
 import GoLiveModal from '../GoLiveModal'
 import { MODULE_INFO } from './MunicipalityModules.constants'
@@ -10,10 +9,11 @@ import type { MunicipalityModulesProps } from './MunicipalityModules.types'
  * Lo que el municipio tiene en el aplicativo además de sus formularios de impuestos. La primera vez que se activa el
  * RIT se pide su fecha de salida a producción.
  */
-export default function MunicipalityModules({ municipality: m, pausas }: MunicipalityModulesProps) {
-  const toggleRit = useData((s) => s.toggleRit)
-  const enableForm = useData((s) => s.enableForm)
-  const toggleAsobancariaUpload = useData((s) => s.toggleAsobancariaUpload)
+export default function MunicipalityModules({
+  switches: sw,
+  pausas,
+  change,
+}: MunicipalityModulesProps) {
   const [requesting, setRequesting] = useState(false)
 
   return (
@@ -24,14 +24,14 @@ export default function MunicipalityModules({ municipality: m, pausas }: Municip
       <div>
         <Toggle
           label="RIT en el aplicativo"
-          help={`Inscripciones, actualizaciones y cancelaciones. ${goLiveText(m.inProductionSince.rit)}.`}
+          help={`Inscripciones, actualizaciones y cancelaciones. ${goLiveText(sw.inProductionSince.rit)}.`}
           info={MODULE_INFO.rit}
-          value={m.rit}
-          onChange={() =>
-            !m.rit && !m.inProductionSince.rit ? setRequesting(true) : toggleRit(m.id)
+          value={sw.rit}
+          onChange={(checked) =>
+            checked && !sw.inProductionSince.rit ? setRequesting(true) : change({ rit: checked })
           }
         />
-        {m.rit && pausas.rit && (
+        {sw.rit && pausas.rit && (
           <div className="mt-2 ml-12">
             <DisabledBadge disabled={pausas.rit} />
           </div>
@@ -41,15 +41,15 @@ export default function MunicipalityModules({ municipality: m, pausas }: Municip
         label="Carga de Asobancaria 2001"
         help="El municipio carga el recaudo de los pagos con código de barras, que el banco no notifica."
         info={MODULE_INFO.asobancariaUpload}
-        value={m.asobancariaUpload}
-        onChange={() => toggleAsobancariaUpload(m.id)}
+        value={sw.asobancariaUpload}
+        onChange={(checked) => change({ asobancariaUpload: checked })}
       />
 
       {requesting && (
         <GoLiveModal
           form="rit"
           onConfirm={(date) => {
-            enableForm(m.id, 'rit', date)
+            change({ rit: true, inProductionSince: { ...sw.inProductionSince, rit: date } })
             setRequesting(false)
           }}
           close={() => setRequesting(false)}

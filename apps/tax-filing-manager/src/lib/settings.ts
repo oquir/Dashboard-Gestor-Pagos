@@ -84,3 +84,32 @@ export function calendarErrors(b: MunicipalityConfig, taxes: Record<Tax, boolean
   for (const cal of b.taxCalendar.byFiscalYear) Object.assign(errors, dueDateErrors(cal, taxes))
   return errors
 }
+
+/** Configuración con la que arranca un municipio nuevo */
+export function newSettings(municipalityId: string): MunicipalityConfig {
+  return {
+    municipalityId,
+    zeroDeclaration: false,
+    allowFilingWithoutCalendar: true,
+    withholdingPaymentInTwoMonths: true,
+    automaticRitCancellation: false,
+    hideCollectionFromOfficials: false,
+    downwardCorrection: 'project_589',
+    earlyPayment: { isActive: false, byFiscalYear: [] },
+    taxCalendar: { byFiscalYear: [] },
+    advancePercentage: 40,
+    fireSurcharge: { active: true, percentage: 4 },
+    reteica: {
+      modality: 'flat',
+      flatRatePerThousand: 2,
+      minServiceBaseUvt: 15,
+      minPurchaseBaseUvt: 15,
+    },
+    selfWithholding: { modality: 'percentage', percentage: 50 },
+    penalties: { ...STATUTORY_PENALTIES },
+    registrationTermMonths: 2,
+    priorApproval: { termBusinessDays: 5, onDue: 'approve', receiptValidityBusinessDays: 5 },
+    disabledForms: {},
+    partialCheck: false,
+  }
+}

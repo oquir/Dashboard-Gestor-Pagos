@@ -27,6 +27,7 @@ import type {
   User,
 } from './types'
 import { now, today } from './utils'
+import { newSettings } from './lib/settings'
 
 /** Lo del municipio que se activa por formulario. */
 type ModuleByTax = 'taxes' | 'validateAgainstRit' | 'priorApproval' | 'cashPayment' | 'checkPayment'
@@ -68,6 +69,8 @@ interface StoreState extends Data {
   /** Reemplaza las actividades del año gravable con las del Excel cargado. */
   loadActivities: (municipalityId: string, fiscalYear: number, rates: Rate[], file: string) => void
   saveUser: (user: User) => void
+  createMunicipality: (m: Municipality) => void
+  editMunicipality: (m: Municipality) => void
   toggleUser: (id: string) => void
   /** Borra el usuario de la demo. Lo que hizo queda con su nombre, que se guarda como texto. */
   removeUser: (id: string) => void
@@ -354,6 +357,19 @@ export const useData = create<StoreState>()(
             users: exists ? s.users.map((u) => (u.id === user.id ? user : u)) : [...s.users, user],
           }))
           record(exists ? REQUESTS.editUser : REQUESTS.createUser, user.municipalityId, { ...user })
+        },
+
+        createMunicipality: (m) => {
+          set((s) => ({
+            municipalities: [...s.municipalities, m],
+            settingsList: [...s.settingsList, newSettings(m.id)],
+          }))
+          record(REQUESTS.createMunicipality, m.id, { ...m })
+        },
+
+        editMunicipality: (m) => {
+          changeMunicipality(m.id, m)
+          record(REQUESTS.editMunicipality, m.id, { ...m })
         },
 
         toggleUser: (id) => {
