@@ -55,7 +55,7 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 - Renglones 31 and 37 need the intro modal (`{{periodo_anio}}` lives there); deleting those intro steps leaves them uncalculated (the export review blocks).
 - Selects mapped to `number` leaves show a permanent `⚠ tipo` (fix offered, not approved).
 - **Moving a field out of a repeatable group to another step keeps its `apiBinding`** (`planLanding`); one-line fix not applied.
-- PDF designer: §3.1, §3.2, §3.5 built; no components (§3.3) or variable list (§3.4). Not checked in a browser yet.
+- PDF designer: §3.1, §3.2, §3.3, §3.5 built; no variable list (§3.4). §3.3 has no checkbox and no repeating row — the user's call, don't build them without asking. The sidebar isn't checked in a browser yet, nor anything through the real back.
 
 ## Invariants that bite (details in `docs/Decisiones.md`)
 
@@ -90,7 +90,7 @@ Package manager is **pnpm** (never npm/yarn/bun).
 
 - Atomic design: `src/components/atoms|molecules|organisms/` + `layout/`; panels in `organisms/panels/`. Each component/hook gets **its own folder** with co-located `X.tsx`/`X.types.ts`/`X.constants.ts`/`X.utils.ts` (only what's needed) and an `index.ts` (`export * from './X'`). Hooks `src/hooks/useX/useX.ts`; libs `src/lib/<name>/<name>.ts`.
 - Import a component by its folder; across levels go through the level `index.ts`, **within a level import by folder, never the level index** (cycle). No upward imports (atom → molecule).
-- `hooks/`, `constants/`, `types/`, `lib/`, `store/` have an `index.ts` too; code outside imports through it. **Left out of the indices on purpose** (imported by folder, from behind the lazy boundary): `useFormPreview`, `usePreviewNavigation`, `usePreviewSearchSelect`, `usePdfDesignAutosave`, `usePdfDesignerShortcuts`, `usePdfFile`; libs `catalogFill`, `formRuntime`, `mockCatalog`, `pdf*`, `runtimeCondition|Derived|Payload|Validation`, `scriptDates`, `scriptRuntime`, `scriptValores`, `zodHydrate`; `store/pdfDesignStore.ts`, `banksSlice`. Libs import each other by folder, never through `lib/index.ts`.
+- `hooks/`, `constants/`, `types/`, `lib/`, `store/` have an `index.ts` too; code outside imports through it. **Left out of the indices on purpose** (imported by folder, from behind the lazy boundary): `useFormPreview`, `usePreviewNavigation`, `usePreviewSearchSelect`, `usePdfDesignAutosave`, `usePdfDesignerShortcuts`, `usePdfFile`, `usePdfImageCheck`; libs `catalogFill`, `formRuntime`, `mockCatalog`, `pdf*`, `runtimeCondition|Derived|Payload|Validation`, `scriptDates`, `scriptRuntime`, `scriptValores`, `zodHydrate`; `store/pdfDesignStore.ts`, `banksSlice`. Libs import each other by folder, never through `lib/index.ts`.
 - A co-located `X.types.ts`/`X.constants.ts` is private to its folder; once something outside imports it, it moves to `src/types/` / `src/constants/` (whole file, not split). A new file there needs its line in the index.
 - `X.ts` is the module's public API — helpers/constants/types go in co-located files.
 

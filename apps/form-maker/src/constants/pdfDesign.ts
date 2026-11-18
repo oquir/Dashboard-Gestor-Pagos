@@ -1,4 +1,4 @@
-import type { PdfFontFamily, PdfFontOption, PdfMargins } from '../types'
+import type { PdfComponentOption, PdfFontFamily, PdfFontOption, PdfMargins } from '../types'
 
 // El perfil de conversion: el contrato con el back (docs/Pendientes-PDF.md §2.1 y §7.2). Vive solo
 // aca; si el back termina con otro numero, se cambia en este archivo y nada mas.
@@ -62,3 +62,26 @@ export const PDF_ZOOM_PRESETS: number[] = [0.5, 0.75, 1, 1.25, 1.5, 2, 3]
 
 // Cuanto acerca cada px de rueda con Ctrl (el mismo factor que el lienzo del formulario).
 export const PDF_ZOOM_WHEEL_FACTOR: number = 0.002
+
+// Los componentes de la celda (docs/Pendientes-PDF.md §3.3), en el orden de la barra lateral. La
+// casilla y la fila repetible quedaron fuera por decision del usuario (2026-11-18).
+export const PDF_COMPONENT_OPTIONS: PdfComponentOption[] = [
+  { type: 'image', label: 'Imagen', description: 'Escudo, bandera o eslogan, por URL o base64' },
+  { type: 'verticalText', label: 'Texto vertical', description: 'Sale como imagen PNG' },
+  { type: 'nit', label: 'NIT con DV', description: 'El número y el dígito en cajas aparte' },
+  { type: 'signatures', label: 'Firmas', description: 'Declarante, contador o revisor fiscal' },
+  { type: 'barcode', label: 'Código de barras', description: 'La imagen la pone el back' },
+  { type: 'qr', label: 'Código QR', description: 'La imagen la pone el back' },
+  { type: 'stamp', label: 'Sello', description: 'La imagen del sello con la fecha encima' },
+]
+
+// Lo que deja reabrir un componente desde el .html: su tipo y su configuracion en JSON, en el
+// elemento de afuera del componente. SelectPdf los ignora. La imagen (src) no va en el JSON: se lee
+// del <img>, para no llevar dos veces un base64.
+export const PDF_COMPONENT_ATTRIBUTE = {
+  type: 'data-fm-component',
+  config: 'data-fm-config',
+} as const
+
+// Tope de quienes firman en un bloque de firmas: declarante, contador y revisor fiscal.
+export const PDF_MAX_SIGNERS: number = 3

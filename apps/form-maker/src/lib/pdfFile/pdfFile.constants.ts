@@ -1,7 +1,9 @@
 // La forma del .html que publica FormMaker. Sube cuando cambie como se escriben los data-fm-* (no
 // cuando cambie el diseño guardado en localStorage, que tiene su propia version). Un archivo de
 // una version mas nueva no se abre: se perderia lo que esta version no sabe leer.
-export const PDF_FILE_FORMAT_VERSION: number = 1
+// 2 (2026-11-18): las celdas con componente (data-fm-cell="component", data-fm-component y
+// data-fm-config). Un archivo de la 1 se sigue abriendo igual.
+export const PDF_FILE_FORMAT_VERSION: number = 2
 
 // Los atributos que dejan reabrir el diseño. SelectPdf los ignora.
 export const FILE_ATTR = {
@@ -27,7 +29,8 @@ export const BASE_CSS: string = 'body { margin: 0; }'
 
 export const FILE_COMMENT: string =
   '<!-- Hecho con el diseñador de PDF de FormMaker. Para volver a abrirlo alla, no quites los atributos data-fm-*: ' +
-  'el texto de las celdas se puede cambiar a mano, los estilos se leen de data-fm-style. -->'
+  'el texto de las celdas se puede cambiar a mano, los estilos se leen de data-fm-style y los componentes ' +
+  '(data-fm-component) se rearman desde data-fm-config. -->'
 
 // La N del nombre <impuesto>_v<N>.html (o <municipio>_<impuesto>_v<N>.html, cuando llegue).
 export const VERSION_IN_NAME: RegExp = /_v(\d+)\.html?$/i

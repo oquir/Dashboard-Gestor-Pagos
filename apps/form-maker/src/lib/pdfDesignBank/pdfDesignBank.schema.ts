@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import type { PdfCell, PdfFontFamily, PdfTable, PdfTaxType } from '../../types'
+import { PDF_MAX_SIGNERS } from '../../constants'
+import type { PdfCell, PdfComponent, PdfFontFamily, PdfTable, PdfTaxType } from '../../types'
 
 // z.object quita en silencio las llaves que no declara: cada llave nueva del diseño necesita su
 // linea aca, o se pierde al recargar. Valida la version actual; las viejas pasan antes por
@@ -27,6 +28,49 @@ const bordersSchema = z.object({
   left: z.boolean(),
 })
 
+const size = z.number().positive()
+
+// Los componentes de celda (docs/Pendientes-PDF.md §3.3). Llegan tambien de un .html, donde
+// cualquiera pudo editar su JSON a mano: por eso los topes.
+export const pdfComponentSchema: z.ZodType<PdfComponent> = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('image'),
+    src: z.string(),
+    alt: z.string().optional(),
+    width: size.optional(),
+    height: size.optional(),
+  }),
+  z.object({
+    type: z.literal('verticalText'),
+    text: z.string(),
+    fontSize: size,
+    bold: z.boolean(),
+    direction: z.enum(['up', 'down']),
+    fontFamily: z.enum(FONT_FAMILIES).optional(),
+  }),
+  z.object({ type: z.literal('nit'), label: z.string(), number: z.string(), dv: z.string() }),
+  z.object({
+    type: z.literal('signatures'),
+    space: z.number().nonnegative(),
+    signers: z
+      .array(z.object({ title: z.string(), details: z.string() }))
+      .min(1)
+      .max(PDF_MAX_SIGNERS),
+  }),
+  z.object({ type: z.literal('barcode'), variable: z.string(), width: size, height: size }),
+  z.object({ type: z.literal('qr'), variable: z.string(), size }),
+  z.object({
+    type: z.literal('stamp'),
+    src: z.string(),
+    width: size,
+    height: size.optional(),
+    text: z.string(),
+    fontSize: size,
+    top: z.number().min(0).max(100),
+    left: z.number().min(0).max(100),
+  }),
+])
+
 // Recursiva: una celda puede llevar una tabla, que lleva celdas. z.lazy corta el ciclo.
 const cellSchema: z.ZodType<PdfCell> = z.object({
   id: z.string(),
@@ -36,6 +80,7 @@ const cellSchema: z.ZodType<PdfCell> = z.object({
     z.object({ kind: z.literal('text'), text: z.string() }),
     z.object({ kind: z.literal('html'), html: z.string() }),
     z.object({ kind: z.literal('table'), table: z.lazy(() => tableSchema) }),
+    z.object({ kind: z.literal('component'), component: pdfComponentSchema }),
   ]),
   fontSize: z.number().positive().optional(),
   bold: z.boolean().optional(),

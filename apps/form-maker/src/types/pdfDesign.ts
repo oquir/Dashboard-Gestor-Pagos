@@ -35,12 +35,149 @@ export interface PdfCellBorders {
 }
 
 // Lo que lleva una celda: texto fijo con {Var} mezcladas donde haga falta ("Año {periodo_anio}"),
-// HTML libre para lo que el editor no sepa hacer, o una tabla adentro (hasta 4 niveles, como las
-// plantillas a mano que dibujan casillas).
+// HTML libre para lo que el editor no sepa hacer, una tabla adentro (hasta 4 niveles, como las
+// plantillas a mano que dibujan casillas) o un componente: un machetazo que se repite entre
+// municipios (docs/Pendientes-PDF.md §3.3).
 export type PdfCellContent =
   | { kind: 'text'; text: string }
   | { kind: 'html'; html: string }
   | { kind: 'table'; table: PdfTable }
+  | { kind: 'component'; component: PdfComponent }
+
+// Una imagen del municipio (escudo, bandera, eslogan): URL, base64 o una {Var} que llena el back.
+// Medidas en px; con una sola, la otra sale de la proporcion de la imagen.
+export interface PdfImageComponent {
+  type: 'image'
+  src: string
+  alt?: string
+  width?: number
+  height?: number
+}
+
+export type PdfVerticalDirection = 'up' | 'down'
+
+// Texto vertical: sale como PNG, porque el WebKit viejo del back no pinta bien writing-mode. Por eso
+// no lleva variables, y guarda su texto en el .html para reabrirse. Una linea por cada salto.
+export interface PdfVerticalTextComponent {
+  type: 'verticalText'
+  text: string
+  fontSize: number
+  bold: boolean
+  // up: se lee de abajo hacia arriba (la cabeza a la izquierda), como los rotulos de las secciones.
+  direction: PdfVerticalDirection
+  // Sin fuente propia usa la del documento.
+  fontFamily?: PdfFontFamily
+}
+
+// El NIT y su digito de verificacion en cajas separadas. Los tres son texto con {Var}.
+export interface PdfNitComponent {
+  type: 'nit'
+  label: string
+  number: string
+  dv: string
+}
+
+// Quien firma: el titulo va bajo la raya, y debajo los detalles (nombre, documento, tarjeta
+// profesional), una linea por cada salto, con {Var}.
+export interface PdfSigner {
+  title: string
+  details: string
+}
+
+export interface PdfSignaturesComponent {
+  type: 'signatures'
+  signers: PdfSigner[]
+  // px en blanco encima de la raya, donde se firma.
+  space: number
+}
+
+// Imagenes que genera el back: el diseñador solo reserva su <img src="{variable}">. La variable va
+// sin llaves.
+export interface PdfBarcodeComponent {
+  type: 'barcode'
+  variable: string
+  width: number
+  height: number
+}
+
+export interface PdfQrComponent {
+  type: 'qr'
+  variable: string
+  size: number
+}
+
+// El sello de la entidad con un texto encima (hoy {FechaGuardado}). top y left son el centro del
+// texto, en % de la imagen: 50/50 es el medio.
+export interface PdfStampComponent {
+  type: 'stamp'
+  src: string
+  width: number
+  height?: number
+  text: string
+  fontSize: number
+  top: number
+  left: number
+}
+
+export type PdfComponent =
+  | PdfImageComponent
+  | PdfVerticalTextComponent
+  | PdfNitComponent
+  | PdfSignaturesComponent
+  | PdfBarcodeComponent
+  | PdfQrComponent
+  | PdfStampComponent
+
+export type PdfComponentType = PdfComponent['type']
+
+export interface PdfComponentOption {
+  type: PdfComponentType
+  label: string
+  description: string
+}
+
+// Como pinta un componente: en el lienzo, lo que el back llena ({Code}, una imagen por variable)
+// sale como una caja de muestra; en el archivo, como el <img src="{…}"> de verdad.
+export type PdfComponentMode = 'canvas' | 'file'
+
+export interface PdfVerticalTextSpec {
+  text: string
+  // La pila CSS completa de la fuente.
+  fontStack: string
+  fontSize: number
+  bold: boolean
+  direction: PdfVerticalDirection
+}
+
+// El PNG del texto vertical y su tamaño en px CSS (la imagen esta dibujada a mas resolucion).
+export interface PdfVerticalTextImage {
+  src: string
+  width: number
+  height: number
+}
+
+// Dibujar el PNG necesita un <canvas>, que la lib pura no tiene: se lo pasa quien llama. null si no
+// se pudo dibujar; entonces sale texto con writing-mode.
+export type PdfVerticalTextRenderer = (spec: PdfVerticalTextSpec) => PdfVerticalTextImage | null
+
+export interface PdfComponentContext {
+  mode: PdfComponentMode
+  // La fuente del documento, para el texto vertical sin fuente propia.
+  fontFamily: PdfFontFamily
+  renderVerticalText: PdfVerticalTextRenderer
+}
+
+// Lo que se sabe de una imagen ya cargada, para avisar si pesa de mas.
+export interface PdfImageInfo {
+  naturalWidth: number
+  naturalHeight: number
+}
+
+export type PdfImageCheck =
+  | { status: 'none' }
+  | { status: 'loading' }
+  | { status: 'error' }
+  | ({ status: 'ok' } & PdfImageInfo)
 
 export type PdfCellContentKind = PdfCellContent['kind']
 

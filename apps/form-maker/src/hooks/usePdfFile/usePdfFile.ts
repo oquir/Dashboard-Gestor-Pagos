@@ -6,6 +6,7 @@ import {
   pickLatestPdfFile,
   readPdfFile,
 } from '../../lib/pdfFile'
+import { renderVerticalTextPng } from '../../lib/pdfVerticalText'
 import { usePdfDesignStore } from '../../store/pdfDesignStore'
 import type { PdfFileNotice, PdfFileRead } from '../../types'
 
@@ -27,7 +28,7 @@ export function usePdfFile(): {
 
     const version: number = (publishedVersion ?? 0) + 1
     const fileName: string = pdfFileName(design.taxType, version)
-    downloadPdfHtml(buildPdfHtml(design, version), fileName)
+    downloadPdfHtml(buildPdfHtml(design, version, renderVerticalTextPng), fileName)
     markPublished(version)
     setNotice({
       tone: 'info',

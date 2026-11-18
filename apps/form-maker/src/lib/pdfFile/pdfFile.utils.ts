@@ -1,6 +1,6 @@
 import { PDF_VARIABLE_PATTERN } from '../../constants'
-import { escapePdfAttribute, pdfHtmlAttribute } from '../pdfHtml'
-import type { CssStyleMap, PdfHtmlElement, PdfHtmlNode } from '../../types'
+import { pdfHtmlAttribute } from '../pdfHtml'
+import type { PdfHtmlElement, PdfHtmlNode } from '../../types'
 import {
   BODY_SELECTOR,
   MESSAGES,
@@ -9,31 +9,13 @@ import {
   VERSION_IN_NAME,
 } from './pdfFile.constants'
 
-// Piezas del generador y del lector, privadas a lib/pdfFile.
-
-// El style de React en camelCase, de vuelta a CSS. Una variable (--x) queda igual; un prefijo
-// (WebkitTransform) recupera su guion inicial.
-export function cssText(map: CssStyleMap): string {
-  return Object.entries(map)
-    .map(([key, value]) => `${key.startsWith('--') ? key : toKebab(key)}: ${value}`)
-    .join('; ')
-}
-
-function toKebab(key: string): string {
-  return key.replace(/[A-Z]/g, (letter: string) => `-${letter.toLowerCase()}`)
-}
+// Piezas del generador y del lector, privadas a lib/pdfFile. Escribir atributos y CSS vive en
+// lib/pdfHtml, porque los componentes (lib/pdfComponents) tambien escriben HTML.
+export { pdfAttributes as attrs, pdfCssText as cssText } from '../pdfHtml'
 
 // Dos decimales bastan: los px que salen de mm traen colas como 37.78544…
 export function px(value: number): string {
   return `${Math.round(value * 100) / 100}px`
-}
-
-// Atributos en el orden dado; los null se omiten.
-export function attrs(list: [string, string | null][]): string {
-  return list
-    .filter((entry): entry is [string, string] => entry[1] !== null)
-    .map(([name, value]) => ` ${name}="${escapePdfAttribute(value)}"`)
-    .join('')
 }
 
 export function elementChildren(node: PdfHtmlElement): PdfHtmlElement[] {

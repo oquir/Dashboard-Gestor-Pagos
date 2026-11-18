@@ -93,6 +93,7 @@ export function PdfSheetView({
                     <PdfTableView
                       key={block.id}
                       table={block}
+                      fontFamily={design.fontFamily}
                       selectedIds={selectedIds}
                       onSelectCell={onSelectCell}
                     />

@@ -6,6 +6,7 @@ import type {
   PdfCellContent,
   PdfCellContentKind,
   PdfCellStylePatch,
+  PdfComponent,
   PdfDesign,
   PdfGridRect,
   PdfSelection,
@@ -14,6 +15,7 @@ import type {
   PdfTableLocation,
   PdfTableStylePatch,
 } from '../../types'
+import { createPdfComponent, pdfComponentText } from '../pdfComponents'
 import { cellsInRect, createTable, selectionRect } from '../pdfTable'
 import { findCellIn, findTableIn, mapTableIn } from './pdfDesignEdit.utils'
 
@@ -122,6 +124,21 @@ export function setCellHtml(design: PdfDesign, cellId: string, html: string): Pd
   )
 }
 
+// Reemplaza el componente de la celda (o pone uno donde habia otra cosa). Uno igual al que ya tiene
+// no cambia nada: la barra lateral lo arma de nuevo en cada tecla.
+export function setCellComponent(
+  design: PdfDesign,
+  cellId: string,
+  component: PdfComponent,
+): PdfDesign {
+  return mapCell(design, cellId, (cell) =>
+    cell.content.kind === 'component' &&
+    JSON.stringify(cell.content.component) === JSON.stringify(component)
+      ? cell
+      : { ...cell, content: { kind: 'component', component } },
+  )
+}
+
 // Hasta donde se puede anidar: la celda vive en una tabla de profundidad d, y su tabla nueva seria
 // d + 1.
 export function canNestTable(design: PdfDesign, cellId: string): boolean {
@@ -130,8 +147,9 @@ export function canNestTable(design: PdfDesign, cellId: string): boolean {
 }
 
 // Cambia lo que lleva la celda. Lo que se pueda se conserva: el texto pasa a HTML escapado (se ve
-// igual) y el HTML a texto sin etiquetas. Una tabla que se cambia por otra cosa se pierde, pero
-// Ctrl+Z la devuelve.
+// igual), el HTML a texto sin etiquetas y un componente a su texto. Una tabla que se cambia por
+// otra cosa se pierde, pero Ctrl+Z la devuelve. Un componente nuevo arranca como imagen; el de un
+// componente a HTML lo arma el store, que tiene con que dibujar el texto vertical.
 export function setCellContentKind(
   design: PdfDesign,
   cellId: string,
@@ -141,15 +159,23 @@ export function setCellContentKind(
   if (!location || location.cell.content.kind === kind) return design
   if (kind === 'table' && location.depth >= PDF_MAX_TABLE_DEPTH) return design
 
-  const current: PdfCellContent = location.cell.content
-  const content: PdfCellContent =
-    kind === 'table'
-      ? { kind, table: createTable(PDF_NEW_TABLE_SIZE.columns, PDF_NEW_TABLE_SIZE.rows) }
-      : kind === 'html'
-        ? { kind, html: current.kind === 'text' ? escapeHtml(current.text) : '' }
-        : { kind, text: current.kind === 'html' ? stripTags(current.html) : '' }
-
+  const content: PdfCellContent = convertContent(location.cell.content, kind)
   return mapCell(design, cellId, (cell) => ({ ...cell, content }))
+}
+
+function convertContent(current: PdfCellContent, kind: PdfCellContentKind): PdfCellContent {
+  switch (kind) {
+    case 'table':
+      return { kind, table: createTable(PDF_NEW_TABLE_SIZE.columns, PDF_NEW_TABLE_SIZE.rows) }
+    case 'component':
+      return { kind, component: createPdfComponent('image') }
+    case 'html':
+      return { kind, html: current.kind === 'text' ? escapeHtml(current.text) : '' }
+    case 'text':
+      if (current.kind === 'html') return { kind, text: stripTags(current.html) }
+      if (current.kind === 'component') return { kind, text: pdfComponentText(current.component) }
+      return { kind, text: '' }
+  }
 }
 
 export function addSheet(design: PdfDesign): PdfDesign {

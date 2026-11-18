@@ -2,11 +2,13 @@ import { type TemporalState, temporal, type ZundoOptions } from 'zundo'
 import { create, type Mutate, type StateCreator, type StoreApi, type UseBoundStore } from 'zustand'
 import { HISTORY_BURST_MS, HISTORY_LIMIT } from '../constants'
 import { createBurstGate } from '../lib/history'
+import { pdfComponentHtml } from '../lib/pdfComponents'
 import { clampPdfZoom, createBlankDesign, normalizeMargins } from '../lib/pdfDesign'
 import { loadPdfDesign } from '../lib/pdfDesignBank'
 import { factoryPdfDesign } from '../lib/pdfTemplates'
 import * as edit from '../lib/pdfDesignEdit'
 import * as table from '../lib/pdfTable'
+import { renderVerticalTextPng } from '../lib/pdfVerticalText'
 import type {
   BurstGate,
   PdfDesign,
@@ -219,8 +221,24 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
   setCellHtml: (cellId, html) =>
     editDesign(set, (design) => edit.setCellHtml(design, cellId, html)),
 
+  // Un componente que pasa a HTML deja su HTML de verdad, el mismo que publicaria: es la salida para
+  // el machetazo que el componente casi cubre.
   setCellContentKind: (cellId, kind) =>
-    editDesign(set, (design) => edit.setCellContentKind(design, cellId, kind)),
+    editDesign(set, (design) => {
+      const content = edit.findCell(design, cellId)?.cell.content
+      if (content?.kind === 'component' && kind === 'html') {
+        const html: string = pdfComponentHtml(content.component, {
+          mode: 'file',
+          fontFamily: design.fontFamily,
+          renderVerticalText: renderVerticalTextPng,
+        })
+        return edit.setCellHtml(design, cellId, html)
+      }
+      return edit.setCellContentKind(design, cellId, kind)
+    }),
+
+  setCellComponent: (cellId, component) =>
+    editDesign(set, (design) => edit.setCellComponent(design, cellId, component)),
 
   updateCellStyle: (cellId, patch) =>
     editDesign(set, (design) => edit.updateCellStyle(design, cellId, patch)),

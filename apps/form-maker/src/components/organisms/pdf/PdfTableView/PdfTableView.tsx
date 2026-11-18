@@ -1,17 +1,34 @@
 import type { MouseEvent, ReactNode } from 'react'
 import { PDF_CANVAS_ATTRIBUTE, PDF_CANVAS_CLASS, PDF_VARIABLE_PATTERN } from '../../../../constants'
+import { pdfComponentHtml } from '../../../../lib/pdfComponents'
 import { cellStyleMap, tableStyleMap } from '../../../../lib/pdfDesign'
 import { sanitizePdfHtml } from '../../../../lib/pdfHtml'
-import type { PdfCell } from '../../../../types'
+import { renderVerticalTextPng } from '../../../../lib/pdfVerticalText'
+import type { PdfCell, PdfCellContent } from '../../../../types'
 import type { PdfTableViewProps } from './PdfTableView.types'
 
 // Una tabla del diseño, pintada como saldra en el PDF, mas lo minimo para editarla: clic selecciona
 // una celda, Shift+clic agranda la seleccion. Se llama a si misma para las tablas anidadas; el clic
 // de una celda de adentro no sube a la de afuera.
-export function PdfTableView({ table, selectedIds, onSelectCell }: PdfTableViewProps) {
+export function PdfTableView({ table, fontFamily, selectedIds, onSelectCell }: PdfTableViewProps) {
   function handleClick(event: MouseEvent<HTMLTableCellElement>, cell: PdfCell): void {
     event.stopPropagation()
     onSelectCell(table.id, cell.id, event.shiftKey)
+  }
+
+  // El HTML de la celda cuando no es texto ni tabla: el libre o el de su componente, saneado igual
+  // que al publicar.
+  function cellHtml(content: PdfCellContent): string | null {
+    if (content.kind === 'html') return sanitizePdfHtml(content.html) || '&nbsp;'
+    if (content.kind === 'component') {
+      const html: string = pdfComponentHtml(content.component, {
+        mode: 'canvas',
+        fontFamily,
+        renderVerticalText: renderVerticalTextPng,
+      })
+      return sanitizePdfHtml(html) || '&nbsp;'
+    }
+    return null
   }
 
   return (
@@ -34,7 +51,8 @@ export function PdfTableView({ table, selectedIds, onSelectCell }: PdfTableViewP
                 .join(' ')
 
               // El HTML libre va saneado, y dentro del shadow root: su <style> no alcanza a la app.
-              if (cell.content.kind === 'html') {
+              const html: string | null = cellHtml(cell.content)
+              if (html !== null) {
                 return (
                   <td
                     key={cell.id}
@@ -44,9 +62,7 @@ export function PdfTableView({ table, selectedIds, onSelectCell }: PdfTableViewP
                     className={className}
                     style={cellStyleMap(cell)}
                     onClick={(event) => handleClick(event, cell)}
-                    dangerouslySetInnerHTML={{
-                      __html: sanitizePdfHtml(cell.content.html) || '&nbsp;',
-                    }}
+                    dangerouslySetInnerHTML={{ __html: html }}
                   />
                 )
               }
@@ -64,12 +80,13 @@ export function PdfTableView({ table, selectedIds, onSelectCell }: PdfTableViewP
                   {cell.content.kind === 'table' ? (
                     <PdfTableView
                       table={cell.content.table}
+                      fontFamily={fontFamily}
                       selectedIds={selectedIds}
                       onSelectCell={onSelectCell}
                     />
-                  ) : (
+                  ) : cell.content.kind === 'text' ? (
                     renderText(cell.content.text)
-                  )}
+                  ) : null}
                 </td>
               )
             })}

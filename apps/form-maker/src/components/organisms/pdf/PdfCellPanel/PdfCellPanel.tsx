@@ -14,6 +14,7 @@ import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import type { PdfCellBorders } from '../../../../types'
 import { Label, Tooltip } from '../../../atoms'
 import { ColorPickerField, PanelSection } from '../../../molecules'
+import { PdfComponentPanel } from '../PdfComponentPanel'
 import { PdfNumberField } from '../PdfNumberField'
 import {
   BORDER_SIDES,
@@ -130,6 +131,16 @@ export function PdfCellPanel() {
           <p className="text-[11px] text-fg-subtle">
             Esta celda lleva una tabla adentro: haz clic en sus celdas para editarlas.
           </p>
+        )}
+
+        {cell.content.kind === 'component' && (
+          <>
+            <PdfComponentPanel cellId={cell.id} component={cell.content.component} />
+            <p className="text-[11px] text-fg-subtle">
+              Si al componente le falta algo, pasa la celda a HTML: queda su HTML para retocarlo a
+              mano.
+            </p>
+          </>
         )}
       </PanelSection>
 

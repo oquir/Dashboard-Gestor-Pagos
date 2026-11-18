@@ -4,6 +4,7 @@ import type {
   PdfCellContentKind,
   PdfCellStylePatch,
   PdfColumnPosition,
+  PdfComponent,
   PdfDesign,
   PdfFontFamily,
   PdfMargins,
@@ -58,6 +59,8 @@ export interface PdfDesignState {
   setCellText: (cellId: string, text: string) => void
   setCellHtml: (cellId: string, html: string) => void
   setCellContentKind: (cellId: string, kind: PdfCellContentKind) => void
+  // Pone o reemplaza el componente de la celda: cambiarlo de tipo o editar uno es la misma accion.
+  setCellComponent: (cellId: string, component: PdfComponent) => void
   updateCellStyle: (cellId: string, patch: PdfCellStylePatch) => void
   // El mismo cambio en todas las celdas del rectangulo seleccionado (un paso de deshacer).
   updateSelectionStyle: (patch: PdfCellStylePatch) => void

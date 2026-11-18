@@ -3,6 +3,7 @@ import {
   PDF_DEFAULT_FONT,
   PDF_DEFAULT_FONT_SIZE,
   PDF_FONT_OPTIONS,
+  PDF_COMPONENT_ATTRIBUTE,
   PDF_MAX_TABLE_DEPTH,
   PDF_WEB_PAGE_WIDTH_PX,
 } from '../../constants'
@@ -12,6 +13,8 @@ import type {
   PdfCell,
   PdfCellContent,
   PdfColumn,
+  PdfComponent,
+  PdfComponentContext,
   PdfDesign,
   PdfFileRead,
   PdfFontFamily,
@@ -22,7 +25,9 @@ import type {
   PdfSheet,
   PdfTable,
   PdfTaxType,
+  PdfVerticalTextRenderer,
 } from '../../types'
+import { pdfComponentHtml } from '../pdfComponents'
 import {
   cellStyleMap,
   createBlankDesign,
@@ -35,7 +40,7 @@ import {
   tableStyleMap,
   taxTypeLabel,
 } from '../pdfDesign'
-import { parsePdfDesign } from '../pdfDesignBank'
+import { parsePdfComponent, parsePdfDesign } from '../pdfDesignBank'
 import {
   escapePdfText,
   normalizePdfHtml,
@@ -85,7 +90,18 @@ export function pdfFileName(taxType: PdfTaxType, version: number): string {
   return `${taxType}_v${version}.html`
 }
 
-export function buildPdfHtml(design: PdfDesign, version: number): string {
+// renderVerticalText dibuja el PNG del texto vertical: necesita un <canvas>, que esta lib no toca
+// (lib/pdfVerticalText lo hace en el navegador). Sin el, el texto vertical sale con writing-mode.
+export function buildPdfHtml(
+  design: PdfDesign,
+  version: number,
+  renderVerticalText: PdfVerticalTextRenderer = () => null,
+): string {
+  const ctx: PdfComponentContext = {
+    mode: 'file',
+    fontFamily: design.fontFamily,
+    renderVerticalText,
+  }
   const rootStyle: CssStyleMap = {
     boxSizing: 'border-box',
     width: `${PDF_WEB_PAGE_WIDTH_PX}px`,
@@ -115,7 +131,7 @@ export function buildPdfHtml(design: PdfDesign, version: number): string {
     '<body>',
     FILE_COMMENT,
     `<div${rootAttributes}>`,
-    ...design.sheets.map((sheet, index) => writeSheet(sheet, index, design.margins)),
+    ...design.sheets.map((sheet, index) => writeSheet(sheet, index, design.margins, ctx)),
     '</div>',
     '</body>',
     '</html>',
@@ -167,7 +183,12 @@ export function downloadPdfHtml(html: string, fileName: string): void {
 
 // Cada hoja lleva su relleno arriba y abajo; desde la segunda, un salto de pagina antes (§2.1,
 // "Hojas"). Los lados son del contenedor y valen para todas.
-function writeSheet(sheet: PdfSheet, index: number, margins: PdfMargins): string {
+function writeSheet(
+  sheet: PdfSheet,
+  index: number,
+  margins: PdfMargins,
+  ctx: PdfComponentContext,
+): string {
   const style: CssStyleMap = {
     paddingTop: px(mmToPx(margins.top)),
     paddingBottom: px(mmToPx(margins.bottom)),
@@ -177,7 +198,7 @@ function writeSheet(sheet: PdfSheet, index: number, margins: PdfMargins): string
 
   const blocks: string[] = sheet.blocks.map((block) =>
     block.kind === 'table'
-      ? writeTable(block)
+      ? writeTable(block, ctx)
       : `<div${attrs([[FILE_ATTR.block, 'html']])}>${normalizePdfHtml(block.html)}</div>`,
   )
   return [
@@ -190,7 +211,7 @@ function writeSheet(sheet: PdfSheet, index: number, margins: PdfMargins): string
   ].join('\n')
 }
 
-function writeTable(table: PdfTable): string {
+function writeTable(table: PdfTable, ctx: PdfComponentContext): string {
   const opening: string = `<table${attrs([
     [FILE_ATTR.table, ''],
     [FILE_ATTR.style, table.style || null],
@@ -202,7 +223,7 @@ function writeTable(table: PdfTable): string {
     .join('')
   const rows: string[] = table.rows.map((row) => {
     const opening: string = `<tr${row.height ? attrs([['style', `height: ${row.height}px`]]) : ''}>`
-    return [opening, ...row.cells.map(writeCell), '</tr>'].join('\n')
+    return [opening, ...row.cells.map((cell) => writeCell(cell, ctx)), '</tr>'].join('\n')
   })
 
   return [
@@ -215,7 +236,7 @@ function writeTable(table: PdfTable): string {
   ].join('\n')
 }
 
-function writeCell(cell: PdfCell): string {
+function writeCell(cell: PdfCell, ctx: PdfComponentContext): string {
   const props: Record<string, unknown> = {}
   for (const key of CELL_PROP_KEYS) if (cell[key] !== undefined) props[key] = cell[key]
 
@@ -229,12 +250,16 @@ function writeCell(cell: PdfCell): string {
     ['style', cssText(cellStyleMap(cell))],
   ])}>`
 
-  return `${opening}${writeCellContent(cell.content)}</td>`
+  return `${opening}${writeCellContent(cell.content, ctx)}</td>`
 }
 
-// Igual que el lienzo: una celda vacia lleva un espacio duro, o la fila se aplasta.
-function writeCellContent(content: PdfCellContent): string {
-  if (content.kind === 'table') return `\n${writeTable(content.table)}\n`
+// Igual que el lienzo: una celda vacia lleva un espacio duro, o la fila se aplasta. El componente
+// pasa por el mismo saneo que el HTML libre: un src que no es seguro se cae ahi.
+function writeCellContent(content: PdfCellContent, ctx: PdfComponentContext): string {
+  if (content.kind === 'table') return `\n${writeTable(content.table, ctx)}\n`
+  if (content.kind === 'component') {
+    return normalizePdfHtml(pdfComponentHtml(content.component, ctx)) || '&nbsp;'
+  }
   if (content.kind === 'html') return normalizePdfHtml(content.html) || '&nbsp;'
   return content.text === '' ? '&nbsp;' : escapePdfText(content.text)
 }
@@ -374,6 +399,12 @@ function readCell(element: PdfHtmlElement, depth: number): PdfCell {
 function readCellContent(element: PdfHtmlElement, depth: number): PdfCellContent {
   const kind: string | null = pdfHtmlAttribute(element, FILE_ATTR.cell)
 
+  // Un componente se rearma desde su data-fm-config; si alguien lo daño a mano, queda como HTML.
+  if (kind === 'component') {
+    const component: PdfComponent | null = readComponent(element)
+    if (component) return { kind: 'component', component }
+  }
+
   const nested: PdfHtmlElement | undefined = elementChildren(element).find(
     (child) => child.name === 'table',
   )
@@ -389,6 +420,27 @@ function readCellContent(element: PdfHtmlElement, depth: number): PdfCellContent
 
   const text: string = pdfHtmlText(element.children)
   return { kind: 'text', text: text === ' ' ? '' : text }
+}
+
+// El tipo y la configuracion salen de los data-fm-* del elemento de afuera del componente; la imagen
+// (imagen y sello), del primer <img>, que es donde va el base64 una sola vez. Lo de adentro no se
+// lee: se vuelve a generar, asi que un cambio a mano dentro de un componente no sobrevive.
+function readComponent(cell: PdfHtmlElement): PdfComponent | null {
+  const root: PdfHtmlElement | null = findElement(cell.children, (child) =>
+    hasAttribute(child, PDF_COMPONENT_ATTRIBUTE.type),
+  )
+  if (!root) return null
+
+  const type: string | null = pdfHtmlAttribute(root, PDF_COMPONENT_ATTRIBUTE.type)
+  const config: Record<string, unknown> = safeJson(
+    pdfHtmlAttribute(root, PDF_COMPONENT_ATTRIBUTE.config),
+  )
+  const value: Record<string, unknown> = { ...config, type }
+  if (type === 'image' || type === 'stamp') {
+    const image: PdfHtmlElement | null = findElement([root], (child) => child.name === 'img')
+    value.src = (image && pdfHtmlAttribute(image, 'src')) ?? ''
+  }
+  return parsePdfComponent(value)
 }
 
 function readFont(value: string | null, warnings: string[]): PdfFontFamily {

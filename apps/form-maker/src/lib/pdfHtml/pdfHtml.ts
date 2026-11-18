@@ -1,4 +1,4 @@
-import type { PdfHtmlElement, PdfHtmlNode } from '../../types'
+import type { CssStyleMap, PdfHtmlElement, PdfHtmlNode } from '../../types'
 import {
   ALLOWED_ATTRIBUTES,
   ALLOWED_TAGS,
@@ -212,6 +212,29 @@ export function escapePdfAttribute(value: string): string {
   return escapeAttribute(value)
 }
 
+// Atributos en el orden dado, escapados; los null se omiten. Lo usan el generador del .html y los
+// componentes, que escriben HTML a mano.
+export function pdfAttributes(list: [string, string | null][]): string {
+  return list
+    .filter((entry): entry is [string, string] => entry[1] !== null)
+    .map(([name, value]) => ` ${name}="${escapeAttribute(value)}"`)
+    .join('')
+}
+
+// El style de React en camelCase, de vuelta a CSS. Una variable (--x) queda igual; un prefijo
+// (WebkitTransform) recupera su guion inicial.
+export function pdfCssText(map: CssStyleMap): string {
+  return Object.entries(map)
+    .map(([key, value]) => `${key.startsWith('--') ? key : toKebab(key)}: ${value}`)
+    .join('; ')
+}
+
+// La misma regla que el saneo aplica a src: http(s), data:image o una {Var} sola. Lo demas (una
+// ruta relativa, javascript:) se quita al publicar; la barra lateral lo avisa antes.
+export function isSafePdfImageSrc(src: string): boolean {
+  return isSafeUrl(src, SAFE_IMAGE_URL)
+}
+
 export function pdfHtmlAttribute(node: PdfHtmlNode, name: string): string | null {
   if (node.type !== 'element') return null
   return node.attributes.find(([attribute]) => attribute === name)?.[1] ?? null
@@ -230,6 +253,10 @@ export function sanitizeCss(css: string): string {
     .replace(/url\s*\(\s*(['"]?)(.*?)\1\s*\)/gi, (match: string, _quote: string, url: string) =>
       isSafeCssUrl(url) ? match : 'none',
     )
+}
+
+function toKebab(key: string): string {
+  return key.replace(/[A-Z]/g, (letter: string) => `-${letter.toLowerCase()}`)
 }
 
 // Dos textos seguidos se juntan en un nodo: asi un "<" suelto no parte la frase en dos.
