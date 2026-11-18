@@ -84,6 +84,33 @@ export const CANVAS_TOOLBAR_ICON_ACTION_CLASSES: string =
 
 export const CANVAS_TOOLBAR_DIVIDER_CLASSES: string = 'mx-0.5 h-5 w-px bg-border'
 
+// La barra flotante del lienzo del formulario (CanvasToolbar) y la del diseñador de PDF (PdfToolbar):
+// misma caja, mismos grupos, mismas herramientas. Flota sobre el lienzo sin desplazarse ni escalarse,
+// centrada abajo como la barra de Figma.
+export const CANVAS_TOOLBAR_CLASSES: string =
+  'absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-border bg-surface p-1 shadow-lg dark:bg-surface-raised'
+
+export const CANVAS_TOOLBAR_GROUP_CLASSES: string = 'flex items-center gap-0.5'
+
+export const CANVAS_TOOL_BUTTON_BASE_CLASSES: string =
+  'flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:cursor-pointer'
+
+// La herramienta activa si va en naranja, a diferencia de la vista del panel derecho: la herramienta
+// cambia lo que hace un clic sobre el lienzo, y seguir en el modo equivocado sin notarlo es
+// seleccionar o desplazar cuando se queria mover. Tiene que verse de reojo.
+export const CANVAS_TOOL_BUTTON_ACTIVE_CLASSES: string = 'bg-brand text-on-brand'
+
+export const CANVAS_TOOL_BUTTON_INACTIVE_CLASSES: string =
+  'text-fg-muted hover:bg-surface-raised hover:text-fg-strong dark:hover:bg-surface-inset'
+
+// Bajo rendimiento prendido: tinte de marca y no el naranja lleno de la herramienta activa. No es
+// una herramienta (no cambia lo que hace un clic) y no debe leerse como una cuarta.
+export const CANVAS_PERFORMANCE_ON_CLASSES: string =
+  'bg-brand-surface text-brand-fg hover:bg-brand-surface'
+
+export const CANVAS_SELECTION_COUNT_CLASSES: string =
+  'px-2 text-xs font-semibold tabular-nums text-fg-strong'
+
 // El control segmentado: riel hundido con la opcion activa en pastilla elevada. Lo comparten
 // ViewModeSwitch y PayloadDestinationSwitch. El activo no va en naranja aunque sea la eleccion
 // vigente: el naranja del panel esta reservado para Exportar, que es la unica accion primaria, y
@@ -98,3 +125,14 @@ export const SWITCH_ITEM_ACTIVE_CLASSES: string =
   'bg-surface font-semibold text-fg-strong shadow-sm dark:bg-surface-inset'
 
 export const SWITCH_ITEM_INACTIVE_CLASSES: string = 'font-medium text-fg-muted hover:text-fg-strong'
+
+// Los botones chicos de los paneles del diseñador de PDF (agregar fila, combinar, negrilla…).
+// Contorno y no relleno: son muchos juntos, y con fondo la barra se volveria una pared de botones.
+export const PANEL_BUTTON_CLASSES: string =
+  'flex h-7 items-center justify-center gap-1 rounded-md border border-border px-2 text-[11px] font-medium text-fg-soft transition-colors hover:cursor-pointer hover:border-border-strong hover:text-fg-strong disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:text-fg-soft'
+
+// Un boton de alternar (negrilla, alineacion) cuando esta puesto.
+export const PANEL_BUTTON_ON_CLASSES: string = 'border-brand-border bg-brand-surface text-brand-fg'
+
+export const PANEL_DANGER_LINK_CLASSES: string =
+  'text-[11px] font-medium text-danger hover:cursor-pointer hover:underline disabled:cursor-not-allowed disabled:opacity-40 disabled:no-underline'

@@ -3,6 +3,7 @@ import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
 import { FILE_DESCRIPTION, FILE_FORMAT_PRESETS } from './FileOptionsEditor.constants'
 import type { FileOptionsEditorProps } from './FileOptionsEditor.types'
 import { togglePreset } from './FileOptionsEditor.utils'
+import { Tooltip } from '../../../atoms'
 
 export function FileOptionsEditor({ field }: FileOptionsEditorProps) {
   const updateFieldFileConfig = useFormStore((state) => state.updateFieldFileConfig)
@@ -24,22 +25,23 @@ export function FileOptionsEditor({ field }: FileOptionsEditorProps) {
             const isActive = preset.tokens.every((token) => config.acceptedFormats.includes(token))
             return (
               <li key={preset.id}>
-                <button
-                  type="button"
-                  onClick={() =>
-                    updateFieldFileConfig(field.id, {
-                      acceptedFormats: togglePreset(config.acceptedFormats, preset.tokens),
-                    })
-                  }
-                  title={preset.tokens.join(', ')}
-                  className={`rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors hover:cursor-pointer ${
-                    isActive
-                      ? 'border-brand bg-brand-surface text-brand-fg'
-                      : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600'
-                  }`}
-                >
-                  {preset.label}
-                </button>
+                <Tooltip content={preset.tokens.join(', ')}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      updateFieldFileConfig(field.id, {
+                        acceptedFormats: togglePreset(config.acceptedFormats, preset.tokens),
+                      })
+                    }
+                    className={`rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors hover:cursor-pointer ${
+                      isActive
+                        ? 'border-brand bg-brand-surface text-brand-fg'
+                        : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600'
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                </Tooltip>
               </li>
             )
           })}

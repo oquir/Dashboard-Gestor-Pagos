@@ -21,7 +21,7 @@ export const PANEL_TAB_INACTIVE_CLASSES: string = 'font-medium text-fg-subtle ho
 export const PANEL_TAB_DROP_DOT_CLASSES: string =
   'h-[5px] w-[5px] rounded-full bg-brand ring-[3px] ring-brand/20'
 
-// Icono solo y sin relleno: es un cuarto control al lado de Exportar, que es el unico primario de
+// Icono solo y sin relleno: es un control mas al lado de Exportar, que es el unico primario de
 // la fila, y con fondo le competiria. Mide como sus vecinos (py-1 text-xs) y no como su gemelo del
 // chip flotante, que vive entre botones de 32px.
 export const PANEL_COLLAPSE_BUTTON_CLASSES: string =

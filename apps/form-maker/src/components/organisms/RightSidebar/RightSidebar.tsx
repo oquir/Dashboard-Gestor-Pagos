@@ -4,12 +4,12 @@ import type { RightSidebarTab } from '../../../types/ui'
 import { CanvasZoomControl } from '../../molecules/CanvasZoomControl/CanvasZoomControl'
 import { FormSummary } from '../../molecules/FormSummary/FormSummary'
 import { PanelBlock } from '../../molecules/PanelBlock/PanelBlock'
-import { PerformanceModeSwitch } from '../../molecules'
 import { RightPanelToggle } from '../../molecules/RightPanelToggle/RightPanelToggle'
 import { TransferNotice } from '../../molecules/TransferNotice/TransferNotice'
 import { ViewModeSwitch } from '../../molecules/ViewModeSwitch/ViewModeSwitch'
 import { CanvasTabs } from '../CanvasTabs/CanvasTabs'
 import { ExportButton } from '../ExportButton/ExportButton'
+import { PdfDesignerButton } from '../PdfDesignerButton/PdfDesignerButton'
 import { ProjectImportModal } from '../ProjectImportModal/ProjectImportModal'
 import { SaveButton } from '../SaveButton/SaveButton'
 import { SimulatorButton } from '../SimulatorButton/SimulatorButton'
@@ -23,6 +23,7 @@ import {
   PANEL_TAB_INACTIVE_CLASSES,
   TABS,
 } from './RightSidebar.constants'
+import { Tooltip } from '../../atoms'
 
 export function RightSidebar() {
   const formSteps = useFormStore((state) => state.formSteps)
@@ -59,12 +60,16 @@ export function RightSidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      {/* Guardar a la izquierda, las salidas a la derecha: Simulador es el "reproducir" y Exportar
-          la unica accion primaria del panel. El ml-auto va en el grupo y no en el primer boton para
-          que ninguno de los tres necesite saber donde lo montan. */}
-      <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
-        <SaveButton />
-        <div className="ml-auto flex items-center gap-1.5">
+      {/* Una sola fila: Guardar y PDF a la izquierda como icono (su tooltip los nombra, como en el
+          chip plegado); a la derecha Simulador y Exportar con texto y el plegar. Con las cuatro
+          etiquetas la fila pedia ~378 px y el panel da 295 utiles (320 - 2 x px-3). Asi suma ~293
+          con gap-1 (con gap-1.5 serian ~301 y se comeria el padding derecho): hay poca holgura, y
+          una cuarta etiqueta ya no cabe. El ml-auto va en el grupo y no en un boton para que
+          ninguno necesite saber donde lo montan. */}
+      <div className="flex items-center gap-1 border-b border-border px-3 py-2">
+        <SaveButton iconOnly />
+        <PdfDesignerButton iconOnly />
+        <div className="ml-auto flex items-center gap-1">
           <SimulatorButton />
           <ExportButton />
           <RightPanelToggle className={PANEL_COLLAPSE_BUTTON_CLASSES} iconSize={14} />
@@ -112,14 +117,15 @@ export function RightSidebar() {
             <PanelBlock
               title="Formulario"
               action={
-                <button
-                  type="button"
-                  onClick={() => setImportOpen(true)}
-                  title="Abrir un formulario exportado"
-                  className={OPEN_PROJECT_BUTTON_CLASSES}
-                >
-                  Abrir…
-                </button>
+                <Tooltip content="Abrir un formulario exportado">
+                  <button
+                    type="button"
+                    onClick={() => setImportOpen(true)}
+                    className={OPEN_PROJECT_BUTTON_CLASSES}
+                  >
+                    Abrir…
+                  </button>
+                </Tooltip>
               }
             >
               <FormSummary />
@@ -145,10 +151,6 @@ export function RightSidebar() {
           </>
         )}
       </div>
-
-      {/* Fuera del cuerpo y debajo de el: el cuerpo es flex-1, asi que esto queda pegado al pie con
-          cualquiera de las dos pestañas, y es de la app entera, no de una seccion. */}
-      <PerformanceModeSwitch />
 
       {isImportOpen && <ProjectImportModal onClose={() => setImportOpen(false)} />}
     </div>

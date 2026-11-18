@@ -8,6 +8,7 @@ import {
 } from './JsonSearchBar.constants'
 import type { JsonSearchBarProps } from './JsonSearchBar.types'
 import { handleSearchKeyDown, searchCountLabel, searchCountShortLabel } from './JsonSearchBar.utils'
+import { Tooltip } from '../../atoms'
 
 export function JsonSearchBar({ search, inputRef }: JsonSearchBarProps) {
   const hasMatches: boolean = search.total > 0
@@ -30,35 +31,42 @@ export function JsonSearchBar({ search, inputRef }: JsonSearchBarProps) {
         <span className="@xs:hidden">{searchCountShortLabel(search)}</span>
         <span className="hidden @xs:inline">{searchCountLabel(search)}</span>
       </span>
-      <button
-        type="button"
-        onClick={search.previous}
-        disabled={!hasMatches}
-        title="Anterior (Shift+Enter)"
-        aria-label="Coincidencia anterior"
-        className={SEARCH_BUTTON_CLASSES}
-      >
-        <AngleUp2 size={13} />
-      </button>
-      <button
-        type="button"
-        onClick={search.next}
-        disabled={!hasMatches}
-        title="Siguiente (Enter)"
-        aria-label="Coincidencia siguiente"
-        className={SEARCH_BUTTON_CLASSES}
-      >
-        <AngleDown2 size={13} />
-      </button>
-      <button
-        type="button"
-        onClick={search.close}
-        title="Cerrar (Esc)"
-        aria-label="Cerrar la búsqueda"
-        className={SEARCH_BUTTON_CLASSES}
-      >
-        <Xmark size={13} />
-      </button>
+      <Tooltip content="Anterior (Shift+Enter)">
+        <span className="inline-flex">
+          <button
+            type="button"
+            onClick={search.previous}
+            disabled={!hasMatches}
+            aria-label="Coincidencia anterior"
+            className={SEARCH_BUTTON_CLASSES}
+          >
+            <AngleUp2 size={13} />
+          </button>
+        </span>
+      </Tooltip>
+      <Tooltip content="Siguiente (Enter)">
+        <span className="inline-flex">
+          <button
+            type="button"
+            onClick={search.next}
+            disabled={!hasMatches}
+            aria-label="Coincidencia siguiente"
+            className={SEARCH_BUTTON_CLASSES}
+          >
+            <AngleDown2 size={13} />
+          </button>
+        </span>
+      </Tooltip>
+      <Tooltip content="Cerrar (Esc)">
+        <button
+          type="button"
+          onClick={search.close}
+          aria-label="Cerrar la búsqueda"
+          className={SEARCH_BUTTON_CLASSES}
+        >
+          <Xmark size={13} />
+        </button>
+      </Tooltip>
     </div>
   )
 }

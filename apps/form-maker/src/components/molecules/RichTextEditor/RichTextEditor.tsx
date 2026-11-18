@@ -10,6 +10,7 @@ import {
   TOOLBAR_CLASSES,
 } from './RichTextEditor.constants'
 import type { RichTextEditorProps } from './RichTextEditor.types'
+import { Tooltip } from '../../atoms'
 
 export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
   const editor = useRichTextEditor({ value, onChange })
@@ -18,32 +19,26 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
     <div className="flex flex-col gap-1.5">
       <div className={TOOLBAR_CLASSES}>
         {FORMAT_BUTTONS.map((button) => (
-          <button
-            key={button.command}
-            type="button"
-            title={button.title}
-            onClick={() => editor.runCommand(button.command)}
-            className={TOOL_BUTTON_CLASSES}
-          >
-            {button.label}
-          </button>
+          <Tooltip key={button.command} content={button.title}>
+            <button
+              type="button"
+              onClick={() => editor.runCommand(button.command)}
+              className={TOOL_BUTTON_CLASSES}
+            >
+              {button.label}
+            </button>
+          </Tooltip>
         ))}
-        <button
-          type="button"
-          title="Insertar enlace"
-          onClick={editor.openLinkInput}
-          className={TOOL_BUTTON_CLASSES}
-        >
-          Enlace
-        </button>
-        <button
-          type="button"
-          title="Quitar enlace"
-          onClick={editor.removeLink}
-          className={TOOL_BUTTON_CLASSES}
-        >
-          Quitar
-        </button>
+        <Tooltip content="Insertar enlace">
+          <button type="button" onClick={editor.openLinkInput} className={TOOL_BUTTON_CLASSES}>
+            Enlace
+          </button>
+        </Tooltip>
+        <Tooltip content="Quitar enlace">
+          <button type="button" onClick={editor.removeLink} className={TOOL_BUTTON_CLASSES}>
+            Quitar
+          </button>
+        </Tooltip>
       </div>
 
       {editor.linkOpen && (

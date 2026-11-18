@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useFieldRules } from '../../../../hooks/useFieldRules/useFieldRules'
 import { Button } from '../../../atoms/Button/Button'
+import { Tooltip } from '../../../atoms/Tooltip'
 import { PanelSection } from '../../../molecules/PanelSection/PanelSection'
 import { FieldRulesModal } from '../../FieldRulesModal/FieldRulesModal'
 import {
@@ -50,13 +51,13 @@ export function FieldRulesEditor({ field, candidates }: FieldRulesEditorProps) {
                   <span className={WARNING_CLASSES}>Todavía no hace nada</span>
                 ) : (
                   summary.effects.map((effect) => (
-                    <span
-                      key={effect.id}
-                      title={effect.text}
-                      className={effect.isCode ? SUMMARY_CODE_CLASSES : SUMMARY_EFFECT_CLASSES}
-                    >
-                      → {effect.text}
-                    </span>
+                    <Tooltip key={effect.id} content={effect.text}>
+                      <span
+                        className={effect.isCode ? SUMMARY_CODE_CLASSES : SUMMARY_EFFECT_CLASSES}
+                      >
+                        → {effect.text}
+                      </span>
+                    </Tooltip>
                   ))
                 )}
               </div>

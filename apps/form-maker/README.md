@@ -91,7 +91,7 @@ Solo escala el documento; los paneles, la barra flotante y el menú contextual s
 
 ### Modo de bajo rendimiento
 
-Para equipos lentos. Se prende y se apaga con el interruptor **Bajo rendimiento**, al pie del panel derecho, y se guarda en el navegador como el tema. Sin una elección guardada sigue a Windows: si ahí están apagadas las animaciones, la app arranca con el modo prendido.
+Para equipos lentos. Se prende y se apaga con el botón **Bajo rendimiento** (el velocímetro) de la barra flotante del lienzo, al lado de Deshacer y Rehacer, y se guarda en el navegador como el tema. Sin una elección guardada sigue a Windows: si ahí están apagadas las animaciones, la app arranca con el modo prendido.
 
 Prendido:
 
@@ -485,6 +485,34 @@ Cosas que conviene saber:
 - **Las opciones de catálogo salen, en este orden,** del banco de catálogos si ese catálogo está en modo personalizado; si no, de los datos de prueba del simulador, en su mayoría transcritos de volcados reales de la API con sus ids reales, porque las condiciones comparan contra esos ids (en `tipo_documento`, `"2"` es NIT); y si no hay nada, de opciones de relleno. Nada de esto se exporta.
 - **`search_select` abre un buscador en un modal** en vez de un `<select>`: 425 actividades por 15 repeticiones serían miles de opciones montadas de entrada.
 - Va detrás de un `React.lazy`: el simulador y sus datos de prueba no se descargan hasta abrirlo.
+
+### Diseñador de PDF (en construcción)
+
+El botón **Diseñar PDF** (el icono de la hoja, en la fila de acciones del panel derecho y en el chip cuando el panel está plegado) abre a pantalla completa la plantilla del PDF de la declaración: la barra lateral a la izquierda y las hojas de carta a la derecha. Todavía no tiene componentes (casilla, firmas, código de barras…) ni la lista de variables del formulario. El plan completo, con lo decidido y lo que falta, está en [`docs/Pendientes-PDF.md`](docs/Pendientes-PDF.md).
+
+Cómo se arma:
+
+- **Hojas y bloques.** Cada hoja es una página aparte, y lleva tablas y bloques de HTML libre, uno debajo del otro. Lo que no cabe en una hoja no pasa solo a la siguiente: se recorta en la guía y la hoja avisa cuántos px sobran.
+- **Tablas.** Clic en una celda la selecciona y Shift+clic en otra selecciona el rectángulo entre las dos. Desde el panel se agregan y quitan filas y columnas junto a la celda, se combina el rectángulo o se divide una celda combinada, y se fijan el ancho de la columna y el alto de la fila en px.
+- **Celdas.** Llevan texto fijo con `{variables}` mezcladas (el lienzo las resalta), HTML libre o una tabla adentro, hasta 4 niveles. Letra, negrilla, cursiva, alineación, bordes y fondo se aplican a todas las celdas seleccionadas; clases y estilos en línea van en "Avanzado".
+- **HTML libre, saneado.** Se quitan scripts, iframes, formularios, eventos (`onclick`…) y enlaces `javascript:`; se permite `<style>`. Las hojas se pintan dentro de un shadow root, así que ese `<style>` cambia las hojas y no el resto de FormMaker.
+- **Deshacer propio.** Ctrl+Z / Ctrl+Y y los botones de la barra flotante deshacen el PDF, no el formulario. Ctrl+S guarda ya mismo.
+- **Barra flotante, igual a la del formulario** (sin + Fila ni + Grupo repetible): **Mover (V)**, **Selección múltiple (M)** y **Mano (H)**, Deshacer / Rehacer y el modo de bajo rendimiento. Con la selección múltiple se arrastra de una celda a otra de la misma tabla para armar el rectángulo, y con 2 o más celdas seleccionadas la barra ofrece **Combinar**. Espacio sostenido es la mano temporal. La mano arrastra las hojas en los dos ejes.
+- **Zoom de 50 % a 300 %** con − / + en la barra flotante (el porcentaje abre saltos fijos), Ctrl + rueda sobre las hojas o Ctrl + / - / 0. Solo cambia cómo se ve: no entra al deshacer ni se guarda.
+- **Subir y Bajar** mueven una tabla o un bloque dentro de su hoja; en el borde lo pasan a la hoja vecina (al final de la anterior o al principio de la siguiente).
+
+Publicar y abrir (todavía sin back, así que no hay peticiones):
+
+- **Publicar vN** descarga `<impuesto>_v<N>.html`, con `N` uno más que la última publicada o abierta. Ese archivo es la plantilla completa: no hay un JSON aparte, y nunca va dentro del JSON del formulario. Lo que FormMaker necesita para reabrirlo viaja en atributos `data-fm-*`, que el convertidor ignora.
+- **Abrir…** lee uno o varios `.html` locales; con varios, vale el de versión más alta. Un archivo de FormMaker se reabre tal cual: el texto de las celdas se lee del HTML, así que un cambio de texto hecho a mano se conserva, y los estilos se leen de `data-fm-style`. No se abre uno de otro impuesto. Abrir es un paso de deshacer: Ctrl+Z vuelve al diseño de antes.
+- **Una plantilla hecha a mano** (las `PdfICA.html`, `PdfReteICA….html` de hoy) entra entera en la hoja 1, como bloques de HTML: uno por cada tabla de primer nivel y otro por lo que haya entre tablas. No se convierte a tablas del editor, porque se vería distinta. Para partirla en hojas: **+ Hoja** y luego **Bajar** los bloques del final. Un aviso arriba del lienzo dice qué revisar: texto suelto entre filas (los `{Bloque…}` del ICA), atributos con variable (`colspan="{ColspanAnual}"`), estilos a `body`, `@page` y `${` sueltos.
+- El lector tolera etiquetas sin cerrar, como el navegador, y todo pasa por el mismo saneo del HTML libre.
+
+- **El ICA trae plantilla de fábrica:** el formulario único nacional en una sola hoja carta, con las 15 actividades y las variables que hoy llena el back (`{RazonSocial}`, `{CodigoSecundaria1}`…). Es la genérica de Autoliquidables rehecha con tablas del editor, así que se cambia celda por celda. El diseñador del ICA arranca con ella si no hay nada guardado, y **Cargar la plantilla de fábrica** (en el panel) la vuelve a traer; Ctrl+Z deshace.
+- **Una plantilla por impuesto**, no por formulario ni por municipio: dos formularios de autorretención comparten la misma. El impuesto sale del formulario abierto, salvo que la URL traiga `?impuesto=<tipo>` con uno conocido.
+- **Se guarda en el navegador**, en una llave por impuesto (`form-orchestrator-pdf-<impuesto>`), poco después de cada cambio y al volver al formulario. Nunca entra al borrador ni al JSON exportado. Si no cabe (unos 5 MB, casi siempre por imágenes en base64), lo avisa en la cabecera.
+- **Carta, con 5 mm fijos del back**, que convierte con una ventana de 778 px. Un margen mayor lo pone el diseño: la guía gris son los 5 mm del back y la naranja, el margen extra.
+- Tiene su propio store, aparte del formulario, y va detrás de un `React.lazy`, como el simulador.
 
 ### Exportación
 

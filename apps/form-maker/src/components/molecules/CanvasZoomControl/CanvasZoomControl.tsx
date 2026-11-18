@@ -1,3 +1,4 @@
+import { Tooltip } from '../../atoms/Tooltip'
 import { useRef, useState } from 'react'
 import { AngleDown2, Check } from 'reicon-react'
 import { useClickOutside } from '../../../hooks/useClickOutside/useClickOutside'
@@ -38,18 +39,23 @@ export function CanvasZoomControl() {
 
   return (
     <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setIsOpen((open) => !open)}
-        disabled={!isCanvasView}
-        title={isCanvasView ? 'Zoom del lienzo' : 'El zoom solo aplica a la vista de lienzo'}
-        aria-haspopup="menu"
-        aria-expanded={isOpen}
-        className={ZOOM_TRIGGER_CLASSES}
+      <Tooltip
+        content={isCanvasView ? 'Zoom del lienzo' : 'El zoom solo aplica a la vista de lienzo'}
       >
-        {formatZoom(canvasZoom)}
-        <AngleDown2 size={12} />
-      </button>
+        <span className="inline-flex">
+          <button
+            type="button"
+            onClick={() => setIsOpen((open) => !open)}
+            disabled={!isCanvasView}
+            aria-haspopup="menu"
+            aria-expanded={isOpen}
+            className={ZOOM_TRIGGER_CLASSES}
+          >
+            {formatZoom(canvasZoom)}
+            <AngleDown2 size={12} />
+          </button>
+        </span>
+      </Tooltip>
 
       {isOpen && (
         <div className="absolute right-0 top-7 z-20 flex w-44 flex-col rounded-md border border-border bg-surface py-1 shadow-lg">

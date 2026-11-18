@@ -33,7 +33,9 @@ export function useKeyboardShortcuts() {
       // Las teclas sueltas son el camino de teclado al cromo que ahora se esconde: si el unico modo
       // de borrar un campo fuera pasar el puntero por encima, quien no usa mouse se queda afuera.
       if (!isMod) {
-        if (state.isSimulatorOpen || !state.setupConfig.isComplete) return
+        if (state.isSimulatorOpen || state.isPdfDesignerOpen || !state.setupConfig.isComplete) {
+          return
+        }
         if (isEditableTarget(event.target)) return
 
         const isCanvasView: boolean = state.canvasViewMode === 'canvas'
@@ -83,7 +85,8 @@ export function useKeyboardShortcuts() {
 
       if (key === 's') {
         event.preventDefault()
-        if (!state.setupConfig.isComplete) return
+        // Con el diseñador de PDF abierto, Ctrl+S guarda el PDF (usePdfDesignerShortcuts).
+        if (!state.setupConfig.isComplete || state.isPdfDesignerOpen) return
 
         saveDraft({
           formSteps: state.formSteps,
@@ -95,7 +98,9 @@ export function useKeyboardShortcuts() {
         return
       }
 
-      if (state.isSimulatorOpen) return
+      // Con el simulador o el diseñador de PDF no hay lienzo del formulario: ni pasos, ni deshacer
+      // (el PDF tendra su propio historial), ni seleccion, ni zoom.
+      if (state.isSimulatorOpen || state.isPdfDesignerOpen) return
 
       // Ctrl + flecha: el paso anterior o el siguiente, de a uno. Solo Ctrl: Alt + flecha es atras y
       // adelante del navegador, Ctrl+Alt + flecha gira la pantalla en muchos equipos con graficos

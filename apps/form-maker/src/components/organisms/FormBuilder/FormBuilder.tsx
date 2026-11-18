@@ -9,6 +9,7 @@ import { DragPreview } from '../../molecules/DragPreview/DragPreview'
 import { Canvas } from '../Canvas/Canvas'
 import { CanvasToolbar } from '../CanvasToolbar/CanvasToolbar'
 import { CollapsedRightSidebar } from '../CollapsedRightSidebar/CollapsedRightSidebar'
+import { PdfDesignerCrashScreen } from '../PdfDesignerCrashScreen/PdfDesignerCrashScreen'
 import { RightSidebar } from '../RightSidebar/RightSidebar'
 import { Sidebar } from '../Sidebar/Sidebar'
 import { SimulatorCrashScreen } from '../SimulatorCrashScreen/SimulatorCrashScreen'
@@ -19,6 +20,12 @@ import { OVERLAY_STYLE } from './FormBuilder.constants'
 // abre el simulador. La frontera solo corta si nada del builder importa ese subarbol.
 const FormSimulator = lazy(() =>
   import('../FormSimulator/FormSimulator').then((module) => ({ default: module.FormSimulator })),
+)
+
+// El diseñador de PDF, igual: su store, su guardado y sus hojas no le sirven a nadie hasta que se
+// abre, y el formulario no importa nada de ese subarbol.
+const PdfDesigner = lazy(() =>
+  import('../PdfDesigner/PdfDesigner').then((module) => ({ default: module.PdfDesigner })),
 )
 
 export function FormBuilder() {
@@ -32,6 +39,7 @@ export function FormBuilder() {
     handleDragEnd,
   } = useDragAndDrop()
   const isSimulatorOpen = useFormStore((state) => state.isSimulatorOpen)
+  const isPdfDesignerOpen = useFormStore((state) => state.isPdfDesignerOpen)
 
   // El simulador se lleva la pantalla entera: sin sidebar, sin lienzo y sin drag and drop. Tiene
   // su propia frontera de errores, por dentro de la de toda la app: si falla, se vuelve al editor
@@ -41,6 +49,16 @@ export function FormBuilder() {
       <ErrorBoundary fallback={(message) => <SimulatorCrashScreen message={message} />}>
         <Suspense fallback={<SimulatorLoading />}>
           <FormSimulator />
+        </Suspense>
+      </ErrorBoundary>
+    )
+  }
+
+  if (isPdfDesignerOpen) {
+    return (
+      <ErrorBoundary fallback={(message) => <PdfDesignerCrashScreen message={message} />}>
+        <Suspense fallback={<SimulatorLoading label="Cargando diseñador de PDF…" />}>
+          <PdfDesigner />
         </Suspense>
       </ErrorBoundary>
     )

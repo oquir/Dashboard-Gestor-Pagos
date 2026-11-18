@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { CheckCircle, Copy } from 'reicon-react'
+import { Tooltip } from '../Tooltip'
 import type { CopyIconButtonProps } from './CopyIconButton.types'
 
 export function CopyIconButton({ value, title = 'Copiar' }: CopyIconButtonProps) {
@@ -23,14 +24,15 @@ export function CopyIconButton({ value, title = 'Copiar' }: CopyIconButtonProps)
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      title={copied ? 'Copiado' : title}
-      aria-label={copied ? 'Copiado' : title}
-      className="flex h-5 w-5 items-center justify-center rounded text-fg-subtle transition-colors hover:cursor-pointer hover:text-fg"
-    >
-      {copied ? <CheckCircle size={12} weight="Filled" /> : <Copy size={12} />}
-    </button>
+    <Tooltip content={copied ? 'Copiado' : title}>
+      <button
+        type="button"
+        onClick={handleCopy}
+        aria-label={copied ? 'Copiado' : title}
+        className="flex h-5 w-5 items-center justify-center rounded text-fg-subtle transition-colors hover:cursor-pointer hover:text-fg"
+      >
+        {copied ? <CheckCircle size={12} weight="Filled" /> : <Copy size={12} />}
+      </button>
+    </Tooltip>
   )
 }

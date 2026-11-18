@@ -1,7 +1,11 @@
-export function SimulatorLoading() {
+import type { SimulatorLoadingProps } from './SimulatorLoading.types'
+
+// Lo que se ve mientras baja un chunk perezoso a pantalla completa: el simulador o el diseñador
+// de PDF.
+export function SimulatorLoading({ label = 'Cargando simulador…' }: SimulatorLoadingProps) {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-surface-sunken">
-      <p className="text-sm text-fg-muted">Cargando simulador…</p>
+      <p className="text-sm text-fg-muted">{label}</p>
     </div>
   )
 }

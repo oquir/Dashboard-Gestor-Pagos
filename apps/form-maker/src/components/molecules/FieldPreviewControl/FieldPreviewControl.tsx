@@ -19,6 +19,7 @@ import { placeholderOf } from '../../../lib/fieldPlaceholder/fieldPlaceholder'
 import { suggestionsOf } from '../../../lib/fieldSuggestions/fieldSuggestions'
 import type { CanvasField, FieldOption } from '../../../types/field'
 import { RichTextView } from '../../atoms/RichTextView/RichTextView'
+import { Tooltip } from '../../atoms/Tooltip'
 import {
   AFFIX_CLASSES,
   CHECKBOX_CLASSES,
@@ -68,10 +69,12 @@ function withFrame(title: string | undefined, control: ReactNode) {
 // un renglon aparte, que cortaba el control. Los select lo dicen en su propio texto.
 function ghostNote(note: OptionsNote, classes: string) {
   return (
-    <span title={GHOST_NOTE_TITLE[note]} className={classes}>
-      {note === 'catalog' && <Database size={11} className="shrink-0" />}
-      <span className="truncate">{GHOST_NOTE_TEXT[note]}</span>
-    </span>
+    <Tooltip content={GHOST_NOTE_TITLE[note]}>
+      <span className={classes}>
+        {note === 'catalog' && <Database size={11} className="shrink-0" />}
+        <span className="truncate">{GHOST_NOTE_TEXT[note]}</span>
+      </span>
+    </Tooltip>
   )
 }
 

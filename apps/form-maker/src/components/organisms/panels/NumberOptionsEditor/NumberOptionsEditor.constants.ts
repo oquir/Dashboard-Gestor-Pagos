@@ -18,8 +18,7 @@ export const DECIMALS_DESCRIPTION: string =
 export const NEGATIVE_DESCRIPTION: string =
   'Apagado, no deja escribir el signo menos y recorta a 0 cualquier resultado negativo de un script o una regla. Recorta el valor, no solo lo que se ve: un total a pagar de −1.000.000 se guarda como 0 y así lo lee el campo de abajo.'
 
-// relative ancla la burbuja del (i) a la fila de cada opcion: toma su ancho, el de la tarjeta.
-export const OPTION_ROW_CLASSES: string = 'relative flex items-center justify-between gap-2'
+export const OPTION_ROW_CLASSES: string = 'flex items-center justify-between gap-2'
 
 // El (i) va al final de la fila, despues del control, como en el encabezado de PanelSection.
 export const OPTION_CONTROL_CLASSES: string = 'flex items-center gap-2'

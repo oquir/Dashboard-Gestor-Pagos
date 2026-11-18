@@ -4,6 +4,7 @@ import { ROW_TOOLBAR_ITEM_CLASSES, ROW_TOOLBAR_POPOVER_CLASSES } from '../../../
 import { useClickOutside } from '../../../hooks'
 import { useFormStore } from '../../../store'
 import type { RowColumnsMenuProps } from './RowColumnsMenu.types'
+import { Tooltip } from '../../atoms'
 
 // El abierto/cerrado lo lleva la barra que lo contiene, no este componente: asi los dos menus son
 // excluyentes sin conocerse y la barra sabe que tiene que quedarse a la vista mientras haya uno
@@ -16,14 +17,11 @@ export function RowColumnsMenu({ rowId, columns, isOpen, onToggle, onClose }: Ro
 
   return (
     <div ref={containerRef} className="relative">
-      <button
-        type="button"
-        onClick={onToggle}
-        title="Cambiar columnas de la fila"
-        className={ROW_TOOLBAR_ITEM_CLASSES}
-      >
-        {columns} col
-      </button>
+      <Tooltip content="Cambiar columnas de la fila">
+        <button type="button" onClick={onToggle} className={ROW_TOOLBAR_ITEM_CLASSES}>
+          {columns} col
+        </button>
+      </Tooltip>
       {isOpen && (
         <div className={ROW_TOOLBAR_POPOVER_CLASSES}>
           <label htmlFor={`row-columns-${rowId}`} className="text-[11px] font-medium text-fg-muted">
