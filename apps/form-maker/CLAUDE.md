@@ -12,36 +12,36 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 
 ## Where to read (section in `docs/Decisiones.md`)
 
-| Area | Section |
-|---|---|
-| Right panel, collapsed chip, tabs, zoom control | `The right panel (RightSidebar)` |
-| Crash screens | `Render errors (ErrorBoundary)` |
-| Hidden steps | `Hidden steps (step.hidden)` |
-| Ctrl+←/→ | `Step navigation shortcut` |
-| Shift / Shift+Ctrl placement while dragging, `colStart` | `Zone placement` |
-| Canvas zoom, free canvas / pan room | `Canvas zoom`, `The free canvas` |
-| Slow-machine toggle | `Low-performance mode` |
-| JSON view, virtual list, its search | `JSON view: virtual list…` |
-| Tools (V/M/H), floating bar, multi-selection | `Canvas tools and floating toolbar` |
-| Undo/redo (zundo) | `Undo / redo (zundo)` |
-| Dragging rows, row styles | `Reordering rows`, `Row styles` |
-| `customCss` fields | `Styles are plain CSS, not Tailwind classes` |
-| Moving fields/rows between steps | `Moving things between steps` (Almacén de Partes is gone — do not rebuild) |
-| `actividades[]`, `group.checks` | `Repeatable groups`, `group.checks` |
-| `logic.script`, `{{campo}}`, rules, prelude, no-code calc | `The field script`, `References are {{campo}}`, `No-code calculation` |
-| `label`, `rich_text` | `Presentational fields` |
-| Simulator, mock catalogs | `Simulador (FormSimulator)` |
-| PDF designer | `PDF designer (PdfDesigner)` |
-| tooltip, rounding, formatted, decimals, allowsNegative, maxLength, placeholder, datalist | the section named after each |
-| `apiBinding.kind: "concept"` / `conceptos` | `Conceptos tributarios` |
-| Options, `dataSource`, `fills`, catalog/fechas/UVT banks | `Options and apiBinding` and its `###` subsections |
-| Date helpers (`fechaLimite`, `mesesDeMora`…) | `fechaLimite / diasDeMora / mesesDeMora` |
-| Renglón 31 / 37 (sanción, intereses) | `Sanciones`, `Intereses de mora` |
-| `validations.overrides`, `visibleWhen`/`enableWhen` | `Conditional validations`, `Conditions` |
-| Open an exported file | `Opening an exported form (builderDraft)` |
-| Export review | `Export review (diagnoseForm)` |
-| `projectMeta.requires` | `What a form requires` |
-| Pieces / persistence / output | `Architecture` → `Pieces` |
+| Area                                                                                     | Section                                                                    |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Right panel, collapsed chip, tabs, zoom control                                          | `The right panel (RightSidebar)`                                           |
+| Crash screens                                                                            | `Render errors (ErrorBoundary)`                                            |
+| Hidden steps                                                                             | `Hidden steps (step.hidden)`                                               |
+| Ctrl+←/→                                                                                 | `Step navigation shortcut`                                                 |
+| Shift / Shift+Ctrl placement while dragging, `colStart`                                  | `Zone placement`                                                           |
+| Canvas zoom, free canvas / pan room                                                      | `Canvas zoom`, `The free canvas`                                           |
+| Slow-machine toggle                                                                      | `Low-performance mode`                                                     |
+| JSON view, virtual list, its search                                                      | `JSON view: virtual list…`                                                 |
+| Tools (V/M/H), floating bar, multi-selection                                             | `Canvas tools and floating toolbar`                                        |
+| Undo/redo (zundo)                                                                        | `Undo / redo (zundo)`                                                      |
+| Dragging rows, row styles                                                                | `Reordering rows`, `Row styles`                                            |
+| `customCss` fields                                                                       | `Styles are plain CSS, not Tailwind classes`                               |
+| Moving fields/rows between steps                                                         | `Moving things between steps` (Almacén de Partes is gone — do not rebuild) |
+| `actividades[]`, `group.checks`                                                          | `Repeatable groups`, `group.checks`                                        |
+| `logic.script`, `{{campo}}`, rules, prelude, no-code calc                                | `The field script`, `References are {{campo}}`, `No-code calculation`      |
+| `label`, `rich_text`                                                                     | `Presentational fields`                                                    |
+| Simulator, mock catalogs                                                                 | `Simulador (FormSimulator)`                                                |
+| PDF designer                                                                             | `PDF designer (PdfDesigner)`                                               |
+| tooltip, rounding, formatted, decimals, allowsNegative, maxLength, placeholder, datalist | the section named after each                                               |
+| `apiBinding.kind: "concept"` / `conceptos`                                               | `Conceptos tributarios`                                                    |
+| Options, `dataSource`, `fills`, catalog/fechas/UVT banks                                 | `Options and apiBinding` and its `###` subsections                         |
+| Date helpers (`fechaLimite`, `mesesDeMora`…)                                             | `fechaLimite / diasDeMora / mesesDeMora`                                   |
+| Renglón 31 / 37 (sanción, intereses)                                                     | `Sanciones`, `Intereses de mora`                                           |
+| `validations.overrides`, `visibleWhen`/`enableWhen`                                      | `Conditional validations`, `Conditions`                                    |
+| Open an exported file                                                                    | `Opening an exported form (builderDraft)`                                  |
+| Export review                                                                            | `Export review (diagnoseForm)`                                             |
+| `projectMeta.requires`                                                                   | `What a form requires`                                                     |
+| Pieces / persistence / output                                                            | `Architecture` → `Pieces`                                                  |
 
 ## Known gaps
 
