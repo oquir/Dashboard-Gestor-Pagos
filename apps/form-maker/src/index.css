@@ -261,6 +261,39 @@
   }
 }
 
+/* Giro del icono de bajo rendimiento al prenderlo (horario) o apagarlo (antihorario). Es un
+   transform sobre un svg de 16px: no cuesta nada. Lo mantiene vivo la excepcion de mas abajo, porque
+   el modo que este boton prende pondria su propia animacion en 0s. */
+@keyframes performance-icon-on {
+  from {
+    transform: rotate(-360deg) scaleX(1) scale(0.6);
+  }
+  to {
+    transform: rotate(0) scaleX(-1) scale(1);
+  }
+}
+
+@keyframes performance-icon-off {
+  from {
+    transform: rotate(360deg) scaleX(-1) scale(0.6);
+  }
+  to {
+    transform: rotate(0) scaleX(1) scale(1);
+  }
+}
+
+@utility animate-performance-icon-on {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: performance-icon-on 520ms cubic-bezier(0.34, 1.4, 0.5, 1);
+  }
+}
+
+@utility animate-performance-icon-off {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: performance-icon-off 520ms cubic-bezier(0.34, 1.4, 0.5, 1);
+  }
+}
+
 @utility animate-collapsed-panel-in {
   animation: collapsed-panel-in 180ms cubic-bezier(0.32, 0.72, 0, 1);
 
@@ -285,6 +318,15 @@
   transition-delay: 0s !important;
   animation-duration: 0s !important;
   animation-delay: 0s !important;
+}
+
+/* Excepcion: el giro del icono del propio boton. Mayor especificidad que la regla de arriba, ambas
+   !important. Sin ella, al prender el modo la clase llega junto con el giro y se anula. */
+@media (prefers-reduced-motion: no-preference) {
+  .low-performance .animate-performance-icon-on,
+  .low-performance .animate-performance-icon-off {
+    animation-duration: 520ms !important;
+  }
 }
 
 @utility bg-dot-grid {

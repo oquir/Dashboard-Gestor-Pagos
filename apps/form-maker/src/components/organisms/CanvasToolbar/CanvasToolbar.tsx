@@ -43,6 +43,9 @@ export function CanvasToolbar() {
   // Lo agregado cae al final del paso, que con la barra flotando puede quedar lejos de lo que se
   // esta mirando. La vista se lleva hasta ahi despues del commit, cuando el nodo nuevo ya existe.
   const [pendingReveal, setPendingReveal] = useState<CanvasReveal | null>(null)
+  // Cuenta los clics del boton de bajo rendimiento: es la key del icono, que al remontarse repite el
+  // giro. En 0 (montaje inicial, estado guardado) no hay giro.
+  const [performanceSpin, setPerformanceSpin] = useState<number>(0)
 
   useEffect(() => {
     if (!pendingReveal) return
@@ -178,14 +181,29 @@ export function CanvasToolbar() {
       >
         <button
           type="button"
-          onClick={() => toggleLowPerformance()}
+          onClick={() => {
+            toggleLowPerformance()
+            setPerformanceSpin((spin: number) => spin + 1)
+          }}
           aria-pressed={isLowPerformance}
           aria-label="Modo de bajo rendimiento"
           className={`${TOOL_BUTTON_BASE_CLASSES} ${
             isLowPerformance ? PERFORMANCE_ON_CLASSES : TOOL_BUTTON_INACTIVE_CLASSES
           }`}
         >
-          <SpeedLow size={16} />
+          <SpeedLow
+            key={performanceSpin}
+            size={16}
+            // Prendido = espejado como estilo base, para que al terminar el giro no haya salto
+            style={isLowPerformance ? { transform: 'scaleX(-1)' } : undefined}
+            className={
+              performanceSpin === 0
+                ? undefined
+                : isLowPerformance
+                  ? 'animate-performance-icon-on'
+                  : 'animate-performance-icon-off'
+            }
+          />
         </button>
       </Tooltip>
 
