@@ -83,5 +83,27 @@ export const PDF_COMPONENT_ATTRIBUTE = {
   config: 'data-fm-config',
 } as const
 
+// La clase que llevan las tablas del editor, en el lienzo y en el .html. El <style> del documento
+// cuelga de ella lo que antes iba repetido en cada celda (relleno, alineacion arriba) y las clases
+// del diseño. Prefijo fm-, que las clases del autor no pueden usar.
+export const PDF_TABLE_CLASS: string = 'fm-t'
+
+export const PDF_RESERVED_CLASS_PREFIX: string = 'fm-'
+
+// El nombre de una clase del diseño: lo que CSS acepta sin escapar nada.
+export const PDF_CLASS_NAME_PATTERN: RegExp = /^[a-zA-Z_][a-zA-Z0-9_-]*$/
+
+// Las propiedades de estilo de una celda o una clase (PdfStyleProps), para recorrerlas sin olvidar
+// ninguna. Son tambien las que viajan en data-fm-props.
+export const PDF_STYLE_KEYS = [
+  'fontSize',
+  'bold',
+  'italic',
+  'align',
+  'verticalAlign',
+  'backgroundColor',
+  'borders',
+] as const
+
 // Tope de quienes firman en un bloque de firmas: declarante, contador y revisor fiscal.
 export const PDF_MAX_SIGNERS: number = 3

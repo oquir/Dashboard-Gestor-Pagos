@@ -7,8 +7,12 @@ import {
   PDF_FONT_OPTIONS,
   PDF_MAX_EXTRA_MARGIN_MM,
   PDF_NO_EXTRA_MARGINS,
+  PDF_CLASS_NAME_PATTERN,
   PDF_PX_PER_MM,
+  PDF_RESERVED_CLASS_PREFIX,
   PDF_SHEET_HEIGHT_PX,
+  PDF_STYLE_KEYS,
+  PDF_TABLE_CLASS,
   PDF_WEB_PAGE_WIDTH_PX,
   PDF_ZOOM_MAX,
   PDF_ZOOM_MIN,
@@ -19,17 +23,19 @@ import type {
   CssStyleMap,
   FormType,
   PdfCell,
+  PdfClass,
   PdfContentBox,
   PdfDesign,
   PdfEntryParams,
   PdfFontFamily,
   PdfMargins,
   PdfSheet,
+  PdfStyleProps,
   PdfTable,
   PdfTaxType,
 } from '../../types'
 import { parseCssText } from '../cssStyles'
-import { sanitizeCss } from '../pdfHtml'
+import { pdfCssText, sanitizeCss } from '../pdfHtml'
 import { MARGIN_STEP_MM, PDF_CELL_BORDER, PDF_CELL_PADDING, TAX_PARAM } from './pdfDesign.constants'
 
 // Reglas puras del diseño del PDF: medidas de la hoja, el diseño en blanco y de que impuesto es.
@@ -47,6 +53,7 @@ export function createBlankDesign(taxType: PdfTaxType): PdfDesign {
     fontFamily: PDF_DEFAULT_FONT,
     fontSize: PDF_DEFAULT_FONT_SIZE,
     margins: PDF_NO_EXTRA_MARGINS,
+    classes: [],
     sheets: [createBlankSheet()],
   }
 }
@@ -83,33 +90,110 @@ export function contentBox(margins: PdfMargins): PdfContentBox {
   }
 }
 
-// El CSS de una tabla: lo fijo del diseñador y, encima, lo que el autor escribio en "Estilos en
-// línea" (gana el texto libre, como en el resto de FormMaker). table-layout fixed para que los anchos
-// de columna en px se respeten y las columnas sin ancho se repartan el resto. El generador del HTML
-// final (§3.5) tiene que emitir lo mismo, o el lienzo y el PDF no coinciden.
+// El CSS en linea de una tabla: solo lo que el autor escribio en "Estilos en línea". Lo fijo del
+// diseñador (collapse, ancho completo, table-layout fixed para que los anchos de columna en px se
+// respeten) va una sola vez en el <style> del documento (pdfStyleSheet), colgado de PDF_TABLE_CLASS.
 export function tableStyleMap(table: PdfTable): CssStyleMap {
-  return {
-    borderCollapse: 'collapse',
-    width: '100%',
-    tableLayout: 'fixed',
-    ...parseCssText(sanitizeCss(table.style ?? '')),
-  }
+  return parseCssText(sanitizeCss(table.style ?? ''))
 }
 
+// El CSS en linea de una celda: solo lo suyo, encima de sus clases. El relleno y la alineacion arriba
+// de siempre estan en el <style> (pdfStyleSheet); antes iban en cada <td> y eran casi la mitad del
+// .html. El lienzo y el generador llaman a esta misma funcion, o no coincidirian.
 export function cellStyleMap(cell: PdfCell): CssStyleMap {
-  const map: CssStyleMap = { padding: PDF_CELL_PADDING }
-  if (cell.fontSize !== undefined) map.fontSize = `${cell.fontSize}px`
-  if (cell.bold) map.fontWeight = 'bold'
-  if (cell.italic) map.fontStyle = 'italic'
-  if (cell.align) map.textAlign = cell.align
-  map.verticalAlign = cell.verticalAlign ?? 'top'
-  if (cell.backgroundColor) map.backgroundColor = cell.backgroundColor
-  if (cell.borders?.top) map.borderTop = PDF_CELL_BORDER
-  if (cell.borders?.right) map.borderRight = PDF_CELL_BORDER
-  if (cell.borders?.bottom) map.borderBottom = PDF_CELL_BORDER
-  if (cell.borders?.left) map.borderLeft = PDF_CELL_BORDER
+  const hasClasses: boolean = pdfClassTokens(cell.className).length > 0
+  return { ...styleMapOf(cell, hasClasses), ...parseCssText(sanitizeCss(cell.style ?? '')) }
+}
 
-  return { ...map, ...parseCssText(sanitizeCss(cell.style ?? '')) }
+// El <style> del documento: la base de las tablas del editor y las clases del diseño, en su orden
+// (con dos clases en una celda gana la de mas abajo, como en cualquier CSS). Lo usan el lienzo,
+// dentro de su shadow root, y el .html, en su <head>.
+//
+// Cada clase sale con dos selectores: ".x" para cualquier elemento (un <span class="x"> del HTML
+// libre) y ".fm-t > tbody > tr > td.x" para las celdas, que tiene que ganarle a la base de la celda
+// (un ".x" solo pesa menos que ".fm-t > tbody > tr > td" y no podria cambiarle el relleno).
+export function pdfStyleSheet(design: PdfDesign): string {
+  const table: string = `.${PDF_TABLE_CLASS}`
+  const cell: string = `${table} > tbody > tr > td`
+  const rules: string[] = [
+    `${table} { ${pdfCssDeclarations({ borderCollapse: 'collapse', width: '100%', tableLayout: 'fixed' })} }`,
+    `${cell} { ${pdfCssDeclarations({ padding: PDF_CELL_PADDING, verticalAlign: 'top' })} }`,
+  ]
+  for (const item of design.classes) {
+    if (!isValidPdfClassName(item.name)) continue
+    const declarations: string = pdfCssDeclarations(classStyleMap(item))
+    if (declarations) rules.push(`.${item.name}, ${cell}.${item.name} { ${declarations} }`)
+  }
+  return rules.join('\n')
+}
+
+export function classStyleMap(item: PdfClass): CssStyleMap {
+  return { ...styleMapOf(item, false), ...parseCssText(sanitizeCss(item.css ?? '')) }
+}
+
+// Las clases de una celda, sin repetidas.
+export function pdfClassTokens(className: string | undefined): string[] {
+  return [...new Set((className ?? '').split(/\s+/).filter(Boolean))]
+}
+
+// Lo que la celda recibe de sus clases del diseño, en el orden del <style>: con lo mismo en dos, la
+// de mas abajo gana. Las clases que no son del diseño (las de un <style> a mano) no se ven aca.
+export function inheritedCellStyle(design: PdfDesign, cell: PdfCell): PdfStyleProps {
+  const tokens: Set<string> = new Set(pdfClassTokens(cell.className))
+  const merged: PdfStyleProps = {}
+  for (const item of design.classes) {
+    if (!tokens.has(item.name)) continue
+    for (const key of PDF_STYLE_KEYS) {
+      if (item[key] !== undefined) (merged as Record<string, unknown>)[key] = item[key]
+    }
+  }
+  return merged
+}
+
+export function isValidPdfClassName(name: string): boolean {
+  return PDF_CLASS_NAME_PATTERN.test(name) && !name.startsWith(PDF_RESERVED_CLASS_PREFIX)
+}
+
+// Las propiedades de la barra lateral, como CSS. Con todos los bordes sale un solo "border". Una
+// celda con clases que define sus propios bordes apaga los lados que no lleva (clearBorders): si
+// no, los de la clase seguirian ahi.
+function styleMapOf(props: PdfStyleProps, clearBorders: boolean): CssStyleMap {
+  const map: CssStyleMap = {}
+  if (props.fontSize !== undefined) map.fontSize = `${props.fontSize}px`
+  if (props.bold !== undefined) map.fontWeight = props.bold ? 'bold' : 'normal'
+  if (props.italic !== undefined) map.fontStyle = props.italic ? 'italic' : 'normal'
+  if (props.align) map.textAlign = props.align
+  if (props.verticalAlign) map.verticalAlign = props.verticalAlign
+  if (props.backgroundColor) map.backgroundColor = props.backgroundColor
+
+  const borders = props.borders
+  if (borders) {
+    const sides = [
+      ['borderTop', borders.top],
+      ['borderRight', borders.right],
+      ['borderBottom', borders.bottom],
+      ['borderLeft', borders.left],
+    ] as const
+    if (sides.every(([, on]) => on)) map.border = PDF_CELL_BORDER
+    else if (clearBorders && sides.every(([, on]) => !on)) map.border = 'none'
+    else {
+      for (const [key, on] of sides) {
+        if (on) map[key] = PDF_CELL_BORDER
+        else if (clearBorders) map[key] = 'none'
+      }
+    }
+  }
+  return map
+}
+
+// "a: b; c: d" para una regla del <style>. Una llave o un "<" en un valor libre cerraria la regla
+// o la etiqueta antes de tiempo: esa declaracion se cae.
+function pdfCssDeclarations(map: CssStyleMap): string {
+  const safe: CssStyleMap = {}
+  for (const [key, value] of Object.entries(map)) {
+    if (!/[{}<>]/.test(key) && !/[{}<>]/.test(value)) safe[key] = value
+  }
+  return pdfCssText(safe)
 }
 
 // La letra de todo el documento. line-height va explicito: el lienzo vive dentro de FormMaker y

@@ -1,4 +1,5 @@
 import type {
+  PdfClass,
   PdfComponent,
   PdfDesign,
   PdfSaveResult,
@@ -12,7 +13,12 @@ import {
   SAVE_FAILED_MESSAGE,
 } from './pdfDesignBank.constants'
 import { migratePdfDesign } from './pdfDesignBank.migrations'
-import { pdfComponentSchema, pdfDesignSchema, storedPdfDesignSchema } from './pdfDesignBank.schema'
+import {
+  pdfClassSchema,
+  pdfComponentSchema,
+  pdfDesignSchema,
+  storedPdfDesignSchema,
+} from './pdfDesignBank.schema'
 
 // El guardado local del diseño del PDF: una llave de localStorage por impuesto. Es la copia de
 // trabajo; lo que se publica es el .html (docs/Pendientes-PDF.md §2.1). Ni persistence ni
@@ -53,6 +59,16 @@ export function loadPdfDesign(taxType: PdfTaxType): StoredPdfDesign | null {
 export function parsePdfDesign(value: unknown): PdfDesign | null {
   const parsed = pdfDesignSchema.safeParse(value)
   return parsed.success ? parsed.data : null
+}
+
+// Las clases leidas de un .html (su data-fm-classes): las que no tienen forma se descartan una por
+// una, no el archivo entero.
+export function parsePdfClasses(value: unknown): PdfClass[] {
+  if (!Array.isArray(value)) return []
+  return value.flatMap((item) => {
+    const parsed = pdfClassSchema.safeParse(item)
+    return parsed.success ? [parsed.data] : []
+  })
 }
 
 // Un componente leido de un .html (su JSON de data-fm-config), con el mismo esquema que el guardado.

@@ -75,6 +75,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
   publishedVersion: null,
   zoom: 1,
   tool: 'move',
+  editingClass: null,
 
   setTool: (tool) => set((state) => (state.tool === tool ? state : { tool })),
 
@@ -95,6 +96,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
     set({
       design,
       selection: null,
+      editingClass: null,
       activeSheetId: design.sheets[0].id,
       lastSavedAt: stored ? stored.savedAt : null,
       saveError: null,
@@ -251,6 +253,51 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
 
   updateTableStyle: (tableId, patch) =>
     editDesign(set, (design) => edit.updateTableStyle(design, tableId, patch)),
+
+  setEditingClass: (name) =>
+    set((state) => (state.editingClass === name ? state : { editingClass: name })),
+
+  addClass: () => {
+    const design: PdfDesign | null = get().design
+    if (!design) return null
+    const name: string = edit.nextClassName(design)
+    editDesign(set, (current) => edit.addClass(current, { name }))
+    set({ editingClass: name })
+    return name
+  },
+
+  updateClass: (name, patch) => editDesign(set, (design) => edit.updateClass(design, name, patch)),
+
+  // El editor sigue abierto sobre la clase con su nombre nuevo.
+  renameClass: (from, to) => {
+    const before: PdfDesign | null = get().design
+    editDesign(set, (design) => edit.renameClass(design, from, to))
+    if (get().design !== before && get().editingClass === from) set({ editingClass: to })
+  },
+
+  removeClass: (name) => editDesign(set, (design) => edit.removeClass(design, name)),
+
+  setSelectionClass: (name, on) =>
+    editDesign(set, (design) =>
+      edit.setCellsClass(design, edit.selectedCellIds(design, get().selection), name, on),
+    ),
+
+  createClassFromSelection: () => {
+    const { design, selection } = get()
+    if (!design || selection?.kind !== 'cells') return null
+    const name: string = edit.nextClassName(design)
+    editDesign(set, (current) =>
+      edit.createClassFromCell(
+        current,
+        edit.selectedCellIds(current, selection),
+        selection.focusCellId,
+        name,
+      ),
+    )
+    if (get().design === design) return null
+    set({ editingClass: name })
+    return name
+  },
 
   insertRow: (position) =>
     editFocusedTable(set, (target, cellId) => table.insertRow(target, cellId, position)),

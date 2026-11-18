@@ -55,7 +55,7 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 - Renglones 31 and 37 need the intro modal (`{{periodo_anio}}` lives there); deleting those intro steps leaves them uncalculated (the export review blocks).
 - Selects mapped to `number` leaves show a permanent `⚠ tipo` (fix offered, not approved).
 - **Moving a field out of a repeatable group to another step keeps its `apiBinding`** (`planLanding`); one-line fix not applied.
-- PDF designer: §3.1, §3.2, §3.3, §3.5 built; no variable list (§3.4). §3.3 has no checkbox and no repeating row — the user's call, don't build them without asking. The sidebar isn't checked in a browser yet, nor anything through the real back.
+- PDF designer: §3.1, §3.2, §3.3, §3.5 built; no variable list (§3.4). §3.3 has no checkbox and no repeating row — the user's call, don't build them without asking. Styles go in design classes (one `<style>`, `class="…"` per cell); don't reintroduce per-cell inline defaults. The sidebar isn't checked in a browser yet, nor anything through the real back.
 
 ## Invariants that bite (details in `docs/Decisiones.md`)
 

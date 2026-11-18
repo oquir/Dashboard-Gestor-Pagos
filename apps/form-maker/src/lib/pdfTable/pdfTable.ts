@@ -38,7 +38,7 @@ export function createTable(columnCount: number, rowCount: number): PdfTable {
     columns,
     rows: Array.from({ length: rowCount }, () => ({
       id: uuidv4(),
-      cells: columns.map(() => newCell(ALL_BORDERS)),
+      cells: columns.map(() => newCell({ borders: ALL_BORDERS })),
     })),
   }
 }
@@ -215,7 +215,7 @@ export function insertRow(table: PdfTable, cellId: string, position: PdfRowPosit
   const added: PdfPlacedCell[] = []
   for (let col = 0; col < colCount; col++) {
     if (!crossing.some((item) => covers(item, at, col))) {
-      added.push({ cell: newCell(target.cell.borders), row: at, col })
+      added.push({ cell: newCell(target.cell), row: at, col })
     }
   }
 
@@ -278,7 +278,7 @@ export function insertColumn(
   const added: PdfPlacedCell[] = []
   for (let row = 0; row < rowCount; row++) {
     if (!crossing.some((item) => covers(item, row, at))) {
-      added.push({ cell: newCell(target.cell.borders), row, col: at })
+      added.push({ cell: newCell(target.cell), row, col: at })
     }
   }
 
@@ -363,7 +363,7 @@ export function splitCell(table: PdfTable, cellId: string): PdfTable {
   for (let row = target.row; row <= lastRow(target); row++) {
     for (let col = target.col; col <= lastCol(target); col++) {
       if (row === target.row && col === target.col) continue
-      added.push({ cell: newCell(target.cell.borders), row, col })
+      added.push({ cell: newCell(target.cell), row, col })
     }
   }
 

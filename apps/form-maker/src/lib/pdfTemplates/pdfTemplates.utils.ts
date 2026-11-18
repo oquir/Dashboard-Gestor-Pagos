@@ -7,22 +7,26 @@ import type {
   PdfTextAlign,
   PdfVerticalAlign,
 } from '../../types'
-import { ALL_SIDES, NESTED_CELL_STYLE } from './pdfTemplates.constants'
+import { ICA_CLASS } from './pdfTemplates.constants'
 
 // Piezas para escribir una plantilla de fabrica como se lee: fila por fila, celda por celda. Cada
-// llamada crea ids nuevos, asi que dos plantillas armadas nunca comparten celdas.
+// llamada crea ids nuevos, asi que dos plantillas armadas nunca comparten celdas. Las opciones se
+// vuelven clases del diseño (ICA_CLASSES); solo lo que no tiene clase queda en la celda.
 
 export interface CellOptions {
   colSpan?: number
   rowSpan?: number
   bold?: boolean
   align?: PdfTextAlign
+  // Al medio por defecto (la clase celda o suelta); top sale con la clase arriba.
   verticalAlign?: PdfVerticalAlign
+  // Una letra propia de la celda; el titulo del formulario va con title.
   fontSize?: number
-  background?: string
+  title?: boolean
+  gray?: boolean
+  indent?: boolean
   // Por defecto lleva los cuatro bordes, como las celdas del FUN; false para las tablas de adentro.
   border?: boolean
-  style?: string
 }
 
 export function text(value: string, options: CellOptions = {}): PdfCell {
@@ -52,7 +56,7 @@ export function table(widths: (number | undefined)[], rows: PdfRow[]): PdfTable 
 // Una fila de una tabla de adentro (casillas, firmas): sin bordes y sin relleno de alto, para que
 // la fila de afuera no crezca.
 export function bare(value: string, options: CellOptions = {}): PdfCell {
-  return html(value, { border: false, style: NESTED_CELL_STYLE, ...options })
+  return html(value, { border: false, ...options })
 }
 
 export function image(src: string, height: number): string {
@@ -60,18 +64,23 @@ export function image(src: string, height: number): string {
 }
 
 function build(content: PdfCellContent, options: CellOptions): PdfCell {
+  const classes: string[] = [options.border === false ? ICA_CLASS.bare : ICA_CLASS.cell]
+  if (options.verticalAlign === 'top') classes.push(ICA_CLASS.top)
+  if (options.bold) classes.push(ICA_CLASS.bold)
+  if (options.align === 'center') classes.push(ICA_CLASS.center)
+  if (options.align === 'right') classes.push(ICA_CLASS.right)
+  if (options.gray) classes.push(ICA_CLASS.gray)
+  if (options.title) classes.push(ICA_CLASS.title)
+  if (options.indent) classes.push(ICA_CLASS.indent)
+
   const cell: PdfCell = {
     id: uuidv4(),
     colSpan: options.colSpan ?? 1,
     rowSpan: options.rowSpan ?? 1,
     content,
-    verticalAlign: options.verticalAlign ?? 'middle',
+    className: classes.join(' '),
   }
-  if (options.bold) cell.bold = true
-  if (options.align) cell.align = options.align
+  if (options.verticalAlign === 'bottom') cell.verticalAlign = 'bottom'
   if (options.fontSize) cell.fontSize = options.fontSize
-  if (options.background) cell.backgroundColor = options.background
-  if (options.border !== false) cell.borders = { ...ALL_SIDES }
-  if (options.style) cell.style = options.style
   return cell
 }

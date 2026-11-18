@@ -1,5 +1,6 @@
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { PdfCellPanel } from '../PdfCellPanel'
+import { PdfClassesPanel } from '../PdfClassesPanel'
 import { PdfDocumentPanel } from '../PdfDocumentPanel'
 import { PdfHtmlBlockPanel } from '../PdfHtmlBlockPanel'
 import { PdfSheetsPanel } from '../PdfSheetsPanel'
@@ -29,6 +30,7 @@ export function PdfSidebar() {
         </p>
       )}
 
+      <PdfClassesPanel />
       <PdfDocumentPanel />
     </div>
   )

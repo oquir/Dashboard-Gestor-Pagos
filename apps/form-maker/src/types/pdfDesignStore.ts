@@ -3,6 +3,7 @@ import type {
   PdfBlock,
   PdfCellContentKind,
   PdfCellStylePatch,
+  PdfClassPatch,
   PdfColumnPosition,
   PdfComponent,
   PdfDesign,
@@ -65,6 +66,21 @@ export interface PdfDesignState {
   // El mismo cambio en todas las celdas del rectangulo seleccionado (un paso de deshacer).
   updateSelectionStyle: (patch: PdfCellStylePatch) => void
   updateTableStyle: (tableId: string, patch: PdfTableStylePatch) => void
+  // La clase abierta en el editor de clases. Vista pura, como el zoom: fuera del historial. Si deshacer
+  // se la lleva, el editor simplemente no la encuentra y se cierra.
+  editingClass: string | null
+  setEditingClass: (name: string | null) => void
+  // Las clases del diseño. addClass y createClassFromSelection devuelven el nombre de la nueva y la
+  // abren en el editor (null si no se pudo).
+  addClass: () => string | null
+  updateClass: (name: string, patch: PdfClassPatch) => void
+  // Tambien en cada celda que la lleva. Un nombre invalido o ya usado no hace nada.
+  renameClass: (from: string, to: string) => void
+  removeClass: (name: string) => void
+  // Pone o quita la clase en todas las celdas seleccionadas (un paso de deshacer).
+  setSelectionClass: (name: string, on: boolean) => void
+  // Una clase nueva con el estilo propio de la celda del foco, puesta en las seleccionadas.
+  createClassFromSelection: () => string | null
   // Las operaciones de tabla actuan sobre la celda del foco de la seleccion.
   insertRow: (position: PdfRowPosition) => void
   removeRow: () => void

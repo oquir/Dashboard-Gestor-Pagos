@@ -1,19 +1,22 @@
 import { v4 as uuidv4 } from 'uuid'
-import type { PdfCell, PdfCellBorders, PdfPlacedCell, PdfRow, PdfTable } from '../../types'
+import type { PdfCell, PdfPlacedCell, PdfRow, PdfTable } from '../../types'
 
 export interface RowMeta {
   id: string
   height?: number
 }
 
-export function newCell(borders?: PdfCellBorders): PdfCell {
+// Una celda vacia. Con `like`, toma sus bordes y sus clases: una fila o columna nueva en una tabla
+// armada con clases (la del ICA) sale con el mismo aspecto que su vecina.
+export function newCell(like?: Pick<PdfCell, 'borders' | 'className'>): PdfCell {
   const cell: PdfCell = {
     id: uuidv4(),
     colSpan: 1,
     rowSpan: 1,
     content: { kind: 'text', text: '' },
   }
-  if (borders) cell.borders = borders
+  if (like?.borders) cell.borders = like.borders
+  if (like?.className) cell.className = like.className
   return cell
 }
 

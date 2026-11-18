@@ -181,14 +181,10 @@ export type PdfImageCheck =
 
 export type PdfCellContentKind = PdfCellContent['kind']
 
-// Una celda de <table>. Medidas en px (la hoja mide 778 px de ancho util); lo opcional ausente
-// hereda de la tabla. className y style son el escape para quien sabe CSS: style es texto CSS en
-// linea, saneado al pintar y al publicar.
-export interface PdfCell {
-  id: string
-  colSpan: number
-  rowSpan: number
-  content: PdfCellContent
+// Lo que se le pone a una celda con los botones de la barra lateral, y lo mismo que define una clase.
+// Ausente es "lo que venga de la clase o del documento". bold e italic en false quitan la negrilla o
+// la cursiva que traiga una clase.
+export interface PdfStyleProps {
   fontSize?: number
   bold?: boolean
   italic?: boolean
@@ -196,25 +192,33 @@ export interface PdfCell {
   verticalAlign?: PdfVerticalAlign
   backgroundColor?: string
   borders?: PdfCellBorders
+}
+
+// Una celda de <table>. Medidas en px (la hoja mide 778 px de ancho util); lo opcional ausente
+// hereda de sus clases, y estas de la tabla. className son las clases de la celda, separadas por
+// espacio: las del diseño (design.classes) y las que defina a mano un <style> de un bloque HTML.
+// style es el escape para quien sabe CSS: texto CSS en linea, saneado al pintar y al publicar.
+export interface PdfCell extends PdfStyleProps {
+  id: string
+  colSpan: number
+  rowSpan: number
+  content: PdfCellContent
   className?: string
   style?: string
 }
 
 // Lo que la barra lateral cambia de una celda. Una clave con undefined la borra (vuelve a heredar).
-export type PdfCellStylePatch = Partial<
-  Pick<
-    PdfCell,
-    | 'fontSize'
-    | 'bold'
-    | 'italic'
-    | 'align'
-    | 'verticalAlign'
-    | 'backgroundColor'
-    | 'borders'
-    | 'className'
-    | 'style'
-  >
->
+export type PdfCellStylePatch = Partial<PdfStyleProps & Pick<PdfCell, 'className' | 'style'>>
+
+// Una clase del diseño: un estilo con nombre que llevan muchas celdas. En el .html sale una sola
+// vez, en el <style> del documento, y cada celda dice solo class="…": sin clases, cada <td> repetia
+// el mismo style entero. css es el escape, como el style de la celda.
+export interface PdfClass extends PdfStyleProps {
+  name: string
+  css?: string
+}
+
+export type PdfClassPatch = Partial<PdfStyleProps & Pick<PdfClass, 'css'>>
 
 export type PdfTableStylePatch = Partial<Pick<PdfTable, 'className' | 'style'>>
 
@@ -267,6 +271,8 @@ export interface PdfDesign {
   // px; las celdas sin fontSize propio heredan este.
   fontSize: number
   margins: PdfMargins
+  // En el orden en que salen en el <style>: con dos clases en una celda, la de mas abajo gana.
+  classes: PdfClass[]
   sheets: PdfSheet[]
 }
 

@@ -1,13 +1,42 @@
-import type { PdfCellBorders } from '../../types'
-
-export const ALL_SIDES: PdfCellBorders = { top: true, right: true, bottom: true, left: true }
-
-export const NESTED_CELL_STYLE: string = 'padding: 0 2px'
-
-// Los renglones "MENOS …" van corridos a la derecha, como en el FUN.
-export const INDENT_STYLE: string = 'padding-left: 12px'
+import type { PdfClass } from '../../types'
 
 export const GRAY: string = '#f1f1f1'
+
+// Las clases de la plantilla del ICA: cortas y para combinar ("celda negrita derecha"), en vez de
+// repetir el mismo style en cada una de sus ~250 celdas. El orden importa: con dos que digan lo
+// mismo gana la de mas abajo (arriba le gana a la alineacion al medio de celda y suelta).
+export const ICA_CLASS = {
+  cell: 'celda',
+  bare: 'suelta',
+  top: 'arriba',
+  bold: 'negrita',
+  center: 'centro',
+  right: 'derecha',
+  gray: 'gris',
+  title: 'titulo',
+  indent: 'sangria',
+} as const
+
+export const ICA_CLASSES: PdfClass[] = [
+  // La celda del FUN: los cuatro bordes y el texto al medio.
+  {
+    name: ICA_CLASS.cell,
+    verticalAlign: 'middle',
+    borders: { top: true, right: true, bottom: true, left: true },
+  },
+  // Una celda de una tabla de adentro (casillas, firmas): sin bordes y sin relleno de alto, para que
+  // la fila de afuera no crezca.
+  { name: ICA_CLASS.bare, verticalAlign: 'middle', css: 'padding: 0 2px' },
+  { name: ICA_CLASS.top, verticalAlign: 'top' },
+  { name: ICA_CLASS.bold, bold: true },
+  { name: ICA_CLASS.center, align: 'center' },
+  { name: ICA_CLASS.right, align: 'right' },
+  { name: ICA_CLASS.gray, backgroundColor: GRAY },
+  // El titulo del formulario, un poco mas grande que los 8 px del resto.
+  { name: ICA_CLASS.title, fontSize: 10 },
+  // Los renglones "MENOS …" van corridos a la derecha, como en el FUN.
+  { name: ICA_CLASS.indent, css: 'padding-left: 12px' },
+]
 
 // Las 10 columnas de la tabla del ICA, medidas para que quepan las variables mas largas de cada
 // columna sin partirse: el rotulo vertical, el numero del renglon y 8 mas. Un renglon usa 5 para el
@@ -34,8 +63,6 @@ export const ICA_COLUMN_WIDTHS: (number | undefined)[] = [
 export const ICA_TABLE_STYLE: string = 'word-wrap: break-word'
 
 export const ICA_FONT_SIZE: number = 8
-
-export const ICA_TITLE_FONT_SIZE: number = 10
 
 // Cuantas actividades caben: las 15 del grupo repetible de la plantilla del formulario
 // (DEFAULT_GROUP_MAX). La 1 es la principal; de la 2 a la 15, las variables Secundaria1…14.

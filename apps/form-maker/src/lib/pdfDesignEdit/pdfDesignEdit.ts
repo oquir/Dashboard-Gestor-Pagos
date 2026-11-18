@@ -1,11 +1,17 @@
 import { v4 as uuidv4 } from 'uuid'
-import { PDF_MAX_TABLE_DEPTH, PDF_NEW_TABLE_SIZE } from '../../constants'
+import {
+  PDF_MAX_TABLE_DEPTH,
+  PDF_NEW_TABLE_SIZE,
+  PDF_STYLE_KEYS as STYLE_KEYS,
+} from '../../constants'
 import type {
   PdfBlock,
   PdfCell,
   PdfCellContent,
   PdfCellContentKind,
   PdfCellStylePatch,
+  PdfClass,
+  PdfClassPatch,
   PdfComponent,
   PdfDesign,
   PdfGridRect,
@@ -16,6 +22,7 @@ import type {
   PdfTableStylePatch,
 } from '../../types'
 import { createPdfComponent, pdfComponentText } from '../pdfComponents'
+import { isValidPdfClassName, pdfClassTokens } from '../pdfDesign'
 import { cellsInRect, createTable, selectionRect } from '../pdfTable'
 import { findCellIn, findTableIn, mapTableIn } from './pdfDesignEdit.utils'
 
@@ -301,6 +308,173 @@ export function sheetOf(design: PdfDesign, id: string): string | null {
     findCell(design, id)?.sheetId ??
     null
   )
+}
+
+// --- Clases del diseño ---
+
+// El primer "claseN" libre, para una clase recien creada que despues se renombra.
+export function nextClassName(design: PdfDesign): string {
+  const used: Set<string> = new Set(design.classes.map((item) => item.name))
+  let index: number = design.classes.length + 1
+  while (used.has(`clase${index}`)) index++
+  return `clase${index}`
+}
+
+export function addClass(design: PdfDesign, item: PdfClass): PdfDesign {
+  if (!isValidPdfClassName(item.name) || design.classes.some((c) => c.name === item.name))
+    return design
+  return { ...design, classes: [...design.classes, item] }
+}
+
+export function updateClass(design: PdfDesign, name: string, patch: PdfClassPatch): PdfDesign {
+  let changed: boolean = false
+  const classes: PdfClass[] = design.classes.map((item) => {
+    if (item.name !== name) return item
+    const next: PdfClass = applyPatch(item, patch)
+    if (next !== item) changed = true
+    return next
+  })
+  return changed ? { ...design, classes } : design
+}
+
+// Cambia el nombre en la clase y en cada celda que la lleva. Un nombre invalido o ya usado no hace
+// nada: la barra lateral lo avisa antes.
+export function renameClass(design: PdfDesign, from: string, to: string): PdfDesign {
+  if (from === to || !isValidPdfClassName(to)) return design
+  if (!design.classes.some((item) => item.name === from)) return design
+  if (design.classes.some((item) => item.name === to)) return design
+
+  const renamed: PdfDesign = {
+    ...design,
+    classes: design.classes.map((item) => (item.name === from ? { ...item, name: to } : item)),
+  }
+  return mapAllCells(renamed, (cell) =>
+    replaceToken(cell, (tokens) => tokens.map((token) => (token === from ? to : token))),
+  )
+}
+
+// Quita la clase y la saca de las celdas que la llevan: un nombre suelto sin regla no sirve de nada.
+export function removeClass(design: PdfDesign, name: string): PdfDesign {
+  if (!design.classes.some((item) => item.name === name)) return design
+  const removed: PdfDesign = {
+    ...design,
+    classes: design.classes.filter((item) => item.name !== name),
+  }
+  return mapAllCells(removed, (cell) =>
+    replaceToken(cell, (tokens) => tokens.filter((token) => token !== name)),
+  )
+}
+
+// Pone o quita una clase en varias celdas, sin tocar sus otras clases.
+export function setCellsClass(
+  design: PdfDesign,
+  cellIds: string[],
+  name: string,
+  on: boolean,
+): PdfDesign {
+  const ids: Set<string> = new Set(cellIds)
+  return mapAllCells(design, (cell) =>
+    ids.has(cell.id)
+      ? replaceToken(cell, (tokens) =>
+          on
+            ? tokens.includes(name)
+              ? tokens
+              : [...tokens, name]
+            : tokens.filter((token) => token !== name),
+        )
+      : cell,
+  )
+}
+
+// "Nueva clase con este estilo": la clase toma lo propio de la celda del foco (botones y estilos en
+// linea) y se pone en todas las seleccionadas, que sueltan lo que ahora les da la clase. Lo que una
+// celda tenga distinto se le queda, encima de la clase.
+export function createClassFromCell(
+  design: PdfDesign,
+  cellIds: string[],
+  focusCellId: string,
+  name: string,
+): PdfDesign {
+  const focus: PdfCell | undefined = findCell(design, focusCellId)?.cell
+  if (!focus || !isValidPdfClassName(name) || design.classes.some((c) => c.name === name))
+    return design
+
+  const item: PdfClass = { name }
+  for (const key of STYLE_KEYS) {
+    if (focus[key] !== undefined) (item as unknown as Record<string, unknown>)[key] = focus[key]
+  }
+  if (focus.style?.trim()) item.css = focus.style
+
+  const ids: Set<string> = new Set(cellIds)
+  const withClass: PdfDesign = { ...design, classes: [...design.classes, item] }
+  return mapAllCells(withClass, (cell) => {
+    if (!ids.has(cell.id)) return cell
+    const next: Record<string, unknown> = { ...cell }
+    for (const key of STYLE_KEYS) {
+      if (JSON.stringify(cell[key]) === JSON.stringify(item[key])) delete next[key]
+    }
+    if (item.css !== undefined && cell.style === item.css) delete next.style
+    const tokens: string[] = pdfClassTokens(cell.className)
+    next.className = [...tokens.filter((token) => token !== name), name].join(' ')
+    return next as unknown as PdfCell
+  })
+}
+
+// En cuantas celdas esta cada clase, para que el editor diga a cuantas toca un cambio.
+export function classUsage(design: PdfDesign): Map<string, number> {
+  const usage: Map<string, number> = new Map()
+  const visit = (table: PdfTable): void => {
+    for (const row of table.rows) {
+      for (const cell of row.cells) {
+        for (const token of pdfClassTokens(cell.className)) {
+          usage.set(token, (usage.get(token) ?? 0) + 1)
+        }
+        if (cell.content.kind === 'table') visit(cell.content.table)
+      }
+    }
+  }
+  for (const sheet of design.sheets) {
+    for (const block of sheet.blocks) if (block.kind === 'table') visit(block)
+  }
+  return usage
+}
+
+// Cada celda del diseño, tambien las de tablas anidadas. Lo que no cambia conserva su referencia.
+function mapAllCells(design: PdfDesign, fn: (cell: PdfCell) => PdfCell): PdfDesign {
+  const mapTableCells = <T extends PdfTable>(table: T): T => {
+    let changed: boolean = false
+    const rows = table.rows.map((row) => {
+      let rowChanged: boolean = false
+      const cells: PdfCell[] = row.cells.map((cell) => {
+        let next: PdfCell = fn(cell)
+        if (next.content.kind === 'table') {
+          const inner: PdfTable = mapTableCells(next.content.table)
+          if (inner !== next.content.table)
+            next = { ...next, content: { kind: 'table', table: inner } }
+        }
+        if (next !== cell) rowChanged = true
+        return next
+      })
+      if (!rowChanged) return row
+      changed = true
+      return { ...row, cells }
+    })
+    return changed ? { ...table, rows } : table
+  }
+  return mapBlocks(design, (block) => (block.kind === 'table' ? mapTableCells(block) : block))
+}
+
+// Reescribe las clases de una celda; sin cambios devuelve la misma celda, y sin clases quita la llave.
+function replaceToken(cell: PdfCell, fn: (tokens: string[]) => string[]): PdfCell {
+  const tokens: string[] = pdfClassTokens(cell.className)
+  const next: string[] = fn(tokens)
+  if (next.join(' ') === tokens.join(' ')) return cell
+  if (next.length === 0) {
+    const rest: PdfCell = { ...cell }
+    delete rest.className
+    return rest
+  }
+  return { ...cell, className: next.join(' ') }
 }
 
 function mapSheet(

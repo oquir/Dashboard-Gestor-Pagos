@@ -5,6 +5,7 @@ import {
   PDF_FONT_OPTIONS,
   PDF_COMPONENT_ATTRIBUTE,
   PDF_MAX_TABLE_DEPTH,
+  PDF_TABLE_CLASS,
   PDF_WEB_PAGE_WIDTH_PX,
 } from '../../constants'
 import type {
@@ -12,6 +13,7 @@ import type {
   PdfBlock,
   PdfCell,
   PdfCellContent,
+  PdfClass,
   PdfColumn,
   PdfComponent,
   PdfComponentContext,
@@ -36,11 +38,13 @@ import {
   isPdfTaxType,
   mmToPx,
   normalizeMargins,
+  pdfClassTokens,
+  pdfStyleSheet,
   sheetEdgeStyleMap,
   tableStyleMap,
   taxTypeLabel,
 } from '../pdfDesign'
-import { parsePdfComponent, parsePdfDesign } from '../pdfDesignBank'
+import { parsePdfClasses, parsePdfComponent, parsePdfDesign } from '../pdfDesignBank'
 import {
   escapePdfText,
   normalizePdfHtml,
@@ -117,6 +121,7 @@ export function buildPdfHtml(
     [FILE_ATTR.font, design.fontFamily],
     [FILE_ATTR.fontSize, String(design.fontSize)],
     [FILE_ATTR.margins, `${top} ${right} ${bottom} ${left}`],
+    [FILE_ATTR.classes, design.classes.length > 0 ? JSON.stringify(design.classes) : null],
     ['style', cssText(rootStyle)],
   ])
 
@@ -126,7 +131,7 @@ export function buildPdfHtml(
     '<head>',
     '<meta charset="utf-8">',
     `<title>${escapePdfText(taxTypeLabel(design.taxType))} v${version}</title>`,
-    `<style>${BASE_CSS}</style>`,
+    `<style>\n${BASE_CSS}\n${pdfStyleSheet(design)}\n</style>`,
     '</head>',
     '<body>',
     FILE_COMMENT,
@@ -215,8 +220,8 @@ function writeTable(table: PdfTable, ctx: PdfComponentContext): string {
   const opening: string = `<table${attrs([
     [FILE_ATTR.table, ''],
     [FILE_ATTR.style, table.style || null],
-    ['class', table.className || null],
-    ['style', cssText(tableStyleMap(table))],
+    ['class', [PDF_TABLE_CLASS, ...pdfClassTokens(table.className)].join(' ')],
+    ['style', cssText(tableStyleMap(table)) || null],
   ])}>`
   const columns: string = table.columns
     .map((column) => `<col${column.width ? attrs([['style', `width: ${column.width}px`]]) : ''}>`)
@@ -240,14 +245,17 @@ function writeCell(cell: PdfCell, ctx: PdfComponentContext): string {
   const props: Record<string, unknown> = {}
   for (const key of CELL_PROP_KEYS) if (cell[key] !== undefined) props[key] = cell[key]
 
+  // Solo lo que la celda tiene propio: lo comun va en sus clases y en el <style>. El texto, que es lo
+  // mas frecuente, no se marca (el lector lo da por defecto).
+  const className: string = pdfClassTokens(cell.className).join(' ')
   const opening: string = `<td${attrs([
     ['colspan', cell.colSpan > 1 ? String(cell.colSpan) : null],
     ['rowspan', cell.rowSpan > 1 ? String(cell.rowSpan) : null],
-    [FILE_ATTR.cell, cell.content.kind],
+    [FILE_ATTR.cell, cell.content.kind === 'text' ? null : cell.content.kind],
     [FILE_ATTR.props, Object.keys(props).length > 0 ? JSON.stringify(props) : null],
     [FILE_ATTR.style, cell.style || null],
-    ['class', cell.className || null],
-    ['style', cssText(cellStyleMap(cell))],
+    ['class', className || null],
+    ['style', cssText(cellStyleMap(cell)) || null],
   ])}>`
 
   return `${opening}${writeCellContent(cell.content, ctx)}</td>`
@@ -303,6 +311,7 @@ function readFormMakerFile(
     fontFamily,
     fontSize,
     margins: readMargins(pdfHtmlAttribute(root, FILE_ATTR.margins)),
+    classes: readClasses(pdfHtmlAttribute(root, FILE_ATTR.classes), warnings),
     sheets: sheets.length > 0 ? sheets : [createBlankSheet()],
   })
   if (!design) return { ok: false, error: MESSAGES.damaged }
@@ -367,7 +376,10 @@ function readTable(element: PdfHtmlElement, depth: number): PdfTable {
   }
 
   const table: PdfTable = { id: uuidv4(), columns, rows }
-  const className: string | null = pdfHtmlAttribute(element, 'class')
+  // La clase de las tablas del editor la pone el generador: no es del autor.
+  const className: string = pdfClassTokens(pdfHtmlAttribute(element, 'class') ?? '')
+    .filter((token) => token !== PDF_TABLE_CLASS)
+    .join(' ')
   const style: string | null = pdfHtmlAttribute(element, FILE_ATTR.style)
   if (className) table.className = className
   if (style) table.style = style
@@ -455,6 +467,22 @@ function readFontSize(value: string | null, warnings: string[]): number {
   if (value !== null && Number.isFinite(size) && size > 0) return size
   warnings.push(MESSAGES.fontSize)
   return PDF_DEFAULT_FONT_SIZE
+}
+
+// Las clases salen de data-fm-classes, no del <style> del <head>: ese lo vuelve a escribir el
+// generador, asi que un cambio a mano ahi no sobrevive (igual que el style de una celda).
+function readClasses(value: string | null, warnings: string[]): PdfClass[] {
+  if (!value) return []
+  let raw: unknown
+  try {
+    raw = JSON.parse(value)
+  } catch {
+    warnings.push(MESSAGES.classes)
+    return []
+  }
+  const classes: PdfClass[] = parsePdfClasses(raw)
+  if (!Array.isArray(raw) || classes.length < raw.length) warnings.push(MESSAGES.classes)
+  return classes
 }
 
 function readMargins(value: string | null): PdfMargins {

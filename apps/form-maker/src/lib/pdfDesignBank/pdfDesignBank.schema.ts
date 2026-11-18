@@ -123,11 +123,26 @@ const marginsSchema = z.object({
   left: z.number().nonnegative(),
 })
 
+// Las clases del diseño. El nombre se revisa al pintar (isValidPdfClassName): aca solo la forma.
+export const pdfClassSchema = z.object({
+  name: z.string(),
+  fontSize: z.number().positive().optional(),
+  bold: z.boolean().optional(),
+  italic: z.boolean().optional(),
+  align: z.enum(['left', 'center', 'right']).optional(),
+  verticalAlign: z.enum(['top', 'middle', 'bottom']).optional(),
+  backgroundColor: z.string().optional(),
+  borders: bordersSchema.optional(),
+  css: z.string().optional(),
+})
+
 export const pdfDesignSchema = z.object({
   taxType: z.enum(TAX_TYPES),
   fontFamily: z.enum(FONT_FAMILIES),
   fontSize: z.number().positive(),
   margins: marginsSchema,
+  // Llego el 2026-11-18; lo guardado antes no las trae y arranca sin clases.
+  classes: z.array(pdfClassSchema).default([]),
   // Al menos una hoja: un diseño sin hojas no tiene donde pintarse.
   sheets: z.array(z.object({ id: z.string(), blocks: z.array(blockSchema) })).min(1),
 })

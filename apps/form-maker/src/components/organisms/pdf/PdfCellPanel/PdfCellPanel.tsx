@@ -1,33 +1,30 @@
 import {
+  ADD_LINK_CLASSES,
   INPUT_CLASSES,
   PANEL_BUTTON_CLASSES,
   PANEL_BUTTON_ON_CLASSES,
+  PDF_STYLE_KEYS,
   SWITCH_ITEM_ACTIVE_CLASSES,
   SWITCH_ITEM_BASE_CLASSES,
   SWITCH_ITEM_INACTIVE_CLASSES,
   SWITCH_TRACK_CLASSES,
   TEXTAREA_CLASSES,
 } from '../../../../constants'
+import { inheritedCellStyle, pdfClassTokens } from '../../../../lib/pdfDesign'
 import { canNestTable, findCell, selectedCellIds } from '../../../../lib/pdfDesignEdit'
-import { ALL_BORDERS } from '../../../../lib/pdfTable'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
-import type { PdfCellBorders } from '../../../../types'
+import type { PdfStyleProps } from '../../../../types'
 import { Label, Tooltip } from '../../../atoms'
-import { ColorPickerField, PanelSection } from '../../../molecules'
+import { PanelSection } from '../../../molecules'
 import { PdfComponentPanel } from '../PdfComponentPanel'
-import { PdfNumberField } from '../PdfNumberField'
-import {
-  BORDER_SIDES,
-  CONTENT_KINDS,
-  HORIZONTAL_ALIGNS,
-  NO_BORDERS,
-  VERTICAL_ALIGNS,
-} from './PdfCellPanel.constants'
+import { PdfStyleFields } from '../PdfStyleFields'
+import { CONTENT_KINDS } from './PdfCellPanel.constants'
 
 // La celda seleccionada, para quien apenas programa: casi todo son botones. El contenido es el de la
-// celda del foco (la ultima que se toco); el estilo se aplica a todas las del rectangulo
-// seleccionado, para poder poner una fila entera en negrilla de una vez. Clases y estilos en linea
-// quedan abajo, en "Avanzado", para quien los necesite.
+// celda del foco (la ultima que se toco); el estilo y las clases se aplican a todas las del
+// rectangulo seleccionado, para poder poner una fila entera en negrilla de una vez. Lo mejor es
+// darle a la celda una clase: el estilo propio de cada celda sale repetido en el .html. Estilos en
+// linea quedan abajo, en "Avanzado", para quien los necesite.
 export function PdfCellPanel() {
   const design = usePdfDesignStore((state) => state.design)
   const selection = usePdfDesignStore((state) => state.selection)
@@ -35,6 +32,8 @@ export function PdfCellPanel() {
   const setCellHtml = usePdfDesignStore((state) => state.setCellHtml)
   const setCellContentKind = usePdfDesignStore((state) => state.setCellContentKind)
   const updateStyle = usePdfDesignStore((state) => state.updateSelectionStyle)
+  const setSelectionClass = usePdfDesignStore((state) => state.setSelectionClass)
+  const createClassFromSelection = usePdfDesignStore((state) => state.createClassFromSelection)
 
   if (!design || selection?.kind !== 'cells') return null
   const location = findCell(design, selection.focusCellId)
@@ -43,7 +42,10 @@ export function PdfCellPanel() {
   const cell = location.cell
   const count: number = selectedCellIds(design, selection).length
   const canNest: boolean = canNestTable(design, cell.id)
-  const borders: PdfCellBorders = cell.borders ?? NO_BORDERS
+  const tokens: string[] = pdfClassTokens(cell.className)
+  const inherited: PdfStyleProps = inheritedCellStyle(design, cell)
+  const hasOwnStyle: boolean =
+    PDF_STYLE_KEYS.some((key) => cell[key] !== undefined) || Boolean(cell.style?.trim())
 
   return (
     <>
@@ -59,8 +61,8 @@ export function PdfCellPanel() {
       >
         {count > 1 && (
           <p className="text-[11px] text-fg-subtle">
-            {count} celdas seleccionadas: el estilo se aplica a todas; el contenido es el de la
-            última que tocaste.
+            {count} celdas seleccionadas: el estilo y las clases se aplican a todas; el contenido es
+            el de la última que tocaste.
           </p>
         )}
 
@@ -144,126 +146,61 @@ export function PdfCellPanel() {
         )}
       </PanelSection>
 
-      <PanelSection title="Letra">
-        <div className="grid grid-cols-[88px_1fr] items-end gap-2">
-          <PdfNumberField
-            id="pdf-cell-font-size"
-            label="Tamaño"
-            value={cell.fontSize}
-            placeholder={String(design.fontSize)}
-            min={1}
-            suffix="px"
-            onChange={(value) => updateStyle({ fontSize: value })}
-          />
-          <div className="flex gap-1.5">
-            <button
-              type="button"
-              aria-label="Negrilla"
-              aria-pressed={cell.bold === true}
-              onClick={() => updateStyle({ bold: cell.bold ? undefined : true })}
-              className={`${PANEL_BUTTON_CLASSES} w-8 font-bold ${cell.bold ? PANEL_BUTTON_ON_CLASSES : ''}`}
-            >
-              N
-            </button>
-            <button
-              type="button"
-              aria-label="Cursiva"
-              aria-pressed={cell.italic === true}
-              onClick={() => updateStyle({ italic: cell.italic ? undefined : true })}
-              className={`${PANEL_BUTTON_CLASSES} w-8 italic ${cell.italic ? PANEL_BUTTON_ON_CLASSES : ''}`}
-            >
-              K
-            </button>
-          </div>
-        </div>
-      </PanelSection>
-
-      <PanelSection title="Alineación">
-        <div className="grid grid-cols-3 gap-1.5">
-          {HORIZONTAL_ALIGNS.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={(cell.align ?? 'left') === value}
-              onClick={() => updateStyle({ align: value === 'left' ? undefined : value })}
-              className={`${PANEL_BUTTON_CLASSES} ${(cell.align ?? 'left') === value ? PANEL_BUTTON_ON_CLASSES : ''}`}
-            >
-              {label}
-            </button>
-          ))}
-          {VERTICAL_ALIGNS.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={(cell.verticalAlign ?? 'top') === value}
-              onClick={() => updateStyle({ verticalAlign: value === 'top' ? undefined : value })}
-              className={`${PANEL_BUTTON_CLASSES} ${(cell.verticalAlign ?? 'top') === value ? PANEL_BUTTON_ON_CLASSES : ''}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </PanelSection>
-
-      <PanelSection title="Bordes">
-        <div className="grid grid-cols-4 gap-1.5">
-          {BORDER_SIDES.map(({ side, label }) => (
-            <button
-              key={side}
-              type="button"
-              aria-pressed={borders[side]}
-              onClick={() => updateStyle({ borders: { ...borders, [side]: !borders[side] } })}
-              className={`${PANEL_BUTTON_CLASSES} ${borders[side] ? PANEL_BUTTON_ON_CLASSES : ''}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <div className="grid grid-cols-2 gap-1.5">
-          <button
-            type="button"
-            onClick={() => updateStyle({ borders: ALL_BORDERS })}
-            className={PANEL_BUTTON_CLASSES}
-          >
-            Todos
-          </button>
-          <button
-            type="button"
-            onClick={() => updateStyle({ borders: undefined })}
-            className={PANEL_BUTTON_CLASSES}
-          >
-            Ninguno
-          </button>
-        </div>
-      </PanelSection>
-
       <PanelSection
-        title="Fondo"
-        aside={
-          cell.backgroundColor ? (
-            <button
-              type="button"
-              onClick={() => updateStyle({ backgroundColor: undefined })}
-              className="text-[11px] font-medium text-fg-subtle hover:cursor-pointer hover:text-fg-strong"
-            >
-              Quitar
-            </button>
-          ) : undefined
-        }
+        title="Clases"
+        description="Una clase es un estilo con nombre que llevan muchas celdas: en el HTML sale una sola vez, y cada celda dice solo su nombre. Si la celda tiene además estilo propio, ese gana sobre la clase."
       >
-        <ColorPickerField
-          id="pdf-cell-background"
-          label="Color"
-          value={cell.backgroundColor ?? ''}
-          defaultColor="#ffffff"
-          placeholder="Sin fondo"
-          onChange={(value) => updateStyle({ backgroundColor: value || undefined })}
-        />
+        {design.classes.length > 0 ? (
+          <div className="flex flex-wrap gap-1.5">
+            {design.classes.map((item) => {
+              const on: boolean = tokens.includes(item.name)
+              return (
+                <button
+                  key={item.name}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => setSelectionClass(item.name, !on)}
+                  className={`${PANEL_BUTTON_CLASSES} font-mono ${on ? PANEL_BUTTON_ON_CLASSES : ''}`}
+                >
+                  {item.name}
+                </button>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="text-[11px] text-fg-subtle">
+            El diseño todavía no tiene clases. Dale a esta celda el estilo que quieras y créala con
+            el botón de abajo.
+          </p>
+        )}
+        <Tooltip
+          content={
+            hasOwnStyle
+              ? 'La clase toma el estilo propio de esta celda y se pone en las seleccionadas'
+              : 'Esta celda no tiene estilo propio: la clase sale vacía y se llena en el editor de clases'
+          }
+        >
+          <button
+            type="button"
+            onClick={() => createClassFromSelection()}
+            className={`${ADD_LINK_CLASSES} self-start`}
+          >
+            + Nueva clase con este estilo
+          </button>
+        </Tooltip>
       </PanelSection>
+
+      <PdfStyleFields
+        idPrefix="pdf-cell"
+        value={cell}
+        inherited={inherited}
+        defaultFontSize={design.fontSize}
+        onChange={updateStyle}
+      />
 
       <PanelSection
         title="Avanzado"
-        description="Para quien sabe CSS. Las clases se definen en un bloque HTML con <style>. Los estilos en línea se limpian igual que el HTML libre, y ganan sobre lo de arriba."
+        description="Para quien sabe CSS. Aquí van todas las clases de la celda, también las que define a mano un bloque HTML con <style>. Los estilos en línea se limpian igual que el HTML libre, y ganan sobre lo de arriba."
       >
         <div>
           <Label htmlFor="pdf-cell-class" className="text-[11px]">
@@ -274,7 +211,7 @@ export function PdfCellPanel() {
             value={cell.className ?? ''}
             onChange={(event) => updateStyle({ className: event.target.value || undefined })}
             spellCheck={false}
-            placeholder="cell-bordered grayRow"
+            placeholder="celda negrita"
             className={`${INPUT_CLASSES} font-mono`}
           />
         </div>

@@ -1,5 +1,10 @@
 import type { MouseEvent, ReactNode } from 'react'
-import { PDF_CANVAS_ATTRIBUTE, PDF_CANVAS_CLASS, PDF_VARIABLE_PATTERN } from '../../../../constants'
+import {
+  PDF_CANVAS_ATTRIBUTE,
+  PDF_CANVAS_CLASS,
+  PDF_TABLE_CLASS,
+  PDF_VARIABLE_PATTERN,
+} from '../../../../constants'
 import { pdfComponentHtml } from '../../../../lib/pdfComponents'
 import { cellStyleMap, tableStyleMap } from '../../../../lib/pdfDesign'
 import { sanitizePdfHtml } from '../../../../lib/pdfHtml'
@@ -32,7 +37,10 @@ export function PdfTableView({ table, fontFamily, selectedIds, onSelectCell }: P
   }
 
   return (
-    <table className={table.className} style={tableStyleMap(table)}>
+    <table
+      className={[PDF_TABLE_CLASS, table.className].filter(Boolean).join(' ')}
+      style={tableStyleMap(table)}
+    >
       <colgroup>
         {table.columns.map((column) => (
           <col key={column.id} style={column.width ? { width: column.width } : undefined} />

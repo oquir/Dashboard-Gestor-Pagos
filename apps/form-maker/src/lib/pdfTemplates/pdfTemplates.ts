@@ -2,14 +2,12 @@ import { v4 as uuidv4 } from 'uuid'
 import { PDF_DEFAULT_FONT, PDF_NO_EXTRA_MARGINS } from '../../constants'
 import type { PdfCell, PdfDesign, PdfRow, PdfTable, PdfTaxType } from '../../types'
 import {
-  GRAY,
   ICA_ACTIVITY_COUNT,
+  ICA_CLASSES,
   ICA_COLUMN_WIDTHS,
   ICA_FONT_SIZE,
   ICA_LABEL_HEIGHTS,
   ICA_TABLE_STYLE,
-  ICA_TITLE_FONT_SIZE,
-  INDENT_STYLE,
 } from './pdfTemplates.constants'
 import { ICA_SECTION_IMAGES } from './pdfTemplates.data'
 import { bare, html, image, nested, row, table, text } from './pdfTemplates.utils'
@@ -23,7 +21,9 @@ import { bare, html, image, nested, row, table, text } from './pdfTemplates.util
 // - las 15 actividades van en la seccion C (antes 3 + "OTRAS ACTIVIDADES / VER DESAGREGACIÓN");
 // - la rejilla es de 10 columnas (la original mezclaba filas de 12 y de 10);
 // - letra de 8 px y rotulos mas chicos, a la escala de los 778 px;
-// - se corrigen INDUSTRÍA, MUNIPIO y AUTORETENCIONES.
+// - se corrigen INDUSTRÍA, MUNIPIO y AUTORETENCIONES;
+// - el estilo va en clases del diseño (ICA_CLASSES: "celda negrita derecha"…), no en cada celda: asi
+//   el .html dice una vez como es una celda del FUN y no 250.
 // Las variables son las de hoy ({RazonSocial}, {CodigoSecundaria1}…): el back actual las llena tal
 // cual. Pasarlas a los nombres de los campos es del inventario (docs/Pendientes-PDF.md §3.7).
 // Solo la usa el diseñador (chunk perezoso): fuera de lib/index.ts.
@@ -35,6 +35,7 @@ export function factoryPdfDesign(taxType: PdfTaxType): PdfDesign | null {
     fontFamily: PDF_DEFAULT_FONT,
     fontSize: ICA_FONT_SIZE,
     margins: PDF_NO_EXTRA_MARGINS,
+    classes: structuredClone(ICA_CLASSES),
     sheets: [{ id: uuidv4(), blocks: [{ ...icaTable(), kind: 'table' }] }],
   }
 }
@@ -64,8 +65,8 @@ function heading(): PdfRow[] {
         colSpan: 10,
         bold: true,
         align: 'center',
-        background: GRAY,
-        fontSize: ICA_TITLE_FONT_SIZE,
+        gray: true,
+        title: true,
       }),
     ]),
     row([
@@ -398,7 +399,7 @@ function sectionPagoVoluntario(): PdfRow[] {
         rowSpan: 3,
         bold: true,
         align: 'center',
-        background: GRAY,
+        gray: true,
         fontSize: 7,
       }),
       html(
@@ -481,7 +482,7 @@ function renglon(
     text(caption, {
       colSpan: 5,
       bold: kind === 'bold',
-      style: kind === 'less' ? INDENT_STYLE : undefined,
+      indent: kind === 'less',
     }),
     text(variable, { colSpan: 3, bold: true, align: 'right' }),
   ])

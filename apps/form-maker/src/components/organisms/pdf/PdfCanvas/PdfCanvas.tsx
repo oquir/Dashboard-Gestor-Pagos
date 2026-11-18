@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { PDF_CANVAS_CLASS } from '../../../../constants'
-import { wheelPdfZoom } from '../../../../lib/pdfDesign'
+import { pdfStyleSheet, wheelPdfZoom } from '../../../../lib/pdfDesign'
 import { selectedCellIds } from '../../../../lib/pdfDesignEdit'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { PdfSheetView } from '../PdfSheetView'
@@ -148,6 +148,7 @@ export function PdfCanvas() {
     [design, selection],
   )
   const selectedBlockId: string | null = selection?.kind === 'block' ? selection.blockId : null
+  const designCss: string = useMemo(() => (design ? pdfStyleSheet(design) : ''), [design])
 
   return (
     <div ref={hostRef}>
@@ -156,6 +157,8 @@ export function PdfCanvas() {
         createPortal(
           <>
             <style>{CANVAS_CSS}</style>
+            {/* El mismo <style> que lleva el .html: la base de las celdas y las clases del diseño. */}
+            <style>{designCss}</style>
             <div
               className={PDF_CANVAS_CLASS.doc}
               data-tool={tool}
