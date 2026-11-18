@@ -135,6 +135,8 @@ Hecha el 2026-11-17. El modelo cambió: la hoja pasa de una tabla a una lista de
 - [x] ~~Tablas dentro de celdas: las plantillas de hoy anidan hasta 4 niveles, sobre todo para dibujar casillas.~~ (2026-11-17: `PDF_MAX_TABLE_DEPTH = 4`.)
 - [x] ~~Deshacer, rehacer y Ctrl+S, como en el formulario, pero con un historial zundo propio del diseño (§2.1).~~ (2026-11-17: un `temporal` aparte en `pdfDesignStore`, con las mismas ráfagas de 500 ms y el mismo tope de 100 pasos.)
 
+- [x] ~~Barra flotante en el diseñador, igual a la del formulario pero sin + Fila ni + Grupo repetible.~~ (2026-11-18: `organisms/pdf/PdfToolbar`. Mover / Selección múltiple (arrastrar entre celdas) / Mano, Deshacer y Rehacer —que salieron de la cabecera—, bajo rendimiento y "N celdas · Combinar · Deseleccionar". Ver "The PDF designer has the same floating toolbar" en `docs/Decisiones.md`.)
+
 ### 3.3 Componentes para los machetazos que se repiten
 
 - [ ] Texto vertical que el diseñador convierte en PNG al exportar. Hoy hay unas 27 imágenes de texto vertical hechas a mano (§4.3).

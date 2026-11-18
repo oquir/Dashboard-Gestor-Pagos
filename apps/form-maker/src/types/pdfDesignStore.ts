@@ -12,6 +12,7 @@ import type {
   PdfTableStylePatch,
   PdfTaxType,
 } from './pdfDesign'
+import type { CanvasTool } from './ui'
 
 export interface PdfDesignState {
   // null hasta que el diseñador abre la plantilla de un impuesto.
@@ -29,6 +30,9 @@ export interface PdfDesignState {
   // Zoom del lienzo (1 = 100 %). Vista pura: no entra al historial, no se guarda y no toca el diseño.
   zoom: number
   setZoom: (zoom: number) => void
+  // La herramienta de la barra flotante (mover, seleccion multiple, mano). Vista pura, como el zoom.
+  tool: CanvasTool
+  setTool: (tool: CanvasTool) => void
   // Trae lo guardado de ese impuesto o empieza en blanco, y vacia el historial. Reabrir el mismo no
   // hace nada.
   openDesign: (taxType: PdfTaxType) => void

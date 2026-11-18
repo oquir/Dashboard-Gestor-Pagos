@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { ArrowLeft, DirectSend2, FolderOpen, Moon, Redo, Sun, Undo } from 'reicon-react'
-import { useStore } from 'zustand'
+import { ArrowLeft, DirectSend2, FolderOpen, Moon, Sun } from 'reicon-react'
+import { useCanvasPan } from '../../../hooks'
 import { usePdfDesignAutosave } from '../../../hooks/usePdfDesignAutosave'
 import { usePdfDesignerShortcuts } from '../../../hooks/usePdfDesignerShortcuts'
 import { usePdfFile } from '../../../hooks/usePdfFile'
@@ -12,9 +12,10 @@ import { Tooltip } from '../../atoms'
 import { PdfCanvas } from '../pdf/PdfCanvas'
 import { PdfFileNotice } from '../pdf/PdfFileNotice'
 import { PdfSidebar } from '../pdf/PdfSidebar'
-import { PdfZoomControl } from '../pdf/PdfZoomControl'
+import { PdfToolbar } from '../pdf/PdfToolbar'
 import {
   EXIT_BUTTON_CLASSES,
+  HAND_CURSOR_CLASSES,
   ICON_BUTTON_CLASSES,
   PUBLISH_BUTTON_CLASSES,
   STATUS_DOT_CLASSES,
@@ -37,16 +38,7 @@ export function PdfDesigner() {
   const openDesign = usePdfDesignStore((state) => state.openDesign)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const { notice, dismissNotice, publish, openFiles } = usePdfFile()
-  const undo = usePdfDesignStore((state) => state.undo)
-  const redo = usePdfDesignStore((state) => state.redo)
-  const canUndo: boolean = useStore(
-    usePdfDesignStore.temporal,
-    (temporal) => temporal.pastStates.length > 0,
-  )
-  const canRedo: boolean = useStore(
-    usePdfDesignStore.temporal,
-    (temporal) => temporal.futureStates.length > 0,
-  )
+  const tool = usePdfDesignStore((state) => state.tool)
 
   // La URL se lee una vez al montar: no cambia mientras el diseñador esta abierto.
   const taxType: PdfTaxType | null = useMemo(
@@ -63,6 +55,9 @@ export function PdfDesigner() {
 
   const status = savedStatus(lastSavedAt, saveError)
   const isReady: boolean = design !== null && design.taxType === taxType
+
+  // La mano desplaza el <main> (el puerto, que lleva data-canvas-scroll). Solo con las hojas montadas.
+  useCanvasPan(isReady && tool === 'hand')
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-surface-sunken text-fg">
@@ -88,35 +83,6 @@ export function PdfDesigner() {
               {status.label}
             </span>
           </Tooltip>
-          <div className="flex items-center gap-1">
-            <Tooltip content="Deshacer (Ctrl+Z)">
-              <span>
-                <button
-                  type="button"
-                  onClick={undo}
-                  disabled={!canUndo}
-                  aria-label="Deshacer"
-                  className={`${ICON_BUTTON_CLASSES} disabled:cursor-not-allowed disabled:opacity-40`}
-                >
-                  <Undo size={16} />
-                </button>
-              </span>
-            </Tooltip>
-            <Tooltip content="Rehacer (Ctrl+Y)">
-              <span>
-                <button
-                  type="button"
-                  onClick={redo}
-                  disabled={!canRedo}
-                  aria-label="Rehacer"
-                  className={`${ICON_BUTTON_CLASSES} disabled:cursor-not-allowed disabled:opacity-40`}
-                >
-                  <Redo size={16} />
-                </button>
-              </span>
-            </Tooltip>
-          </div>
-          {isReady && <PdfZoomControl />}
           {isReady && (
             <div className="flex items-center gap-1.5">
               <input
@@ -185,9 +151,17 @@ export function PdfDesigner() {
           <aside className="w-80 shrink-0 overflow-y-auto border-r border-border bg-surface">
             <PdfSidebar />
           </aside>
-          <main className="min-w-0 flex-1 overflow-auto">
-            <PdfCanvas />
-          </main>
+          {/* La barra cuelga de este contenedor y no del <main>, que es el que hace scroll: asi
+              queda quieta sobre las hojas. */}
+          <div className="relative flex min-w-0 flex-1 flex-col">
+            <main
+              data-canvas-scroll
+              className={`min-h-0 flex-1 overflow-auto ${tool === 'hand' ? HAND_CURSOR_CLASSES : ''}`}
+            >
+              <PdfCanvas />
+            </main>
+            <PdfToolbar />
+          </div>
         </div>
       )}
     </div>

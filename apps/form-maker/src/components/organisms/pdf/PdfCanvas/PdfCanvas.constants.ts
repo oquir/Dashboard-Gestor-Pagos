@@ -5,7 +5,7 @@ import { PDF_CANVAS_CLASS as C } from '../../../../constants'
 // color de respaldo por si el token cambia de nombre. Lo que dibuja la edicion (seleccion, hover,
 // guias) usa sombras y outlines, que no ocupan espacio: el contenido mide lo mismo que en el PDF.
 export const CANVAS_CSS: string = `
-:host { display: block; }
+:host { display: block; min-width: max-content; }
 .${C.doc} { display: flex; flex-direction: column; align-items: center; gap: 28px; padding: 32px; min-width: max-content; box-sizing: border-box; }
 .${C.sheet} { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .${C.paper} { position: relative; flex-shrink: 0; background: #fff; color: #000; box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 4px 12px rgba(0,0,0,.08); }
@@ -24,4 +24,7 @@ export const CANVAS_CSS: string = `
 .${C.html}:empty::before { content: 'Bloque HTML vacío'; color: #94a3b8; font: italic 12px system-ui, sans-serif; }
 .${C.html}.${C.selected} { outline: 2px solid var(--color-brand, #f97316); outline-offset: 1px; }
 .${C.variable} { background: rgba(249,115,22,.14); border-radius: 2px; }
+.${C.doc}[data-tool="hand"] { pointer-events: none; }
+.${C.doc}[data-tool="select"] { user-select: none; -webkit-user-select: none; }
+.${C.doc}[data-tool="select"] .${C.cell}, .${C.doc}[data-tool="select"] .${C.html} { cursor: cell; }
 `

@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import {
+  type PointerEvent as ReactPointerEvent,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { createPortal } from 'react-dom'
 import { PDF_CANVAS_CLASS } from '../../../../constants'
 import { wheelPdfZoom } from '../../../../lib/pdfDesign'
@@ -6,8 +14,8 @@ import { selectedCellIds } from '../../../../lib/pdfDesignEdit'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { PdfSheetView } from '../PdfSheetView'
 import { CANVAS_CSS } from './PdfCanvas.constants'
-import type { PendingZoom, ZoomAnchor } from './PdfCanvas.types'
-import { restoreZoomAnchor, scrollerOf } from './PdfCanvas.utils'
+import type { CellDrag, CellHit, PendingZoom, ZoomAnchor } from './PdfCanvas.types'
+import { cellOf, restoreZoomAnchor, scrollerOf } from './PdfCanvas.utils'
 
 // Las hojas del diseño, todas dentro de UN shadow root. Por que: el HTML libre puede traer su
 // <style> (decidido en docs/Pendientes-PDF.md §2.1), y en el documento de la app ese <style> le
@@ -27,6 +35,12 @@ export function PdfCanvas() {
   const setActiveSheet = usePdfDesignStore((state) => state.setActiveSheet)
   const clearSelection = usePdfDesignStore((state) => state.clearSelection)
   const zoom = usePdfDesignStore((state) => state.zoom)
+  const tool = usePdfDesignStore((state) => state.tool)
+  const dragRef = useRef<CellDrag | null>(null)
+  // Tras un arrastre entre celdas el navegador manda un clic al ancestro comun (la fila), que sube
+  // hasta el papel y lo trataria como "clic en la hoja": limpiaria la seleccion recien armada. Este
+  // flag se lo salta una vez; el siguiente pointerdown lo baja, por si el clic nunca llego.
+  const swallowClickRef = useRef<boolean>(false)
   const anchorRef = useRef<ZoomAnchor | null>(null)
   const pendingRef = useRef<PendingZoom | null>(null)
 
@@ -83,6 +97,52 @@ export function PdfCanvas() {
     restoreZoomAnchor(port, pending)
   }, [zoom, shadowRoot])
 
+  // El arrastre de la seleccion multiple termina donde sea que se suelte el boton, no solo sobre una
+  // celda; y cambiar de herramienta a medio gesto lo cancela.
+  useEffect(() => {
+    function endDrag(): void {
+      if (dragRef.current?.started) swallowClickRef.current = true
+      dragRef.current = null
+    }
+    window.addEventListener('pointerup', endDrag)
+    window.addEventListener('pointercancel', endDrag)
+    return () => {
+      window.removeEventListener('pointerup', endDrag)
+      window.removeEventListener('pointercancel', endDrag)
+    }
+  }, [])
+
+  useEffect(() => {
+    dragRef.current = null
+  }, [tool])
+
+  // Seleccion multiple: presionar en una celda y llegar a otra de LA MISMA tabla arma el rectangulo
+  // entre las dos (la seleccion es siempre un rectangulo dentro de una tabla). Sin cruzar a otra
+  // celda es un clic, que extiende desde donde estaba (ver onSelectCell mas abajo).
+  function handleDocPointerDown(event: ReactPointerEvent<HTMLDivElement>): void {
+    swallowClickRef.current = false
+    if (tool !== 'select' || event.button !== 0) return
+
+    const hit: CellHit | null = cellOf(event.target)
+    dragRef.current = hit ? { ...hit, started: false, last: hit.cellId } : null
+  }
+
+  function handleDocPointerOver(event: ReactPointerEvent<HTMLDivElement>): void {
+    const drag: CellDrag | null = dragRef.current
+    if (!drag) return
+
+    const hit: CellHit | null = cellOf(event.target)
+    if (!hit || hit.tableId !== drag.tableId || hit.cellId === drag.last) return
+
+    // La primera vez fija el ancla en la celda donde se presiono; despues solo mueve el foco.
+    if (!drag.started) {
+      selectCell(drag.tableId, drag.cellId, false)
+      drag.started = true
+    }
+    selectCell(hit.tableId, hit.cellId, true)
+    drag.last = hit.cellId
+  }
+
   const selectedIds: ReadonlySet<string> = useMemo(
     () => new Set(design ? selectedCellIds(design, selection) : []),
     [design, selection],
@@ -96,7 +156,12 @@ export function PdfCanvas() {
         createPortal(
           <>
             <style>{CANVAS_CSS}</style>
-            <div className={PDF_CANVAS_CLASS.doc}>
+            <div
+              className={PDF_CANVAS_CLASS.doc}
+              data-tool={tool}
+              onPointerDown={handleDocPointerDown}
+              onPointerOver={handleDocPointerOver}
+            >
               {design.sheets.map((sheet, index) => (
                 <PdfSheetView
                   key={sheet.id}
@@ -109,10 +174,16 @@ export function PdfCanvas() {
                   selectedIds={selectedIds}
                   selectedBlockId={selectedBlockId}
                   onActivate={() => {
+                    if (swallowClickRef.current) {
+                      swallowClickRef.current = false
+                      return
+                    }
                     setActiveSheet(sheet.id)
                     clearSelection()
                   }}
-                  onSelectCell={selectCell}
+                  onSelectCell={(tableId, cellId, extend) =>
+                    selectCell(tableId, cellId, extend || tool === 'select')
+                  }
                   onSelectBlock={selectBlock}
                 />
               ))}

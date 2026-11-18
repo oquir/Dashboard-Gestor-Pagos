@@ -496,8 +496,9 @@ Cómo se arma:
 - **Tablas.** Clic en una celda la selecciona y Shift+clic en otra selecciona el rectángulo entre las dos. Desde el panel se agregan y quitan filas y columnas junto a la celda, se combina el rectángulo o se divide una celda combinada, y se fijan el ancho de la columna y el alto de la fila en px.
 - **Celdas.** Llevan texto fijo con `{variables}` mezcladas (el lienzo las resalta), HTML libre o una tabla adentro, hasta 4 niveles. Letra, negrilla, cursiva, alineación, bordes y fondo se aplican a todas las celdas seleccionadas; clases y estilos en línea van en "Avanzado".
 - **HTML libre, saneado.** Se quitan scripts, iframes, formularios, eventos (`onclick`…) y enlaces `javascript:`; se permite `<style>`. Las hojas se pintan dentro de un shadow root, así que ese `<style>` cambia las hojas y no el resto de FormMaker.
-- **Deshacer propio.** Ctrl+Z / Ctrl+Y y los botones de la cabecera deshacen el PDF, no el formulario. Ctrl+S guarda ya mismo.
-- **Zoom de 50 % a 300 %** con − / + en la cabecera (el porcentaje abre saltos fijos), Ctrl + rueda sobre las hojas o Ctrl + / - / 0. Solo cambia cómo se ve: no entra al deshacer ni se guarda.
+- **Deshacer propio.** Ctrl+Z / Ctrl+Y y los botones de la barra flotante deshacen el PDF, no el formulario. Ctrl+S guarda ya mismo.
+- **Barra flotante, igual a la del formulario** (sin + Fila ni + Grupo repetible): **Mover (V)**, **Selección múltiple (M)** y **Mano (H)**, Deshacer / Rehacer y el modo de bajo rendimiento. Con la selección múltiple se arrastra de una celda a otra de la misma tabla para armar el rectángulo, y con 2 o más celdas seleccionadas la barra ofrece **Combinar**. Espacio sostenido es la mano temporal. La mano arrastra las hojas en los dos ejes.
+- **Zoom de 50 % a 300 %** con − / + en la barra flotante (el porcentaje abre saltos fijos), Ctrl + rueda sobre las hojas o Ctrl + / - / 0. Solo cambia cómo se ve: no entra al deshacer ni se guarda.
 - **Subir y Bajar** mueven una tabla o un bloque dentro de su hoja; en el borde lo pasan a la hoja vecina (al final de la anterior o al principio de la siguiente).
 
 Publicar y abrir (todavía sin back, así que no hay peticiones):

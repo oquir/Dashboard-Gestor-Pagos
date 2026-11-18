@@ -1,6 +1,11 @@
 import { useRef, useState } from 'react'
 import { AngleDown2, Check, Minus, Plus } from 'reicon-react'
-import { PDF_ZOOM_MAX, PDF_ZOOM_MIN, PDF_ZOOM_PRESETS } from '../../../../constants'
+import {
+  CANVAS_TOOLBAR_ICON_ACTION_CLASSES,
+  PDF_ZOOM_MAX,
+  PDF_ZOOM_MIN,
+  PDF_ZOOM_PRESETS,
+} from '../../../../constants'
 import { useClickOutside } from '../../../../hooks'
 import { formatZoom } from '../../../../lib'
 import { stepPdfZoom } from '../../../../lib/pdfDesign'
@@ -10,12 +15,12 @@ import {
   MENU_CLASSES,
   ZOOM_ITEM_CLASSES,
   ZOOM_SHORTCUT_CLASSES,
-  ZOOM_STEP_CLASSES,
   ZOOM_TRIGGER_CLASSES,
 } from './PdfZoomControl.constants'
 
-// El zoom del lienzo del PDF: − y + a la vista (el usuario no encontraba como acercar) y, en el
-// porcentaje, un menu con saltos fijos. Ctrl + rueda y Ctrl + / - / 0 hacen lo mismo.
+// El zoom del lienzo del PDF, dentro de la barra flotante: − y + a la vista (el usuario no
+// encontraba como acercar) y, en el porcentaje, un menu con saltos fijos que se abre hacia arriba.
+// Ctrl + rueda y Ctrl + / - / 0 hacen lo mismo.
 export function PdfZoomControl() {
   const zoom = usePdfDesignStore((state) => state.zoom)
   const setZoom = usePdfDesignStore((state) => state.setZoom)
@@ -38,14 +43,14 @@ export function PdfZoomControl() {
             onClick={() => setZoom(stepPdfZoom(zoom, -1))}
             disabled={zoom <= PDF_ZOOM_MIN}
             aria-label="Alejar"
-            className={ZOOM_STEP_CLASSES}
+            className={CANVAS_TOOLBAR_ICON_ACTION_CLASSES}
           >
             <Minus size={14} />
           </button>
         </span>
       </Tooltip>
 
-      <Tooltip content="Zoom de las hojas">
+      <Tooltip content="Zoom de las hojas" disabled={isOpen}>
         <button
           type="button"
           onClick={() => setIsOpen((open) => !open)}
@@ -65,7 +70,7 @@ export function PdfZoomControl() {
             onClick={() => setZoom(stepPdfZoom(zoom, 1))}
             disabled={zoom >= PDF_ZOOM_MAX}
             aria-label="Acercar"
-            className={ZOOM_STEP_CLASSES}
+            className={CANVAS_TOOLBAR_ICON_ACTION_CLASSES}
           >
             <Plus size={14} />
           </button>

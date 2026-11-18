@@ -72,6 +72,9 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
   saveError: null,
   publishedVersion: null,
   zoom: 1,
+  tool: 'move',
+
+  setTool: (tool) => set((state) => (state.tool === tool ? state : { tool })),
 
   setZoom: (zoom) =>
     set((state) => {

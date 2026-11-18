@@ -1,5 +1,5 @@
 import type { MouseEvent, ReactNode } from 'react'
-import { PDF_CANVAS_CLASS, PDF_VARIABLE_PATTERN } from '../../../../constants'
+import { PDF_CANVAS_ATTRIBUTE, PDF_CANVAS_CLASS, PDF_VARIABLE_PATTERN } from '../../../../constants'
 import { cellStyleMap, tableStyleMap } from '../../../../lib/pdfDesign'
 import { sanitizePdfHtml } from '../../../../lib/pdfHtml'
 import type { PdfCell } from '../../../../types'
@@ -38,6 +38,7 @@ export function PdfTableView({ table, selectedIds, onSelectCell }: PdfTableViewP
                 return (
                   <td
                     key={cell.id}
+                    {...cellAttributes(table.id, cell.id)}
                     colSpan={cell.colSpan}
                     rowSpan={cell.rowSpan}
                     className={className}
@@ -53,6 +54,7 @@ export function PdfTableView({ table, selectedIds, onSelectCell }: PdfTableViewP
               return (
                 <td
                   key={cell.id}
+                  {...cellAttributes(table.id, cell.id)}
                   colSpan={cell.colSpan}
                   rowSpan={cell.rowSpan}
                   className={className}
@@ -76,6 +78,11 @@ export function PdfTableView({ table, selectedIds, onSelectCell }: PdfTableViewP
       </tbody>
     </table>
   )
+}
+
+// Lo que el arrastre de la seleccion multiple lee para saber en que celda esta el puntero.
+function cellAttributes(tableId: string, cellId: string): Record<string, string> {
+  return { [PDF_CANVAS_ATTRIBUTE.table]: tableId, [PDF_CANVAS_ATTRIBUTE.cell]: cellId }
 }
 
 // Las {variables} van resaltadas para que se vean entre el texto fijo. Una celda vacia lleva un
