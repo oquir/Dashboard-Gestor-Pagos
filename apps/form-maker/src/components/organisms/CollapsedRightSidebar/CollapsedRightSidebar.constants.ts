@@ -5,7 +5,7 @@
 // TRAMPA: ni transform, ni filter, ni backdrop-filter, ni will-change en este contenedor. El modal
 // de la revision de exportacion es position:fixed con inset-0 y se dibuja desde adentro; cualquiera
 // de esas propiedades crea bloque contenedor y el modal pasaria a medirse contra el chip en vez de
-// contra la ventana. Por eso no se copia el -translate-x-1/2 de TOOLBAR_CLASSES, que ademas aca no
+// contra la ventana. Por eso no se copia el -translate-x-1/2 de CANVAS_TOOLBAR_CLASSES, que ademas aca no
 // hace falta. Tampoco overflow-hidden: recortaria el menu del zoom.
 export const CHIP_CLASSES: string =
   'animate-collapsed-panel-in absolute right-4 top-4 z-30 flex items-center gap-1 rounded-xl border border-border bg-surface p-1 shadow-lg dark:bg-surface-raised'
