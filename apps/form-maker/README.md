@@ -488,7 +488,7 @@ Cosas que conviene saber:
 
 ### Diseñador de PDF (en construcción)
 
-El botón **Diseñar PDF**, en el bloque "PDF de la declaración" de la pestaña Proyecto, abre a pantalla completa la plantilla del PDF de la declaración: la barra lateral a la izquierda y las hojas de carta a la derecha. Todavía no tiene componentes (casilla, firmas, código de barras…) ni la lista de variables del formulario. El plan completo, con lo decidido y lo que falta, está en [`docs/Pendientes-PDF.md`](docs/Pendientes-PDF.md).
+El botón **Diseñar PDF** (el icono de la hoja, en la fila de acciones del panel derecho y en el chip cuando el panel está plegado) abre a pantalla completa la plantilla del PDF de la declaración: la barra lateral a la izquierda y las hojas de carta a la derecha. Todavía no tiene componentes (casilla, firmas, código de barras…) ni la lista de variables del formulario. El plan completo, con lo decidido y lo que falta, está en [`docs/Pendientes-PDF.md`](docs/Pendientes-PDF.md).
 
 Cómo se arma:
 

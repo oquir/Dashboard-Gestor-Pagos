@@ -60,12 +60,16 @@ export function RightSidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      {/* Guardar a la izquierda, las salidas a la derecha: Simulador es el "reproducir" y Exportar
-          la unica accion primaria del panel. El ml-auto va en el grupo y no en el primer boton para
-          que ninguno de los tres necesite saber donde lo montan. */}
-      <div className="flex items-center gap-1.5 border-b border-border px-3 py-2">
-        <SaveButton />
-        <div className="ml-auto flex items-center gap-1.5">
+      {/* Una sola fila: Guardar y PDF a la izquierda como icono (su tooltip los nombra, como en el
+          chip plegado); a la derecha Simulador y Exportar con texto y el plegar. Con las cuatro
+          etiquetas la fila pedia ~378 px y el panel da 295 utiles (320 - 2 x px-3). Asi suma ~293
+          con gap-1 (con gap-1.5 serian ~301 y se comeria el padding derecho): hay poca holgura, y
+          una cuarta etiqueta ya no cabe. El ml-auto va en el grupo y no en un boton para que
+          ninguno necesite saber donde lo montan. */}
+      <div className="flex items-center gap-1 border-b border-border px-3 py-2">
+        <SaveButton iconOnly />
+        <PdfDesignerButton iconOnly />
+        <div className="ml-auto flex items-center gap-1">
           <SimulatorButton />
           <ExportButton />
           <RightPanelToggle className={PANEL_COLLAPSE_BUTTON_CLASSES} iconSize={14} />
@@ -125,10 +129,6 @@ export function RightSidebar() {
               }
             >
               <FormSummary />
-            </PanelBlock>
-
-            <PanelBlock title="PDF de la declaración">
-              <PdfDesignerButton />
             </PanelBlock>
           </>
         )}

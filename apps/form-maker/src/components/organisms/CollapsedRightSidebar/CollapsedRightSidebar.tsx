@@ -7,6 +7,7 @@ import { CanvasZoomControl } from '../../molecules/CanvasZoomControl/CanvasZoomC
 import { RightPanelToggle } from '../../molecules/RightPanelToggle/RightPanelToggle'
 import { TransferNotice } from '../../molecules/TransferNotice/TransferNotice'
 import { ExportButton } from '../ExportButton/ExportButton'
+import { PdfDesignerButton } from '../PdfDesignerButton/PdfDesignerButton'
 import { SaveButton } from '../SaveButton/SaveButton'
 import { SimulatorButton } from '../SimulatorButton/SimulatorButton'
 import { CHIP_CLASSES, NOTICE_CLASSES } from './CollapsedRightSidebar.constants'
@@ -21,12 +22,12 @@ export function CollapsedRightSidebar() {
       {/* A diferencia de CanvasToolbar esto no se apaga fuera de la vista lienzo: guardar, exportar
           y simular tienen que seguir al alcance en JSON y Payload. El unico que sabe de la vista es
           el zoom, y lo resuelve adentro. */}
-      {/* Las tres acciones van sin etiqueta: en el panel el texto cabe y ayuda, pero aca el chip
-          flota sobre el lienzo y cada palabra le come ancho. El nombre sigue en el title. El zoom
-          queda al final porque es el unico que muestra un valor y no una accion. */}
+      {/* Las cuatro acciones van sin etiqueta: el chip flota sobre el lienzo y cada palabra le come
+          ancho. El nombre sigue en el tooltip. El zoom queda al final porque es el unico que muestra un valor y no una accion. */}
       <div role="toolbar" aria-label="Acciones del formulario" className={CHIP_CLASSES}>
         <SaveButton iconOnly />
         <SimulatorButton iconOnly />
+        <PdfDesignerButton iconOnly />
         <ExportButton iconOnly />
         <CanvasZoomControl />
         <span aria-hidden className={CANVAS_TOOLBAR_DIVIDER_CLASSES} />
