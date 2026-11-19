@@ -58,7 +58,7 @@ export function CanvasZoomControl() {
       </Tooltip>
 
       {isOpen && (
-        <div className="absolute right-0 top-7 z-20 flex w-44 flex-col rounded-md border border-border bg-surface py-1 shadow-lg">
+        <div className="absolute right-0 top-7 z-20 flex w-44 origin-top-right animate-pop-in flex-col rounded-md border border-border bg-surface py-1 shadow-lg">
           <button
             type="button"
             onClick={() => apply(zoomIn(canvasZoom))}

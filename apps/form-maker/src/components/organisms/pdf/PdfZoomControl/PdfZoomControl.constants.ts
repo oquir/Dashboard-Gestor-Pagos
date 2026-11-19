@@ -5,7 +5,7 @@ export const ZOOM_TRIGGER_CLASSES: string =
 
 // La barra esta pegada al borde de abajo: el menu se abre hacia arriba, o se saldria de la ventana.
 export const MENU_CLASSES: string =
-  'absolute bottom-10 left-1/2 z-20 flex w-40 -translate-x-1/2 flex-col rounded-md border border-border bg-surface py-1 shadow-lg dark:bg-surface-raised'
+  'absolute bottom-10 left-1/2 z-20 flex w-40 origin-bottom animate-pop-in -translate-x-1/2 flex-col rounded-md border border-border bg-surface py-1 shadow-lg dark:bg-surface-raised'
 
 export const ZOOM_ITEM_CLASSES: string =
   'flex items-center justify-between gap-4 px-2.5 py-1.5 text-left text-xs text-fg-soft transition-colors hover:bg-surface-raised hover:cursor-pointer dark:hover:bg-surface-inset'

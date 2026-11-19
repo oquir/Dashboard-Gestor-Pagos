@@ -302,6 +302,114 @@
   }
 }
 
+/* Animaciones de entrada (al montar) de modales, menus, filas, campos y pestañas. Existen para que
+   el modo de bajo rendimiento se note: la regla de mas abajo las deja a 0s sin codigo extra.
+
+   Solo entrada, nunca salida: el modo se apoya en que nada espera un animationend.
+
+   TRAMPA 1: ninguna lleva animation-fill-mode forwards/both, por lo mismo que las del panel
+   derecho (un transform que sobrevive crea bloque contenedor y descoloca los modales fixed). La
+   unica con fill-mode es la de las filas, y es `backwards`: solo aplica el `from` mientras dura el
+   retardo y despues no deja nada.
+
+   TRAMPA 2: se anima con las propiedades individuales scale / translate / opacity y no con
+   `transform`. Las filas y bandas llevan un transform en linea (el desplazamiento al arrastrar) y
+   dnd-kit escribe otro: un keyframe sobre `transform` los pisaria. Los menus centrados con
+   -translate-x-1/2 usan la propiedad `translate` de Tailwind v4, asi que ellos solo animan
+   scale + opacity. */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    scale: 0.96;
+    translate: 0 8px;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    scale: 0.95;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+
+@keyframes field-in {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+
+@utility animate-fade-in {
+  animation: fade-in 160ms ease-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility animate-modal-in {
+  animation: modal-in 200ms cubic-bezier(0.32, 0.72, 0, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility animate-pop-in {
+  animation: pop-in 140ms cubic-bezier(0.32, 0.72, 0, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility animate-rise-in {
+  animation: rise-in 200ms cubic-bezier(0.32, 0.72, 0, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* El escalonado lo da --enter-index (indice del bloque en el lienzo), con tope en 12 para que un
+   formulario largo no tarde mas de ~0.4 s en terminar de aparecer. */
+@utility animate-row-in {
+  animation: row-in 260ms cubic-bezier(0.32, 0.72, 0, 1) backwards;
+  animation-delay: calc(min(var(--enter-index, 0), 12) * 35ms);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility animate-field-in {
+  animation: field-in 240ms cubic-bezier(0.34, 1.4, 0.5, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
 /* Modo de bajo rendimiento: la clase la pone usePerformanceClass en <html>. Deja en cero todas las
    transiciones y animaciones, incluidas las de la fila que se abre paso al arrastrar y las que
    llegan por style en linea (por eso el !important). Nada en la app espera un transitionend ni un
