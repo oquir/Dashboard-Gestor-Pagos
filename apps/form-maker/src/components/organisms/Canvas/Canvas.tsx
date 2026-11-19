@@ -43,7 +43,7 @@ export function Canvas() {
 
   if (viewMode !== 'canvas') {
     return (
-      <div className="mx-auto max-w-5xl px-6 py-8">
+      <div key={viewMode} className="mx-auto max-w-5xl animate-fade-in px-6 py-8">
         {viewMode === 'json' && <JsonPreviewCanvas />}
         {viewMode === 'payload' && <PayloadPreviewCanvas />}
       </div>
@@ -63,7 +63,7 @@ export function Canvas() {
       <div
         ref={contentRef}
         style={contentStyle}
-        className={`mx-auto ${canvasTool === 'move' ? '' : 'pointer-events-none'}`}
+        className={`mx-auto animate-fade-in ${canvasTool === 'move' ? '' : 'pointer-events-none'}`}
       >
         {isIntro ? (
           <div className="relative flex min-h-[70vh] items-center justify-center overflow-hidden rounded-lg bg-slate-100 p-6 dark:bg-neutral-950">

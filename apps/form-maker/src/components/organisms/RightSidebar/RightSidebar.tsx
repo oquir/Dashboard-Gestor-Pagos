@@ -108,48 +108,51 @@ export function RightSidebar() {
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <TransferNotice />
 
-        {visibleTab === 'project' && (
-          <>
-            <PanelBlock title="Vista">
-              <ViewModeSwitch activeMode={viewMode} onSelect={setViewMode} />
-            </PanelBlock>
+        {/* El key es la pestaña: al cambiar, el contenido se remonta y entra (animate-rise-in). */}
+        <div key={visibleTab} className="flex min-h-0 flex-1 animate-rise-in flex-col">
+          {visibleTab === 'project' && (
+            <>
+              <PanelBlock title="Vista">
+                <ViewModeSwitch activeMode={viewMode} onSelect={setViewMode} />
+              </PanelBlock>
 
-            <PanelBlock
-              title="Formulario"
-              action={
-                <Tooltip content="Abrir un formulario exportado">
-                  <button
-                    type="button"
-                    onClick={() => setImportOpen(true)}
-                    className={OPEN_PROJECT_BUTTON_CLASSES}
-                  >
-                    Abrir…
-                  </button>
-                </Tooltip>
-              }
-            >
-              <FormSummary />
-            </PanelBlock>
-          </>
-        )}
+              <PanelBlock
+                title="Formulario"
+                action={
+                  <Tooltip content="Abrir un formulario exportado">
+                    <button
+                      type="button"
+                      onClick={() => setImportOpen(true)}
+                      className={OPEN_PROJECT_BUTTON_CLASSES}
+                    >
+                      Abrir…
+                    </button>
+                  </Tooltip>
+                }
+              >
+                <FormSummary />
+              </PanelBlock>
+            </>
+          )}
 
-        {visibleTab === 'steps' && (
-          <>
-            <PanelBlock
-              title="Pasos"
-              action={<span className="text-[10px] text-fg-subtle">{stepCountLabel}</span>}
-            >
-              <CanvasTabs />
-            </PanelBlock>
+          {visibleTab === 'steps' && (
+            <>
+              <PanelBlock
+                title="Pasos"
+                action={<span className="text-[10px] text-fg-subtle">{stepCountLabel}</span>}
+              >
+                <CanvasTabs />
+              </PanelBlock>
 
-            <PanelBlock
-              title="Paso activo"
-              action={<span className="text-[10px] text-fg-subtle">{activeStepLabel}</span>}
-            >
-              <StepTitleEditor />
-            </PanelBlock>
-          </>
-        )}
+              <PanelBlock
+                title="Paso activo"
+                action={<span className="text-[10px] text-fg-subtle">{activeStepLabel}</span>}
+              >
+                <StepTitleEditor />
+              </PanelBlock>
+            </>
+          )}
+        </div>
       </div>
 
       {isImportOpen && <ProjectImportModal onClose={() => setImportOpen(false)} />}
