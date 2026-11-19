@@ -32,6 +32,15 @@ export const FILE_ATTR = {
 // Sin esto el navegador pone 8 px de margen al body y todo se corre respecto del lienzo.
 export const BASE_CSS: string = 'body { margin: 0; }'
 
+// Solo al imprimir con Ctrl+P (printPdfHtml): no va en el archivo publicado, porque el papel lo pone
+// el back. Sin print-color-adjust el navegador quita los fondos (los grises) al imprimir.
+export const PRINT_CSS: string =
+  '@page { size: letter; margin: 5mm; }\n' +
+  'html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }'
+
+// Respaldo por si el navegador no manda afterprint y el iframe se quedaria para siempre.
+export const PRINT_FRAME_TIMEOUT_MS: number = 60_000
+
 export const FILE_COMMENT: string =
   '<!-- Hecho con el diseñador de PDF de FormMaker. Para volver a abrirlo alla, no quites los atributos data-fm-*: ' +
   'el texto de las celdas se puede cambiar a mano, los estilos se leen de data-fm-style, las clases de ' +
