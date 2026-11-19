@@ -16,6 +16,7 @@ import {
   ZOOM_SHORTCUT_CLASSES,
   ZOOM_TRIGGER_CLASSES,
 } from './CanvasZoomControl.constants'
+import { ENTER_POP_CLASSES } from '../../../constants'
 
 export function CanvasZoomControl() {
   const canvasZoom = useFormStore((state) => state.canvasZoom)
@@ -58,7 +59,9 @@ export function CanvasZoomControl() {
       </Tooltip>
 
       {isOpen && (
-        <div className="absolute right-0 top-7 z-20 flex w-44 origin-top-right animate-pop-in flex-col rounded-md border border-border bg-surface py-1 shadow-lg">
+        <div
+          className={`absolute right-0 top-7 z-20 flex w-44 origin-top-right flex-col rounded-md border border-border bg-surface py-1 shadow-lg ${ENTER_POP_CLASSES}`}
+        >
           <button
             type="button"
             onClick={() => apply(zoomIn(canvasZoom))}

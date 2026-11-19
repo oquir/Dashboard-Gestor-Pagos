@@ -24,6 +24,7 @@ import {
   TABS,
 } from './RightSidebar.constants'
 import { Tooltip } from '../../atoms'
+import { ENTER_RISE_CLASSES } from '../../../constants'
 
 export function RightSidebar() {
   const formSteps = useFormStore((state) => state.formSteps)
@@ -108,8 +109,8 @@ export function RightSidebar() {
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <TransferNotice />
 
-        {/* El key es la pestaña: al cambiar, el contenido se remonta y entra (animate-rise-in). */}
-        <div key={visibleTab} className="flex min-h-0 flex-1 animate-rise-in flex-col">
+        {/* El key es la pestaña: al cambiar, el contenido se remonta y entra (ENTER_RISE_CLASSES). */}
+        <div key={visibleTab} className={`flex min-h-0 flex-1 flex-col ${ENTER_RISE_CLASSES}`}>
           {visibleTab === 'project' && (
             <>
               <PanelBlock title="Vista">

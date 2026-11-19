@@ -1,4 +1,5 @@
 // Constantes compartidas. Entre archivos de esta carpeta se importa por la ruta.
+export * from './animations'
 export * from './baseTemplate'
 export * from './canvasTool'
 export * from './canvasView'

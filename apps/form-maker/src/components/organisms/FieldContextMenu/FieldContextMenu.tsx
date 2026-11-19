@@ -1,4 +1,5 @@
-﻿import { Trash6, Xmark } from 'reicon-react'
+import { ENTER_POP_CLASSES } from '../../../constants'
+import { Trash6, Xmark } from 'reicon-react'
 import { useFieldContextMenu } from '../../../hooks/useFieldContextMenu/useFieldContextMenu'
 import type { FieldContextMenuState } from '../../../types/fieldContextMenu'
 import { IconButton } from '../../atoms/IconButton/IconButton'
@@ -33,7 +34,7 @@ export function FieldContextMenu({
         width: position.width,
         maxHeight: position.maxHeight,
       }}
-      className="fixed z-50 flex origin-top-left animate-pop-in flex-col overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+      className={`fixed z-50 flex origin-top-left flex-col overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900 ${ENTER_POP_CLASSES}`}
       onPointerDown={(event) => event.stopPropagation()}
     >
       <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2 dark:border-neutral-800">

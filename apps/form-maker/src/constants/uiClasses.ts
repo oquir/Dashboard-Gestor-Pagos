@@ -1,3 +1,4 @@
+import { ENTER_POP_CLASSES } from './animations'
 // Clases de Tailwind que se repetian igual, letra por letra, en varios paneles y tarjetas del
 // sidebar. Viven aca para que cambiar un token de diseno (index.css) no dependa de encontrar cada
 // copia; donde el texto crudo no coincidia con el token (colores de dark mode escritos a mano) se
@@ -69,8 +70,7 @@ export const ROW_TOOLBAR_ICON_ITEM_CLASSES: string =
 
 // El desplegable cuelga de la barra, que esta pegada al borde derecho de la fila: abriendose hacia
 // la derecha se saldria del lienzo.
-export const ROW_TOOLBAR_POPOVER_CLASSES: string =
-  'absolute right-0 top-6 z-20 flex w-72 origin-top-right animate-pop-in flex-col gap-2 rounded-md border border-border bg-surface p-3 shadow-lg dark:bg-surface-raised'
+export const ROW_TOOLBAR_POPOVER_CLASSES: string = `absolute right-0 top-6 z-20 flex w-72 origin-top-right flex-col gap-2 rounded-md border border-border bg-surface p-3 shadow-lg dark:bg-surface-raised ${ENTER_POP_CLASSES}`
 
 // Las acciones con texto de la barra flotante del lienzo. Las comparten CanvasToolbar,
 // MoveToStepMenu y CollapsedRightSidebar, que viven en carpetas distintas.

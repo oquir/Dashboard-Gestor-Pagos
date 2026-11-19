@@ -18,6 +18,7 @@ import { MaxDatesPanel } from '../panels/MaxDatesPanel'
 import { StylesPanel } from '../panels/StylesPanel'
 import { ValidationsPanel } from '../panels/ValidationsPanel'
 import { FIELD_TABS, TABS } from './Sidebar.constants'
+import { ENTER_RISE_CLASSES } from '../../../constants'
 
 export function Sidebar() {
   const activeTab = useFormStore((state) => state.sidebarTab)
@@ -78,8 +79,8 @@ export function Sidebar() {
         />
 
         <div className="flex-1 overflow-y-auto p-4 text-sm text-slate-400 dark:text-neutral-500">
-          {/* El key es la pestaña: al cambiar, el contenido se remonta y entra (animate-rise-in). */}
-          <div key={activeTab} className="animate-rise-in">
+          {/* El key es la pestaña: al cambiar, el contenido se remonta y entra (ENTER_RISE_CLASSES). */}
+          <div key={activeTab} className={ENTER_RISE_CLASSES}>
             {activeTab === 'fields' && <FieldPalette />}
             {isMultiSelection && isFieldTab && (
               <SelectionSummary

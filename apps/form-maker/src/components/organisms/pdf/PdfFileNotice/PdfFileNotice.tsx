@@ -1,5 +1,6 @@
 import { Xmark } from 'reicon-react'
 import type { PdfFileNoticeProps } from './PdfFileNotice.types'
+import { ENTER_RISE_CLASSES } from '../../../../constants'
 
 export function PdfFileNotice({ notice, onDismiss }: PdfFileNoticeProps) {
   const isError: boolean = notice.tone === 'error'
@@ -7,7 +8,7 @@ export function PdfFileNotice({ notice, onDismiss }: PdfFileNoticeProps) {
   return (
     <div
       role="status"
-      className={`flex shrink-0 animate-rise-in items-start gap-3 border-b px-6 py-2.5 text-xs ${
+      className={`flex shrink-0 ${ENTER_RISE_CLASSES} items-start gap-3 border-b px-6 py-2.5 text-xs ${
         isError
           ? 'border-danger-border bg-danger-surface text-danger'
           : 'border-brand-border bg-brand-surface text-fg-soft'

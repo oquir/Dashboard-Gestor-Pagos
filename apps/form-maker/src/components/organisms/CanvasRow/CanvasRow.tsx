@@ -7,6 +7,7 @@ import { RowZoneOverlay } from '../../molecules'
 import { RowToolbar } from '../RowToolbar'
 import type { CanvasRowProps } from './CanvasRow.types'
 import { getRowBorderClasses } from './CanvasRow.utils'
+import { ENTER_ROW_CLASSES } from '../../../constants'
 
 export function CanvasRow({
   row,
@@ -76,7 +77,7 @@ export function CanvasRow({
       // desaparecen en el mismo commit: el navegador no tiene que animar la vuelta a cero y la fila
       // no pega el salto de deshacer el desplazamiento que ya se convirtio en su sitio real.
       className={`group/row relative col-span-16 grid gap-3 rounded-md border-2 p-3 ${
-        enterIndex === undefined ? '' : 'animate-row-in'
+        enterIndex === undefined ? '' : ENTER_ROW_CLASSES
       } ${
         isRowDragActive
           ? 'transition-transform duration-200 ease-[cubic-bezier(0.34,1.6,0.5,1)]'
