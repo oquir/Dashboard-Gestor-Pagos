@@ -101,7 +101,9 @@ export default function MonthlyCollectionLineChart({
                         x2={WIDTH - PADDING.right}
                         y1={top}
                         y2={top}
-                        stroke={i === TICKS ? 'var(--ui-border-strong)' : 'var(--ui-surface-raised)'}
+                        stroke={
+                          i === TICKS ? 'var(--ui-border-strong)' : 'var(--ui-surface-raised)'
+                        }
                       />
                       <text
                         x={PADDING.left - 8}
