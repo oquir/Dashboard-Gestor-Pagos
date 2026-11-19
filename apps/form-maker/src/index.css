@@ -410,6 +410,162 @@
   }
 }
 
+/* Segunda tanda: paso del simulador (con direccion), temblor del error, pop del tilde de copiar y
+   el hundido de los botones. Mismas reglas que las de arriba: solo entrada, sin fill-mode, con las
+   propiedades individuales. */
+@keyframes step-in-forward {
+  from {
+    opacity: 0;
+    translate: 16px 0;
+  }
+}
+
+@keyframes step-in-back {
+  from {
+    opacity: 0;
+    translate: -16px 0;
+  }
+}
+
+@keyframes shake {
+  20% {
+    translate: -4px 0;
+  }
+  40% {
+    translate: 4px 0;
+  }
+  60% {
+    translate: -3px 0;
+  }
+  80% {
+    translate: 3px 0;
+  }
+}
+
+@keyframes check-in {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+@utility animate-step-in-forward {
+  animation: step-in-forward 240ms cubic-bezier(0.32, 0.72, 0, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility animate-step-in-back {
+  animation: step-in-back 240ms cubic-bezier(0.32, 0.72, 0, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility animate-shake {
+  animation: shake 320ms ease-in-out;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@utility animate-check-in {
+  animation: check-in 260ms cubic-bezier(0.34, 1.4, 0.5, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* Reemplaza a transition-colors en los botones: los mismos colores mas `scale`, para que se hundan
+   al presionarlos. TRAMPA: no combinarla con transition-colors ni transition-transform, que en
+   Tailwind v4 pisarian el transition-property. El modo de bajo rendimiento la deja a 0s. */
+@utility press {
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke, scale;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+
+  &:active:not(:disabled) {
+    scale: 0.96;
+  }
+}
+
+/* Loader origami: una hoja que se dobla por cuartos (la idea del "Folding Cube" de SpinKit,
+   escrita aparte). Aqui si va `transform`: es un elemento aislado, sin modales ni dnd-kit dentro.
+   Cada cuarto es un casillero de una cuadricula 2x2 girada 45 grados; su ::before es el pliegue. */
+.origami-loader {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  transform: rotateZ(45deg);
+}
+
+.origami-loader__tile {
+  position: relative;
+}
+
+.origami-loader__tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--ui-brand);
+  animation: origami-fold 2.4s infinite linear both;
+  transform-origin: 100% 100%;
+}
+
+.origami-loader__tile:nth-child(2) {
+  transform: scale(1.1) rotateZ(90deg);
+}
+.origami-loader__tile:nth-child(4) {
+  transform: scale(1.1) rotateZ(180deg);
+}
+.origami-loader__tile:nth-child(3) {
+  transform: scale(1.1) rotateZ(270deg);
+}
+.origami-loader__tile:nth-child(2)::before {
+  animation-delay: 0.3s;
+  background: var(--ui-brand-hover);
+}
+.origami-loader__tile:nth-child(4)::before {
+  animation-delay: 0.6s;
+}
+.origami-loader__tile:nth-child(3)::before {
+  animation-delay: 0.9s;
+  background: var(--ui-brand-hover);
+}
+
+@keyframes origami-fold {
+  0%,
+  10% {
+    transform: perspective(140px) rotateX(-180deg);
+    opacity: 0;
+  }
+  25%,
+  75% {
+    transform: perspective(140px) rotateX(0deg);
+    opacity: 1;
+  }
+  90%,
+  100% {
+    transform: perspective(140px) rotateY(180deg);
+    opacity: 0;
+  }
+}
+
+/* Quieto y desplegado con prefers-reduced-motion. */
+@media (prefers-reduced-motion: reduce) {
+  .origami-loader__tile::before {
+    animation: none;
+  }
+}
+
 /* Modo de bajo rendimiento: la clase la pone usePerformanceClass en <html>. Deja en cero todas las
    transiciones y animaciones, incluidas las de la fila que se abre paso al arrastrar y las que
    llegan por style en linea (por eso el !important). Nada en la app espera un transitionend ni un
@@ -435,6 +591,23 @@
   .low-performance .animate-performance-icon-off {
     animation-duration: 520ms !important;
   }
+}
+
+/* Excepcion: el loader origami sigue girando con el modo prendido. Son 4 cuadros de 20px, no
+   cuestan nada, y un loader congelado en su ultimo cuadro parece colgado. Hay que devolver tambien
+   los retardos escalonados, que la regla de arriba tambien puso a 0s. Con reduced-motion no hay
+   animacion (animation: none arriba) y esto no hace nada. */
+.low-performance .origami-loader__tile::before {
+  animation-duration: 2.4s !important;
+}
+.low-performance .origami-loader__tile:nth-child(2)::before {
+  animation-delay: 0.3s !important;
+}
+.low-performance .origami-loader__tile:nth-child(4)::before {
+  animation-delay: 0.6s !important;
+}
+.low-performance .origami-loader__tile:nth-child(3)::before {
+  animation-delay: 0.9s !important;
 }
 
 @utility bg-dot-grid {

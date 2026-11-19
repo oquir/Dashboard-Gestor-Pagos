@@ -1,3 +1,4 @@
+import { OrigamiLoader } from '../OrigamiLoader'
 import type { SimulatorLoadingProps } from './SimulatorLoading.types'
 
 // Lo que se ve mientras baja un chunk perezoso a pantalla completa: el simulador o el diseñador
@@ -5,7 +6,7 @@ import type { SimulatorLoadingProps } from './SimulatorLoading.types'
 export function SimulatorLoading({ label = 'Cargando simulador…' }: SimulatorLoadingProps) {
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-surface-sunken">
-      <p className="text-sm text-fg-muted">{label}</p>
+      <OrigamiLoader label={label} />
     </div>
   )
 }
