@@ -96,7 +96,7 @@ Package manager is **pnpm** (never npm/yarn/bun).
 
 ## Stack
 
-`@dnd-kit/core` + `sortable`, `zustand` + `zundo` (undo/redo), `zod` (schemas authored per field, stored as strings), `react-hook-form` (unused so far), Tailwind v4 (class-based dark mode), `uuid`, `reicon-react` (not lucide/heroicons), `@floating-ui/react` `0.27.20` (UI tooltips only — not `field.tooltip`), `@codemirror/*` (script editor, lazy).
+`@dnd-kit/core` + `sortable`, `zustand` + `zundo` (undo/redo), `zod` (schemas authored per field, stored as strings), `react-hook-form` (unused so far), Tailwind v4 (class-based dark mode), `uuid`, `reicon-react` (not lucide/heroicons), `@floating-ui/react` `0.27.20` (UI tooltips only — not `field.tooltip`), `@codemirror/*` (script editor, lazy), `tw-animate-css` (entry animations, composed in `constants/animations.ts`; not inside the PDF canvas's shadow root).
 
 ## Code style
 
