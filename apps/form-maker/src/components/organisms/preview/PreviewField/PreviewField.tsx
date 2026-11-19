@@ -89,7 +89,9 @@ export function PreviewField({
       />
 
       <div className="flex flex-wrap items-center gap-2">
-        {error && <span className="text-[11px] text-danger">{error}</span>}
+        {error && (
+          <span className="inline-block animate-shake text-[11px] text-danger">{error}</span>
+        )}
         {computed && <span className="text-[11px] text-fg-subtle">Calculado</span>}
         {scope.clamped[field.name] && (
           <span className="text-[11px] text-fg-subtle">

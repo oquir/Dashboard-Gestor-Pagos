@@ -13,6 +13,7 @@ export function usePreviewNavigation(preview: FormPreviewApi): UsePreviewNavigat
   const [introIndex, setIntroIndex] = useState<number>(0)
   const [stepIndex, setStepIndex] = useState<number>(0)
   const [submitted, setSubmitted] = useState<boolean>(false)
+  const [direction, setDirection] = useState<'forward' | 'back'>('forward')
 
   // Un paso oculto no se navega, pero sus campos siguen en el modelo: calculan y viajan igual.
   const steps: ExportedStep[] = preview.model.steps.filter((s) => !s.hidden)
@@ -32,11 +33,13 @@ export function usePreviewNavigation(preview: FormPreviewApi): UsePreviewNavigat
       return
     }
 
+    setDirection('forward')
     setStepIndex(current + 1)
   }
 
   function goBack(): void {
     setSubmitted(false)
+    setDirection('back')
     setStepIndex(current - 1)
   }
 
@@ -54,6 +57,7 @@ export function usePreviewNavigation(preview: FormPreviewApi): UsePreviewNavigat
 
   function restart(): void {
     preview.reset()
+    setDirection('forward')
     setStepIndex(0)
     setIntroIndex(0)
     setIntroOpen(true)
@@ -67,6 +71,7 @@ export function usePreviewNavigation(preview: FormPreviewApi): UsePreviewNavigat
     isFirstStep: current === 0,
     isLastStep,
     submitted,
+    direction,
     showIntro: preview.model.hasIntroModal && introOpen,
     introStep: introSteps[introIndex],
     introNumber: introIndex + 1,
