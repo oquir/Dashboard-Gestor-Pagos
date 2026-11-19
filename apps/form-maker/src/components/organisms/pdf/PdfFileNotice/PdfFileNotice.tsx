@@ -7,7 +7,7 @@ export function PdfFileNotice({ notice, onDismiss }: PdfFileNoticeProps) {
   return (
     <div
       role="status"
-      className={`flex shrink-0 items-start gap-3 border-b px-6 py-2.5 text-xs ${
+      className={`flex shrink-0 animate-rise-in items-start gap-3 border-b px-6 py-2.5 text-xs ${
         isError
           ? 'border-danger-border bg-danger-surface text-danger'
           : 'border-brand-border bg-brand-surface text-fg-soft'
