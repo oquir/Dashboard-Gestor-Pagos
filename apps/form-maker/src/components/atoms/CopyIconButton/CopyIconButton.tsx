@@ -31,7 +31,9 @@ export function CopyIconButton({ value, title = 'Copiar' }: CopyIconButtonProps)
         aria-label={copied ? 'Copiado' : title}
         className="flex h-5 w-5 items-center justify-center rounded text-fg-subtle transition-colors hover:cursor-pointer hover:text-fg"
       >
-        {copied ? <CheckCircle size={12} weight="Filled" /> : <Copy size={12} />}
+        <span key={copied ? 'copied' : 'copy'} className="flex animate-check-in">
+          {copied ? <CheckCircle size={12} weight="Filled" /> : <Copy size={12} />}
+        </span>
       </button>
     </Tooltip>
   )

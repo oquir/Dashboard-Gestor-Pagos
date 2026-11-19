@@ -93,7 +93,7 @@ export const CANVAS_TOOLBAR_CLASSES: string =
 export const CANVAS_TOOLBAR_GROUP_CLASSES: string = 'flex items-center gap-0.5'
 
 export const CANVAS_TOOL_BUTTON_BASE_CLASSES: string =
-  'flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:cursor-pointer'
+  'flex h-8 w-8 items-center justify-center rounded-lg press hover:cursor-pointer'
 
 // La herramienta activa si va en naranja, a diferencia de la vista del panel derecho: la herramienta
 // cambia lo que hace un clic sobre el lienzo, y seguir en el modo equivocado sin notarlo es

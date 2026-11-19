@@ -15,7 +15,7 @@ export function ToggleSwitch({ checked, onChange, label, disabled, id }: ToggleS
       } ${checked ? 'bg-brand' : 'bg-slate-300 dark:bg-neutral-700'}`}
     >
       <span
-        className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform ${
+        className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
           checked ? 'translate-x-4.5' : 'translate-x-0.75'
         }`}
       />
