@@ -4,9 +4,10 @@ import { PDF_CANVAS_CLASS as C } from '../../../../constants'
 // shadow root, porque las variables CSS se heredan; las clases de Tailwind no. Cada var() trae su
 // color de respaldo por si el token cambia de nombre. Lo que dibuja la edicion (seleccion, hover,
 // guias) usa sombras y outlines, que no ocupan espacio: el contenido mide lo mismo que en el PDF.
+// El padding de abajo (96px) deja la leyenda de la ultima hoja por encima de la barra flotante.
 export const CANVAS_CSS: string = `
 :host { display: block; min-width: max-content; }
-.${C.doc} { display: flex; flex-direction: column; align-items: center; gap: 28px; padding: 32px; min-width: max-content; box-sizing: border-box; }
+.${C.doc} { display: flex; flex-direction: column; align-items: center; gap: 28px; padding: 32px 32px 96px; min-width: max-content; box-sizing: border-box; }
 .${C.sheet} { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .${C.paper} { position: relative; flex-shrink: 0; background: #fff; color: #000; box-shadow: 0 1px 3px rgba(0,0,0,.2), 0 4px 12px rgba(0,0,0,.08); }
 .${C.paper}.${C.active} { box-shadow: 0 0 0 2px var(--color-brand, #f97316), 0 4px 12px rgba(0,0,0,.08); }
