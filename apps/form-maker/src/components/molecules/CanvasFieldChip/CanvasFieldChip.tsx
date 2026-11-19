@@ -87,7 +87,7 @@ export function CanvasFieldChip({
       style={{ gridColumn: `${field.colStart} / span ${field.colSpan}`, gridRow: 1 }}
       // El grupo lleva nombre: la fila es antecesora del chip, y un `group` a secas dejaria que
       // pasar por encima de la fila encendiera de golpe el cromo de todos sus campos.
-      className={`group/field relative min-w-0 ${isDragging ? 'opacity-40' : ''}`}
+      className={`group/field relative min-w-0 animate-field-in ${isDragging ? 'opacity-40' : ''}`}
     >
       <div
         className={`relative group/tooltip ${isOver ? 'rounded-md outline-2 outline-brand' : ''}`}

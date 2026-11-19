@@ -7,6 +7,9 @@ export interface CanvasRowProps {
   linkedLabels: Map<string, CanvasField>
   // Cuanto se aparta esta fila, en px, para dejar pasar a la que se esta arrastrando.
   offsetY?: number
+  // Posicion del bloque en el lienzo: escalona la entrada (animate-row-in). Sin el, la fila no se
+  // anima: las de dentro de una banda ya entran con ella.
+  enterIndex?: number
   onFieldContextMenu: (fieldId: string, x: number, y: number) => void
 }
 

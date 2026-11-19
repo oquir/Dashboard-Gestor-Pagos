@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core'
-import { useState } from 'react'
+import { type CSSProperties, useState } from 'react'
 import { Layers, Plus } from 'reicon-react'
 import { PAYLOAD_SCHEMA } from '../../../constants'
 import { arrayPaths } from '../../../lib'
@@ -23,6 +23,7 @@ export function RepeatableGroupBand({
   rows,
   linkedLabels,
   offsetY = 0,
+  enterIndex,
   rowOffsets,
   onFieldContextMenu,
 }: RepeatableGroupBandProps) {
@@ -48,8 +49,13 @@ export function RepeatableGroupBand({
     <li
       ref={setNodeRef}
       data-band-id={group.id}
-      style={{ transform: offsetY === 0 ? undefined : `translateY(${offsetY}px)` }}
-      className={`${BAND_CLASSES} ${
+      style={
+        {
+          transform: offsetY === 0 ? undefined : `translateY(${offsetY}px)`,
+          '--enter-index': enterIndex,
+        } as CSSProperties
+      }
+      className={`${BAND_CLASSES} ${enterIndex === undefined ? '' : 'animate-row-in'} ${
         isRowDragActive
           ? 'transition-transform duration-200 ease-[cubic-bezier(0.34,1.6,0.5,1)]'
           : ''

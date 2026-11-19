@@ -8,7 +8,13 @@ import { RowToolbar } from '../RowToolbar'
 import type { CanvasRowProps } from './CanvasRow.types'
 import { getRowBorderClasses } from './CanvasRow.utils'
 
-export function CanvasRow({ row, linkedLabels, offsetY = 0, onFieldContextMenu }: CanvasRowProps) {
+export function CanvasRow({
+  row,
+  linkedLabels,
+  offsetY = 0,
+  enterIndex,
+  onFieldContextMenu,
+}: CanvasRowProps) {
   const { setNodeRef: setDropRef, isOver } = useDroppable({ id: row.id, data: { rowId: row.id } })
   const {
     listeners,
@@ -63,12 +69,15 @@ export function CanvasRow({ row, linkedLabels, offsetY = 0, onFieldContextMenu }
           ...resolveRowStyles(row.styles),
           gridTemplateColumns: `repeat(${row.columns}, minmax(0, 1fr))`,
           transform: offsetY === 0 ? undefined : `translateY(${offsetY}px)`,
+          '--enter-index': enterIndex,
         } as CSSProperties
       }
       // La clase de transicion depende del mismo estado que el transform, asi que al soltar las dos
       // desaparecen en el mismo commit: el navegador no tiene que animar la vuelta a cero y la fila
       // no pega el salto de deshacer el desplazamiento que ya se convirtio en su sitio real.
       className={`group/row relative col-span-16 grid gap-3 rounded-md border-2 p-3 ${
+        enterIndex === undefined ? '' : 'animate-row-in'
+      } ${
         isRowDragActive
           ? 'transition-transform duration-200 ease-[cubic-bezier(0.34,1.6,0.5,1)]'
           : 'transition-colors'

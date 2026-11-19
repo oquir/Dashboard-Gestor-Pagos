@@ -8,6 +8,8 @@ export interface RepeatableGroupBandProps {
   // La banda se aparta entera cuando pasa una fila suelta; rowOffsets solo tiene algo cuando se
   // reordena dentro del grupo, que es el unico caso en que sus filas se mueven por separado.
   offsetY?: number
+  // Posicion de la banda en el lienzo: escalona su entrada (animate-row-in).
+  enterIndex?: number
   rowOffsets?: Map<string, number>
   onFieldContextMenu: (fieldId: string, x: number, y: number) => void
 }
