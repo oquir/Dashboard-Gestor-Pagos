@@ -1,5 +1,5 @@
 import {
-  PDF_ADD_LINK_CLASSES,
+  ADD_LINK_CLASSES,
   INPUT_CLASSES,
   PANEL_BUTTON_CLASSES,
   PANEL_BUTTON_ON_CLASSES,
@@ -183,7 +183,7 @@ export function PdfCellPanel() {
           <button
             type="button"
             onClick={() => createClassFromSelection()}
-            className={`${PDF_ADD_LINK_CLASSES} self-start`}
+            className={`${ADD_LINK_CLASSES} self-start`}
           >
             + Nueva clase con este estilo
           </button>

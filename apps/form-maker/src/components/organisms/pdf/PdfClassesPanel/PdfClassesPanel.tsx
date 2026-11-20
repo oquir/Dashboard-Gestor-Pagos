@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import {
-  PDF_ADD_LINK_CLASSES,
+  ADD_LINK_CLASSES,
   ERROR_CLASSES,
   INPUT_CLASSES,
   PANEL_BUTTON_CLASSES,
@@ -76,11 +76,7 @@ export function PdfClassesPanel() {
           </button>
         ))}
       </div>
-      <button
-        type="button"
-        onClick={() => addClass()}
-        className={`${PDF_ADD_LINK_CLASSES} self-start`}
-      >
+      <button type="button" onClick={() => addClass()} className={`${ADD_LINK_CLASSES} self-start`}>
         + Clase
       </button>
 

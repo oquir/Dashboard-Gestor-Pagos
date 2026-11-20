@@ -31,17 +31,12 @@ export const SELECT_CLASSES: string =
   'min-w-0 flex-1 rounded-md border border-border bg-field px-2 py-1 text-xs text-fg outline-none focus:border-brand-border'
 
 export const ACTION_CLASSES: string =
-  'shrink-0 text-xs font-medium text-brand-fg hover:cursor-pointer hover:text-brand-hover'
+  'shrink-0 text-xs font-medium text-brand-strong hover:cursor-pointer hover:underline'
 
 export const COUNT_CLASSES: string =
   'rounded-md border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-fg-muted'
 
 export const ADD_LINK_CLASSES: string =
-  'text-xs font-medium text-brand-fg hover:cursor-pointer hover:text-brand-hover disabled:cursor-not-allowed disabled:opacity-40'
-
-// La del diseñador de PDF: brand-fg en claro da 3,58:1 sobre blanco (docs/Plan-PDF-UX-P1.md). El
-// hover subraya en vez de aclarar, para no bajar el contraste.
-export const PDF_ADD_LINK_CLASSES: string =
   'text-xs font-medium text-brand-strong hover:cursor-pointer hover:underline disabled:cursor-not-allowed disabled:opacity-40'
 
 // El cromo del lienzo (tiradores, barra de fila, botones de borrar) aparece al pasar por encima y
@@ -153,7 +148,8 @@ export const PANEL_BUTTON_CLASSES: string =
   'flex h-7 items-center justify-center gap-1 rounded-md border border-border px-2 text-[11px] font-medium text-fg-soft transition-colors hover:cursor-pointer hover:border-border-strong hover:text-fg-strong disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:text-fg-soft'
 
 // Un boton de alternar (negrilla, alineacion) cuando esta puesto.
-export const PANEL_BUTTON_ON_CLASSES: string = 'border-brand-border bg-brand-surface text-brand-fg'
+export const PANEL_BUTTON_ON_CLASSES: string =
+  'border-brand-border bg-brand-surface text-brand-strong'
 
 export const PANEL_DANGER_LINK_CLASSES: string =
   'text-[11px] font-medium text-danger hover:cursor-pointer hover:underline disabled:cursor-not-allowed disabled:opacity-40 disabled:no-underline'
