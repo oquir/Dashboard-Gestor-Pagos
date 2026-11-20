@@ -524,6 +524,6 @@ export const useData = create<StoreState>()(
         resetDemo: () => set({ ...generateData(), selectedMunicipality: null, dateQueries: {} }),
       }
     },
-    { name: 'tax-filing-manager-demo', version: 49 },
+    { name: 'tax-filing-manager-demo', version: 50 },
   ),
 )
