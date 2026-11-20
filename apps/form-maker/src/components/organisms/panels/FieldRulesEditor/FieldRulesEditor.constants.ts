@@ -6,7 +6,7 @@ export const EMPTY_VALUE_TEXT: string = '(sin valor)'
 export const SUMMARY_CLASSES: string = 'flex gap-2 rounded-md border border-border bg-surface p-2'
 
 export const NUMBER_BADGE_CLASSES: string =
-  'flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-surface text-[10px] font-semibold tabular-nums text-brand-fg'
+  'flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-surface text-[10px] font-semibold tabular-nums text-brand-strong'
 
 export const SUMMARY_LABEL_CLASSES: string = 'text-xs font-medium text-fg-strong'
 

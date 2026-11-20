@@ -34,20 +34,20 @@ export function CatalogFillsEditor({ field }: CatalogFillsEditorProps) {
           type="button"
           disabled={candidates.length === 0}
           onClick={() => commit([...fills, { column: 'code', field: candidates[0].id }])}
-          className="flex items-center gap-1 text-[11px] text-brand-fg hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex items-center gap-1 text-[11px] text-brand-strong hover:cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Plus size={11} weight="Filled" />
           <span>Agregar</span>
         </button>
       </div>
 
-      <p className="text-[10px] text-fg-subtle">
+      <p className="text-[10px] text-fg-muted">
         Al elegir una opción, estas columnas se copian a los campos indicados. Es lo que llena solos
         el código y la tarifa de una actividad, sin que el contribuyente los escriba.
       </p>
 
       {candidates.length === 0 && (
-        <p className="text-[10px] text-fg-subtle">No hay otros campos en este paso.</p>
+        <p className="text-[10px] text-fg-muted">No hay otros campos en este paso.</p>
       )}
 
       <ul className="flex list-none flex-col gap-1.5">

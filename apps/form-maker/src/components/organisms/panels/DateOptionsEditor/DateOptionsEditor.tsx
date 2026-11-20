@@ -46,7 +46,7 @@ export function DateOptionsEditor({ field }: DateOptionsEditorProps) {
         ))}
       </fieldset>
 
-      {isRange && <p className="text-[10px] text-fg-subtle">{RANGE_DESCRIPTION}</p>}
+      {isRange && <p className="text-[10px] text-fg-muted">{RANGE_DESCRIPTION}</p>}
 
       <div className={OPTION_ROW_CLASSES}>
         <span className="text-sm text-fg">Incluir hora</span>
@@ -87,7 +87,7 @@ export function DateOptionsEditor({ field }: DateOptionsEditorProps) {
             <InfoHint text={FORMAT_DESCRIPTION} label="Ayuda sobre Formato" />
           </div>
         </div>
-        <p className="text-[10px] text-fg-subtle">{formatExample(field)}</p>
+        <p className="text-[10px] text-fg-muted">{formatExample(field)}</p>
       </div>
     </PanelSection>
   )

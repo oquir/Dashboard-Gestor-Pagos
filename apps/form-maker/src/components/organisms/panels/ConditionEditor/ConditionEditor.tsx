@@ -35,7 +35,7 @@ export function ConditionEditor({ field, otherFields, kind }: ConditionEditorPro
       }
     >
       {otherFields.length === 0 && !condition && (
-        <p className="text-[11px] text-fg-subtle">{CONDITION_COPY[kind].emptyHint}</p>
+        <p className="text-[11px] text-fg-muted">{CONDITION_COPY[kind].emptyHint}</p>
       )}
 
       {condition && (

@@ -35,7 +35,7 @@ export function FileOptionsEditor({ field }: FileOptionsEditorProps) {
                     }
                     className={`rounded-full border px-2 py-0.5 text-[11px] font-medium transition-colors hover:cursor-pointer ${
                       isActive
-                        ? 'border-brand bg-brand-surface text-brand-fg'
+                        ? 'border-brand bg-brand-surface text-brand-strong'
                         : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:border-neutral-600'
                     }`}
                   >
@@ -61,7 +61,7 @@ export function FileOptionsEditor({ field }: FileOptionsEditorProps) {
           }}
           className="rounded-md border border-slate-200 bg-white px-2 py-1.5 text-sm text-slate-700 outline-none focus:border-brand dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200"
         />
-        <p className="text-[10px] text-slate-400 dark:text-neutral-500">
+        <p className="text-[10px] text-fg-muted">
           Tocá los presets o editá manualmente (MIME, extensión o wildcard). Vacío = todos.
         </p>
       </div>

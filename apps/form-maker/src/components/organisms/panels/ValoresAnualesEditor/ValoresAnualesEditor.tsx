@@ -103,7 +103,7 @@ export function ValoresAnualesEditor() {
           )}
 
           <div className="max-h-40 overflow-y-auto">
-            <div className={`${ROW_CLASSES} font-semibold text-fg-subtle`}>
+            <div className={`${ROW_CLASSES} font-semibold text-fg-muted`}>
               <span>Año</span>
               <span className="text-right">UVT</span>
               <span className="text-right">SMMLV</span>

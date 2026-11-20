@@ -28,7 +28,7 @@ export function SuggestionsEditor({ field }: SuggestionsEditorProps) {
         placeholder={SUGGESTIONS_EXAMPLE}
         rows={6}
       />
-      <p className="text-xs text-fg-subtle">{SUGGESTIONS_HINT}</p>
+      <p className="text-xs text-fg-muted">{SUGGESTIONS_HINT}</p>
     </PanelSection>
   )
 }

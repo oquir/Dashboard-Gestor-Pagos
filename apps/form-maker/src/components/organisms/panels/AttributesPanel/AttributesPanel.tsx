@@ -92,7 +92,7 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
             onChange={(event) => updateField(field.id, { label: event.target.value })}
           />
           {linkedLabel && (
-            <span className="text-[11px] text-fg-subtle">
+            <span className="text-[11px] text-fg-muted">
               La aporta la etiqueta ligada. Editála seleccionando ese campo en el lienzo.
             </span>
           )}
@@ -165,7 +165,7 @@ export function AttributesPanel({ field }: { field: CanvasField }) {
                 label="Dibujar las opciones en una sola línea"
               />
             </div>
-            <p className="text-[10px] text-fg-subtle">
+            <p className="text-[10px] text-fg-muted">
               Las pone una al lado de otra en vez de una debajo de otra, para que el renglón entre
               en un solo alto. Es solo presentación: no cambia el valor ni cuántas se pueden elegir.
             </p>

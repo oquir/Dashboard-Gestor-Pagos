@@ -34,7 +34,7 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
         <button
           type="button"
           onClick={toggleOpen}
-          className="text-[11px] font-medium text-brand-fg hover:cursor-pointer hover:text-brand-hover"
+          className="text-[11px] font-medium text-brand-strong hover:cursor-pointer hover:underline"
         >
           {isOpen ? '▾' : '▸'} Comprobaciones del grupo
           {checks.length > 0 && ` (${activeCount} de ${checks.length} activas)`}
@@ -44,7 +44,7 @@ export function GroupChecksEditor({ group }: GroupChecksEditorProps) {
           <button
             type="button"
             onClick={addCheck}
-            className="flex items-center gap-1 text-[11px] font-medium text-brand-fg hover:cursor-pointer hover:text-brand-hover"
+            className="flex items-center gap-1 text-[11px] font-medium text-brand-strong hover:cursor-pointer hover:underline"
           >
             <Plus size={11} weight="Filled" />
             <span>Comprobación</span>

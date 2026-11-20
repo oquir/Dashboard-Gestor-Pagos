@@ -73,13 +73,13 @@ export function FieldOptionsEditor({ field }: FieldOptionsEditorProps) {
         <button
           type="button"
           onClick={() => addFieldOption(field.id)}
-          className="mt-2 text-xs font-medium text-brand-fg hover:cursor-pointer hover:text-brand-hover"
+          className="mt-2 text-xs font-medium text-brand-strong hover:cursor-pointer hover:underline"
         >
           + Agregar opción
         </button>
       </fieldset>
 
-      <p className="text-xs text-fg-subtle">
+      <p className="text-xs text-fg-muted">
         {getOptionsHint(field.type, Boolean(field.validations.required))}
       </p>
     </PanelSection>

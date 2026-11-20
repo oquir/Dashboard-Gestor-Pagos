@@ -46,7 +46,7 @@ export function ApiMappingPanel({ field }: { field: CanvasField }) {
 
   if (isPresentationalField(field.type)) {
     return (
-      <p className="text-xs text-fg-subtle">
+      <p className="text-xs text-fg-muted">
         Este campo solo muestra contenido: no envía ningún valor, así que no se mapea al payload.
       </p>
     )
