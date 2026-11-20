@@ -100,7 +100,7 @@ export default function FormsSection({
               ? `${formLabel[requesting]} está desactivado.`
               : 'Los contribuyentes no podrán diligenciarlo; lo que ya radicaron se sigue gestionando aquí. Se desactiva al guardar los cambios.'
           }
-          label="Motivo de la desactivación"
+          label="Motivo del cambio"
           placeholder="Ej.: se están actualizando las tarifas del año gravable."
           confirm={disabledOnes[requesting] ? 'Cambiar el motivo' : 'Desactivar'}
           danger={!disabledOnes[requesting]}

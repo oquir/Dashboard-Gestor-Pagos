@@ -1,6 +1,12 @@
 import { ONGOING_YEAR } from '../../../../constants'
-import { taxLabel, frequencyLabel, formatList } from '../../../../lib'
-import type { FiscalYearCalendar, Declaration, Tax, Frequency } from '../../../../types'
+import { taxLabel, frequencyLabel, formatList, TAXES } from '../../../../lib'
+import type {
+  FiscalYearCalendar,
+  Declaration,
+  Tax,
+  Frequency,
+  MunicipalityConfig,
+} from '../../../../types'
 import { YEARS_BACK } from './CalendarSection.constants'
 
 /**
@@ -61,4 +67,23 @@ export function formErrors(errors: Record<string, string>, fiscalYear: number, t
   for (const [key, error] of Object.entries(errors))
     if (key.startsWith(prefix)) ofForm[Number(key.slice(prefix.length))] = error
   return ofForm
+}
+
+/** Trámites que el municipio tiene activos y que ya tienen al menos una fecha en el calendario guardado. */
+export function formsWithDates(cal: FiscalYearCalendar | undefined, taxes: Record<Tax, boolean>) {
+  if (!cal) return []
+  return TAXES.filter((t) => taxes[t] && cal[t].periods.some((p) => p.dates.some(Boolean)))
+}
+
+/**
+ * Tramos de pronto pago que muestra el PDF: los guardados del año gravable que se ve, y solo si el
+ * descuento está activo y el ICA también, como en la sección de la página.
+ */
+export function discountTiers(
+  config: MunicipalityConfig,
+  fiscalYear: number,
+  taxes: Record<Tax, boolean>,
+) {
+  if (!taxes.ica || !config.earlyPayment.isActive) return []
+  return config.earlyPayment.byFiscalYear.find((v) => v.fiscalYear === fiscalYear)?.tiers ?? []
 }
