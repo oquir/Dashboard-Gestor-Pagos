@@ -55,8 +55,11 @@ export function Sidebar() {
         isCollapsed={!isSidebarOpen}
       />
 
+      {/* Contraido, el panel sigue montado (recortado por el aside de 56 px de AppLayout): sin inert
+          el Tab entraba a sus botones y el navegador desplazaba el aside para mostrarlos. */}
       <section
         aria-label={activeTabDef?.label ?? 'Panel de edición'}
+        inert={!isSidebarOpen}
         className="flex min-w-0 flex-1 flex-col"
       >
         <PanelHeader
