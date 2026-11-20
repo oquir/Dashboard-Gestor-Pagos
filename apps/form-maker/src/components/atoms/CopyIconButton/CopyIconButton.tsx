@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { CheckCircle, Copy } from 'reicon-react'
 import { Tooltip } from '../Tooltip'
 import type { CopyIconButtonProps } from './CopyIconButton.types'
+import { ENTER_CHECK_CLASSES } from '../../../constants'
 
 export function CopyIconButton({ value, title = 'Copiar' }: CopyIconButtonProps) {
   const [copied, setCopied] = useState<boolean>(false)
@@ -31,7 +32,9 @@ export function CopyIconButton({ value, title = 'Copiar' }: CopyIconButtonProps)
         aria-label={copied ? 'Copiado' : title}
         className="flex h-5 w-5 items-center justify-center rounded text-fg-subtle transition-colors hover:cursor-pointer hover:text-fg"
       >
-        {copied ? <CheckCircle size={12} weight="Filled" /> : <Copy size={12} />}
+        <span key={copied ? 'copied' : 'copy'} className={`flex ${ENTER_CHECK_CLASSES}`}>
+          {copied ? <CheckCircle size={12} weight="Filled" /> : <Copy size={12} />}
+        </span>
       </button>
     </Tooltip>
   )

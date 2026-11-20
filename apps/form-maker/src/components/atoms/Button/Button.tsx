@@ -5,7 +5,7 @@ export function Button({ variant = 'primary', className = '', children, ...rest 
   return (
     <button
       type="button"
-      className={`rounded-md font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${VARIANT_CLASSES[variant]} ${className}`}
+      className={`rounded-md font-medium press disabled:cursor-not-allowed disabled:opacity-40 ${VARIANT_CLASSES[variant]} ${className}`}
       {...rest}
     >
       {children}

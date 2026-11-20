@@ -9,39 +9,40 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 - `docs/Project.md` (Spanish) — original spec, reference for the target JSON schema. Check before adding features.
 - `docs/Dominio-ICA.md` — **read before working on the `industria_comercio`, `retencion_industria_comercio` or `autorretencion` templates, renglones, scripts, sanctions or deadlines.** ⏳ marks data that expires (UVT, bases, deadlines, rates): re-verify only those.
 - `docs/Pendientes-PDF.md` — **read before any work on a declaration's PDF** ("Diseñar PDF", its templates, the `{Variable}` placeholders). Tick items off there as they land (`[x]`, strikethrough, date, commit).
+- `docs/Plan-PDF-UX-P1.md` / `docs/Plan-PDF-UX-P2.md` (Spanish) — fix plans from the 2026-11-19 UI critique, **PDF designer only** (not the form builder). Read before touching the designer's UI; tick items there.
 
 ## Where to read (section in `docs/Decisiones.md`)
 
-| Area | Section |
-|---|---|
-| Right panel, collapsed chip, tabs, zoom control | `The right panel (RightSidebar)` |
-| Crash screens | `Render errors (ErrorBoundary)` |
-| Hidden steps | `Hidden steps (step.hidden)` |
-| Ctrl+←/→ | `Step navigation shortcut` |
-| Shift / Shift+Ctrl placement while dragging, `colStart` | `Zone placement` |
-| Canvas zoom, free canvas / pan room | `Canvas zoom`, `The free canvas` |
-| Slow-machine toggle | `Low-performance mode` |
-| JSON view, virtual list, its search | `JSON view: virtual list…` |
-| Tools (V/M/H), floating bar, multi-selection | `Canvas tools and floating toolbar` |
-| Undo/redo (zundo) | `Undo / redo (zundo)` |
-| Dragging rows, row styles | `Reordering rows`, `Row styles` |
-| `customCss` fields | `Styles are plain CSS, not Tailwind classes` |
-| Moving fields/rows between steps | `Moving things between steps` (Almacén de Partes is gone — do not rebuild) |
-| `actividades[]`, `group.checks` | `Repeatable groups`, `group.checks` |
-| `logic.script`, `{{campo}}`, rules, prelude, no-code calc | `The field script`, `References are {{campo}}`, `No-code calculation` |
-| `label`, `rich_text` | `Presentational fields` |
-| Simulator, mock catalogs | `Simulador (FormSimulator)` |
-| PDF designer | `PDF designer (PdfDesigner)` |
-| tooltip, rounding, formatted, decimals, allowsNegative, maxLength, placeholder, datalist | the section named after each |
-| `apiBinding.kind: "concept"` / `conceptos` | `Conceptos tributarios` |
-| Options, `dataSource`, `fills`, catalog/fechas/UVT banks | `Options and apiBinding` and its `###` subsections |
-| Date helpers (`fechaLimite`, `mesesDeMora`…) | `fechaLimite / diasDeMora / mesesDeMora` |
-| Renglón 31 / 37 (sanción, intereses) | `Sanciones`, `Intereses de mora` |
-| `validations.overrides`, `visibleWhen`/`enableWhen` | `Conditional validations`, `Conditions` |
-| Open an exported file | `Opening an exported form (builderDraft)` |
-| Export review | `Export review (diagnoseForm)` |
-| `projectMeta.requires` | `What a form requires` |
-| Pieces / persistence / output | `Architecture` → `Pieces` |
+| Area                                                                                     | Section                                                                    |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Right panel, collapsed chip, tabs, zoom control                                          | `The right panel (RightSidebar)`                                           |
+| Crash screens                                                                            | `Render errors (ErrorBoundary)`                                            |
+| Hidden steps                                                                             | `Hidden steps (step.hidden)`                                               |
+| Ctrl+←/→                                                                                 | `Step navigation shortcut`                                                 |
+| Shift / Shift+Ctrl placement while dragging, `colStart`                                  | `Zone placement`                                                           |
+| Canvas zoom, free canvas / pan room                                                      | `Canvas zoom`, `The free canvas`                                           |
+| Slow-machine toggle                                                                      | `Low-performance mode`                                                     |
+| JSON view, virtual list, its search                                                      | `JSON view: virtual list…`                                                 |
+| Tools (V/M/H), floating bar, multi-selection                                             | `Canvas tools and floating toolbar`                                        |
+| Undo/redo (zundo)                                                                        | `Undo / redo (zundo)`                                                      |
+| Dragging rows, row styles                                                                | `Reordering rows`, `Row styles`                                            |
+| `customCss` fields                                                                       | `Styles are plain CSS, not Tailwind classes`                               |
+| Moving fields/rows between steps                                                         | `Moving things between steps` (Almacén de Partes is gone — do not rebuild) |
+| `actividades[]`, `group.checks`                                                          | `Repeatable groups`, `group.checks`                                        |
+| `logic.script`, `{{campo}}`, rules, prelude, no-code calc                                | `The field script`, `References are {{campo}}`, `No-code calculation`      |
+| `label`, `rich_text`                                                                     | `Presentational fields`                                                    |
+| Simulator, mock catalogs                                                                 | `Simulador (FormSimulator)`                                                |
+| PDF designer                                                                             | `PDF designer (PdfDesigner)`                                               |
+| tooltip, rounding, formatted, decimals, allowsNegative, maxLength, placeholder, datalist | the section named after each                                               |
+| `apiBinding.kind: "concept"` / `conceptos`                                               | `Conceptos tributarios`                                                    |
+| Options, `dataSource`, `fills`, catalog/fechas/UVT banks                                 | `Options and apiBinding` and its `###` subsections                         |
+| Date helpers (`fechaLimite`, `mesesDeMora`…)                                             | `fechaLimite / diasDeMora / mesesDeMora`                                   |
+| Renglón 31 / 37 (sanción, intereses)                                                     | `Sanciones`, `Intereses de mora`                                           |
+| `validations.overrides`, `visibleWhen`/`enableWhen`                                      | `Conditional validations`, `Conditions`                                    |
+| Open an exported file                                                                    | `Opening an exported form (builderDraft)`                                  |
+| Export review                                                                            | `Export review (diagnoseForm)`                                             |
+| `projectMeta.requires`                                                                   | `What a form requires`                                                     |
+| Pieces / persistence / output                                                            | `Architecture` → `Pieces`                                                  |
 
 ## Known gaps
 
@@ -90,13 +91,13 @@ Package manager is **pnpm** (never npm/yarn/bun).
 
 - Atomic design: `src/components/atoms|molecules|organisms/` + `layout/`; panels in `organisms/panels/`. Each component/hook gets **its own folder** with co-located `X.tsx`/`X.types.ts`/`X.constants.ts`/`X.utils.ts` (only what's needed) and an `index.ts` (`export * from './X'`). Hooks `src/hooks/useX/useX.ts`; libs `src/lib/<name>/<name>.ts`.
 - Import a component by its folder; across levels go through the level `index.ts`, **within a level import by folder, never the level index** (cycle). No upward imports (atom → molecule).
-- `hooks/`, `constants/`, `types/`, `lib/`, `store/` have an `index.ts` too; code outside imports through it. **Left out of the indices on purpose** (imported by folder, from behind the lazy boundary): `useFormPreview`, `usePreviewNavigation`, `usePreviewSearchSelect`, `usePdfDesignAutosave`, `usePdfDesignerShortcuts`, `usePdfFile`, `usePdfImageCheck`; libs `catalogFill`, `formRuntime`, `mockCatalog`, `pdf*`, `runtimeCondition|Derived|Payload|Validation`, `scriptDates`, `scriptRuntime`, `scriptValores`, `zodHydrate`; `store/pdfDesignStore.ts`, `banksSlice`. Libs import each other by folder, never through `lib/index.ts`.
+- `hooks/`, `constants/`, `types/`, `lib/`, `store/` have an `index.ts` too; code outside imports through it. **Left out of the indices on purpose** (imported by folder, from behind the lazy boundary): `useFormPreview`, `usePreviewNavigation`, `usePreviewSearchSelect`, `usePdfDesignAutosave`, `usePdfDesignerShortcuts`, `usePdfFile`, `usePdfImageCheck`, `usePdfOverflowToast`; `molecules/Toaster` (sonner, only the PDF designer mounts it); libs `catalogFill`, `formRuntime`, `mockCatalog`, `pdf*`, `runtimeCondition|Derived|Payload|Validation`, `scriptDates`, `scriptRuntime`, `scriptValores`, `zodHydrate`; `store/pdfDesignStore.ts`, `banksSlice`. Libs import each other by folder, never through `lib/index.ts`.
 - A co-located `X.types.ts`/`X.constants.ts` is private to its folder; once something outside imports it, it moves to `src/types/` / `src/constants/` (whole file, not split). A new file there needs its line in the index.
 - `X.ts` is the module's public API — helpers/constants/types go in co-located files.
 
 ## Stack
 
-`@dnd-kit/core` + `sortable`, `zustand` + `zundo` (undo/redo), `zod` (schemas authored per field, stored as strings), `react-hook-form` (unused so far), Tailwind v4 (class-based dark mode), `uuid`, `reicon-react` (not lucide/heroicons), `@floating-ui/react` `0.27.20` (UI tooltips only — not `field.tooltip`), `@codemirror/*` (script editor, lazy).
+`@dnd-kit/core` + `sortable`, `zustand` + `zundo` (undo/redo), `zod` (schemas authored per field, stored as strings), `react-hook-form` (unused so far), Tailwind v4 (class-based dark mode), `uuid`, `reicon-react` (not lucide/heroicons), `@floating-ui/react` `0.27.20` (UI tooltips only — not `field.tooltip`), `@codemirror/*` (script editor, lazy), `tw-animate-css` (entry animations, composed in `constants/animations.ts`; not inside the PDF canvas's shadow root).
 
 ## Code style
 

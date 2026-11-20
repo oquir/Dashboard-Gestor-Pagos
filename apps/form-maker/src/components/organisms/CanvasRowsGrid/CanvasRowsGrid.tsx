@@ -21,7 +21,7 @@ export function CanvasRowsGrid({ rows, groups, onFieldContextMenu }: CanvasRowsG
 
   return (
     <ul className="grid list-none grid-cols-16 content-start gap-3">
-      {blocks.map((block) => {
+      {blocks.map((block, index) => {
         if (block.kind === 'row') {
           return (
             <CanvasRow
@@ -29,6 +29,7 @@ export function CanvasRowsGrid({ rows, groups, onFieldContextMenu }: CanvasRowsG
               row={block.row}
               linkedLabels={linkedLabels}
               offsetY={displacement.rows.get(block.row.id) ?? 0}
+              enterIndex={index}
               onFieldContextMenu={onFieldContextMenu}
             />
           )
@@ -45,6 +46,7 @@ export function CanvasRowsGrid({ rows, groups, onFieldContextMenu }: CanvasRowsG
               row={row}
               linkedLabels={linkedLabels}
               offsetY={displacement.rows.get(row.id) ?? 0}
+              enterIndex={index}
               onFieldContextMenu={onFieldContextMenu}
             />
           ))
@@ -57,6 +59,7 @@ export function CanvasRowsGrid({ rows, groups, onFieldContextMenu }: CanvasRowsG
             rows={block.rows}
             linkedLabels={linkedLabels}
             offsetY={displacement.bands.get(group.id) ?? 0}
+            enterIndex={index}
             rowOffsets={displacement.rows}
             onFieldContextMenu={onFieldContextMenu}
           />

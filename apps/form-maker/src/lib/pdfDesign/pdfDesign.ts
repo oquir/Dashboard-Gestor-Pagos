@@ -5,6 +5,7 @@ import {
   PDF_DEFAULT_FONT_SIZE,
   PDF_EDGE_GUARD_PX,
   PDF_FONT_OPTIONS,
+  PDF_LINE_HEIGHT,
   PDF_MAX_EXTRA_MARGIN_MM,
   PDF_NO_EXTRA_MARGINS,
   PDF_CLASS_NAME_PATTERN,
@@ -197,13 +198,13 @@ function pdfCssDeclarations(map: CssStyleMap): string {
 }
 
 // La letra de todo el documento. line-height va explicito: el lienzo vive dentro de FormMaker y
-// heredaria su 1.5, mientras que el convertidor arranca en normal; sin el, las filas del lienzo
-// saldrian mas altas que en el PDF.
+// heredaria su 1.5, mientras que el convertidor arranca en normal. Tampoco puede ser "normal":
+// cada motor lo redondea distinto y la plantilla del ICA dejaba de caber en Firefox (PDF_LINE_HEIGHT).
 export function documentStyleMap(design: PdfDesign): CssStyleMap {
   return {
     fontFamily: fontStack(design.fontFamily),
     fontSize: `${design.fontSize}px`,
-    lineHeight: 'normal',
+    lineHeight: String(PDF_LINE_HEIGHT),
     color: '#000',
   }
 }

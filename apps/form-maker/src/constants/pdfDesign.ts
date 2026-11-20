@@ -45,6 +45,12 @@ export const PDF_DEFAULT_FONT: PdfFontFamily = 'Arial'
 // px; con el perfil de carta son 8,25 pt, letra corriente de formulario. Cada celda puede cambiarla.
 export const PDF_DEFAULT_FONT_SIZE: number = 11
 
+// Interlineado del documento, sin unidad para que escale con la letra de cada celda. No puede ser
+// "normal": cada motor lo calcula con las metricas de la fuente y lo redondea distinto (Arial a 8 px
+// da 9 px en Chromium y 10-11 en Firefox), y 70 filas de un renglon suman decenas de px de
+// diferencia. 1.15 es la proporcion de diseño de Arial.
+export const PDF_LINE_HEIGHT: number = 1.15
+
 // Resguardo a cada lado del contenido de la hoja. Una tabla con bordes colapsados pinta su borde de
 // la orilla mitad adentro y mitad afuera: a lo ancho exacto de la hoja, la mitad de afuera caia en
 // el pixel 778, que el lienzo recorta y el convertidor no pinta, y el borde derecho desaparecia.

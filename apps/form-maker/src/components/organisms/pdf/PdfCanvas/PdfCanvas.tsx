@@ -11,6 +11,7 @@ import { createPortal } from 'react-dom'
 import { PDF_CANVAS_CLASS } from '../../../../constants'
 import { pdfStyleSheet, wheelPdfZoom } from '../../../../lib/pdfDesign'
 import { selectedCellIds } from '../../../../lib/pdfDesignEdit'
+import { useFormStore } from '../../../../store'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { PdfSheetView } from '../PdfSheetView'
 import { CANVAS_CSS } from './PdfCanvas.constants'
@@ -36,6 +37,7 @@ export function PdfCanvas() {
   const clearSelection = usePdfDesignStore((state) => state.clearSelection)
   const zoom = usePdfDesignStore((state) => state.zoom)
   const tool = usePdfDesignStore((state) => state.tool)
+  const isLowPerformance = useFormStore((state) => state.isLowPerformance)
   const dragRef = useRef<CellDrag | null>(null)
   // Tras un arrastre entre celdas el navegador manda un clic al ancestro comun (la fila), que sube
   // hasta el papel y lo trataria como "clic en la hoja": limpiaria la seleccion recien armada. Este
@@ -162,6 +164,7 @@ export function PdfCanvas() {
             <div
               className={PDF_CANVAS_CLASS.doc}
               data-tool={tool}
+              data-low-performance={isLowPerformance ? '' : undefined}
               onPointerDown={handleDocPointerDown}
               onPointerOver={handleDocPointerOver}
             >

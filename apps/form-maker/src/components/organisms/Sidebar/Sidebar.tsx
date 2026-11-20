@@ -18,6 +18,7 @@ import { MaxDatesPanel } from '../panels/MaxDatesPanel'
 import { StylesPanel } from '../panels/StylesPanel'
 import { ValidationsPanel } from '../panels/ValidationsPanel'
 import { FIELD_TABS, TABS } from './Sidebar.constants'
+import { ENTER_RISE_CLASSES } from '../../../constants'
 
 export function Sidebar() {
   const activeTab = useFormStore((state) => state.sidebarTab)
@@ -78,31 +79,38 @@ export function Sidebar() {
         />
 
         <div className="flex-1 overflow-y-auto p-4 text-sm text-slate-400 dark:text-neutral-500">
-          {activeTab === 'fields' && <FieldPalette />}
-          {isMultiSelection && isFieldTab && (
-            <SelectionSummary
-              fields={getAllFields(rows).filter((field) => selectedFieldIds.includes(field.id))}
-            />
-          )}
-          {activeTab !== 'fields' &&
-            activeTab !== 'catalogs' &&
-            activeTab !== 'fechas' &&
-            activeTab !== 'logic' &&
-            !selectedField &&
-            !isMultiSelection && <p>Sin campo seleccionado.</p>}
-          {selectedField && activeTab === 'attributes' && <AttributesPanel field={selectedField} />}
-          {selectedField && activeTab === 'validations' && (
-            <ValidationsPanel field={selectedField} />
-          )}
-          {selectedField && activeTab === 'styles' && <StylesPanel field={selectedField} />}
-          {/* Con campo, el script de ese campo; sin campo, el del formulario. Es la misma
+          {/* El key es la pestaña: al cambiar, el contenido se remonta y entra (ENTER_RISE_CLASSES). */}
+          <div key={activeTab} className={ENTER_RISE_CLASSES}>
+            {activeTab === 'fields' && <FieldPalette />}
+            {isMultiSelection && isFieldTab && (
+              <SelectionSummary
+                fields={getAllFields(rows).filter((field) => selectedFieldIds.includes(field.id))}
+              />
+            )}
+            {activeTab !== 'fields' &&
+              activeTab !== 'catalogs' &&
+              activeTab !== 'fechas' &&
+              activeTab !== 'logic' &&
+              !selectedField &&
+              !isMultiSelection && <p>Sin campo seleccionado.</p>}
+            {selectedField && activeTab === 'attributes' && (
+              <AttributesPanel field={selectedField} />
+            )}
+            {selectedField && activeTab === 'validations' && (
+              <ValidationsPanel field={selectedField} />
+            )}
+            {selectedField && activeTab === 'styles' && <StylesPanel field={selectedField} />}
+            {/* Con campo, el script de ese campo; sin campo, el del formulario. Es la misma
               convencion que ya usan las pestañas que funcionan sin seleccion. */}
-          {activeTab === 'logic' &&
-            !isMultiSelection &&
-            (selectedField ? <LogicPanel field={selectedField} /> : <FormScriptEditor />)}
-          {selectedField && activeTab === 'apiMapping' && <ApiMappingPanel field={selectedField} />}
-          {activeTab === 'catalogs' && <CatalogsPanel />}
-          {activeTab === 'fechas' && <MaxDatesPanel />}
+            {activeTab === 'logic' &&
+              !isMultiSelection &&
+              (selectedField ? <LogicPanel field={selectedField} /> : <FormScriptEditor />)}
+            {selectedField && activeTab === 'apiMapping' && (
+              <ApiMappingPanel field={selectedField} />
+            )}
+            {activeTab === 'catalogs' && <CatalogsPanel />}
+            {activeTab === 'fechas' && <MaxDatesPanel />}
+          </div>
         </div>
       </section>
     </div>

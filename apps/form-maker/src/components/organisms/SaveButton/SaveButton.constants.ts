@@ -1,5 +1,5 @@
 export const SAVE_BUTTON_BASE_CLASSES: string =
-  'flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-medium transition-colors'
+  'flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-medium press'
 
 export const SAVE_BUTTON_STATE_CLASSES: Record<'saved' | 'idle', string> = {
   saved:

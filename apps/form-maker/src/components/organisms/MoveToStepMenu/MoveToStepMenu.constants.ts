@@ -1,7 +1,7 @@
+import { ENTER_POP_CLASSES } from '../../../constants'
 // Abre hacia arriba: la barra vive pegada al borde inferior del lienzo, y hacia abajo se saldria de
 // la ventana.
-export const MENU_CLASSES: string =
-  'absolute bottom-full left-1/2 mb-2 flex max-h-72 w-60 -translate-x-1/2 flex-col overflow-y-auto rounded-md border border-border bg-surface py-1 shadow-lg dark:bg-surface-raised'
+export const MENU_CLASSES: string = `absolute bottom-full left-1/2 mb-2 flex max-h-72 w-60 origin-bottom -translate-x-1/2 flex-col overflow-y-auto rounded-md border border-border bg-surface py-1 shadow-lg dark:bg-surface-raised ${ENTER_POP_CLASSES}`
 
 export const MENU_CAPTION_CLASSES: string =
   'px-2.5 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wide text-fg-subtle'

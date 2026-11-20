@@ -62,6 +62,8 @@ import {
   FILE_COMMENT,
   MESSAGES,
   PDF_FILE_FORMAT_VERSION,
+  PRINT_CSS,
+  PRINT_FRAME_TIMEOUT_MS,
   UNSAFE_INPUT,
 } from './pdfFile.constants'
 import {
@@ -182,6 +184,41 @@ export function downloadPdfHtml(html: string, fileName: string): void {
   anchor.download = fileName
   anchor.click()
   URL.revokeObjectURL(url)
+}
+
+// Imprime el mismo .html que se publica, en un iframe oculto: Ctrl+P saca el PDF y no la app (lienzo
+// con zoom, barras y marcos de seleccion). Solo uno a la vez.
+let printFrame: HTMLIFrameElement | null = null
+
+export function printPdfHtml(html: string): void {
+  if (printFrame) return
+
+  const frame: HTMLIFrameElement = document.createElement('iframe')
+  frame.setAttribute('aria-hidden', 'true')
+  frame.style.cssText =
+    'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;'
+  printFrame = frame
+
+  let timer: number | undefined
+  function cleanup(): void {
+    window.clearTimeout(timer)
+    frame.remove()
+    if (printFrame === frame) printFrame = null
+  }
+
+  frame.onload = () => {
+    const win: Window | null = frame.contentWindow
+    if (!win) {
+      cleanup()
+      return
+    }
+    win.addEventListener('afterprint', cleanup)
+    timer = window.setTimeout(cleanup, PRINT_FRAME_TIMEOUT_MS)
+    win.focus()
+    win.print()
+  }
+  frame.srcdoc = html.replace('</head>', `<style>\n${PRINT_CSS}\n</style>\n</head>`)
+  document.body.appendChild(frame)
 }
 
 // --- Generador ---

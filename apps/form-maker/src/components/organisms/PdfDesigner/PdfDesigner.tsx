@@ -9,6 +9,8 @@ import { useFormStore } from '../../../store'
 import { usePdfDesignStore } from '../../../store/pdfDesignStore'
 import type { PdfTaxType } from '../../../types'
 import { Tooltip } from '../../atoms'
+// Por la carpeta y no por el indice de moleculas: arrastra sonner, que solo debe cargar este chunk.
+import { Toaster } from '../../molecules/Toaster'
 import { PdfCanvas } from '../pdf/PdfCanvas'
 import { PdfFileNotice } from '../pdf/PdfFileNotice'
 import { PdfSidebar } from '../pdf/PdfSidebar'
@@ -61,7 +63,7 @@ export function PdfDesigner() {
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-surface-sunken text-fg">
-      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-6 py-3">
+      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-6 py-2">
         <div className="min-w-0">
           <h1 className="text-base font-semibold text-fg-strong">Diseñar PDF</h1>
           <p className="truncate text-xs text-fg-muted">
@@ -136,6 +138,8 @@ export function PdfDesigner() {
           </button>
         </div>
       </header>
+
+      <Toaster />
 
       {notice && <PdfFileNotice notice={notice} onDismiss={dismissNotice} />}
 

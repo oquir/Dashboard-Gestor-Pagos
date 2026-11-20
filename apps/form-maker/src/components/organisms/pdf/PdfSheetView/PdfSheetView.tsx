@@ -1,6 +1,7 @@
 import { type CSSProperties, useEffect, useRef, useState } from 'react'
 import { PDF_CANVAS_CLASS } from '../../../../constants'
 import { contentBox, documentStyleMap, mmToPx, sheetEdgeStyleMap } from '../../../../lib/pdfDesign'
+import { usePdfOverflowToast } from '../../../../hooks/usePdfOverflowToast'
 import { sanitizePdfHtml } from '../../../../lib/pdfHtml'
 import type { PdfContentBox } from '../../../../types'
 import { PdfTableView } from '../PdfTableView'
@@ -54,6 +55,7 @@ export function PdfSheetView({
     return () => observer.disconnect()
   }, [box.height, sheet.blocks])
 
+  usePdfOverflowToast(sheet.id, index + 1, overflow.bottom, overflow.right)
   const overflows: boolean = overflow.bottom > 0 || overflow.right > 0
 
   const contentStyle: CSSProperties = {

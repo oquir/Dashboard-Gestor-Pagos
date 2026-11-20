@@ -8,6 +8,7 @@ import { FieldContextMenu } from '../FieldContextMenu'
 import { JsonPreviewCanvas } from '../JsonPreviewCanvas'
 import { PayloadPreviewCanvas } from '../PayloadPreviewCanvas'
 import { TOOL_ROOT_CLASSES } from './Canvas.constants'
+import { ENTER_FADE_CLASSES } from '../../../constants'
 
 export function Canvas() {
   const activeRows = useFormStore(getActiveRows)
@@ -43,7 +44,7 @@ export function Canvas() {
 
   if (viewMode !== 'canvas') {
     return (
-      <div className="mx-auto max-w-5xl px-6 py-8">
+      <div key={viewMode} className={`mx-auto max-w-5xl px-6 py-8 ${ENTER_FADE_CLASSES}`}>
         {viewMode === 'json' && <JsonPreviewCanvas />}
         {viewMode === 'payload' && <PayloadPreviewCanvas />}
       </div>
@@ -63,7 +64,7 @@ export function Canvas() {
       <div
         ref={contentRef}
         style={contentStyle}
-        className={`mx-auto ${canvasTool === 'move' ? '' : 'pointer-events-none'}`}
+        className={`mx-auto ${ENTER_FADE_CLASSES} ${canvasTool === 'move' ? '' : 'pointer-events-none'}`}
       >
         {isIntro ? (
           <div className="relative flex min-h-[70vh] items-center justify-center overflow-hidden rounded-lg bg-slate-100 p-6 dark:bg-neutral-950">

@@ -2,13 +2,16 @@ import { useEffect } from 'react'
 import { CANVAS_TOOLS } from '../../constants/canvasTool'
 import { stepPdfZoom } from '../../lib/pdfDesign'
 import { savePdfDesign } from '../../lib/pdfDesignBank'
+import { buildPdfHtml, printPdfHtml } from '../../lib/pdfFile'
+import { renderVerticalTextPng } from '../../lib/pdfVerticalText'
 import { usePdfDesignStore } from '../../store/pdfDesignStore'
 import type { CanvasToolItem, PdfDesignState, PdfSaveResult } from '../../types'
 import type { CanvasTool } from '../../types/ui'
 import { isEditableTarget, isPointerOverCanvas } from './usePdfDesignerShortcuts.utils'
 
 // Los atajos del diseñador de PDF, mientras esta montado: Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z sobre el
-// historial del PDF (no el del formulario), Ctrl+S guarda ya mismo, Ctrl + / - / 0 hacen zoom en el
+// historial del PDF (no el del formulario), Ctrl+S guarda ya mismo, Ctrl+P imprime el diseño y no la
+// pagina, Ctrl + / - / 0 hacen zoom en el
 // lienzo y Escape suelta la seleccion. V / M / H eligen la herramienta y Espacio sostenido es la mano
 // temporal, como en el lienzo del formulario. Los del formulario se apagan con el diseñador abierto
 // (useKeyboardShortcuts).
@@ -63,6 +66,15 @@ export function usePdfDesignerShortcuts(): void {
       }
 
       const key: string = event.key.toLowerCase()
+
+      // Ctrl+P imprime el diseño (el mismo .html que se publica), no la app. Vale tambien con el
+      // foco en un input: ese atajo nunca es de un campo.
+      if (key === 'p' && !event.shiftKey && !event.altKey) {
+        event.preventDefault()
+        if (!state.design) return
+        printPdfHtml(buildPdfHtml(state.design, state.publishedVersion ?? 0, renderVerticalTextPng))
+        return
+      }
 
       if (key === 's') {
         event.preventDefault()

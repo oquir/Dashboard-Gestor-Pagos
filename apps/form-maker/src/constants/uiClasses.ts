@@ -1,3 +1,4 @@
+import { ENTER_POP_CLASSES } from './animations'
 // Clases de Tailwind que se repetian igual, letra por letra, en varios paneles y tarjetas del
 // sidebar. Viven aca para que cambiar un token de diseno (index.css) no dependa de encontrar cada
 // copia; donde el texto crudo no coincidia con el token (colores de dark mode escritos a mano) se
@@ -69,8 +70,7 @@ export const ROW_TOOLBAR_ICON_ITEM_CLASSES: string =
 
 // El desplegable cuelga de la barra, que esta pegada al borde derecho de la fila: abriendose hacia
 // la derecha se saldria del lienzo.
-export const ROW_TOOLBAR_POPOVER_CLASSES: string =
-  'absolute right-0 top-6 z-20 flex w-72 flex-col gap-2 rounded-md border border-border bg-surface p-3 shadow-lg dark:bg-surface-raised'
+export const ROW_TOOLBAR_POPOVER_CLASSES: string = `absolute right-0 top-6 z-20 flex w-72 origin-top-right flex-col gap-2 rounded-md border border-border bg-surface p-3 shadow-lg dark:bg-surface-raised ${ENTER_POP_CLASSES}`
 
 // Las acciones con texto de la barra flotante del lienzo. Las comparten CanvasToolbar,
 // MoveToStepMenu y CollapsedRightSidebar, que viven en carpetas distintas.
@@ -93,7 +93,7 @@ export const CANVAS_TOOLBAR_CLASSES: string =
 export const CANVAS_TOOLBAR_GROUP_CLASSES: string = 'flex items-center gap-0.5'
 
 export const CANVAS_TOOL_BUTTON_BASE_CLASSES: string =
-  'flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:cursor-pointer'
+  'flex h-8 w-8 items-center justify-center rounded-lg press hover:cursor-pointer'
 
 // La herramienta activa si va en naranja, a diferencia de la vista del panel derecho: la herramienta
 // cambia lo que hace un clic sobre el lienzo, y seguir en el modo equivocado sin notarlo es
