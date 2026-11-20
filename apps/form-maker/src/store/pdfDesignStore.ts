@@ -75,9 +75,13 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
   publishedVersion: null,
   zoom: 1,
   tool: 'move',
+  sidebarTab: 'selection',
   editingClass: null,
 
   setTool: (tool) => set((state) => (state.tool === tool ? state : { tool })),
+
+  setSidebarTab: (sidebarTab) =>
+    set((state) => (state.sidebarTab === sidebarTab ? state : { sidebarTab })),
 
   setZoom: (zoom) =>
     set((state) => {
@@ -97,6 +101,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
       design,
       selection: null,
       editingClass: null,
+      sidebarTab: 'selection',
       activeSheetId: design.sheets[0].id,
       lastSavedAt: stored ? stored.savedAt : null,
       saveError: null,
@@ -206,12 +211,14 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
       return {
         selection: { kind: 'cells', tableId, anchorCellId, focusCellId: cellId },
         activeSheetId: sheetId ?? state.activeSheetId,
+        sidebarTab: 'selection',
       }
     }),
 
   selectBlock: (blockId) =>
     set((state) => ({
       selection: { kind: 'block', blockId },
+      sidebarTab: 'selection',
       activeSheetId: (state.design && edit.sheetOf(state.design, blockId)) ?? state.activeSheetId,
     })),
 
@@ -254,15 +261,19 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
   updateTableStyle: (tableId, patch) =>
     editDesign(set, (design) => edit.updateTableStyle(design, tableId, patch)),
 
+  // Cerrar el editor (null) no cambia de pestaña; abrir una clase lleva a la de Documento.
   setEditingClass: (name) =>
-    set((state) => (state.editingClass === name ? state : { editingClass: name })),
+    set((state) => {
+      if (state.editingClass === name) return state
+      return name === null ? { editingClass: null } : { editingClass: name, sidebarTab: 'document' }
+    }),
 
   addClass: () => {
     const design: PdfDesign | null = get().design
     if (!design) return null
     const name: string = edit.nextClassName(design)
     editDesign(set, (current) => edit.addClass(current, { name }))
-    set({ editingClass: name })
+    set({ editingClass: name, sidebarTab: 'document' })
     return name
   },
 
@@ -295,7 +306,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
       ),
     )
     if (get().design === design) return null
-    set({ editingClass: name })
+    set({ editingClass: name, sidebarTab: 'document' })
     return name
   },
 

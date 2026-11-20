@@ -149,7 +149,7 @@ export function PdfCellPanel() {
 
       <PanelSection
         legibleTitle
-        title="Clases"
+        title="Clases de la celda"
         description="Una clase es un estilo con nombre que llevan muchas celdas: en el HTML sale una sola vez, y cada celda dice solo su nombre. Si la celda tiene además estilo propio, ese gana sobre la clase."
       >
         {design.classes.length > 0 ? (
@@ -192,45 +192,54 @@ export function PdfCellPanel() {
         </Tooltip>
       </PanelSection>
 
-      <PdfStyleFields
-        idPrefix="pdf-cell"
-        value={cell}
-        inherited={inherited}
-        defaultFontSize={design.fontSize}
-        onChange={updateStyle}
-      />
+      <PanelSection legibleTitle title="Estilo de la celda">
+        <PdfStyleFields
+          idPrefix="pdf-cell"
+          value={cell}
+          inherited={inherited}
+          defaultFontSize={design.fontSize}
+          onChange={updateStyle}
+        />
+      </PanelSection>
 
       <PanelSection
         legibleTitle
         title="Avanzado"
         description="Para quien sabe CSS. Aquí van todas las clases de la celda, también las que define a mano un bloque HTML con <style>. Los estilos en línea se limpian igual que el HTML libre, y ganan sobre lo de arriba."
       >
-        <div>
-          <Label htmlFor="pdf-cell-class" className="text-[11px]">
-            Clases
-          </Label>
-          <input
-            id="pdf-cell-class"
-            value={cell.className ?? ''}
-            onChange={(event) => updateStyle({ className: event.target.value || undefined })}
-            spellCheck={false}
-            placeholder="celda negrita"
-            className={`${INPUT_CLASSES} font-mono`}
-          />
-        </div>
-        <div>
-          <Label htmlFor="pdf-cell-style" className="text-[11px]">
-            Estilos en línea
-          </Label>
-          <textarea
-            id="pdf-cell-style"
-            value={cell.style ?? ''}
-            onChange={(event) => updateStyle({ style: event.target.value || undefined })}
-            spellCheck={false}
-            placeholder="letter-spacing: 1px;"
-            className={`${TEXTAREA_CLASSES} h-16`}
-          />
-        </div>
+        <details className="group">
+          <summary className="cursor-pointer text-[11px] font-medium text-fg-muted hover:text-fg-strong">
+            Clases escritas a mano y estilos en línea
+          </summary>
+          <div className="mt-2 flex flex-col gap-3">
+            <div>
+              <Label htmlFor="pdf-cell-class" className="text-[11px]">
+                Clases (escritas a mano)
+              </Label>
+              <input
+                id="pdf-cell-class"
+                value={cell.className ?? ''}
+                onChange={(event) => updateStyle({ className: event.target.value || undefined })}
+                spellCheck={false}
+                placeholder="celda negrita"
+                className={`${INPUT_CLASSES} font-mono`}
+              />
+            </div>
+            <div>
+              <Label htmlFor="pdf-cell-style" className="text-[11px]">
+                Estilos en línea
+              </Label>
+              <textarea
+                id="pdf-cell-style"
+                value={cell.style ?? ''}
+                onChange={(event) => updateStyle({ style: event.target.value || undefined })}
+                spellCheck={false}
+                placeholder="letter-spacing: 1px;"
+                className={`${TEXTAREA_CLASSES} h-16`}
+              />
+            </div>
+          </div>
+        </details>
       </PanelSection>
     </>
   )

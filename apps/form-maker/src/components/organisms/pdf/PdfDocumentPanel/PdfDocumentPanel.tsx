@@ -25,7 +25,7 @@ export function PdfDocumentPanel() {
 
   return (
     <>
-      <PanelSection legibleTitle title="Letra">
+      <PanelSection legibleTitle title="Letra del documento">
         <div className="grid grid-cols-[1fr_88px] gap-2">
           <div className="min-w-0">
             <Label htmlFor="pdf-font-family" className="text-[11px]">

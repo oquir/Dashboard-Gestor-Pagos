@@ -20,3 +20,7 @@ export const BORDER_SIDES: { side: keyof PdfCellBorders; label: string }[] = [
 ]
 
 export const NO_BORDERS: PdfCellBorders = { top: false, right: false, bottom: false, left: false }
+
+export const GROUP_CLASSES: string = 'flex flex-col gap-1.5'
+
+export const GROUP_TITLE_CLASSES: string = 'text-[11px] font-medium text-fg-muted'

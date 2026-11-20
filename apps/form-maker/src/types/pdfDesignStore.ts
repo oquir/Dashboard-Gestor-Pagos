@@ -16,6 +16,9 @@ import type {
 } from './pdfDesign'
 import type { CanvasTool } from './ui'
 
+// Las pestañas de la barra lateral: lo seleccionado (tabla, celda, bloque) o lo de todo el documento.
+export type PdfSidebarTab = 'selection' | 'document'
+
 export interface PdfDesignState {
   // null hasta que el diseñador abre la plantilla de un impuesto.
   design: PdfDesign | null
@@ -35,6 +38,10 @@ export interface PdfDesignState {
   // La herramienta de la barra flotante (mover, seleccion multiple, mano). Vista pura, como el zoom.
   tool: CanvasTool
   setTool: (tool: CanvasTool) => void
+  // La pestaña de la barra lateral. Vista pura, como el zoom. Seleccionar algo pasa a 'selection';
+  // abrir una clase en el editor, a 'document' (ahi vive el editor de clases).
+  sidebarTab: PdfSidebarTab
+  setSidebarTab: (tab: PdfSidebarTab) => void
   // Trae lo guardado de ese impuesto o empieza en blanco, y vacia el historial. Reabrir el mismo no
   // hace nada.
   openDesign: (taxType: PdfTaxType) => void
