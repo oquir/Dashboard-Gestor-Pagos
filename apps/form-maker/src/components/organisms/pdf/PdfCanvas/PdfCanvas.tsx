@@ -166,6 +166,11 @@ export function PdfCanvas() {
               data-tool={tool}
               data-low-performance={isLowPerformance ? '' : undefined}
               onPointerDown={handleDocPointerDown}
+              // Shift+clic extiende la seleccion de celdas; sin esto el navegador ademas extiende la
+              // de texto y la pinta en azul encima. El click sigue llegando.
+              onMouseDown={(event) => {
+                if (event.shiftKey) event.preventDefault()
+              }}
               onPointerOver={handleDocPointerOver}
             >
               {design.sheets.map((sheet, index) => (
