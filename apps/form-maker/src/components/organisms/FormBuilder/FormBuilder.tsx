@@ -7,6 +7,7 @@ import { SimulatorLoading } from '../../atoms/SimulatorLoading/SimulatorLoading'
 import { AppLayout } from '../../layout/AppLayout'
 import { DragPreview } from '../../molecules/DragPreview/DragPreview'
 import { Canvas } from '../Canvas/Canvas'
+import { ActiveStepLabel } from '../ActiveStepLabel/ActiveStepLabel'
 import { CanvasToolbar } from '../CanvasToolbar/CanvasToolbar'
 import { CollapsedRightSidebar } from '../CollapsedRightSidebar/CollapsedRightSidebar'
 import { PdfDesignerCrashScreen } from '../PdfDesignerCrashScreen/PdfDesignerCrashScreen'
@@ -77,6 +78,7 @@ export function FormBuilder() {
         canvas={<Canvas />}
         canvasOverlay={
           <>
+            <ActiveStepLabel />
             <CanvasToolbar />
             <CollapsedRightSidebar />
           </>
