@@ -11,7 +11,7 @@ Origen: crítica visual del 2026-11-19, hecha en Edge headless a 1600×1000 y 13
 Los contrastes se midieron con los colores computados, componiendo los fondos translúcidos. Marca cada
 punto como `[x]`, con fecha y commit, cuando quede hecho.
 
-## [ ] P1.1 Shift+clic pinta la selección de texto del navegador sobre las celdas
+## [x] ~~P1.1 Shift+clic pinta la selección de texto del navegador sobre las celdas~~ (2026-11-20, 68545566)
 
 - **Qué pasa:** con Mover (V), que es la herramienta por defecto, Shift+clic en otra celda extiende la
   selección de texto nativa (azul) por encima de la selección naranja. Medido: `getSelection()` devolvió
@@ -27,7 +27,7 @@ punto como `[x]`, con fecha y commit, cuando quede hecho.
 - **Verificar:** clic en una celda y Shift+clic en otra; `getSelection().toString()` tiene que dar `''`
   y el rectángulo se tiene que armar igual.
 
-## [ ] P1.2 Texto informativo por debajo de 4,5:1
+## [x] ~~P1.2 Texto informativo por debajo de 4,5:1~~ (2026-11-20, 32003043)
 
 - **Medido:** en claro, `text-fg-subtle` (slate-400) sobre blanco da **2,63:1**. En oscuro, sobre el
   velo de las tarjetas, da **3,8–4,0:1**. Afecta los rótulos de sección (10 px, mayúsculas), las ayudas,
@@ -46,7 +46,7 @@ punto como `[x]`, con fecha y commit, cuando quede hecho.
 - **Meta:** ningún texto informativo del encabezado, la barra lateral o la barra flotante del PDF por
   debajo de 4,5:1, ni en claro ni en oscuro. `fg-muted` mide 4,76:1 en claro.
 
-## [ ] P1.3 El naranja de "Publicar" y de los enlaces "+"
+## [x] ~~P1.3 El naranja de "Publicar" y de los enlaces "+"~~ (2026-11-20, 32003043)
 
 - **Medido:**
   - "Publicar v1" es blanco sobre naranja: **3,58:1** en claro (orange-600) y **2,89:1** en oscuro
