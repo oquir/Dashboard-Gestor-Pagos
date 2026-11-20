@@ -6,8 +6,7 @@ import {
   useFormStore,
 } from '../../../store'
 import { PanelHeader } from '../../atoms'
-import { SelectionSummary } from '../../molecules'
-import { SidebarTabRail } from '../../molecules'
+import { SelectionSummary, SidebarTabRail } from '../../molecules'
 import { FieldPalette } from '../FieldPalette'
 import { ApiMappingPanel } from '../panels/ApiMappingPanel'
 import { AttributesPanel } from '../panels/AttributesPanel'
@@ -17,7 +16,7 @@ import { LogicPanel } from '../panels/LogicPanel'
 import { MaxDatesPanel } from '../panels/MaxDatesPanel'
 import { StylesPanel } from '../panels/StylesPanel'
 import { ValidationsPanel } from '../panels/ValidationsPanel'
-import { FIELD_TABS, TABS } from './Sidebar.constants'
+import { BANK_TABS, FIELD_TABS, RAIL_DIVIDER_BEFORE, TABS } from './Sidebar.constants'
 import { ENTER_RISE_CLASSES } from '../../../constants'
 
 export function Sidebar() {
@@ -41,6 +40,7 @@ export function Sidebar() {
     <div className="flex h-full">
       <SidebarTabRail
         tabs={TABS}
+        dividerBefore={RAIL_DIVIDER_BEFORE}
         activeTab={activeTab}
         onSelect={(tab) => {
           if (isSidebarOpen && tab === activeTab) {
@@ -65,7 +65,9 @@ export function Sidebar() {
           title={activeTabDef?.label ?? ''}
           subtitle={
             activeTab === 'fields' ? (
-              'Arrastra un campo al lienzo'
+              'Haz clic o arrastra un campo al lienzo'
+            ) : BANK_TABS.includes(activeTab) ? (
+              'Datos de prueba del simulador'
             ) : isMultiSelection && isFieldTab ? (
               `${selectedFieldIds.length} campos seleccionados`
             ) : selectedField ? (
