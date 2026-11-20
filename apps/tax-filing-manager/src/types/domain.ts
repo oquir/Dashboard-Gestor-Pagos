@@ -455,11 +455,21 @@ export type FiscalYearCalendar = {
    * sin el calendario. Un año recién agregado no lo tiene hasta que se guarda.
    */
   uploaded?: CalendarUpload
+  /** Motivo del último cambio de este año, si al guardarlo había que darlo. */
+  changeReason?: CalendarChangeReason
 } & Record<Tax, FormDueDates>
 
 export interface CalendarUpload {
   date: string
   /** Nombre de quien lo guardó, como era en ese momento. */
+  by: string
+}
+
+/** Motivo de un cambio al calendario, con cuándo y quién lo hizo */
+export interface CalendarChangeReason {
+  reason: string
+  date: string
+  /** Nombre de quien hizo el cambio. */
   by: string
 }
 

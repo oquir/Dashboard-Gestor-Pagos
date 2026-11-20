@@ -1,8 +1,10 @@
-import { DIGITS, PERIOD_NAMES } from '../../../../constants'
-import { withDate, withFrequency, withByDigit, frequencyLabel } from '../../../../lib'
+//import { PERIOD_NAMES } from '../../../../constants'
+import {  withFrequency, withByDigit, frequencyLabel } from '../../../../lib'
 import type { Frequency } from '../../../../types'
-import { Input, Select } from '../../../atoms'
+import {  Select } from '../../../atoms'
 import { Notice, Field, Toggle } from '../../../molecules'
+import ByDigitDates from '../ByDigitDates'
+import SingleDates from '../SingleDates'
 import { FREQUENCY_INFO, WITHHOLDING_FREQUENCIES } from './DueDatesTable.constants'
 import type { DueDatesTableProps } from './DueDatesTable.types'
 
@@ -20,7 +22,7 @@ export default function DueDatesTable({
   errors,
   frequencyNotice,
 }: DueDatesTableProps) {
-  const firstNames = PERIOD_NAMES[value.frequency]
+
 
   return (
     <div className="space-y-4 rounded-lg border border-border p-4">
@@ -71,75 +73,16 @@ export default function DueDatesTable({
             <strong>sin el dígito de verificación (DV)</strong>. Por ejemplo, en el NIT
             900.123.456-7 cuenta el 6, no el 7; en la cédula 43.567.891, el 1.
           </Notice>
-          <div className="overflow-x-auto">
-            <table className="text-sm">
-              <thead>
-                <tr>
-                  <th scope="col" className="px-2 pb-1 text-left text-xs font-medium text-fg-muted">
-                    Último dígito (sin DV)
-                  </th>
-                  {value.periods.map((p) => (
-                    <th
-                      key={p.period}
-                      scope="col"
-                      className="min-w-40 px-1 pb-1 text-left text-xs font-medium text-fg"
-                    >
-                      {firstNames[p.period - 1]}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {DIGITS.map((d) => (
-                  <tr key={d}>
-                    <th
-                      scope="row"
-                      className="px-2 py-1 text-left font-medium tabular-nums text-fg"
-                    >
-                      {d}
-                    </th>
-                    {value.periods.map((p) => (
-                      <td key={p.period} className="px-1 py-1">
-                        <Input
-                          type="date"
-                          aria-label={`${firstNames[p.period - 1]}, último dígito ${d}`}
-                          disabled={!editable}
-                          value={p.dates[d] ?? ''}
-                          onChange={(e) => onChange(withDate(value, p.period, d, e.target.value))}
-                        />
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-              {value.periods.some((p) => errors[p.period]) && (
-                <tfoot>
-                  <tr>
-                    <td />
-                    {value.periods.map((p) => (
-                      <td key={p.period} className="px-1 pt-1 align-top text-xs text-danger">
-                        {errors[p.period]}
-                      </td>
-                    ))}
-                  </tr>
-                </tfoot>
-              )}
-            </table>
-          </div>
+          <ByDigitDates
+            key={value.frequency}
+            value={value}
+            onChange={onChange}
+            editable={editable}
+            errors={errors}
+          />
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {value.periods.map((p) => (
-            <Field key={p.period} label={firstNames[p.period - 1]} error={errors[p.period]}>
-              <Input
-                type="date"
-                disabled={!editable}
-                value={p.dates[0] ?? ''}
-                onChange={(e) => onChange(withDate(value, p.period, 0, e.target.value))}
-              />
-            </Field>
-          ))}
-        </div>
+         <SingleDates value={value} onChange={onChange} editable={editable} errors={errors} />
       )}
     </div>
   )
