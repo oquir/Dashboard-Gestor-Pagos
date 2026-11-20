@@ -8,4 +8,4 @@ export const ZOOM_TRIGGER_CLASSES: string =
 export const ZOOM_ITEM_CLASSES: string =
   'flex items-center justify-between gap-4 px-2.5 py-1.5 text-left text-xs text-fg-soft transition-colors hover:bg-surface-raised hover:cursor-pointer disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:cursor-not-allowed'
 
-export const ZOOM_SHORTCUT_CLASSES: string = 'text-[10px] tabular-nums text-fg-subtle'
+export const ZOOM_SHORTCUT_CLASSES: string = 'text-[10px] tabular-nums text-fg-muted'

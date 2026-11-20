@@ -23,7 +23,7 @@ export function RowDragPreview({ row, width, scale }: RowDragPreviewProps) {
       {row.fields.length === 0 && (
         <div
           style={{ gridColumn: `span ${row.columns} / span ${row.columns}` }}
-          className="flex h-16 items-center justify-center text-sm text-slate-300 dark:text-neutral-600"
+          className="flex h-16 items-center justify-center text-sm text-fg-muted"
         >
           Fila vacía
         </div>

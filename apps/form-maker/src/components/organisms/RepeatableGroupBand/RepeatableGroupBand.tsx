@@ -141,7 +141,7 @@ export function RepeatableGroupBand({
               </select>
             </label>
 
-            <span className="text-slate-400 dark:text-neutral-500">
+            <span className="text-fg-muted">
               {group.arrayPath
                 ? `Cada repetición es un ítem de ${group.arrayPath}[].`
                 : 'Elegí el arreglo para poder mapear los campos de adentro.'}

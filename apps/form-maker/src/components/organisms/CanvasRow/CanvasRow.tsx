@@ -102,7 +102,7 @@ export function CanvasRow({
       {row.fields.length === 0 && (
         <div
           style={{ gridColumn: `span ${row.columns} / span ${row.columns}` }}
-          className="flex h-24 items-center justify-center text-sm text-slate-300 dark:text-neutral-600"
+          className="flex h-24 items-center justify-center text-sm text-fg-muted"
         >
           Suelta un campo aquí
         </div>

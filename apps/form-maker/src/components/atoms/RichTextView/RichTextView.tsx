@@ -4,7 +4,7 @@ import { renderLeaf } from './RichTextView.utils'
 
 export function RichTextView({ content, className }: RichTextViewProps) {
   if (isEmptyRichText(content)) {
-    return <p className="text-xs italic text-fg-subtle">Bloque de texto vacío</p>
+    return <p className="text-xs italic text-fg-muted">Bloque de texto vacío</p>
   }
 
   return (

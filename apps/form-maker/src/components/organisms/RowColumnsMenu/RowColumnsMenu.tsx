@@ -50,7 +50,7 @@ export function RowColumnsMenu({ rowId, columns, isOpen, onToggle, onClose }: Ro
               className="flex-1 accent-brand cursor-grab active:cursor-grabbing"
             />
           </div>
-          <p className="text-[10px] text-fg-subtle">
+          <p className="text-[10px] text-fg-muted">
             Los campos que excedan se ajustan automaticamente.
           </p>
         </div>
