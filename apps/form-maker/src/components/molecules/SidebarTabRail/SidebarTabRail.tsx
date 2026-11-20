@@ -8,7 +8,6 @@ export function SidebarTabRail({
   onSelect,
   isDarkMode,
   onToggleDarkMode,
-  isCollapsed,
 }: SidebarTabRailProps) {
   const themeLabel: string = isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'
 
@@ -17,12 +16,14 @@ export function SidebarTabRail({
       {tabs.map((tab) => {
         const Icon = tab.icon
         return (
-          // Con el panel abierto el encabezado ya nombra la pestana: el globo solo sale contraido.
-          <Tooltip key={tab.id} content={tab.label} placement="right" disabled={!isCollapsed}>
+          // El globo sale siempre: con el panel abierto el encabezado nombra solo la pestana activa, y
+          // las otras siete quedaban como iconos sin nombre (docs/Plan-Form-UX-P1.md, P1.4).
+          <Tooltip key={tab.id} content={tab.label} placement="right">
             <button
               type="button"
               onClick={() => onSelect(tab.id)}
               aria-label={tab.label}
+              aria-current={activeTab === tab.id ? 'page' : undefined}
               className={`flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:cursor-pointer ${
                 activeTab === tab.id
                   ? 'bg-brand text-on-brand'
@@ -35,7 +36,7 @@ export function SidebarTabRail({
         )
       })}
 
-      <Tooltip content={themeLabel} placement="right" disabled={!isCollapsed}>
+      <Tooltip content={themeLabel} placement="right">
         <button
           type="button"
           onClick={onToggleDarkMode}

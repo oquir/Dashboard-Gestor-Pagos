@@ -52,7 +52,6 @@ export function Sidebar() {
         }}
         isDarkMode={isDarkMode}
         onToggleDarkMode={toggleDarkMode}
-        isCollapsed={!isSidebarOpen}
       />
 
       {/* Contraido, el panel sigue montado (recortado por el aside de 56 px de AppLayout): sin inert

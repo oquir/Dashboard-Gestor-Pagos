@@ -7,6 +7,4 @@ export interface SidebarTabRailProps {
   onSelect: (tab: SidebarTab) => void
   isDarkMode: boolean
   onToggleDarkMode: () => void
-  // Panel plegado: solo entonces los iconos muestran su nombre en un globo.
-  isCollapsed: boolean
 }
