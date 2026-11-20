@@ -92,7 +92,7 @@ export const ROW_TOOLBAR_POPOVER_CLASSES: string = `absolute right-0 top-6 z-20 
 // Las acciones con texto de la barra flotante del lienzo. Las comparten CanvasToolbar,
 // MoveToStepMenu y CollapsedRightSidebar, que viven en carpetas distintas.
 export const CANVAS_TOOLBAR_ACTION_CLASSES: string =
-  'flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-fg-soft transition-colors hover:cursor-pointer hover:bg-surface-raised hover:text-fg-strong disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-fg-soft dark:hover:bg-surface-inset'
+  'flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 text-xs font-medium text-fg-soft transition-colors hover:cursor-pointer hover:bg-surface-raised hover:text-fg-strong disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-fg-soft dark:hover:bg-surface-inset'
 
 // La accion de solo icono y el separador de esa misma barra. Bajaron aca cuando el chip del panel
 // derecho plegado, que es su hermano visual, empezo a necesitarlos desde otra carpeta.
@@ -103,9 +103,13 @@ export const CANVAS_TOOLBAR_DIVIDER_CLASSES: string = 'mx-0.5 h-5 w-px bg-border
 
 // La barra flotante del lienzo del formulario (CanvasToolbar) y la del diseñador de PDF (PdfToolbar):
 // misma caja, mismos grupos, mismas herramientas. Flota sobre el lienzo sin desplazarse ni escalarse,
-// centrada abajo como la barra de Figma.
-export const CANVAS_TOOLBAR_CLASSES: string =
-  'absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-border bg-surface p-1 shadow-lg dark:bg-surface-raised'
+// centrada abajo como la barra de Figma. El w-max no es adorno: una caja absoluta con left-1/2 solo
+// dispone de la mitad del contenedor para su ancho, y sin el las etiquetas se partian en dos lineas
+// aunque la barra entrara de sobra.
+export const CANVAS_TOOLBAR_BOX_CLASSES: string =
+  'flex w-max items-center gap-1 rounded-xl border border-border bg-surface p-1 shadow-lg dark:bg-surface-raised'
+
+export const CANVAS_TOOLBAR_CLASSES: string = `absolute bottom-4 left-1/2 z-30 -translate-x-1/2 ${CANVAS_TOOLBAR_BOX_CLASSES}`
 
 export const CANVAS_TOOLBAR_GROUP_CLASSES: string = 'flex items-center gap-0.5'
 
@@ -126,7 +130,7 @@ export const CANVAS_PERFORMANCE_ON_CLASSES: string =
   'bg-brand-surface text-brand-fg hover:bg-brand-surface'
 
 export const CANVAS_SELECTION_COUNT_CLASSES: string =
-  'px-2 text-xs font-semibold tabular-nums text-fg-strong'
+  'whitespace-nowrap px-2 text-xs font-semibold tabular-nums text-fg-strong'
 
 // El control segmentado: riel hundido con la opcion activa en pastilla elevada. Lo comparten
 // ViewModeSwitch y PayloadDestinationSwitch. El activo no va en naranja aunque sea la eleccion
