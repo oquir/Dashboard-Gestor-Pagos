@@ -45,7 +45,7 @@ import type {
   RepeatableGroup,
 } from '../types/formStructure'
 import type { BurstGate, HistoryPastState, HistorySnapshot } from '../types/history'
-import type { CanvasTarget } from '../types/placement'
+import type { CanvasTarget, FieldPlacement } from '../types/placement'
 import type { StateSlice } from '../types/store'
 import { createBanksSlice } from './banksSlice'
 import {
@@ -338,6 +338,40 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
             step.stepId === stepId ? { ...step, rows: [...step.rows, newRow] } : step,
           ),
         },
+      }
+    }),
+  // El clic en la paleta: fila nueva al final del paso activo con el campo adentro, en un solo set
+  // para que Ctrl+Z la deshaga de una vez (addRowToActiveCanvas + addFieldToRow dejarian dos pasos).
+  // La fila nace suelta, nunca dentro de un grupo repetible.
+  appendFieldToActiveCanvas: (fieldType) =>
+    set((state) => {
+      const emptyRow: CanvasRow = createEmptyRow()
+      const placement: FieldPlacement | null = resolvePlacement(emptyRow, GRID_BASE_COLUMNS)
+      if (!placement) return state
+      const newField: CanvasField = createEmptyField(
+        fieldType.type,
+        fieldType.label,
+        placement,
+        allFieldNames(state),
+      )
+      const newRow: CanvasRow = { ...emptyRow, fields: [newField] }
+      const stepId: string = state.activeCanvas.stepId
+      if (state.activeCanvas.type === 'formStep') {
+        return {
+          formSteps: state.formSteps.map((step) =>
+            step.stepId === stepId ? { ...step, rows: [...step.rows, newRow] } : step,
+          ),
+          selectedFieldIds: [newField.id],
+        }
+      }
+      return {
+        introModal: {
+          ...state.introModal,
+          steps: state.introModal.steps.map((step) =>
+            step.stepId === stepId ? { ...step, rows: [...step.rows, newRow] } : step,
+          ),
+        },
+        selectedFieldIds: [newField.id],
       }
     }),
   updateRowColumns: (rowId, columns) =>

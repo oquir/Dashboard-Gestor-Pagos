@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { Layers, Plus, Trash6, Xmark } from 'reicon-react'
 import {
   CANVAS_SELECTION_COUNT_CLASSES,
@@ -7,9 +6,8 @@ import {
   CANVAS_TOOLBAR_GROUP_CLASSES,
   CANVAS_TOOLBAR_ICON_ACTION_CLASSES,
 } from '../../../constants/uiClasses'
+import { useCanvasReveal } from '../../../hooks/useCanvasReveal/useCanvasReveal'
 import { useFormHistory } from '../../../hooks/useFormHistory/useFormHistory'
-import { revealScrollBehavior } from '../../../lib'
-import { getBandElement, getRowElement } from '../../../lib/canvasDom/canvasDom'
 import { getActiveGroups, getActiveRows, useFormStore } from '../../../store/formStore'
 import type { CanvasRow, RepeatableGroup } from '../../../types/formStructure'
 import { MoveToStepMenu } from '../MoveToStepMenu/MoveToStepMenu'
@@ -19,7 +17,6 @@ import {
   TOOLBAR_DANGER_CLASSES,
   TOOLBAR_LAYER_CLASSES,
 } from './CanvasToolbar.constants'
-import type { CanvasReveal } from './CanvasToolbar.types'
 import { CanvasToolPicker, HistoryButtons, PerformanceModeToggle } from '../../molecules'
 import { Tooltip } from '../../atoms'
 
@@ -35,26 +32,7 @@ export function CanvasToolbar() {
   const removeFields = useFormStore((state) => state.removeFields)
   const moveFieldsToStep = useFormStore((state) => state.moveFieldsToStep)
   const { canUndo, canRedo, undo, redo } = useFormHistory()
-  // Lo agregado cae al final del paso, que con la barra flotando puede quedar lejos de lo que se
-  // esta mirando. La vista se lleva hasta ahi despues del commit, cuando el nodo nuevo ya existe.
-  const [pendingReveal, setPendingReveal] = useState<CanvasReveal | null>(null)
-
-  useEffect(() => {
-    if (!pendingReveal) return
-
-    const element: HTMLElement | null =
-      pendingReveal.kind === 'row'
-        ? getRowElement(pendingReveal.id)
-        : getBandElement(pendingReveal.id)
-
-    element?.scrollIntoView({
-      block: 'nearest',
-      inline: 'nearest',
-      behavior: revealScrollBehavior(useFormStore.getState().isLowPerformance),
-    })
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- consume el reveal pendiente despues del commit
-    setPendingReveal(null)
-  }, [pendingReveal])
+  const setPendingReveal = useCanvasReveal()
 
   function handleAddRow(): void {
     const before: number = getActiveRows(useFormStore.getState()).length
