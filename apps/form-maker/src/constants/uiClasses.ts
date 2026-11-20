@@ -4,7 +4,7 @@ import { ENTER_POP_CLASSES } from './animations'
 // copia; donde el texto crudo no coincidia con el token (colores de dark mode escritos a mano) se
 // tomo el token como version correcta y se ajusto el archivo que se desviaba.
 
-export const HINT_CLASSES: string = 'text-[11px] text-fg-subtle'
+export const HINT_CLASSES: string = 'text-[11px] text-fg-muted'
 
 export const ERROR_CLASSES: string = 'text-[11px] text-danger'
 
@@ -20,7 +20,7 @@ export const BADGE_LOADED_CLASSES: string =
   'rounded-md border border-emerald-300 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold tabular-nums text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-300'
 
 export const BADGE_EMPTY_CLASSES: string =
-  'rounded-md border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-fg-subtle'
+  'rounded-md border border-border bg-surface px-1.5 py-0.5 text-[10px] font-semibold text-fg-muted'
 
 export const INPUT_CLASSES: string =
   'w-full rounded-md border border-border bg-field px-2 py-1 text-xs text-fg outline-none focus:border-brand-border'

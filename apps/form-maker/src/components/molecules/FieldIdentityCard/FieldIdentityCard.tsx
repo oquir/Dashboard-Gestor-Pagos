@@ -23,7 +23,7 @@ export function FieldIdentityCard({ field, linkedLabel }: FieldIdentityCardProps
         <p className="wrap-break-word text-sm font-medium leading-snug text-fg-strong">
           {visibleLabel || <span className="italic text-fg-muted">Sin texto</span>}
         </p>
-        <p className="mt-0.5 text-[11px] text-fg-muted">
+        <p className="mt-0.5 text-[11px] text-fg-soft">
           {typeLabel}
           {linkedLabel && ' · el texto lo aporta una etiqueta ligada'}
         </p>
