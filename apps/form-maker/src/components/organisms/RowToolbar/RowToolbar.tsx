@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Xmark } from 'reicon-react'
+import { Trash6 } from 'reicon-react'
 import { CHROME_ON_ROW_CLASSES, CHROME_PINNED_CLASSES } from '../../../constants'
 import { useFormStore } from '../../../store'
 import { IconButton } from '../../atoms'
@@ -50,7 +50,7 @@ export function RowToolbar({ row, listeners, attributes, pinned }: RowToolbarPro
         aria-label="Eliminar fila"
         className={ROW_TOOLBAR_DANGER_ITEM_CLASSES}
       >
-        <Xmark size={12} weight="Filled" />
+        <Trash6 size={13} />
       </IconButton>
     </div>
   )
