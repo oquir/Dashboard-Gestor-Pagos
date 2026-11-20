@@ -2,7 +2,7 @@ import type { RightSidebarTabItem } from './RightSidebar.types'
 
 export const TABS: RightSidebarTabItem[] = [
   { id: 'project', label: 'Proyecto' },
-  { id: 'steps', label: 'Steps' },
+  { id: 'steps', label: 'Pasos' },
 ]
 
 // Subrayado y no pastilla: la pastilla apoyaba una superficie elevada sobre otra y la pestana activa

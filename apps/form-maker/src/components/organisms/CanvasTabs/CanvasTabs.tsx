@@ -24,7 +24,7 @@ export function CanvasTabs() {
 
   return (
     <div className="flex flex-col gap-3">
-      <nav aria-label="Steps del formulario">
+      <nav aria-label="Pasos del formulario">
         <span className={GROUP_CAPTION_CLASSES}>Formulario</span>
         {/* Con todos los chips del mismo ancho entran 8 por fila, asi que el tope solo entra en
             juego pasados ~40 steps: el panel no rueda nunca, pero esta grilla si puede, y es el
@@ -49,7 +49,7 @@ export function CanvasTabs() {
                     transferState={isActive ? 'idle' : transferState}
                     onSelect={() => setActiveCanvas({ type: 'formStep', stepId: step.stepId })}
                     onRemove={formSteps.length > 1 ? () => removeFormStep(step.stepId) : undefined}
-                    removeTitle="Eliminar step"
+                    removeTitle="Eliminar paso"
                     removeIconSize={12}
                   />
                 </li>
@@ -58,8 +58,8 @@ export function CanvasTabs() {
             <li>
               <DashedAddButton
                 onClick={addFormStep}
-                title="Agregar step al formulario"
-                aria-label="Agregar step al formulario"
+                title="Agregar paso al formulario"
+                aria-label="Agregar paso al formulario"
                 className={ADD_BUTTON_CLASSES}
               >
                 <Plus size={14} weight="Filled" />
@@ -69,7 +69,7 @@ export function CanvasTabs() {
         </div>
       </nav>
 
-      <nav aria-label="Steps del modal de entrada" className="border-t border-border pt-3">
+      <nav aria-label="Pasos del modal de entrada" className="border-t border-border pt-3">
         <span className={GROUP_CAPTION_CLASSES}>Modal de entrada</span>
         <ul className="flex list-none flex-wrap items-center gap-2">
           {introSteps.map((step, index) => {

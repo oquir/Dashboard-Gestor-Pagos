@@ -39,7 +39,7 @@ export function FormSummary() {
       <div className={`${METRICS_GRID_CLASSES} ${hasIntro ? 'grid-cols-3' : 'grid-cols-2'}`}>
         <div className={METRIC_CELL_CLASSES}>
           <span className={METRIC_NUMBER_CLASSES}>{formSteps.length}</span>
-          <span className={METRIC_CAPTION_CLASSES}>Steps</span>
+          <span className={METRIC_CAPTION_CLASSES}>Pasos</span>
         </div>
         {hasIntro && (
           <div className={METRIC_CELL_CLASSES}>

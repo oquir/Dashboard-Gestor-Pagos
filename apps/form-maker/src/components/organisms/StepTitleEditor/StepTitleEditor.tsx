@@ -37,7 +37,7 @@ export function StepTitleEditor() {
     <div className="flex flex-col gap-3">
       <LabeledInput
         id="step-title"
-        label="Título del step"
+        label="Título del paso"
         required
         value={step.title}
         onChange={(event) =>
@@ -49,7 +49,7 @@ export function StepTitleEditor() {
       />
       <LabeledInput
         id="step-subtitle"
-        label="Subtítulo del step (opcional)"
+        label="Subtítulo del paso (opcional)"
         value={step.subtitle ?? ''}
         onChange={(event) =>
           activeCanvas.type === 'formStep'
