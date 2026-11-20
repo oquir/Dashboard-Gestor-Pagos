@@ -94,7 +94,14 @@ export function Sidebar() {
               activeTab !== 'fechas' &&
               activeTab !== 'logic' &&
               !selectedField &&
-              !isMultiSelection && <p>Sin campo seleccionado.</p>}
+              !isMultiSelection && (
+                // Un clic en un campo no abre esta pestana por decision del usuario (abrir el panel
+                // en cada clic incomodaba): el vacio dice cuales son los gestos que si la abren.
+                <p>
+                  Sin campo seleccionado. Haz doble clic en un campo del lienzo para editarlo aquí,
+                  o clic derecho para abrir su menú.
+                </p>
+              )}
             {selectedField && activeTab === 'attributes' && (
               <AttributesPanel field={selectedField} />
             )}
