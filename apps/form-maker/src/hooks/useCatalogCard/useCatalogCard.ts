@@ -5,7 +5,7 @@ import { useFormStore } from '../../store'
 import type { CatalogEntry, CatalogParseResult } from '../../types'
 import type { UseCatalogCardParams, UseCatalogCardResult } from './useCatalogCard.types'
 
-// Estado y logica para la tarjeta de configuracion de cada catalogo en el panel de catalogos.
+// Estado de la tarjeta de cada catalogo del panel Catalogos.
 export function useCatalogCard({ catalog, stored }: UseCatalogCardParams): UseCatalogCardResult {
   const setCatalogEntries = useFormStore((state) => state.setCatalogEntries)
   const setCatalogSource = useFormStore((state) => state.setCatalogSource)

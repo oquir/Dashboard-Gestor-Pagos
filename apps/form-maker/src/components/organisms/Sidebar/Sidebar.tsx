@@ -31,8 +31,8 @@ export function Sidebar() {
   const toggleDarkMode = useFormStore((state) => state.toggleDarkMode)
   const isSidebarOpen = useFormStore((state) => state.isSidebarOpen)
   const setSidebarOpen = useFormStore((state) => state.setSidebarOpen)
-  // Con varios seleccionados las pestanas de campo no tienen a quien editar, y la de Logica no debe
-  // caer al preludio como si no hubiera nada seleccionado.
+  // Con varios seleccionados las pestanas de campo no tienen a quien editar, y Logica no cae al
+  // preludio.
   const isMultiSelection: boolean = selectedFieldIds.length > 1
   const isFieldTab: boolean = FIELD_TABS.includes(activeTab)
 
@@ -54,8 +54,7 @@ export function Sidebar() {
         onToggleDarkMode={toggleDarkMode}
       />
 
-      {/* Contraido, el panel sigue montado (recortado por el aside de 56 px de AppLayout): sin inert
-          el Tab entraba a sus botones y el navegador desplazaba el aside para mostrarlos. */}
+      {/* Contraido sigue montado: sin inert, el Tab entraba a sus botones y desplazaba el aside. */}
       <section
         aria-label={activeTabDef?.label ?? 'Panel de edición'}
         inert={!isSidebarOpen}
@@ -83,7 +82,7 @@ export function Sidebar() {
         />
 
         <div className="flex-1 overflow-y-auto p-4 text-sm text-fg-muted">
-          {/* El key es la pestaña: al cambiar, el contenido se remonta y entra (ENTER_RISE_CLASSES). */}
+          {/* Key por pestana: al cambiar, el contenido se remonta y entra. */}
           <div key={activeTab} className={ENTER_RISE_CLASSES}>
             {activeTab === 'fields' && <FieldPalette />}
             {isMultiSelection && isFieldTab && (
@@ -97,8 +96,8 @@ export function Sidebar() {
               activeTab !== 'logic' &&
               !selectedField &&
               !isMultiSelection && (
-                // Un clic en un campo no abre esta pestana por decision del usuario (abrir el panel
-                // en cada clic incomodaba): el vacio dice cuales son los gestos que si la abren.
+                // Un clic en un campo no abre esta pestana (decision del usuario): el vacio dice
+                // que gestos la abren.
                 <p>
                   Sin campo seleccionado. Haz doble clic en un campo del lienzo para editarlo aquí,
                   o clic derecho para abrir su menú.
@@ -111,8 +110,7 @@ export function Sidebar() {
               <ValidationsPanel field={selectedField} />
             )}
             {selectedField && activeTab === 'styles' && <StylesPanel field={selectedField} />}
-            {/* Con campo, el script de ese campo; sin campo, el del formulario. Es la misma
-              convencion que ya usan las pestañas que funcionan sin seleccion. */}
+            {/* Con campo, su script; sin campo, el del formulario. */}
             {activeTab === 'logic' &&
               !isMultiSelection &&
               (selectedField ? <LogicPanel field={selectedField} /> : <FormScriptEditor />)}

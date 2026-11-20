@@ -1,13 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { GroupCheck } from '../../types/groupCheck'
 
-// Comprobaciones que abarcan un grupo repetible entero, en su forma declarativa: crear una y
-// decidir cuales cuentan. Nada de ejecutarlas.
-//
-// Esa division no es estetica. El exportador necesita filtrar las encendidas, y el exportador vive
-// del lado del builder; si desde aca se importara el evaluador, exportar arrastraria el runtime del
-// simulador al chunk inicial. Ejecutar una comprobacion es cosa de runtimeValidation, que ya esta
-// del otro lado de la frontera.
+// Comprobaciones de grupo en forma declarativa, sin ejecutarlas: el exportador vive en el builder y
+// no puede arrastrar el runtime del simulador.
 
 export function createGroupCheck(): GroupCheck {
   return { id: uuidv4(), label: '', enabled: true, script: '', message: '' }

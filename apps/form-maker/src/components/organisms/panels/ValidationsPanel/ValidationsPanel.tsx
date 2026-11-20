@@ -34,14 +34,12 @@ export function ValidationsPanel({ field }: { field: CanvasField }) {
     field.type === 'select' ||
     field.type === 'datalist' ||
     isContactField(field.type)
-  // Telefono y correo ya validan sin patron: lo vacio no es "sin formato" sino "el de fabrica".
+  // Telefono y correo validan sin patron: vacio es "el de fabrica".
   const builtInFormat: PatternRule | undefined = builtInFormatOf(field)
-  // La longitud se declara una sola vez pero se cuenta distinto, asi que son dos controles: en
-  // texto son caracteres y en numero digitos de la parte entera. Un select queda afuera de los dos
-  // -- su valor es el id de una opcion y buildZodSchema ni mira la longitud.
+  // Longitud en dos controles: caracteres en texto, digitos enteros en numero. Un select no tiene
+  // ninguno.
   const countsChars: boolean = supportsMaxLength(field.type) && !isNumeric
-  // Un checkbox no tiene nada basico que declarar: no lleva "requerido" -su esquema es z.boolean()
-  // y buildZodSchema nunca le agrega .optional()- ni longitud ni rango. La seccion quedaria vacia.
+  // Checkbox no tiene reglas basicas (z.boolean(), nunca opcional): la seccion quedaria vacia.
   const showsBasicRules: boolean = field.type !== 'checkbox'
 
   if (isPresentationalField(field.type)) {

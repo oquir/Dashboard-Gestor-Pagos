@@ -10,10 +10,8 @@ import { CssValidationHint } from '../../molecules'
 import { PxInput } from '../../molecules'
 import type { RowStylesMenuProps } from './RowStylesMenu.types'
 
-// Mismo icono que la pestaña "Estilos" de un campo (Sidebar.constants): es el mismo concepto, un
-// nivel mas arriba. A proposito no ofrece color de fondo ni de texto -- ver el comentario en
-// types/formStructure -- asi que solo hay dos secciones, no las tres de StylesPanel. El
-// abierto/cerrado lo lleva la barra que lo contiene.
+// A proposito sin color de fondo ni de texto (ver types/formStructure). El abierto/cerrado lo lleva
+// la barra.
 export function RowStylesMenu({ rowId, styles, isOpen, onToggle, onClose }: RowStylesMenuProps) {
   const updateRowStyles = useFormStore((state) => state.updateRowStyles)
   const containerRef = useRef<HTMLDivElement | null>(null)

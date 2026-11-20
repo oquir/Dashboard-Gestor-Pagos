@@ -3,8 +3,7 @@ import { Button } from '../../atoms'
 import { CrashPanel } from '../../molecules'
 import type { PdfDesignerCrashScreenProps } from './PdfDesignerCrashScreen.types'
 
-// El diseñador de PDF se carga en un chunk aparte y tiene su propio store, asi que si falla el
-// formulario no se toco: basta con cerrarlo. Lo ultimo guardado del diseño sigue en su llave.
+// Chunk y store propios: si falla, el formulario no se toco y basta con cerrarlo.
 export function PdfDesignerCrashScreen({ message }: PdfDesignerCrashScreenProps) {
   const setPdfDesignerOpen = useFormStore((state) => state.setPdfDesignerOpen)
 

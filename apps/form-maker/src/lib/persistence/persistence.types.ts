@@ -1,5 +1,4 @@
-// El borrador antes de pasar por Zod: viene de localStorage, que se puede editar desde las
-// devtools, asi que hasta que valide no se le supone ninguna forma.
+// Antes de Zod no se le supone forma (localStorage se edita desde las devtools).
 export type LooseDraft = Record<string, unknown>
 
 export type DraftMigration = (draft: LooseDraft) => LooseDraft

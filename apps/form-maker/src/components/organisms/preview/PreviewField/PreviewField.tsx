@@ -16,12 +16,11 @@ export function PreviewField({
   error,
   onChange,
 }: PreviewFieldProps) {
-  // Precedencia del contrato: si visibleWhen da falso el campo no se dibuja ni se valida.
+  // Si visibleWhen da falso, el campo no se dibuja ni se valida.
   if (!scope.visible[field.name]) return null
 
-  // Los estilos ya llegan resueltos a CSS plano desde el export (ver lib/cssStyles); aca solo se
-  // completa con la posicion en el grid, y va al final para que gane sobre cualquier CSS libre
-  // que el autor haya escrito.
+  // Los estilos llegan resueltos desde el export; la posicion en el grid va al final para ganarle
+  // al CSS libre.
   const style: CSSProperties = {
     ...(field.styles as CSSProperties),
     gridColumn: `${field.colStart} / span ${field.colSpan}`,

@@ -1,4 +1,4 @@
-// Lo que se lanza no siempre es un Error: un throw de cualquier valor tambien llega aca.
+// Un throw puede lanzar cualquier valor, no solo un Error.
 export function describeError(error: unknown): string {
   if (error instanceof Error && error.message.trim() !== '') return error.message
   const text: string = String(error)

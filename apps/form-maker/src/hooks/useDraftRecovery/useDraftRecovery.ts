@@ -6,19 +6,17 @@ import type { DraftLoad } from '../../types'
 import { NOTHING_PENDING } from './useDraftRecovery.constants'
 import type { PendingDraft } from './useDraftRecovery.types'
 
-// Corre antes que el asistente de configuracion: si hay borrador guardado se ofrece recuperarlo.
+// Corre antes del asistente: si hay borrador guardado, ofrece recuperarlo.
 export function useDraftRecovery(): DraftRecovery {
   const restoreDraft = useFormStore((state) => state.restoreDraft)
-  // null es "todavia no se miro". Sin ese estado el primer render mostraria el asistente un
-  // instante antes de descubrir que habia borrador.
+  // null: todavia no se miro (si no, el asistente asomaria un instante).
   const [pending, setPending] = useState<PendingDraft | null>(null)
 
   useEffect(() => {
     const result: DraftLoad = loadDraft()
 
-    // Un borrador que no valida se borra en el acto. Dejarlo seria releerlo y rechazarlo en cada
-    // arranque, y el objeto manipulado sobreviviria a la sesion que lo detecto. Al store nunca
-    // llega: solo restoreDraft lo escribe, y ese camino exige status "ok".
+    // Un borrador invalido se borra en el acto y nunca llega al store (solo restoreDraft escribe, y
+    // exige status ok).
     if (result.status === 'invalid') {
       clearDraft()
       // eslint-disable-next-line react-hooks/set-state-in-effect -- el borrador se lee de localStorage al montar

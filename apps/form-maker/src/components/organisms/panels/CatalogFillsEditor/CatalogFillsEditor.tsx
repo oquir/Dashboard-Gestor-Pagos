@@ -53,7 +53,7 @@ export function CatalogFillsEditor({ field }: CatalogFillsEditorProps) {
       <ul className="flex list-none flex-col gap-1.5">
         {fills.map((fill, index) => (
           <li
-            // biome-ignore lint/suspicious/noArrayIndexKey: un relleno no tiene id y dos pueden ser iguales ("Agregar" siempre crea el mismo); la fila no guarda estado propio
+            // Key por indice: un relleno no tiene id y dos pueden ser iguales.
             key={index}
             className="flex items-center gap-1.5"
           >

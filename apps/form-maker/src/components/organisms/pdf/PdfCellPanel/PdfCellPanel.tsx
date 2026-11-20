@@ -20,11 +20,7 @@ import { PdfComponentPanel } from '../PdfComponentPanel'
 import { PdfStyleFields } from '../PdfStyleFields'
 import { CONTENT_KINDS } from './PdfCellPanel.constants'
 
-// La celda seleccionada, para quien apenas programa: casi todo son botones. El contenido es el de la
-// celda del foco (la ultima que se toco); el estilo y las clases se aplican a todas las del
-// rectangulo seleccionado, para poder poner una fila entera en negrilla de una vez. Lo mejor es
-// darle a la celda una clase: el estilo propio de cada celda sale repetido en el .html. Estilos en
-// linea quedan abajo, en "Avanzado", para quien los necesite.
+// Contenido de la celda del foco; estilo y clases a todo el rectangulo seleccionado.
 export function PdfCellPanel() {
   const design = usePdfDesignStore((state) => state.design)
   const selection = usePdfDesignStore((state) => state.selection)

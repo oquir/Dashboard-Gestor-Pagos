@@ -29,10 +29,8 @@ import {
   RANGE_START_MISSING,
 } from './zodSchema.constants'
 
-// Genera el schema de Zod como texto, que es lo unico que viaja en el export. El consumidor lo
-// ejecuta con new Function, asi que lo de aca tiene que ser una expresion valida por si sola.
-// Ojo: no sabe nada de visibleWhen. Un campo obligatorio y oculto igual exporta su `.min(1)`,
-// porque cuando se ve la exigencia es real; es el consumidor quien debe sacarlo del resolver.
+// El schema como texto: el consumidor lo ejecuta con new Function. No sabe de visibleWhen: sacar un
+// campo oculto del resolver es cosa del consumidor.
 
 export function buildGroupZodSchema(group: RepeatableGroup, fields: CanvasField[]): string {
   const shape: string = fields
@@ -47,8 +45,7 @@ export function buildZodSchema(field: CanvasField): string {
   return buildSchemaFor(field, field.validations)
 }
 
-// El schema de una variante condicional. Las reglas del override se fusionan sobre las de base:
-// declarar solo `pattern` cambia el patron y deja el resto como estaba.
+// Las reglas del override se fusionan sobre las de base.
 export function buildOverrideZodSchema(
   field: CanvasField,
   override: FieldValidationOverride,
@@ -56,8 +53,7 @@ export function buildOverrideZodSchema(
   return buildSchemaFor(field, mergeValidationRules(field.validations, override.validations))
 }
 
-// Se ignoran las claves en undefined en vez de dejar que el spread las escriba: un override que
-// trae `pattern: undefined` quiere decir "no toco el patron", no "borro el de base".
+// Las claves undefined no se escriben: pattern: undefined es no tocar, no borrar.
 function mergeValidationRules(
   base: FieldValidationRules,
   patch: FieldValidationRules,
@@ -78,8 +74,7 @@ function dateSchema(pattern: string, invalidMessage: string, missingMessage?: st
   return `z.string()${missing}.regex(new RegExp(${JSON.stringify(pattern)}), { message: ${JSON.stringify(invalidMessage)} })`
 }
 
-// Un limite como refine. Se compara solo la fecha -- los diez primeros caracteres --, asi que con
-// hora el limite es por dia: "no posterior a hoy" acepta hoy a las 11 de la noche.
+// Compara solo la fecha: con hora el limite es por dia.
 function boundRefine(
   accessor: string,
   bound: DateBound | undefined,
@@ -94,11 +89,8 @@ function boundRefine(
   return `.refine((v) => ${accessor}.slice(0, 10) ${operator} ${boundExpression(bound)}, { message: ${message} })`
 }
 
-// Las dos puntas son obligatorias dentro del rango aunque el campo sea opcional: un rango opcional
-// sin llenar llega como undefined y pasa por el .optional(), pero uno a medias es un error. El orden
-// se compara como texto, que con AAAA-MM-DD y AAAA-MM-DDTHH:mm da lo mismo que comparar fechas.
-// Los limites van a la punta que pueden romper: con el orden ya exigido, si la inicial no es
-// anterior al minimo la final tampoco, y si la final no pasa del maximo la inicial tampoco.
+// Dentro del rango las dos puntas son obligatorias (vacio pasa por .optional(), a medias no). Se
+// compara como texto. Cada limite va a la punta que puede romperlo.
 function dateRangeSchema(pattern: string, v: FieldValidationRules): string {
   const start: string = dateSchema(pattern, RANGE_START_INVALID, RANGE_START_MISSING)
   const end: string = dateSchema(pattern, RANGE_END_INVALID, RANGE_END_MISSING)
@@ -128,9 +120,8 @@ function buildSchemaFor(field: CanvasField, v: FieldValidationRules): string {
   let schema: string
 
   if (isOptionBasedField(field.type)) {
-    // Solo se enumeran los valores de un campo que no va al contrato -excluido o concepto-, que es
-    // el unico caso en que el builder los conoce. Uno mapeado recibe sus opciones del catalogo en
-    // tiempo de ejecucion, asi que cae en z.string(): no se puede enumerar lo que no se ha visto.
+    // Solo se enumeran las opciones de un campo fuera del contrato; uno mapeado las recibe del
+    // catalogo y cae en z.string().
     const options: FieldOption[] = exportableOptions(field) ?? []
     const ids: string[] = options.map((option) => JSON.stringify(option.id))
     schema = ids.length > 0 ? `z.enum([${ids.join(', ')}])` : 'z.string()'
@@ -148,9 +139,7 @@ function buildSchemaFor(field: CanvasField, v: FieldValidationRules): string {
       schema = 'z.number()'
       if (v.min !== undefined) schema += `.min(${v.min})`
       if (v.max !== undefined) schema += `.max(${v.max})`
-      // El tope de longitud de un numero son digitos de la parte entera, no caracteres ni valor.
-      // No hay forma de decirlo con .max(): 999999999,99 tiene nueve digitos enteros y se pasaria
-      // de cualquier tope de valor que se escriba, asi que va como refine.
+      // Digitos de la parte entera, como refine: con .max() no se puede decir.
       const digits: number | undefined = effectiveMaxLength(v.maxLength)
       if (digits !== undefined) {
         schema += `.refine((n) => Math.abs(Math.trunc(n)).toString().length <= ${digits}, { message: "Máximo ${digits} dígitos" })`
@@ -177,8 +166,7 @@ function buildSchemaFor(field: CanvasField, v: FieldValidationRules): string {
     default: {
       schema = 'z.string()'
       if (v.minLength !== undefined) schema += `.min(${v.minLength})`
-      // Por effectiveMaxLength y no por v.maxLength directo: es el mismo numero que el input va a
-      // aplicar como maxLength nativo, y leerlo distinto en cada lado los pondria a discrepar.
+      // effectiveMaxLength, el mismo que aplica el input: si no, discreparian.
       const chars: number | undefined = effectiveMaxLength(v.maxLength)
       if (chars !== undefined) schema += `.max(${chars})`
       // Un telefono o un correo sin patron propio igual sale con el de su tipo: ver lib/fieldContact.
@@ -193,8 +181,7 @@ function buildSchemaFor(field: CanvasField, v: FieldValidationRules): string {
     }
   }
 
-  // Que un campo sea obligatorio se expresa por omision: no se agrega `.optional()`. Es lo que
-  // luego lee isRequiredBySchema para pintar el asterisco, ya que `required` no se exporta.
+  // Obligatorio por omision de .optional(); isRequiredBySchema lo lee para el asterisco.
   if (!v.required && field.type !== 'checkbox') {
     schema += '.optional()'
   }

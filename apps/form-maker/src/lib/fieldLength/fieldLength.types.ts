@@ -4,8 +4,8 @@ export interface AuthoredLengthField {
   validations: { maxLength?: number }
 }
 
-// La forma exportada: el tope sale ademas como clave propia. El input lo necesita como numero, y
-// adentro del texto del schema no hay como leerlo sin ponerse a parsearlo.
+// En el export el tope sale tambien como clave propia: dentro del texto del schema no se puede
+// leer.
 export interface LengthLimitedField {
   type: string
   maxLength?: number

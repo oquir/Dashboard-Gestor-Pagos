@@ -7,10 +7,7 @@ import {
 } from './simpleCalc.constants'
 import type { CalcShape } from './simpleCalc.types'
 
-// Lee de izquierda a derecha la forma que escribe buildSimpleCalcScript, saltando los espacios
-// entre piezas. Es permisivo en los detalles (parentesis, sum, el punto y coma) porque quien decide
-// si el texto es de verdad del modal es la comparacion con lo regenerado; aca solo se corta en el
-// primer caracter que no encaja.
+// Permisivo en los detalles: decide la comparacion con lo regenerado.
 export function readCalcShape(source: string): CalcShape | null {
   let position: number = 0
 

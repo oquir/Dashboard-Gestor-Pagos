@@ -1,4 +1,4 @@
-// Los textos de las reglas condicionales que repiten el resumen del sidebar y el modal que las edita.
+// Textos que comparten el resumen del panel y el modal de reglas.
 export const RULES_HINT: string =
   'Corren después del script y pisan lo que haya devuelto, de arriba hacia abajo. Una regla sin condiciones se cumple siempre.'
 

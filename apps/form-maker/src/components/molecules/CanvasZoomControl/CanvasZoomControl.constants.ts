@@ -1,5 +1,4 @@
-// Los saltos que ofrece el menu. Todos caen dentro de [ZOOM_MIN, ZOOM_MAX]: si alguno se saliera,
-// clampZoom lo recortaria y el menu mostraria un porcentaje que al elegirlo da otro.
+// Dentro de [ZOOM_MIN, ZOOM_MAX]: si no, clampZoom aplicaria otro porcentaje que el del menu.
 export const ZOOM_PRESETS: number[] = [0.5, 0.75, 1, 1.25, 1.5]
 
 export const ZOOM_TRIGGER_CLASSES: string =

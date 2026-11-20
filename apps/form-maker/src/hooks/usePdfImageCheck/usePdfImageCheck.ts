@@ -3,10 +3,8 @@ import { isSafePdfImageSrc } from '../../lib/pdfHtml'
 import type { PdfImageCheck } from '../../types'
 import { NO_IMAGE_CHECK, VARIABLE_SOURCE } from './usePdfImageCheck.constants'
 
-// Carga la imagen de un componente del PDF para saber cuanto mide de verdad: con eso la barra
-// lateral avisa si pesa mucho mas de lo que se muestra (lib/pdfComponents, pdfImageWarnings). Lo
-// que no se puede cargar (vacio, una {Var} del back, una ruta no segura) queda en 'none'. Es del
-// diseñador de PDF (chunk perezoso): fuera de hooks/index.ts.
+// Carga la imagen de un componente para saber su tamano real y avisar si pesa mucho mas de lo que
+// se muestra. Lo que no se puede cargar queda en 'none'. Chunk del PDF: fuera de hooks/index.ts.
 export function usePdfImageCheck(src: string): PdfImageCheck {
   const value: string = src.trim()
   const loadable: boolean = value !== '' && !VARIABLE_SOURCE.test(value) && isSafePdfImageSrc(value)

@@ -1,8 +1,7 @@
 import { getCanvasScrollPort } from '../../lib'
 
-// :hover lo resuelve el navegador con la ultima posicion conocida del puntero. El puerto es el <main>
-// del diseñador (lleva data-canvas-scroll), asi que Espacio solo es la mano con el puntero sobre las
-// hojas: con el foco en un boton de la barra lateral tiene que seguir activandolo.
+// Espacio solo es la mano con el puntero sobre las hojas: en un boton de la barra lateral tiene que
+// activarlo.
 export function isPointerOverCanvas(): boolean {
   return getCanvasScrollPort()?.matches(':hover') ?? false
 }

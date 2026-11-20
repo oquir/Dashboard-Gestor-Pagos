@@ -1,6 +1,4 @@
 import type { PendingDraft } from './useDraftRecovery.types'
 
-// Constante a nivel de modulo y no un literal en cada setPending: el hook devuelve `renamed`
-// directo al componente, y un arreglo nuevo en cada render vuelve inestable cualquier dependencia
-// que lo mire.
+// Constante de modulo: un arreglo nuevo en cada render volveria inestable cualquier dependencia.
 export const NOTHING_PENDING: PendingDraft = { draft: null, renamed: [], wasInvalid: false }

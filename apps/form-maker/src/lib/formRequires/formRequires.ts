@@ -2,21 +2,10 @@ import type { ExportedFormSchema, ExportedSetupConfig, ExportedStep } from '../.
 import { FORM_SCHEMA_KEYS, SETUP_CONFIG_KEYS } from './formRequires.constants'
 import { declareHelpers, declareKeys, declareStep } from './formRequires.utils'
 
-// Lo que un consumidor tiene que saber hacer para ejecutar ESTE formulario sin perder nada en
-// silencio. Viaja en projectMeta.requires, y un consumidor que no reconoce alguna palabra se niega
-// a cargar el formulario en vez de dibujarlo a medias.
-//
-// Una lista y no un numero de version: un numero bloquearia tambien un formulario viejo que no usa
-// nada nuevo. La lista solo frena lo que de verdad no se sabe hacer.
-//
-// Se calcula sobre el export ya armado y no sobre el modelo, porque juzga lo que viaja: un tooltip
-// vacio o una comprobacion apagada no salen en el JSON, asi que tampoco pueden pedir nada.
-//
-// Dos clases de palabras:
-// - claves, como "alcance.clave": field.prefix, group.checks. Salen de las tablas de
-//   formRequires.constants, que el compilador obliga a mantener completas.
-// - valores de una lista cerrada sobre la que el consumidor decide, como "categoria:valor":
-//   type:date, operator:matches, helper:uvt, catalog:ciudades.
+// Lo que un consumidor tiene que saber hacer para ejecutar este formulario sin perder nada; viaja
+// en projectMeta.requires y el consumidor rechaza lo que no reconoce. Una lista y no una version.
+// Se calcula sobre el export armado.
+// Palabras de clave (field.prefix) y de valor en lista cerrada (type:date, helper:uvt).
 
 export function collectRequires(
   setupConfig: ExportedSetupConfig,
@@ -37,7 +26,6 @@ export function collectRequires(
     declareStep(words, step)
   }
 
-  // Ordenada para que dos exports del mismo formulario den la misma lista y un diff muestre solo
-  // lo que cambio.
+  // Ordenada: dos exports iguales dan la misma lista.
   return [...words].sort()
 }

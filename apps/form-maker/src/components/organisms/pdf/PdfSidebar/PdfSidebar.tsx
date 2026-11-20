@@ -13,9 +13,7 @@ import { PdfSheetsPanel } from '../PdfSheetsPanel'
 import { PdfTablePanel } from '../PdfTablePanel'
 import { SIDEBAR_TABS } from './PdfSidebar.constants'
 
-// La barra lateral amena del PDF (docs/Pendientes-PDF.md §2.1, docs/Plan-PDF-UX-P2.md): arriba,
-// fijo, lo de la hoja; debajo dos pestañas, lo seleccionado y lo de todo el documento. Con una celda
-// seleccionada su tabla va primero: agregar filas y combinar es lo que mas se usa al armar.
+// Arriba, fijo, lo de la hoja; debajo las pestanas Seleccion y Documento.
 export function PdfSidebar() {
   const selectionKind = usePdfDesignStore((state) => state.selection?.kind ?? null)
   const sidebarTab = usePdfDesignStore((state) => state.sidebarTab)

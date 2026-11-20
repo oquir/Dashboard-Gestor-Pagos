@@ -27,10 +27,8 @@ export function segmentClass(
   return JSON_TOKEN_CLASSES[segment.kind]
 }
 
-// Corta el texto de un segmento donde lo tocan las coincidencias. `from` es donde empieza el
-// segmento dentro del contenido de la linea, en la misma cuenta que las posiciones del buscador.
-// Una coincidencia puede cruzar segmentos ("name": cae entre la clave y los dos puntos), asi que
-// cada segmento pinta solo su tramo; la key es la posicion del tramo, que no se repite en la fila.
+// Corta el segmento donde lo tocan las coincidencias; una puede cruzar segmentos, asi que cada uno
+// pinta su tramo.
 function highlightPieces(text: string, from: number, highlights: JsonHighlight[]): ReactNode[] {
   const to: number = from + text.length
   const pieces: ReactNode[] = []

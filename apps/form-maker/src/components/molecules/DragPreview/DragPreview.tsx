@@ -9,11 +9,8 @@ export function DragPreview({ activeDrag }: DragPreviewProps) {
   const hoveredTransferTarget = useFormStore((state) => state.hoveredTransferTarget)
   const isLowPerformance = useFormStore((state) => state.isLowPerformance)
 
-  // Sobre una pestana la fila se encoge a la ficha: dibujada a tamano real tapa la tira entera de
-  // pestanas y no se ve cual esta resaltada, que es justo lo que hay que mirar ahi. En bajo
-  // rendimiento es ficha todo el viaje: la replica copia cada campo con su control de muestra y su
-  // sombra grande, y se repinta en cada movimiento del puntero. useDragAndDrop elige el modificador
-  // del overlay con la misma condicion.
+  // Sobre una pestana, y siempre en bajo rendimiento, la fila viaja como ficha. useDragAndDrop
+  // elige el modificador del overlay con la misma condicion.
   if (
     activeDrag.source === 'canvas-row' &&
     rowDrag &&

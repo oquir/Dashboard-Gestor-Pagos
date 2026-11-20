@@ -1,8 +1,7 @@
 import type { SelectionRect } from '../../types'
 import type { ScrollPoint } from './useCanvasMarquee.types'
 
-// Cuanto hay que sumarle a una coordenada de la ventana para llevarla al espacio de scroll del
-// puerto. Se calcula una vez por movimiento y no una vez por campo.
+// De ventana a espacio de scroll; una vez por movimiento, no por campo.
 export function scrollOffset(port: HTMLElement): ScrollPoint {
   const portRect: DOMRect = port.getBoundingClientRect()
 
@@ -18,8 +17,7 @@ export function shiftRect(rect: SelectionRect, offset: ScrollPoint): SelectionRe
   }
 }
 
-// El marco se dibuja fixed y fuera del puerto: sin recortarlo pintaria encima de los paneles cuando
-// el puntero sale del lienzo arrastrando.
+// Fixed y fuera del puerto: sin recortarlo pintaria sobre los paneles.
 export function clipToPort(port: HTMLElement, rect: SelectionRect): SelectionRect {
   const portRect: DOMRect = port.getBoundingClientRect()
 

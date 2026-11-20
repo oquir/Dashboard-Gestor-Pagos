@@ -17,10 +17,8 @@ import {
 } from './formRequires.constants'
 import type { KeyRule, KeyTable } from './formRequires.types'
 
-// Si el valor trae algo que un consumidor tendria que interpretar. false no cuenta: los booleanos
-// del export viajan como true o no viajan, salvo alwaysDisabled, que queda en false al apagarlo
-// desde el panel. Un objeto cuenta si alguna clave tiene valor: en memoria, antes de serializar,
-// las ausentes siguen ahi como undefined.
+// false no cuenta (salvo alwaysDisabled, que queda en false). Un objeto cuenta si alguna clave
+// tiene valor.
 function carriesValue(value: unknown): boolean {
   if (value === undefined || value === null || value === false || value === '') return false
   if (Array.isArray(value)) return value.length > 0
@@ -44,10 +42,8 @@ export function declareKeys<T extends object>(
   }
 }
 
-// Busca sobre el texto entero, comentarios y strings incluidos, y es a proposito: un falso
-// positivo solo pide de mas, mientras que separar codigo de texto aca -- con un recorrido distinto
-// del de fieldScript -- podria esconder una llamada real, que es justo el fallo silencioso que esta
-// lista existe para evitar.
+// Sobre el texto entero, comentarios incluidos: un falso positivo pide de mas, y separar codigo
+// podria esconder una llamada real.
 export function declareHelpers(words: Set<string>, code: string): void {
   for (const [name, pattern] of HELPER_PATTERNS) {
     if (pattern.test(code)) words.add(`helper:${name}`)

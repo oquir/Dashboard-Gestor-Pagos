@@ -2,9 +2,7 @@ import { Maximize22 } from 'reicon-react'
 import { CHROME_ON_FIELD_CLASSES, CHROME_PINNED_CLASSES } from '../../../constants/uiClasses'
 import type { FieldDragHandleProps } from './FieldDragHandle.types'
 
-// Se oculta entera al reposo, igual que el tirador de ancho. Antes solo se atenuaba el icono, asi
-// que la caja blanca quedaba pintada una vez por campo: era el peso repetido mas grande del lienzo.
-// Se esconde por opacidad y no desmontandola, para no sacarle el nodo a dnd-kit a mitad de gesto.
+// Se oculta con opacidad y no se desmonta: dnd-kit necesita el nodo a mitad del gesto.
 export function FieldDragHandle({
   listeners,
   attributes,

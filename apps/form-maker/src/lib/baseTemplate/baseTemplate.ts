@@ -37,10 +37,8 @@ import {
 import type { TemplateCondition, TemplateValidationOverride } from './baseTemplate.types'
 import { applyNumericDefaults, buildRow, resolveTemplateConditions } from './baseTemplate.utils'
 
-// Los ocho pasos del formulario de industria y comercio, escritos como filas de FieldSpec.
-// Es el unico tipo de formulario con plantilla; los demas arrancan con una fila vacia.
-// Los renglones calculados llevan script y alwaysDisabled, y la cadena de liquidacion sube de la
-// base gravable al total a pagar. SALDO_NETO es la subexpresion que comparten el 33 y el 34.
+// Los ocho pasos de Industria y Comercio como filas de FieldSpec (unica plantilla: los demas tipos
+// arrancan vacios). Los calculados llevan script y alwaysDisabled.
 
 // Un NIT identifica a una persona juridica: no tiene nombres ni apellidos que capturar.
 const SOLO_PERSONA_NATURAL: TemplateCondition = {
@@ -55,9 +53,7 @@ const SOLO_PERSONA_JURIDICA: TemplateCondition = {
   value: TIPO_DOCUMENTO_NIT,
 }
 
-// El maximo de digitos baja de 10 a 9 cuando el documento es un NIT. Recibe el nombre del selector
-// porque cada bloque tiene el suyo: el contribuyente, el declarante y el responsable no comparten
-// tipo de documento y cada override tiene que observar el de su propio bloque.
+// El maximo baja de 10 a 9 digitos con NIT. Cada bloque observa su propio tipo de documento.
 function nitOverride(tipoDocumentoField: string): TemplateValidationOverride {
   return {
     when: { field: tipoDocumentoField, operator: 'equals', value: TIPO_DOCUMENTO_NIT },
@@ -122,9 +118,8 @@ function buildActividadesStep(): FormStepTemplate {
     min: 1,
     max: 15,
     arrayPath: 'actividades',
-    // Encendida de fabrica: cuadrar es la regla y dejarlo pasar es la excepcion de los municipios
-    // que prefieren cobrar la multa despues. Apagarla es una decision visible; olvidarse de
-    // encenderla dejaria pasar evasion en silencio.
+    // Encendida de fabrica: apagarla es una decision visible; olvidar encenderla dejaria pasar
+    // evasion.
     checks: [
       {
         id: uuidv4(),
@@ -149,8 +144,8 @@ function buildActividadesStep(): FormStepTemplate {
             colSpan: 10,
             path: 'actividades[].idActividad',
             required: true,
-            // El codigo y la tarifa no se tipean: salen de la actividad elegida. Los dos campos
-            // van alwaysDisabled y se llenan solos al seleccionar, aca y en el consumidor.
+            // Codigo y tarifa salen de la actividad elegida (alwaysDisabled), aca y en el
+            // consumidor.
             dataSource: {
               catalog: CATALOG_ACTIVIDADES,
               fills: [
@@ -213,10 +208,8 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
         title: 'Datos',
         subtitle: 'Contribuyente',
         rows: [
-          // El catalogo se llama tipos_persona pero su endpoint es ListaTipoPersonaNoConvencional:
-          // no es natural contra juridica, son consorcio o union temporal y patrimonio autonomo. De
-          // ahi que el campo vaya arriba del documento y no al lado, y que no sea obligatorio: el
-          // contribuyente que no es ninguna de las dos cosas lo deja sin marcar.
+          // tipos_persona es ListaTipoPersonaNoConvencional (consorcio, union temporal, patrimonio
+          // autonomo): va arriba y no es obligatorio.
           buildRow([
             {
               name: 'tipo_persona_no_convencional',
@@ -663,9 +656,8 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               min: 0,
             },
           ]),
-          // El renglon 31 son tres campos en una linea: el rotulo, que tipo de sancion y cuanto.
-          // El tipo va en radio y no en desplegable porque son cuatro opciones cortas y asi se
-          // ven todas de una; inlineOptions es lo que las pone al lado en vez de una bajo otra.
+          // Renglon 31: rotulo, tipo y valor en una linea. Radio en linea: cuatro opciones cortas
+          // se ven de una.
           buildRow([
             {
               name: 'sancion_rotulo',
@@ -691,32 +683,21 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               path: 'ajusteDeclaracion.valorSancion',
               required: true,
               min: 0,
-              // Sin alwaysDisabled a proposito: el bloqueo lo decide el script solo. El runtime
-              // trata computed como disabled, asi que el campo queda de lectura cuando el script
-              // devuelve un valor -- extemporaneidad -- y tecleable cuando devuelve undefined, que
-              // es el caso de los otros tres tipos de sancion. Un solo renglon sirve para la que el
-              // sistema sabe liquidar y para las tres que no.
-              //
-              // Sigue siendo type: "number" y no "calculated" por lo mismo: la mitad de las veces
-              // lo escribe una persona.
+              // Sin alwaysDisabled: el bloqueo lo decide el script (computed se trata como
+              // disabled). Lectura con extemporaneidad, tecleable con las otras tres. number y no
+              // calculated: la mitad de las veces lo escribe una persona.
               script: SANCION_EXTEMPORANEIDAD_SCRIPT,
             },
           ]),
-          // La descripcion va en fila propia y no al lado: asi el renglon 31 no cambia de forma al
-          // elegir OTRA, y como PreviewRowsGrid omite la fila donde ningun campo se ve, la fila
-          // entera desaparece sin dejar hueco.
-          //
-          // No lleva validacion condicional: un campo oculto no se valida, asi que required a
-          // secas ya significa "obligatorio solo cuando se ve", que es justo lo que se pide.
+          // Descripcion en fila propia: el 31 no cambia de forma al elegir OTRA y la fila
+          // desaparece sin hueco. required a secas alcanza: un campo oculto no se valida.
           buildRow([
             {
               name: 'sancion_descripcion_rotulo',
               type: 'label',
               label: 'Describa la sanción:',
               colSpan: 5,
-              // Sin visibleWhen propio a proposito: la hereda de su campo. Repetir la condicion
-              // aca funcionaria hoy y se desincronizaria a la primera vez que alguien edite una
-              // sola de las dos.
+              // Sin visibleWhen propio: la hereda de su campo, y repetirla se desincronizaria.
               labelFor: 'descripcion_sancion',
             },
             {
@@ -769,12 +750,8 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
       {
         title: 'Totales',
         rows: [
-          // Sale del 33 y no del neto: el 33 ya viene recortado con max(..., 0), asi que cuando la
-          // liquidacion da a favor vale 0 y este renglon con el. Es la regla "si hay saldo a favor
-          // no hay valor a pagar" sin escribir ninguna condicion.
-          //
-          // Algunos municipios piden ver el saldo a favor aca como un valor a pagar negativo. Esa
-          // variante todavia no se hace: seria cambiar este script por el neto sin recortar.
+          // Sale del 33, ya recortado: con saldo a favor vale 0 sin escribir condicion. Mostrar el
+          // saldo a favor en negativo (lo piden algunos municipios) todavia no se hace.
           buildRow([
             {
               name: 'valor_a_pagar',
@@ -807,9 +784,7 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               path: 'totalDeclaracion.interesMora',
               required: true,
               min: 0,
-              // Sin alwaysDisabled, igual que el renglon 31: el bloqueo lo decide el script.
-              // Queda de lectura cuando hay fecha limite con que calcular y tecleable cuando no
-              // la hay, que es como funcionaba este renglon hasta ahora.
+              // Sin alwaysDisabled, como el 31: lectura con fecha limite, tecleable sin ella.
               script: INTERES_MORA_SCRIPT,
             },
           ]),
@@ -821,11 +796,9 @@ export function getIndustriaComercioFormTemplate(): FormStepTemplate[] {
               colSpan: GRID_BASE_COLUMNS,
               path: 'totalDeclaracion.totalDeclaracion',
               alwaysDisabled: true,
-              // Resta el 34 aunque el rotulo oficial no lo nombre. Con saldo a favor el 35 vale 0,
-              // asi que sin esa resta los intereses de mora se cobrarian enteros sobre una deuda
-              // que no existe: lo que queda por pagar es lo que los intereses superen al saldo a
-              // favor. El max(..., 0) es el otro lado de lo mismo -- por debajo de cero el
-              // resultado ya es el saldo a favor, y ese se declara en el 34, no aca en negativo.
+              // Resta el 34 aunque el rotulo no lo diga: sin eso, con saldo a favor se cobrarian
+              // intereses sobre una deuda inexistente. Bajo 0 el resultado es saldo a favor, que va
+              // en el 34.
               script:
                 'return max({{valor_a_pagar}} - {{descuento_pronto_pago}} + {{interes_mora}} - {{total_saldo_a_favor}}, 0);',
             },

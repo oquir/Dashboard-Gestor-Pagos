@@ -6,9 +6,8 @@ import { conceptKindOf, conceptOwners, isValidConceptId } from '../fieldConcept/
 import { resolveLeafType } from '../payloadSchema/payloadSchema'
 import { buildNode, buildPathIndex } from './payloadMapping.utils'
 
-// Cruza el contrato de la API con lo que el usuario mapeo, para poder mostrar la cobertura y
-// avisar de desajustes de tipo, rutas huerfanas y hojas que pone el host. Tambien resume la lista
-// de conceptos, que va al final del payload fuera del contrato.
+// Cruza el contrato con lo mapeado: cobertura, desajustes de tipo, rutas huerfanas, hojas del host
+// y el resumen de conceptos.
 
 export { fieldMatchesLeaf } from './payloadMapping.utils'
 
@@ -47,9 +46,8 @@ export function toPlainSummary(node: MappingNode): JsonNode {
     : `← ${node.binding.fieldLabel}`
 }
 
-// La lista de conceptos no esta en el contrato fijo, asi que no sale del arbol: se arma aparte y
-// el resumen la cuelga al final, que es donde la manda el consumidor. Una linea por campo, en ambar
-// si le falta el id o lo comparte con otro, que es lo que la revision de exportacion bloquea.
+// Los conceptos no estan en el contrato: se arman aparte y van al final, en ambar si falta el id o
+// se repite.
 export function summarizeConcepts(fields: CanvasField[]): JsonNode {
   const concepts: CanvasField[] = fields.filter(
     (field) => field.apiBinding?.kind === 'concept' && conceptKindOf(field.type) !== null,

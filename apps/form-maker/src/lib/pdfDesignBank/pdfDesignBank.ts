@@ -20,17 +20,14 @@ import {
   storedPdfDesignSchema,
 } from './pdfDesignBank.schema'
 
-// El guardado local del diseño del PDF: una llave de localStorage por impuesto. Es la copia de
-// trabajo; lo que se publica es el .html (docs/Pendientes-PDF.md §2.1). Ni persistence ni
-// exportForm nombran este modulo, asi que el diseño no se filtra al borrador ni al JSON.
-// Solo lo usa el diseñador (chunk perezoso): fuera de lib/index.ts.
+// Guardado local del diseno, una llave por impuesto: es la copia de trabajo; lo publicado es el
+// .html. Ni persistence ni exportForm lo nombran. Fuera de lib/index.ts.
 
 export function pdfDesignKey(taxType: PdfTaxType): string {
   return `${PDF_DESIGN_KEY_PREFIX}${taxType}`
 }
 
-// null cuando no hay nada guardado, o cuando lo guardado no se puede leer: otra version, otra
-// forma o de otro impuesto. El diseñador empieza entonces en blanco.
+// null si no hay nada o no se puede leer: el disenador empieza en blanco.
 export function loadPdfDesign(taxType: PdfTaxType): StoredPdfDesign | null {
   let raw: string | null
   try {
@@ -54,15 +51,14 @@ export function loadPdfDesign(taxType: PdfTaxType): StoredPdfDesign | null {
   }
 }
 
-// El mismo esquema que el guardado, para el diseño que sale de leer un .html (lib/pdfFile): asi un
-// archivo editado a mano no mete en el store una forma que el guardado despues rechazaria.
+// El mismo esquema para el diseno leido de un .html: un archivo editado a mano no mete una forma
+// que el guardado rechazaria.
 export function parsePdfDesign(value: unknown): PdfDesign | null {
   const parsed = pdfDesignSchema.safeParse(value)
   return parsed.success ? parsed.data : null
 }
 
-// Las clases leidas de un .html (su data-fm-classes): las que no tienen forma se descartan una por
-// una, no el archivo entero.
+// Las clases sin forma se descartan una por una.
 export function parsePdfClasses(value: unknown): PdfClass[] {
   if (!Array.isArray(value)) return []
   return value.flatMap((item) => {
@@ -77,8 +73,7 @@ export function parsePdfComponent(value: unknown): PdfComponent | null {
   return parsed.success ? parsed.data : null
 }
 
-// Nunca lanza: el autoguardado corre en un temporizador y un error ahi no lo atrapa nadie. El
-// caso que importa es el cupo lleno, que llega con las imagenes en base64.
+// Nunca lanza: corre en un temporizador. El caso real es el cupo lleno por los base64.
 export function savePdfDesign(
   design: PdfDesign,
   now: Date = new Date(),

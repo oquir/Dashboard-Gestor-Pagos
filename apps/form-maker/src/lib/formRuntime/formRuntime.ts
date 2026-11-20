@@ -18,12 +18,9 @@ import type { FormType } from '../../types/setup'
 import { computeDerivedValues, type DerivedResult } from '../runtimeDerived/runtimeDerived'
 import { buildScope, dedupeIssues, emptyItem, groupColumns } from './formRuntime.utils'
 
-// El corazon del simulador. Solo consume el JSON exportado, nunca el store: si algo no se puede
-// hacer con lo que hay aca, el aplicativo que consuma el export tampoco podra.
-// Todo se indexa por nombre de campo porque el export ya resolvio los ids a nombres al salir.
+// Corazon del simulador: solo consume el JSON exportado, nunca el store. Todo indexado por nombre.
 
-// Aplana el export en los indices que el resto del runtime necesita. Recorre el modal de intro
-// junto con los pasos: para evaluar, un campo del intro es un campo mas del formulario.
+// Aplana el export en indices; el modal de intro cuenta como un paso mas.
 export function buildRuntimeModel(exported: FormExport): RuntimeModel {
   const steps: ExportedStep[] = exported.formSchema.steps
   const introSteps: ExportedStep[] = exported.setupConfig.introModal?.steps ?? []
@@ -68,9 +65,8 @@ export function buildRuntimeModel(exported: FormExport): RuntimeModel {
   }
 }
 
-// Cual de las tres listas de vencimientos aplica. Sale del export y no de la configuracion del
-// builder: el simulador solo consume el JSON, y el consumidor tampoco tiene otra cosa. Sin tipo
-// declarado se asume ICA, que es el unico con plantilla.
+// Que lista de vencimientos aplica, desde el export (el consumidor no tiene otra cosa). Sin tipo,
+// ICA.
 function declaracionDe(formType: FormType | null): DeclaracionKind {
   if (formType === 'retencion_industria_comercio') return 'reteica'
   if (formType === 'autorretencion') return 'autoretencionIca'
@@ -90,10 +86,8 @@ export function createInitialState(model: RuntimeModel): PreviewState {
   return { values: {}, groups }
 }
 
-// Tres pasadas, y el orden no es negociable: dentro de un grupo {{campo}} es el escalar de esa
-// fila, pero desde el root el mismo nombre tiene que ser el array con la columna entera, asi que
-// las columnas del grupo tienen que estar aplanadas en el root antes de resolverlo. Juntar esto en
-// una sola pasada hace que los totales de la declaracion den 0 sin que nada falle a la vista.
+// Tres pasadas y en este orden: dentro de un grupo {{campo}} es el escalar de la fila, y desde el
+// root el array de la columna. En una sola pasada los totales dan 0 sin aviso.
 export function resolveRuntime(
   model: RuntimeModel,
   state: PreviewState,
@@ -156,9 +150,8 @@ export function resolveRuntime(
   }
 }
 
-// Un ambito por repeticion, no una bolsa comun: cada fila del grupo resuelve a sus hermanas de
-// la misma fila. Si se compartiera un solo ambito, el impuesto de una actividad terminaria
-// calculado con los ingresos de la ultima.
+// Un ambito por repeticion: con uno comun, cada actividad se calcularia con los ingresos de la
+// ultima.
 function resolveGroupValues(
   model: RuntimeModel,
   state: PreviewState,

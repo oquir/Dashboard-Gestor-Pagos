@@ -17,11 +17,8 @@ export function AppLayout({ sidebar, canvas, canvasOverlay, rightSidebar }: AppL
         </div>
       </aside>
 
-      {/* La capa flotante va al lado de main y no adentro: asi no se desplaza con el scroll ni se
-          escala con el zoom. scrollbar-gutter estable porque el lienzo dimensiona su raiz con el
-          ancho del puerto: si la barra vertical apareciera y desapareciera, ese ancho oscilaria.
-          Con el panel derecho plegado este envoltorio llega hasta el borde de la ventana, que es lo
-          que deja al chip en la esquina de la pantalla y no dentro del lienzo. */}
+      {/* Al lado de main y no adentro: asi no se desplaza ni se escala con el lienzo.
+          scrollbar-gutter estable porque el lienzo mide su raiz con el ancho del puerto. */}
       <div className="relative flex min-w-0 flex-1">
         <main
           data-canvas-scroll
@@ -32,13 +29,8 @@ export function AppLayout({ sidebar, canvas, canvasOverlay, rightSidebar }: AppL
         {canvasOverlay}
       </div>
 
-      {/* Plegado se va entero y no a ancho cero: un aside de 0 px dejaria su border-l como una linea
-          sin panel detras, y sobre todo mantendria montado CanvasTabs, cuyas pestañas son zonas de
-          soltar -- invisibles pero vivas. Plegado lo reemplaza CollapsedRightSidebar desde la capa
-          flotante. Tampoco anima el ancho: no es el mismo objeto encogiendose sino otro distinto, y
-          cada frame de esa animacion dispararia el ResizeObserver del puerto. Por lo mismo no
-          necesita el molde de hijo w-80 recortado del izquierdo, que existe alla porque su riel de
-          56 px sigue a la vista y su contenido no puede desmontarse. */}
+      {/* Plegado no se renderiza (no w-0): seguiria montado CanvasTabs con zonas de soltar
+          invisibles. No anima el ancho: dispararia el ResizeObserver del puerto en cada frame. */}
       {isRightSidebarOpen && (
         <aside className="animate-right-panel-in relative flex h-full w-80 shrink-0 flex-col overflow-hidden border-l border-slate-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
           {rightSidebar}

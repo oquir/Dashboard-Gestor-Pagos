@@ -2,8 +2,7 @@
 
 const KEBAB_SEGMENT: RegExp = /-([a-z])/g
 
-// Una variable CSS (--mi-color) no se transforma: React necesita el nombre literal para aplicarla,
-// y camelCasearla la deja irreconocible.
+// Una variable CSS (--x) no se camelCasea: React necesita el nombre literal.
 export function toCamelCase(property: string): string {
   if (property.startsWith('--')) return property
 

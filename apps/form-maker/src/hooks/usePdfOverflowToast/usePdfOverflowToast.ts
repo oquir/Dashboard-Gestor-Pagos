@@ -1,10 +1,8 @@
 import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
-// Avisa con un toast cuando una hoja del PDF deja de caber (por abajo o por la derecha). La leyenda
-// de la hoja sigue ahi y es la que dice cuantos px sobran: el toast es solo el empujon. Se dispara
-// al PASAR de caber a no caber, no en cada cambio de px (si no, saldria en cada tecla); el id lo
-// deduplica y lo cierra apenas la hoja vuelve a caber. Hay que montar <Toaster /> arriba.
+// Toast cuando una hoja deja de caber: solo al pasar de caber a no caber, no en cada px. El id lo
+// deduplica y lo cierra al volver a caber. Requiere <Toaster /> arriba.
 export function usePdfOverflowToast(
   sheetId: string,
   sheetNumber: number,

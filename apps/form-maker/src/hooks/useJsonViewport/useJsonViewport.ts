@@ -9,14 +9,10 @@ import {
   visibleRowRange,
 } from './useJsonViewport.utils'
 
-// Lista virtual de la vista JSON: solo se pintan las filas que se ven, mas un margen. Con la
-// plantilla de ICA el JSON tiene unas 2.200 lineas, y pintarlas todas eran ~12.500 nodos que se
-// volvian a armar con cada cambio del formulario: era la vista mas lenta de la app.
-//
-// La lista mide filas * alto fijo, asi el scroll y su barra son los de siempre; adentro, un relleno
-// arriba empuja las pintadas hasta donde van. Se escucha el scroll de cualquier elemento (en fase de
-// captura) porque quien desplaza depende de donde viva la vista: <main> en el lienzo, la propia caja
-// en el panel del simulador.
+// Lista virtual de la vista JSON: solo las filas visibles mas un margen (con ICA eran ~12.500 nodos
+// rehechos en cada cambio). La lista mide filas * alto fijo, asi el scroll es el de siempre.
+// Escucha el scroll de cualquier elemento en captura: quien desplaza depende de donde viva la
+// vista.
 export function useJsonViewport(
   rowCount: number,
   reveal: JsonRevealRequest | null,
@@ -60,8 +56,7 @@ export function useJsonViewport(
     }
   }, [list, update])
 
-  // Un pedido de llevar la vista a una linea, una sola vez por token: si el JSON cambia despues
-  // (alguien edita un campo con el buscador abierto) la vista no vuelve a saltar sola.
+  // Una sola vez por token: si el JSON cambia despues, la vista no vuelve a saltar.
   useLayoutEffect(() => {
     if (!reveal || !list || revealIndex < 0 || reveal.token === handledReveal.current) return
 
@@ -71,9 +66,7 @@ export function useJsonViewport(
     update()
   })
 
-  // Lo horizontal va despues, cuando la fila ya esta pintada: las lineas de scripts compilados son
-  // largas y la coincidencia puede quedar fuera por la derecha. block 'nearest' no mueve lo vertical,
-  // que ya quedo centrado.
+  // Lo horizontal despues, con la fila ya pintada (las lineas compiladas son largas).
   useLayoutEffect(() => {
     if (!pendingInlineReveal.current || !list) return
 

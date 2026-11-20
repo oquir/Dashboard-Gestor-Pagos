@@ -15,8 +15,7 @@ import type {
 import { EMPTY_VALUE_TEXT } from './FieldRulesEditor.constants'
 import type { RuleEffectSummary, RuleSummary } from './FieldRulesEditor.types'
 
-// El valor se nombra como lo muestra ConditionValueInput: la etiqueta de la opcion donde el campo
-// tiene opciones propias, el texto tal cual donde el operador compara texto.
+// El valor se nombra como lo muestra ConditionValueInput.
 function describeValue(condition: RuleCondition, observed: CanvasField | undefined): string {
   const options: FieldOption[] = observed?.options ?? []
   const optionLabel = (id: string): string =>

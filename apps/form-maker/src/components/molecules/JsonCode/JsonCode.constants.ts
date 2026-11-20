@@ -10,8 +10,8 @@ export const JSON_TOKEN_CLASSES: Record<JsonTokenKind, string> = {
 
 export const JSON_MUTED_CLASS: string = 'text-slate-400 dark:text-neutral-500'
 
-// Sin overflow propio: la caja no es contenedor de scroll, asi la barra del buscador queda pegada
-// arriba contra quien desplaza de verdad (ver JsonSearchBar). El desborde vive en el hijo de abajo.
+// Sin overflow propio: asi el sticky del buscador se ancla a quien desplaza. El desborde va en el
+// hijo.
 export const JSON_CODE_BASE_CLASSES: string =
   'flex min-h-0 flex-col font-mono text-xs text-slate-500 dark:text-neutral-400'
 

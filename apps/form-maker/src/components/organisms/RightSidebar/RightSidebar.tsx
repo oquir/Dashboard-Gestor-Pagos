@@ -41,8 +41,7 @@ export function RightSidebar() {
   const isIntro: boolean = activeCanvas.type === 'introStep'
   const canvasLabel: string = isIntro ? 'Modal de entrada' : 'Formulario'
 
-  // El chip del paso activo ya no lleva su nombre, asi que el numero tiene que reaparecer aca: es
-  // lo unico que ata el "3" de la grilla con el titulo que se esta editando debajo.
+  // El numero ata el chip de la grilla con el titulo que se edita debajo.
   const activeStepIndex: number = (isIntro ? introSteps : formSteps).findIndex(
     (step) => step.stepId === activeCanvas.stepId,
   )
@@ -50,23 +49,15 @@ export function RightSidebar() {
     activeStepIndex >= 0 ? `Paso ${activeStepIndex + 1} · ${canvasLabel}` : canvasLabel
   const stepCountLabel: string = `${formSteps.length} ${formSteps.length === 1 ? 'paso' : 'pasos'}`
 
-  // Mientras hay un arrastre manda la pestaña de steps: es la unica que dibuja las pestañas de
-  // paso, o sea las zonas de soltar para mudar un campo o una fila a otro step, y desde Proyecto
-  // esa mudanza no tendria a donde apuntar. Es derivado y no un set: al soltar vuelve solo a la
-  // pestaña que el usuario eligio. El panel ahora se pliega, pero eso no reabre el viejo problema
-  // de reacomodar el lienzo a mitad del gesto: mientras existe su ancho es fijo, y el unico modo de
-  // plegarlo es un boton, que no se puede pulsar con una fila colgando del cursor.
+  // Durante un arrastre manda la pestana Pasos: tiene las zonas de soltar para mudar a otro paso.
+  // Es derivado: al soltar vuelve a la elegida.
   const isTransferring: boolean = rowDrag !== null || draggingFieldId !== null
   const visibleTab: RightSidebarTab = isTransferring ? 'steps' : activeTab
 
   return (
     <div className="flex h-full flex-col">
-      {/* Una sola fila: Guardar y PDF a la izquierda como icono (su tooltip los nombra, como en el
-          chip plegado); a la derecha Simulador y Exportar con texto y el plegar. Con las cuatro
-          etiquetas la fila pedia ~378 px y el panel da 295 utiles (320 - 2 x px-3). Asi suma ~293
-          con gap-1 (con gap-1.5 serian ~301 y se comeria el padding derecho): hay poca holgura, y
-          una cuarta etiqueta ya no cabe. El ml-auto va en el grupo y no en un boton para que
-          ninguno necesite saber donde lo montan. */}
+      {/* Guardar y PDF como icono, Simulador y Exportar con texto: con cuatro etiquetas no entra
+          en los 295px utiles. Poca holgura: otra etiqueta ya no cabe. */}
       <div className="flex items-center gap-1 border-b border-border px-3 py-2">
         <SaveButton iconOnly />
         <PdfDesignerButton iconOnly />
@@ -77,8 +68,7 @@ export function RightSidebar() {
         </div>
       </div>
 
-      {/* El zoom vive aca y no dentro de Proyecto porque es del lienzo, no de una seccion: se
-          mantiene visible con cualquiera de las dos pestañas abiertas. */}
+      {/* El zoom es del lienzo, no de una seccion: visible con cualquier pestana. */}
       <nav
         aria-label="Secciones del panel"
         className="flex items-stretch gap-0.5 border-b border-border px-3"
@@ -103,13 +93,11 @@ export function RightSidebar() {
         </div>
       </nav>
 
-      {/* min-h-0 es lo que deja que este flex item se encoja por debajo de su contenido: sin el,
-          el desborde se escapa del panel en vez de recortarse aca, y el scroll vertical que el
-          panel entero no debe tener aparece de todos modos. */}
+      {/* min-h-0 deja que se encoja: sin el, el desborde escapa y el panel entero hace scroll. */}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <TransferNotice />
 
-        {/* El key es la pestaña: al cambiar, el contenido se remonta y entra (ENTER_RISE_CLASSES). */}
+        {/* Key por pestana: al cambiar, el contenido se remonta y entra. */}
         <div key={visibleTab} className={`flex min-h-0 flex-1 flex-col ${ENTER_RISE_CLASSES}`}>
           {visibleTab === 'project' && (
             <>

@@ -3,10 +3,8 @@ import { useFormStore } from '../../../store/formStore'
 import { IconButton } from '../../atoms/IconButton/IconButton'
 import type { TransferNoticeProps } from './TransferNotice.types'
 
-// El margen por los cuatro lados es el default y no una clase fija porque el cuerpo del panel
-// derecho no tiene padding propio: cada bloque pone el suyo, y un envoltorio con padding aca
-// dejaria un hueco muerto arriba cada vez que no hay aviso, que es casi siempre. Plegado el panel
-// el aviso cuelga del chip flotante, que le pasa posicion absoluta en lugar de margen.
+// Margen por defecto porque el cuerpo del panel no tiene padding. Plegado, el chip le pasa posicion
+// absoluta.
 export function TransferNotice({ className = 'm-3' }: TransferNoticeProps) {
   const transferNotice = useFormStore((state) => state.transferNotice)
   const dismissTransferNotice = useFormStore((state) => state.dismissTransferNotice)

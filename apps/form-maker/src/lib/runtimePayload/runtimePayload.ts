@@ -6,11 +6,8 @@ import { formatDateForPayload } from '../fieldDate/fieldDate'
 import { isPresentationalField } from '../fieldKind/fieldKind'
 import { ARRAY_MARKER, conceptEntry, setDeepValue } from './runtimePayload.utils'
 
-// Arma el objeto que se le mandaria a la API a partir de lo que el usuario lleva escrito.
-// Solo entra lo mapeado y visible: un campo oculto no viaja, aunque tenga valor de antes. Lo que va
-// como concepto se junta en una lista aparte al final; ver conceptEntry.
-// Una fecha con formato sale en ese formato: es el unico punto donde el valor deja de ser
-// AAAA-MM-DD, y el consumidor tiene que convertirla en este mismo lugar.
+// Payload desde lo escrito: solo lo mapeado y visible; los conceptos van en una lista al final. Una
+// fecha con formato sale en ese formato: es el unico punto donde deja de ser AAAA-MM-DD.
 export function buildPayload(
   model: RuntimeModel,
   snapshot: RuntimeSnapshot,
@@ -31,8 +28,7 @@ export function buildPayload(
     if (concepto !== null) conceptos.push(concepto)
   }
 
-  // Un concepto dentro de un grupo no se recorre: el builder no deja ponerlo ahi, y la lista plana
-  // no sabria a que repeticion pertenece cada valor.
+  // Un concepto en un grupo no se recorre: la lista plana no sabria la repeticion.
   for (const [groupId, fields] of model.groupFields) {
     ;(snapshot.groups[groupId] ?? []).forEach((scope, index) => {
       for (const field of fields) {
@@ -49,8 +45,7 @@ export function buildPayload(
     })
   }
 
-  // La clave sale solo si el formulario declara conceptos: uno que no los usa, como la plantilla
-  // ICA, manda exactamente el mismo objeto de antes.
+  // La clave solo sale si el formulario declara conceptos: ICA manda el mismo objeto de antes.
   if (conceptFieldCount(model) > 0) payload[CONCEPTS_PAYLOAD_KEY] = conceptos
 
   return payload

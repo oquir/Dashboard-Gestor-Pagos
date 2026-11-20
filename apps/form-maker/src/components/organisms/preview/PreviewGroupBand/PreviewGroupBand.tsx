@@ -11,9 +11,7 @@ export function PreviewGroupBand({ groupId, rows, preview }: PreviewGroupBandPro
   const canAdd = scopes.length < (group?.max ?? 15)
   const canRemove = scopes.length > (group?.min ?? 1)
 
-  // El error de una comprobacion es del grupo entero, no de una fila, asi que se dibuja arriba de
-  // las repeticiones. Como cualquier otro error, solo aparece una vez revelado: nadie ve rojo en
-  // una pantalla a la que todavia no llego.
+  // El error de una comprobacion es del grupo y va arriba; como todo error, solo una vez revelado.
   const checkErrors: { id: string; message: string }[] = (group?.checks ?? []).flatMap((check) => {
     const key: string = checkKey(groupId, check.id)
 
@@ -55,7 +53,7 @@ export function PreviewGroupBand({ groupId, rows, preview }: PreviewGroupBandPro
       <ul className="flex list-none flex-col gap-3">
         {scopes.map((scope, index) => (
           <li
-            // biome-ignore lint/suspicious/noArrayIndexKey: las repeticiones no tienen id propio
+            // Key por indice: las repeticiones no tienen id propio.
             key={index}
             className="rounded-md border border-border bg-surface p-3"
           >

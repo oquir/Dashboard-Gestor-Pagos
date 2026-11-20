@@ -11,13 +11,9 @@ import {
   UNKNOWN_FORM_TYPE_LABEL,
 } from './projectFile.constants'
 
-// Volver a abrir un formulario exportado. El JSON que baja Exportar lleva, al lado del contrato
-// que lee el consumidor, la copia del borrador (builderDraft), y el proyecto sale de ahi:
-// formSchema se ignora, porque viene compilado y con perdidas, y el builder lo regenera.
-//
-// El archivo lo trae otra persona, asi que es entrada no confiable igual que localStorage: pasa
-// por las mismas migraciones y el mismo esquema de Zod, que ademas sanea los enlaces del texto con
-// formato. Lo que no se puede sanear son los scripts, que el simulador ejecuta tal como vienen.
+// Reabrir un export: el proyecto sale de builderDraft; formSchema se ignora (compilado y con
+// perdidas). Entrada no confiable: mismas migraciones y esquema que localStorage. Los scripts no se
+// pueden sanear.
 
 export function readProjectFile(text: string): ProjectFileLoad {
   let parsed: unknown
@@ -36,8 +32,7 @@ export function readProjectFile(text: string): ProjectFileLoad {
     return { status: 'error', message: NOT_EXPORT_MESSAGE }
   }
 
-  // Un export sin copia es anterior a builderDraft. De lo compilado no se reconstruye el proyecto
-  // sin perder las validaciones, asi que se pide volver a exportarlo en vez de abrirlo a medias.
+  // Un export sin builderDraft es anterior a el: se pide volver a exportarlo.
   if (file.builderDraft === undefined) {
     return { status: 'error', message: LEGACY_EXPORT_MESSAGE }
   }
@@ -51,8 +46,7 @@ export function readProjectFile(text: string): ProjectFileLoad {
 
   return {
     status: 'ok',
-    // Todo lo que se exporta salio de un setup terminado. Un archivo que llegue con isComplete en
-    // false dejaria la app en el asistente despues de abrirlo.
+    // Todo export salio de un setup terminado: isComplete en false dejaria la app en el asistente.
     draft: { ...loaded.draft, setupConfig: { ...loaded.draft.setupConfig, isComplete: true } },
     renamed: loaded.renamed,
   }

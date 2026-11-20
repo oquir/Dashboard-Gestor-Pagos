@@ -2,9 +2,8 @@ import { z } from 'zod'
 import { PDF_MAX_SIGNERS } from '../../constants'
 import type { PdfCell, PdfComponent, PdfFontFamily, PdfTable, PdfTaxType } from '../../types'
 
-// z.object quita en silencio las llaves que no declara: cada llave nueva del diseño necesita su
-// linea aca, o se pierde al recargar. Valida la version actual; las viejas pasan antes por
-// pdfDesignBank.migrations.ts.
+// z.object quita las llaves que no declara: cada llave nueva necesita su linea aca. Valida la
+// version actual; las viejas migran antes.
 
 const TAX_TYPES: [PdfTaxType, ...PdfTaxType[]] = [
   'industria_comercio',
@@ -30,8 +29,7 @@ const bordersSchema = z.object({
 
 const size = z.number().positive()
 
-// Los componentes de celda (docs/Pendientes-PDF.md §3.3). Llegan tambien de un .html, donde
-// cualquiera pudo editar su JSON a mano: por eso los topes.
+// Tambien llegan de un .html editable a mano: por eso los topes.
 export const pdfComponentSchema: z.ZodType<PdfComponent> = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('image'),

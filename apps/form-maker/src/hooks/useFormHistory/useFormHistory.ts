@@ -2,9 +2,8 @@ import { useStore } from 'zustand'
 import { useFormStore } from '../../store'
 import type { UseFormHistoryResult } from './useFormHistory.types'
 
-// Lo que la interfaz necesita del historial: si hay algo que deshacer o rehacer, y las dos acciones.
-// Se suscribe al store temporal de zundo, que vive aparte del de la aplicacion: los pasos no estan en
-// FormState, asi que ningun selector de useFormStore se enteraria de que cambiaron.
+// Si hay algo que deshacer o rehacer, y las dos acciones. Se suscribe al store temporal de zundo:
+// los pasos no estan en FormState.
 export function useFormHistory(): UseFormHistoryResult {
   const canUndo: boolean = useStore(
     useFormStore.temporal,

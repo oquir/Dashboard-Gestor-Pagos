@@ -42,8 +42,8 @@ import { exportableFormatting } from '../numberFormat/numberFormat'
 import { groupFields } from '../repeatableGroup/repeatableGroup'
 import { buildGroupZodSchema, buildOverrideZodSchema, buildZodSchema } from '../zodSchema/zodSchema'
 
-// Traduccion del modelo interno al contrato de salida. La regla que gobierna todo el archivo:
-// hacia afuera no viaja ningun uuid, cada referencia a un campo se convierte en su nombre.
+// Del modelo interno al contrato de salida: hacia afuera no viaja ningun uuid, cada referencia es
+// un nombre.
 
 export function buildNameIndex(rows: CanvasRow[]): Map<string, string> {
   const index: Map<string, string> = new Map()
@@ -63,8 +63,7 @@ export function resolveCondition(
 ): ExportedCondition | undefined {
   if (!condition) return undefined
 
-  // Los operadores de lista guardan el valor como texto separado por comas mientras se edita;
-  // al salir se entrega ya partido en array para que el consumidor no tenga que interpretarlo.
+  // Los operadores de lista salen ya partidos en array.
   return {
     field: names.get(condition.fieldId) ?? condition.fieldId,
     operator: condition.operator,
@@ -74,9 +73,7 @@ export function resolveCondition(
   }
 }
 
-// Un override cuya condicion apunta a un campo que ya no existe se descarta entero, igual que
-// resolveCondition hace con visibleWhen: exportar una variante que nunca se puede evaluar seria
-// darle al consumidor una regla muerta que igual tiene que recorrer.
+// Un override que apunta a un campo borrado se descarta, como visibleWhen.
 export function resolveValidations(
   field: CanvasField,
   names: Map<string, string>,
@@ -98,9 +95,8 @@ export function resolveValidations(
   }
 }
 
-// El script se compila aca y no del lado del consumidor: {{campo}} no es JS, y hacer que cada
-// consumidor implemente el recorrido que distingue codigo de texto seria repartir la parte
-// delicada. Sale ya en JS, con las dependencias que declara al leerlas.
+// Se compila aca y no en el consumidor: {{campo}} no es JS, y repartir el recorrido seria repartir
+// lo delicado.
 function compileSource(source: string, knownNames: Set<string>): ExportedScript {
   const { code, reads } = compileScript(source, knownNames)
 
@@ -150,8 +146,7 @@ export function resolveRules(
   }))
 }
 
-// El tipo de dato del concepto se calcula al salir y no se guarda: lo decide el tipo del campo. Un
-// campo sin valor que mandar -uno presentacional- no sale como concepto.
+// El tipo de dato del concepto se calcula al salir; un presentacional no sale como concepto.
 function resolveApiBinding(field: CanvasField): ExportedApiBinding | undefined {
   const binding: ApiBinding | undefined = field.apiBinding
   if (binding?.kind !== 'concept') return binding
@@ -167,8 +162,7 @@ export function resolveDataSource(
   const source: FieldDataSource | undefined = field.dataSource
   if (!source) return undefined
 
-  // Un relleno cuyo destino ya no existe se descarta entero, igual que un override que apunta a
-  // un campo borrado: dejarlo seria mandarle al consumidor una instruccion de copiar a la nada.
+  // Un relleno a un destino borrado se descarta.
   const fills: CatalogFill[] | undefined = source.fills?.flatMap((fill) => {
     const name: string | undefined = names.get(fill.field)
 
@@ -200,8 +194,8 @@ export function mapRows(
       colStart: field.colStart,
       colSpan: field.colSpan,
       styles: resolveFieldStyles(field.styles),
-      // Solo se exporta el schema como texto, nunca las validaciones sueltas: que no haya schema
-      // es justamente como el consumidor sabe que un campo presentacional no valida nada.
+      // Solo el schema como texto: que no haya schema es como el consumidor sabe que un
+      // presentacional no valida.
       validations: resolveValidations(field, names),
       logic: {
         script: resolveScript(field, knownNames),
@@ -235,9 +229,7 @@ export function mapRows(
   }))
 }
 
-// Solo salen las encendidas, y sin bandera: apagar una comprobacion la borra del contrato en vez
-// de mandarla desactivada. El consumidor no tiene que saber que existio ni decidir que hacer con
-// ella, que es la misma regla por la que un tooltip vacio no deja rastro en el JSON.
+// Solo las encendidas y sin bandera: apagar una comprobacion la borra del contrato.
 function resolveChecks(
   group: RepeatableGroup,
   knownNames: Set<string>,

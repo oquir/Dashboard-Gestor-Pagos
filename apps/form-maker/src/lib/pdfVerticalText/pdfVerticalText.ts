@@ -6,13 +6,9 @@ import {
   VERTICAL_TEXT_SCALE,
 } from './pdfVerticalText.constants'
 
-// El PNG del texto vertical del PDF (docs/Pendientes-PDF.md §3.3). Sale como imagen y no con
-// writing-mode porque el WebKit viejo de SelectPdf no lo pinta bien: es lo que hoy se hace a mano
-// con unas 27 imagenes. Toca el DOM (un <canvas>): lo llaman el lienzo y la publicacion, nunca la
-// lib pura de componentes, que lo recibe como parametro. Fuera de lib/index.ts.
-//
-// El mismo PNG va al lienzo y al .html, asi que lo que se ve es lo que sale. Se recuerda por
-// configuracion: el lienzo pinta en cada cambio.
+// PNG del texto vertical: writing-mode no lo pinta bien el WebKit de SelectPdf. Toca el DOM
+// (<canvas>): lo llaman el lienzo y la publicacion, nunca la lib pura. Mismo PNG en el lienzo y el
+// .html; se cachea por configuracion.
 
 const cache: Map<string, PdfVerticalTextImage | null> = new Map()
 
@@ -29,8 +25,7 @@ export function renderVerticalTextPng(spec: PdfVerticalTextSpec): PdfVerticalTex
   return image
 }
 
-// Se mide y se dibuja acostado y despues se gira: "length" es lo largo del texto (el alto del PNG)
-// y "thickness" lo que suman sus lineas (el ancho).
+// Se dibuja acostado y se gira: length es el alto del PNG y thickness el ancho.
 function draw(spec: PdfVerticalTextSpec): PdfVerticalTextImage | null {
   if (typeof document === 'undefined') return null
   const canvas: HTMLCanvasElement = document.createElement('canvas')

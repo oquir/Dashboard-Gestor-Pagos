@@ -7,8 +7,8 @@ export interface DateBoundInputProps {
   onChange: (bound: DateBound | undefined) => void
 }
 
-// Lo que se elige en el desplegable. "past" y "future" son el mismo limite relativo con distinta
-// direccion; se separan aca porque "Hace…" y "Dentro de…" se leen como dos cosas distintas.
+// past y future son el mismo limite relativo; se separan porque "Hace…" y "Dentro de…" se leen
+// distinto.
 export type DateBoundMode = 'none' | 'today' | 'past' | 'future' | 'fixed'
 
 export interface DateBoundModeOption {

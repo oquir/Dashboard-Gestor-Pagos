@@ -18,14 +18,8 @@ import { CANVAS_CSS } from './PdfCanvas.constants'
 import type { CellDrag, CellHit, PendingZoom, ZoomAnchor } from './PdfCanvas.types'
 import { cellOf, restoreZoomAnchor, scrollerOf } from './PdfCanvas.utils'
 
-// Las hojas del diseño, todas dentro de UN shadow root. Por que: el HTML libre puede traer su
-// <style> (decidido en docs/Pendientes-PDF.md §2.1), y en el documento de la app ese <style> le
-// cambiaria la cara a FormMaker entero. Adentro del shadow root solo alcanza a las hojas, y como
-// todas comparten el mismo root, un <style> de la hoja 1 vale tambien en la 2, igual que en el HTML
-// final, que es un solo documento.
-//
-// React escucha los eventos en el contenedor del portal, asi que los clics de adentro llegan a sus
-// manejadores sin nada especial. Tailwind no entra: las clases del lienzo las define CANVAS_CSS.
+// Todas las hojas en UN shadow root: el <style> del HTML libre no alcanza a FormMaker y vale para
+// todas las hojas, como en el HTML final.
 export function PdfCanvas() {
   const [shadowRoot, setShadowRoot] = useState<ShadowRoot | null>(null)
   const design = usePdfDesignStore((state) => state.design)
@@ -39,9 +33,8 @@ export function PdfCanvas() {
   const tool = usePdfDesignStore((state) => state.tool)
   const isLowPerformance = useFormStore((state) => state.isLowPerformance)
   const dragRef = useRef<CellDrag | null>(null)
-  // Tras un arrastre entre celdas el navegador manda un clic al ancestro comun (la fila), que sube
-  // hasta el papel y lo trataria como "clic en la hoja": limpiaria la seleccion recien armada. Este
-  // flag se lo salta una vez; el siguiente pointerdown lo baja, por si el clic nunca llego.
+  // Tras un arrastre entre celdas el navegador manda un clic a la fila, que limpiaria la seleccion:
+  // este flag lo salta una vez.
   const swallowClickRef = useRef<boolean>(false)
   const anchorRef = useRef<ZoomAnchor | null>(null)
   const pendingRef = useRef<PendingZoom | null>(null)
@@ -51,8 +44,8 @@ export function PdfCanvas() {
     if (node) setShadowRoot(node.shadowRoot ?? node.attachShadow({ mode: 'open' }))
   }, [])
 
-  // Al abrir, la hoja llena el ancho (docs/Plan-PDF-UX-P2.md). Va antes de la suscripcion de abajo a
-  // proposito: asi este cambio de zoom no anota ancla y la vista arranca arriba, no en el centro.
+  // Al abrir, ajusta al ancho. Va antes de la suscripcion de abajo: asi este zoom no anota ancla y
+  // la vista arranca arriba.
   const didFitRef = useRef<boolean>(false)
   useEffect(() => {
     const port: HTMLElement | null = scrollerOf(shadowRoot)
@@ -61,8 +54,7 @@ export function PdfCanvas() {
     usePdfDesignStore.getState().setZoom(fitPdfZoom(port.clientWidth))
   }, [shadowRoot])
 
-  // Ctrl + rueda acerca con el punto bajo el cursor quieto. Sin esto el navegador haria su propio
-  // zoom de pagina, que agranda tambien la barra lateral.
+  // Ctrl+rueda acerca sobre el cursor; sin esto el navegador haria zoom de pagina.
   useEffect(() => {
     const port: HTMLElement | null = scrollerOf(shadowRoot)
     if (!port) return
@@ -79,8 +71,8 @@ export function PdfCanvas() {
     return () => port.removeEventListener('wheel', handleWheel)
   }, [shadowRoot])
 
-  // El scroll se anota en el momento del cambio, antes de que React pinte: despues, al alejar, el
-  // navegador ya lo habria recortado al contenido mas chico. Sin ancla (botones, teclado), el centro.
+  // El scroll se anota al cambiar, antes de pintar: despues, al alejar, ya estaria recortado. Sin
+  // ancla, el centro.
   useEffect(() => {
     const port: HTMLElement | null = scrollerOf(shadowRoot)
     if (!port) return
@@ -100,7 +92,7 @@ export function PdfCanvas() {
     })
   }, [shadowRoot])
 
-  // zoom va como disparador: el efecto corre despues de pintar las hojas con el zoom nuevo.
+  // zoom como disparador: corre despues de pintar con el zoom nuevo.
   useLayoutEffect(() => {
     const pending: PendingZoom | null = pendingRef.current
     const port: HTMLElement | null = scrollerOf(shadowRoot)
@@ -109,8 +101,7 @@ export function PdfCanvas() {
     restoreZoomAnchor(port, pending)
   }, [zoom, shadowRoot])
 
-  // El arrastre de la seleccion multiple termina donde sea que se suelte el boton, no solo sobre una
-  // celda; y cambiar de herramienta a medio gesto lo cancela.
+  // El arrastre termina donde se suelte; cambiar de herramienta lo cancela.
   useEffect(() => {
     function endDrag(): void {
       if (dragRef.current?.started) swallowClickRef.current = true
@@ -128,9 +119,8 @@ export function PdfCanvas() {
     dragRef.current = null
   }, [tool])
 
-  // Seleccion multiple: presionar en una celda y llegar a otra de LA MISMA tabla arma el rectangulo
-  // entre las dos (la seleccion es siempre un rectangulo dentro de una tabla). Sin cruzar a otra
-  // celda es un clic, que extiende desde donde estaba (ver onSelectCell mas abajo).
+  // Presionar en una celda y llegar a otra de la misma tabla arma el rectangulo; sin cruzar es un
+  // clic.
   function handleDocPointerDown(event: ReactPointerEvent<HTMLDivElement>): void {
     swallowClickRef.current = false
     if (tool !== 'select' || event.button !== 0) return
@@ -146,7 +136,6 @@ export function PdfCanvas() {
     const hit: CellHit | null = cellOf(event.target)
     if (!hit || hit.tableId !== drag.tableId || hit.cellId === drag.last) return
 
-    // La primera vez fija el ancla en la celda donde se presiono; despues solo mueve el foco.
     if (!drag.started) {
       selectCell(drag.tableId, drag.cellId, false)
       drag.started = true
@@ -169,15 +158,15 @@ export function PdfCanvas() {
         createPortal(
           <>
             <style>{CANVAS_CSS}</style>
-            {/* El mismo <style> que lleva el .html: la base de las celdas y las clases del diseño. */}
+            {/* El mismo <style> que lleva el .html. */}
             <style>{designCss}</style>
             <div
               className={PDF_CANVAS_CLASS.doc}
               data-tool={tool}
               data-low-performance={isLowPerformance ? '' : undefined}
               onPointerDown={handleDocPointerDown}
-              // Shift+clic extiende la seleccion de celdas; sin esto el navegador ademas extiende la
-              // de texto y la pinta en azul encima. El click sigue llegando.
+              // Shift+clic: sin esto el navegador extiende tambien la seleccion de texto. El click
+              // sigue llegando.
               onMouseDown={(event) => {
                 if (event.shiftKey) event.preventDefault()
               }}

@@ -4,8 +4,6 @@ import { useClickOutside } from '../../../hooks'
 import { Label } from '../../atoms'
 import type { ColorPickerFieldProps } from './ColorPickerField.types'
 
-// La muestra va dentro del mismo marco que el hex y no al lado: son dos formas de escribir el mismo
-// dato, y separadas se leian como dos controles distintos.
 export function ColorPickerField({
   id,
   label,
@@ -41,10 +39,8 @@ export function ColorPickerField({
           className="w-full min-w-0 bg-transparent font-mono text-xs text-slate-700 uppercase outline-none dark:text-neutral-200"
         />
       </div>
-      {/* El lado lo decide quien lo coloca porque el panel recorta: mide 320px con el riel y el
-          padding adentro, el selector 200px fijos y cada columna 100px. Desde la columna derecha
-          abrir hacia la derecha se sale 72px, y desde la izquierda abrir hacia la izquierda se sale
-          16px. El overflow-y-auto del panel recorta tambien en X, asi que ningun z-index lo salva. */}
+      {/* El lado lo decide quien lo coloca: el overflow del panel recorta tambien en X y ningun
+          z-index lo salva. */}
       {isOpen && (
         <div
           className={`absolute z-50 mt-1 rounded-md border border-slate-200 bg-white p-2 shadow-lg dark:border-neutral-700 dark:bg-neutral-800 ${

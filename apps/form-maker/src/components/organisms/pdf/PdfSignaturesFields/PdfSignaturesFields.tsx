@@ -5,8 +5,7 @@ import { PdfTextField } from '../PdfTextField'
 import type { PdfSignaturesFieldsProps } from './PdfSignaturesFields.types'
 import { NEW_SIGNER } from './PdfSignaturesFields.constants'
 
-// Quienes firman, uno por columna: el titulo va bajo la raya y los detalles debajo, una linea por
-// renglon y con {variables} donde haga falta. Hasta tres (declarante, contador y revisor fiscal).
+// Uno por columna: titulo bajo la raya y detalles debajo, con {variables}. Hasta tres.
 export function PdfSignaturesFields({ component, onChange }: PdfSignaturesFieldsProps) {
   function updateSigner(index: number, patch: Partial<PdfSigner>): void {
     onChange({

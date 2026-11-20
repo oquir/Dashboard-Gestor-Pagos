@@ -3,10 +3,8 @@ import { INDUSTRIA_COMERCIO_INTRO_STEPS } from '../../constants'
 import { useFormStore } from '../../store'
 import type { UseSetupWizardResult, WizardSelection, WizardStep } from './useSetupWizard.types'
 
-// Asistente de dos pasos que se muestra mientras setupConfig.isComplete sea falso.
-// Industria y comercio se salta la segunda pregunta: su plantilla ya trae modal de intro con un
-// numero de pantallas fijo, asi que no tiene sentido preguntarlo. Abrir un formulario exportado va
-// por su propia pantalla y no crea nada: el proyecto entero sale del archivo (useProjectImport).
+// Asistente de dos pasos mientras setupConfig.isComplete es falso. Industria y Comercio salta la
+// segunda pregunta (su plantilla trae el modal). Abrir un exportado va por useProjectImport.
 export function useSetupWizard(): UseSetupWizardResult {
   const completeSetup = useFormStore((state) => state.completeSetup)
   const [step, setStep] = useState<WizardStep>(1)

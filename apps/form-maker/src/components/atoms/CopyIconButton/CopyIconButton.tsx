@@ -8,8 +8,6 @@ export function CopyIconButton({ value, title = 'Copiar' }: CopyIconButtonProps)
   const [copied, setCopied] = useState<boolean>(false)
   const timeoutRef = useRef<number | null>(null)
 
-  // El temporizador se limpia al desmontar: el panel cambia de campo mientras el tilde sigue
-  // visible, y sin esto se llama a setCopied sobre un componente que ya no esta.
   useEffect(() => {
     return () => {
       if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current)

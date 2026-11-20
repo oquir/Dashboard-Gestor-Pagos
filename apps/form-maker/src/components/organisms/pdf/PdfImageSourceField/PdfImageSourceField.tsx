@@ -12,10 +12,7 @@ import { Label } from '../../../atoms'
 import type { PdfImageSourceFieldProps } from './PdfImageSourceField.types'
 import { ACCEPTED_IMAGES, BASE64_PREFIX } from './PdfImageSourceField.constants'
 
-// La imagen de un componente (imagen o sello): se pega la URL del servidor de imagenes, un base64
-// o una {variable} que llena el back. FormMaker no sube imagenes (docs/Pendientes-PDF.md §2.1);
-// "Elegir archivo" solo la lee del equipo y la pasa a base64, sin mandarla a ningun lado. Debajo, los
-// avisos: WebP, mas grande de lo que se muestra, un base64 pesado o una ruta que no sirve.
+// URL, base64 o {variable}. FormMaker no sube imagenes: Elegir archivo solo la pasa a base64.
 export function PdfImageSourceField({
   id,
   label,

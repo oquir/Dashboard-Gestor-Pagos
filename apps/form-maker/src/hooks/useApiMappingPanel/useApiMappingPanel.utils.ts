@@ -8,8 +8,7 @@ export function destinationOf(binding: ApiBinding | undefined): PayloadDestinati
   return 'contract'
 }
 
-// El binding con el que se estrena cada destino que no va al contrato. El concepto arranca sin id:
-// el campo ya queda fuera del contrato mientras se escribe.
+// El concepto arranca sin id: el campo sale del contrato mientras se escribe.
 export function offContractBinding(destination: 'concept' | 'excluded'): ApiBinding {
   return destination === 'concept' ? { kind: 'concept' } : { kind: 'excluded' }
 }

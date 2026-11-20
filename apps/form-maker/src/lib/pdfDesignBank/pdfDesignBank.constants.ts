@@ -1,12 +1,9 @@
-// Una llave por impuesto, aparte del borrador del formulario: descartar un borrador no se lleva el
-// PDF, y el PDF nunca entra al borrador ni al export. Prefijo del nombre viejo, como las demas.
+// Una llave por impuesto, aparte del borrador: el PDF nunca entra al borrador ni al export. Prefijo
+// viejo, como las demas.
 export const PDF_DESIGN_KEY_PREFIX: string = 'form-orchestrator-pdf-'
 
-// Sube con cada cambio de forma del diseño guardado, junto con su paso de migracion.
-// 2 (2026-11-17): la hoja pasa de una tabla a una lista de bloques; la celda, de texto a contenido.
-// El contenido "component" (2026-11-18) no la subio: es una variante mas, y lo guardado antes se
-// sigue leyendo igual. Tampoco las clases del diseño (2026-11-18): lo guardado sin ellas entra con
-// una lista vacia (el .default([]) del esquema).
+// Sube con cada cambio de forma, junto con su migracion. 2: la hoja pasa a lista de bloques.
+// Componentes y clases no la subieron (variante nueva; .default([])).
 export const PDF_DESIGN_SCHEMA_VERSION: number = 2
 
 export const QUOTA_MESSAGE: string =

@@ -6,8 +6,8 @@ export interface StepTabChipProps {
   label: string
   active: boolean
   canvasTarget: CanvasTarget
-  // "idle" fuera de un arrastre; "ready" cuando la pestana puede recibir la mudanza y "rejected"
-  // cuando lo que se arrastra no puede salir de su paso.
+  // idle sin arrastre; ready si puede recibir la mudanza; rejected si lo arrastrado no puede salir
+  // de su paso.
   transferState?: TransferTabState
   onSelect: () => void
   onRemove?: () => void

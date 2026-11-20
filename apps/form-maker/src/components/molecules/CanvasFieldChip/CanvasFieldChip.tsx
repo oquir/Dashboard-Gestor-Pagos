@@ -74,10 +74,8 @@ export function CanvasFieldChip({
   const destination: FieldDestination = getFieldDestination(field)
   const DestinationIcon: ComponentType<IconProps> | undefined = DESTINATION_ICONS[destination]
   const destinationTitle: string = getDestinationTitle(field, destination)
-  // El margen se queda en el div de arriba (relative, con el handle y el resize anclados a el):
-  // aplicarlo aca correria el boton por dentro sin mover a sus hermanos absolutos. El resto --
-  // fondo, color y el CSS libre -- va sobre la caja pintada, nunca sobre el div que solo lleva
-  // gridColumn, porque ese es el que fija la posicion en la fila.
+  // Los margenes van en el div relative (con handle y resize); el resto del estilo en la caja
+  // pintada, nunca en el div con gridColumn.
   const { marginTop, marginBottom, ...buttonStyles } = resolveFieldStyles(field.styles)
   const chromeClasses: string = pinned ? CHROME_PINNED_CLASSES : CHROME_ON_FIELD_CLASSES
 
@@ -86,8 +84,7 @@ export function CanvasFieldChip({
       ref={setRefs}
       data-field-id={field.id}
       style={{ gridColumn: `${field.colStart} / span ${field.colSpan}`, gridRow: 1 }}
-      // El grupo lleva nombre: la fila es antecesora del chip, y un `group` a secas dejaria que
-      // pasar por encima de la fila encendiera de golpe el cromo de todos sus campos.
+      // group con nombre: uno a secas encenderia el cromo de todos los campos al pasar por la fila.
       className={`group/field relative min-w-0 ${ENTER_FIELD_CLASSES} ${isDragging ? 'opacity-40' : ''}`}
     >
       <div
@@ -128,12 +125,9 @@ export function CanvasFieldChip({
                 )}
                 {showTooltip && <InfoCircle size={12} className="shrink-0 text-fg-subtle" />}
               </div>
-              {/* Iconos monocromos y sin fondo: eran tres pildoras de tres colores que le disputaban
-                el naranja a la seleccion. El detalle sale en un Tooltip y esta en el panel de logica.
-                Se ven solo si caben al lado de la palabra mas larga del nombre: el nombre mide eso
-                (w-min) al repartir el renglon, y si no queda lugar el flex-wrap baja los iconos a
-                una segunda linea de alto cero, que el overflow-hidden de arriba no deja ver. Cada
-                campo decide con su propio nombre y su ancho real, sin un corte fijo. */}
+              {/* Los iconos solo se ven si caben junto a la palabra mas larga del nombre
+                  (w-min): si no, flex-wrap los baja a una linea de alto cero que overflow-hidden
+                  oculta. */}
               <div className="ml-auto h-0 shrink-0">
                 <div className="flex h-5 items-center gap-1.5">
                   {field.visibleWhen && (
@@ -165,8 +159,6 @@ export function CanvasFieldChip({
               <FieldPreviewControl field={field} />
             </div>
           </div>
-          {/* Tan angosto que el contenido no entra: en lugar de una tarjeta en blanco, el icono
-              del tipo, que es lo unico que cabe y lo unico que hace falta para reconocerlo. */}
           {shouldHideContent && (
             <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <FieldTypeBadge type={field.type} size={14} />

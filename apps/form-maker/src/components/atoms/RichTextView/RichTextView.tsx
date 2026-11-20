@@ -12,7 +12,6 @@ export function RichTextView({ content, className }: RichTextViewProps) {
       className={`flex min-w-0 flex-col gap-1 wrap-break-word ${className ?? 'text-xs text-fg-soft'}`}
     >
       {(content ?? []).map((paragraph, index) => (
-        // biome-ignore lint/suspicious/noArrayIndexKey: los parrafos no tienen id propio
         <p key={index}>
           {paragraph.children.map((leaf, leafIndex) => renderLeaf(leaf, leafIndex))}
         </p>

@@ -8,8 +8,7 @@ export function emptyGroupItem(model: RuntimeModel, groupId: string): RuntimeVal
   return item
 }
 
-// El modelo se reconstruye en cada edicion del lienzo. Si aparece o desaparece un grupo hay que
-// acomodar el estado sin perder lo que el usuario ya escribio.
+// El modelo se rehace en cada edicion: acomoda grupos nuevos o borrados sin perder lo escrito.
 export function reconcileState(model: RuntimeModel, state: PreviewState): PreviewState {
   const groups: Record<string, RuntimeValues[]> = {}
   let changed = false
@@ -27,7 +26,6 @@ export function reconcileState(model: RuntimeModel, state: PreviewState): Previe
 
   if (Object.keys(groups).length !== Object.keys(state.groups).length) changed = true
 
-  // Se devuelve el mismo objeto si nada cambio: un state nuevo en cada render dispararia el
-  // efecto otra vez y entraria en bucle.
+  // El mismo objeto si nada cambio: si no, el efecto entraria en bucle.
   return changed ? { ...state, groups } : state
 }

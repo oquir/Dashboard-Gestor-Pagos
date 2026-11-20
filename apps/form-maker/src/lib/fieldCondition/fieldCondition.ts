@@ -7,11 +7,9 @@ import {
   STRING_OPERATORS,
 } from './fieldCondition.constants'
 
-// Semantica de los operadores del lado del builder: quien pide un valor, quien lo toma como lista
-// y cuales tienen sentido para cada tipo de campo. Lo comparten el editor, el export y el grafo,
-// asi que conviene preguntarlo aca en vez de repetir las reglas en cada sitio.
-// Un campo lleva dos condiciones independientes: visibleWhen decide si se dibuja y enableWhen si
-// se puede editar. Comparten tipo y editor; solo cambia cual se lee y cual se escribe.
+// Semantica de los operadores del lado del builder (quien pide valor, quien lo toma como lista,
+// cuales sirven por tipo), compartida por el editor, el export y el grafo. visibleWhen decide si se
+// dibuja y enableWhen si se edita.
 
 export function operatorNeedsValue(operator: ConditionOperator): boolean {
   return !OPERATORS_WITHOUT_VALUE.includes(operator)
@@ -34,9 +32,7 @@ export function parseConditionList(value: string | number | boolean | undefined)
     .filter((entry) => entry.length > 0)
 }
 
-// Un rango de fechas no se compara con un valor: es un objeto, y el ejecutor compara texto contra
-// texto, asi que "es igual a" nunca se cumpliria. Lo unico que se le puede preguntar es si esta
-// lleno. Quien tenga el campo a mano pregunta aca y no por el tipo solo.
+// Un rango de fechas es un objeto: solo se le puede preguntar si esta lleno.
 export function operatorsForField(field: DateCapableField): ConditionOperator[] {
   return isDateRangeField(field) ? ['isEmpty', 'isNotEmpty'] : operatorsForFieldType(field.type)
 }
@@ -67,8 +63,8 @@ export function operatorsForFieldType(type: string): ConditionOperator[] {
       return ['equals', 'notEquals', 'in', 'isEmpty', 'isNotEmpty']
     case 'checkbox_group':
       return ['contains', 'isEmpty', 'isNotEmpty']
-    // Antes y despues de una fecha quedan afuera: greaterThan y lessThan comparan como numero en el
-    // ejecutor, y un AAAA-MM-DD ahi da NaN, asi que nunca se cumplirian.
+    // Antes y despues quedan afuera: greaterThan y lessThan comparan como numero y AAAA-MM-DD da
+    // NaN.
     case 'date':
       return ['equals', 'notEquals', 'isEmpty', 'isNotEmpty']
     case 'file':

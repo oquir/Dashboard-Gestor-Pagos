@@ -12,21 +12,10 @@ import {
 import { ICA_SECTION_IMAGES } from './pdfTemplates.data'
 import { bare, html, image, nested, row, table, text } from './pdfTemplates.utils'
 
-// Las plantillas de fabrica del PDF: con lo que arranca el diseñador de un impuesto que todavia no
-// tiene nada guardado, y lo que trae el boton "Plantilla de fábrica". Hoy solo el ICA.
-//
-// La del ICA es la generica de Autoliquidables (GENERICO\PdfICA.html) rehecha con tablas del
-// editor, para que se pueda tocar celda por celda, y en UNA hoja carta: la original eran dos (la
-// segunda, las actividades 4 a 15) y estaba medida para una ventana de 1960 px. Cambios a proposito:
-// - las 15 actividades van en la seccion C (antes 3 + "OTRAS ACTIVIDADES / VER DESAGREGACIÓN");
-// - la rejilla es de 10 columnas (la original mezclaba filas de 12 y de 10);
-// - letra de 8 px y rotulos mas chicos, a la escala de los 778 px;
-// - se corrigen INDUSTRÍA, MUNIPIO y AUTORETENCIONES;
-// - el estilo va en clases del diseño (ICA_CLASSES: "celda negrita derecha"…), no en cada celda: asi
-//   el .html dice una vez como es una celda del FUN y no 250.
-// Las variables son las de hoy ({RazonSocial}, {CodigoSecundaria1}…): el back actual las llena tal
-// cual. Pasarlas a los nombres de los campos es del inventario (docs/Pendientes-PDF.md §3.7).
-// Solo la usa el diseñador (chunk perezoso): fuera de lib/index.ts.
+// Plantillas de fabrica del PDF (hoy solo ICA): la generica de Autoliquidables rehecha con tablas
+// del editor en una hoja carta, 15 actividades en la seccion C, rejilla de 10 columnas, letra de 8
+// px, erratas corregidas y estilo en clases. Las variables son las de hoy del back. Fuera de
+// lib/index.ts.
 
 export function factoryPdfDesign(taxType: PdfTaxType): PdfDesign | null {
   if (taxType !== 'industria_comercio') return null

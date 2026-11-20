@@ -3,14 +3,8 @@ import type { ScriptFunction } from '../../types'
 import type { RuntimeContext } from '../../types'
 import { buscarFechaLimite, diasEntre, mesesOFraccion } from '../maxDates'
 
-// Los dos helpers de fecha que un script tiene en ambito. Son los unicos que no son puros: el resto
-// vive en constants/fieldScript porque le alcanza con sus argumentos, y estos necesitan la tabla de
-// vencimientos, que no esta en el export. Por eso se construyen por corrida, cerrando sobre el
-// contexto, en vez de ser una constante de modulo.
-//
-// El contrato hacia el consumidor: `compiled` los va a llamar por nombre, asi que del otro lado
-// tienen que existir con estas mismas reglas. Es el mismo acuerdo coordinado que ya rige para
-// logic.script -- quien escribe el formulario y quien lo consume son la misma persona.
+// Helpers de fecha del script: impuros (la tabla de vencimientos no esta en el export), se arman
+// por corrida. Contrato: compiled los llama por nombre.
 
 const PERIODO_POR_DEFECTO: number = 1
 
@@ -32,17 +26,14 @@ function resolver(context: RuntimeContext, args: unknown[]): string | null {
   return buscarFechaLimite(context.reglas, anio, comoPeriodo(args[1]), comoTexto(args[2])) ?? null
 }
 
-// El orden sale de DATE_HELPER_NAMES y no de escribirlo dos veces: es la misma disciplina con la que
-// SCRIPT_HELPER_VALUES deriva de SCRIPT_HELPERS. Agregar uno en un lado y olvidarlo en el otro
-// correria todos los argumentos siguientes sin que nada avise.
+// El orden sale de DATE_HELPER_NAMES: escribirlo dos veces podria correr los argumentos sin aviso.
 export function buildDateHelpers(context: RuntimeContext): ScriptFunction[] {
   const porNombre: Record<string, ScriptFunction> = {
     // La fecha maxima, o null si no hay tabla para ese ano, periodo o digito.
     fechaLimite: (...args: unknown[]) => resolver(context, args),
 
-    // Dias de atraso, 0 si esta en fecha. Tambien 0 cuando no hay fecha con que comparar, y eso es
-    // deliberado: sin tabla cargada la alternativa seria NaN, que apagaria en silencio la cadena de
-    // renglones que venga detras. Y una sancion no puede nacer de un dato que falta.
+    // 0 tambien sin fecha para comparar, a proposito: NaN apagaria la cadena de renglones, y una
+    // sancion no nace de un dato que falta.
     diasDeMora: (...args: unknown[]) => {
       const limite: string | null = resolver(context, args)
       if (limite === null) return 0
@@ -52,9 +43,7 @@ export function buildDateHelpers(context: RuntimeContext): ScriptFunction[] {
       return dias === null || dias <= 0 ? 0 : dias
     },
 
-    // Meses o fraccion de atraso, que es la unidad en la que crece la sancion por extemporaneidad.
-    // No se deriva de diasDeMora: dividir dias entre 30 cobra un mes de mas cada medio ano.
-    // Mismo fail-open que arriba -- sin tabla no hay mora, y por lo tanto no hay sancion.
+    // Meses o fraccion (no dias / 30, que cobra un mes de mas). Sin tabla no hay mora.
     mesesDeMora: (...args: unknown[]) => {
       const limite: string | null = resolver(context, args)
       if (limite === null) return 0

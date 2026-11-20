@@ -14,7 +14,7 @@ export function PreviewRowsGrid({
   return (
     <div className="flex flex-col gap-4">
       {rows.map((row) => {
-        // Una fila sin campos visibles seguiria contando como hijo del flex y dejaria su gap.
+        // Una fila sin campos visibles dejaria su gap en el flex.
         if (!row.fields.some((field) => scope.visible[field.name])) return null
 
         return (
@@ -23,15 +23,13 @@ export function PreviewRowsGrid({
             className={`grid items-start gap-3 ${PREVIEW_ROW_STACK_CLASSES}`}
             style={
               {
-                // Los estilos de la fila ya llegan resueltos a CSS plano; gridTemplateColumns va
-                // al final para que gane sobre un CSS libre que lo nombrara.
+                // gridTemplateColumns al final para ganarle al CSS libre.
                 ...row.styles,
                 gridTemplateColumns: `repeat(${row.columns}, minmax(0, 1fr))`,
               } as CSSProperties
             }
           >
-            {/* Apilada en celular la fila sigue el orden del DOM, no el de colStart: se ordena aca.
-                En desktop no cambia nada, cada campo tiene su columna explicita. */}
+            {/* Apilada en celular la fila sigue el orden del DOM: se ordena por colStart. */}
             {[...row.fields]
               .sort((a, b) => a.colStart - b.colStart)
               .map((field) => {

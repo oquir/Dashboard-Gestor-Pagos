@@ -1,8 +1,7 @@
 import type { ConditionOperator } from '../../../types'
 
 export interface ConditionOperatorSelectProps {
-  // Por defecto continua la frase que arma el editor de condiciones ("Cuando X …y el valor Y").
-  // Donde el control va en una columna propia esa frase no se lee seguida y conviene rotularlo.
+  // Sin label continua la frase del editor de condiciones; ponlo cuando va en columna propia.
   label?: string
   operator: ConditionOperator
   availableOperators: ConditionOperator[]

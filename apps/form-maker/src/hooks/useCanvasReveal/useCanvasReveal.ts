@@ -1,6 +1,5 @@
-// Trae a la vista lo que se acaba de agregar al final del paso: la fila o la banda nueva puede caer
-// lejos de lo que se esta mirando. Lo usan la barra flotante (+ Fila, + Grupo repetible) y la paleta
-// (clic en un tipo de campo). El scroll va en un efecto despues del commit, cuando el nodo ya existe.
+// Trae a la vista lo recien agregado al final del paso (barra flotante y paleta). El scroll va en
+// un efecto, cuando el nodo ya existe.
 import { useEffect, useState } from 'react'
 import { revealScrollBehavior } from '../../lib/performanceMode/performanceMode'
 import { getBandElement, getRowElement } from '../../lib/canvasDom/canvasDom'

@@ -33,13 +33,11 @@ export function RepeatableGroupBand({
   const removeGroup = useFormStore((state) => state.removeGroup)
   const isRowDragActive = useFormStore((state) => state.rowDrag !== null)
   const paths: string[] = arrayPaths(PAYLOAD_SCHEMA)
-  // Minimo, maximo, arreglo y comprobaciones eran un formulario de configuracion desplegado en
-  // medio del lienzo, aunque no se toquen casi nunca. Al reposo ahora se leen en una linea.
+  // La configuracion del grupo va plegada: se toca casi nunca.
   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false)
 
-  // La banda solo es zona de soltar mientras se arrastra una fila. Apagada el resto del tiempo,
-  // no puede competir con las filas de dentro por el drop de un campo: es estructural y no depende
-  // de que dnd-kit prefiera el droppable mas chico.
+  // Solo es zona de soltar mientras se arrastra una fila: asi no compite con las filas de adentro
+  // por el drop de un campo.
   const { setNodeRef } = useDroppable({
     id: `band-${group.id}`,
     data: { bandGroupId: group.id },
@@ -150,8 +148,7 @@ export function RepeatableGroupBand({
 
           <GroupChecksEditor group={group} />
 
-          {/* Disolver vive aca dentro y ya no al lado de "+ Fila": es destructivo y estaba a
-              veinte pixeles de la accion que mas se usa, con el mismo tamaño. */}
+          {/* Disolver vive adentro: es destructivo y estaba a 20px de "+ Fila". */}
           <Tooltip content="Disolver el grupo (las filas se quedan)">
             <button
               type="button"

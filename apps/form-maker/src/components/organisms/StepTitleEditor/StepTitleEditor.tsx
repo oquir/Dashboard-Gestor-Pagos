@@ -25,7 +25,7 @@ export function StepTitleEditor() {
       ? formSteps.find((s) => s.stepId === activeCanvas.stepId)
       : introSteps.find((s) => s.stepId === activeCanvas.stepId)
 
-  // Solo un paso del formulario se puede ocultar: el modal de entrada no se navega igual.
+  // Solo un paso del formulario se puede ocultar.
   const formStep: FormStep | undefined =
     activeCanvas.type === 'formStep'
       ? formSteps.find((s) => s.stepId === activeCanvas.stepId)

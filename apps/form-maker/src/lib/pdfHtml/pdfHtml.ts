@@ -20,19 +20,13 @@ import {
   type Tag,
 } from './pdfHtml.utils'
 
-// El saneo del HTML libre del PDF (docs/Pendientes-PDF.md §2.1): lista blanca propia, como
-// serializeRichText, pero sobre texto y no sobre el DOM, por dos razones: corre igual en un script
-// de tsx que en el navegador, y la salida se vuelve a escribir desde cero -- etiquetas de la lista,
-// atributos de la lista entre comillas y escapados, texto escapado --, asi que nada del original
-// pasa tal cual. Tolera lo que las plantillas a mano traen: etiquetas sin cerrar, mayusculas,
-// atributos sin comillas. Nunca lanza.
-//
-// Es la primera barrera; la segunda es el convertidor del back sin JavaScript (§7.1).
+// Saneo del HTML libre: lista blanca sobre texto (no DOM), para correr igual en tsx; la salida se
+// reescribe desde cero. Tolera etiquetas sin cerrar, mayusculas y atributos sin comillas. Nunca
+// lanza. La segunda barrera es el convertidor del back sin JavaScript.
 export function sanitizePdfHtml(html: string): string {
   let out: string = ''
   let index: number = 0
-  // Mientras se esta adentro de algo que se borra con su contenido, se cuenta cuantas aperturas
-  // del mismo nombre van, para no salir en el primer cierre de una anidada.
+  // Cuenta las aperturas anidadas del mismo nombre para no salir en el primer cierre.
   let dropping: { name: string; depth: number } | null = null
 
   while (index < html.length) {
@@ -78,8 +72,7 @@ export function sanitizePdfHtml(html: string): string {
       continue
     }
 
-    // Lo que tiene texto crudo adentro se lee hasta su cierre de una vez: ahi un "<b>" no es una
-    // etiqueta, y leerlo como tal dejaria pasar lo que no se ve.
+    // Texto crudo se lee hasta su cierre: ahi un <b> no es etiqueta.
     if (RAW_TEXT_TAGS.has(tag.name) && !tag.selfClosing) {
       const close: number = html.toLowerCase().indexOf(`</${tag.name}`, index)
       const body: string = html.slice(index, close === -1 ? html.length : close)
@@ -103,11 +96,8 @@ export function sanitizePdfHtml(html: string): string {
   return out
 }
 
-// El lector tolerante: arma el arbol de un HTML YA SANEADO, cerrando lo que la plantilla dejo
-// abierto como lo haria el navegador -- una <td> cierra la anterior, una <tr> cierra su fila, un
-// cierre que no tiene apertura se ignora. No agrega lo que falta (ni <tbody> ni <tr> implicitos):
-// lo que se lee se vuelve a escribir en el mismo lugar. El texto queda como venia (escapado) y los
-// atributos ya decodificados. Nunca lanza.
+// Lector tolerante de HTML YA SANEADO: cierra lo abierto como el navegador, sin agregar lo que
+// falta (ni <tbody> ni <tr>). Nunca lanza.
 export function parsePdfHtml(html: string): PdfHtmlNode[] {
   const root: PdfHtmlElement = { type: 'element', name: '#root', attributes: [], children: [] }
   const stack: PdfHtmlElement[] = [root]
@@ -185,8 +175,7 @@ export function serializePdfHtml(nodes: PdfHtmlNode[]): string {
   return out
 }
 
-// Saneado y con todas sus etiquetas cerradas: lo que el generador del .html final mete en una celda
-// o un bloque. Sin esto, un <table> sin cerrar del HTML libre se tragaria el resto del documento.
+// Saneado y con todo cerrado: un <table> abierto se tragaria el resto del documento.
 export function normalizePdfHtml(html: string): string {
   return serializePdfHtml(parsePdfHtml(sanitizePdfHtml(html)))
 }
@@ -202,8 +191,7 @@ export function pdfHtmlText(nodes: PdfHtmlNode[]): string {
   return out
 }
 
-// Texto del autor que va como texto: todo "&" se escapa, tambien el de un "&nbsp;" escrito a mano,
-// que es lo que la persona tecleo y no una entidad.
+// Todo & se escapa, tambien un &nbsp; escrito a mano: es lo que se tecleo.
 export function escapePdfText(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
@@ -212,8 +200,7 @@ export function escapePdfAttribute(value: string): string {
   return escapeAttribute(value)
 }
 
-// Atributos en el orden dado, escapados; los null se omiten. Lo usan el generador del .html y los
-// componentes, que escriben HTML a mano.
+// En orden y escapados; los null se omiten.
 export function pdfAttributes(list: [string, string | null][]): string {
   return list
     .filter((entry): entry is [string, string] => entry[1] !== null)
@@ -221,16 +208,14 @@ export function pdfAttributes(list: [string, string | null][]): string {
     .join('')
 }
 
-// El style de React en camelCase, de vuelta a CSS. Una variable (--x) queda igual; un prefijo
-// (WebkitTransform) recupera su guion inicial.
+// camelCase a CSS: --x queda igual y un prefijo (WebkitTransform) recupera su guion.
 export function pdfCssText(map: CssStyleMap): string {
   return Object.entries(map)
     .map(([key, value]) => `${key.startsWith('--') ? key : toKebab(key)}: ${value}`)
     .join('; ')
 }
 
-// La misma regla que el saneo aplica a src: http(s), data:image o una {Var} sola. Lo demas (una
-// ruta relativa, javascript:) se quita al publicar; la barra lateral lo avisa antes.
+// La misma regla que el saneo de src: http(s), data:image o una {Var} sola.
 export function isSafePdfImageSrc(src: string): boolean {
   return isSafeUrl(src, SAFE_IMAGE_URL)
 }
@@ -240,10 +225,8 @@ export function pdfHtmlAttribute(node: PdfHtmlNode, name: string): string | null
   return node.attributes.find(([attribute]) => attribute === name)?.[1] ?? null
 }
 
-// El CSS de un atributo style o de un campo "Estilos en línea". Quita lo que ejecuta o trae algo de
-// afuera: @import, expression(), behavior y -moz-binding (motores viejos) y cualquier url() que no
-// sea una imagen http(s), una data:image o una {Var}. Los comentarios se quitan antes, para que no
-// sirvan de escondite ("expr/**/ession").
+// Quita lo que ejecuta o trae algo de afuera (@import, expression(), behavior, -moz-binding, url()
+// que no sea imagen segura). Los comentarios se quitan antes: no sirven de escondite.
 export function sanitizeCss(css: string): string {
   return css
     .replace(/\/\*[\s\S]*?(\*\/|$)/g, '')
@@ -296,8 +279,7 @@ function serializeAttributes(tag: Tag): string {
   return out
 }
 
-// El esquema se mira ya decodificado y sin espacios ni controles, que es como lo lee el navegador:
-// "java&#115;cript:" y " javascript:" son javascript:.
+// El esquema se mira decodificado y sin espacios ni controles, como lo lee el navegador.
 function isSafeUrl(value: string, pattern: RegExp): boolean {
   // eslint-disable-next-line no-control-regex -- quitar los caracteres de control es el punto
   const compact: string = value.replace(/[\u0000- ]/g, '')

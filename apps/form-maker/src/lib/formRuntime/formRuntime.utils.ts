@@ -11,14 +11,12 @@ import { checkKey, fieldKey } from '../runtimeValidation/runtimeValidation.utils
 
 // Piezas de apoyo del runtime: recorridos del export y armado de los ambitos.
 
-// stepFields y allSteps no tienen uso en el builder, pero FrontAutoliquidable las usa desde su
-// copia del runtime: borrarlas aca rompe al consumidor en la proxima copia.
+// stepFields y allSteps los usa FrontAutoliquidable en su copia del runtime: no borrarlas.
 export function stepFields(step: ExportedStep): ExportedField[] {
   return step.rows.flatMap((row) => row.fields)
 }
 
-// Las claves de error de un paso: los campos sueltos por nombre y los de un grupo repetible
-// una vez por repeticion, que es como las indexa validateRuntime.
+// Sueltos por nombre y los de un grupo una vez por repeticion, como validateRuntime.
 export function stepErrorKeys(step: ExportedStep, snapshot: RuntimeSnapshot): string[] {
   const keys: string[] = []
 
@@ -36,9 +34,7 @@ export function stepErrorKeys(step: ExportedStep, snapshot: RuntimeSnapshot): st
     }
   }
 
-  // Las comprobaciones del grupo son del paso que lo declara, no de una fila suya. Sin esta vuelta
-  // el error existiria en la lista pero "Siguiente" avanzaria igual, que es justo lo contrario de
-  // lo que se pide de ella.
+  // Las comprobaciones del grupo son del paso: sin esta vuelta, Siguiente avanzaria con el error.
   for (const group of step.groups ?? []) {
     for (const check of group.checks ?? []) keys.push(checkKey(group.groupId, check.id))
   }
@@ -50,8 +46,7 @@ export function allSteps(model: RuntimeModel): ExportedStep[] {
   return [...model.introSteps, ...model.steps]
 }
 
-// Convierte cada columna de un grupo en un array bajo el nombre del campo. Es lo que permite que
-// sumOf(impuesto_actividad) encuentre algo que sumar cuando se resuelve el root.
+// Cada columna de un grupo como array: asi sumOf la encuentra desde el root.
 export function groupColumns(
   model: RuntimeModel,
   groups: Record<string, RuntimeValues[]>,
@@ -78,24 +73,16 @@ export function buildScope(
   const visible: Record<string, boolean> = {}
   const disabled: Record<string, boolean> = {}
 
-  // Precedencia del contrato: alwaysDisabled gana sobre enableWhen. La visibilidad se calcula
-  // aparte porque manda sobre las dos: un campo oculto no se dibuja ni se valida.
+  // alwaysDisabled gana sobre enableWhen; la visibilidad manda sobre las dos.
   for (const field of fields) {
     visible[field.name] = evaluateCondition(field.visibleWhen, values)
     disabled[field.name] =
       Boolean(field.alwaysDisabled) || !evaluateCondition(field.enableWhen, values)
   }
 
-  // Segunda pasada, y tiene que serlo: el destino puede aparecer despues que su etiqueta en la
-  // lista, asi que su visibilidad todavia no estaria calculada.
-  //
-  // Una etiqueta enlazada se esconde con su campo. La regla no se puede dejar en manos del autor
-  // -- copiar el visibleWhen del campo a la etiqueta -- porque dos condiciones que dicen lo mismo
-  // se desincronizan a la primera edicion, y el resultado es un rotulo suelto apuntando a un campo
-  // que no esta. Se deriva, igual que hasLinkedLabel.
-  //
-  // El === false es a proposito: si el destino no vive en este ambito no hay nada que heredar y la
-  // etiqueta se queda como estaba.
+  // Segunda pasada: el destino puede venir despues que su etiqueta. La etiqueta se esconde con su
+  // campo (derivado, no copiado). === false: si el destino no esta en este ambito no hay que
+  // heredar.
   for (const field of fields) {
     if (field.labelFor && visible[field.labelFor] === false) visible[field.name] = false
   }
@@ -111,11 +98,8 @@ export function emptyItem(fields: ExportedField[]): RuntimeValues {
   return item
 }
 
-// Un script roto dentro de un grupo falla una vez por repeticion, y el mismo calculo pasa por tres
-// pasadas: sin esto, un error se listaria cuarenta y cinco veces sobre quince actividades. Corre
-// otra vez sobre la lista final de validateRuntime, que suma fuentes que no pasaron por aca (dos
-// comprobaciones sin etiqueta fallan con el mismo texto), porque PreviewResults usa esta misma
-// clave como key: repetida, React deja avisos fantasma en pantalla.
+// Sin esto un script roto en un grupo se listaria 45 veces (15 filas x 3 pasadas). Corre tambien
+// sobre la lista final: PreviewResults usa la clave como key.
 export function dedupeIssues(issues: RuntimeIssue[]): RuntimeIssue[] {
   const seen = new Set<string>()
   const unique: RuntimeIssue[] = []

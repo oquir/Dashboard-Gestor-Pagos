@@ -6,8 +6,7 @@ export interface RowMeta {
   height?: number
 }
 
-// Una celda vacia. Con `like`, toma sus bordes y sus clases: una fila o columna nueva en una tabla
-// armada con clases (la del ICA) sale con el mismo aspecto que su vecina.
+// Con like toma bordes y clases: una fila nueva sale igual que su vecina.
 export function newCell(like?: Pick<PdfCell, 'borders' | 'className'>): PdfCell {
   const cell: PdfCell = {
     id: uuidv4(),
@@ -38,8 +37,7 @@ export function covers(placed: PdfPlacedCell, row: number, col: number): boolean
   return placed.row <= row && row <= lastRow(placed) && placed.col <= col && col <= lastCol(placed)
 }
 
-// Rearma las filas a partir de las celdas ubicadas: cada una va en la fila donde empieza, ordenadas
-// por columna. Es el camino de vuelta de placeCells y la unica forma en que las operaciones escriben.
+// El camino de vuelta de placeCells, y la unica forma en que las operaciones escriben.
 export function rebuildRows(metas: RowMeta[], placed: PdfPlacedCell[]): PdfRow[] {
   return metas.map((meta, index) => ({
     ...meta,

@@ -1,7 +1,6 @@
 import type { CalcSignChoice } from './CalcTermRow.types'
 
-// El menos se dibuja con el signo tipografico (U+2212): el guion comun queda corto y fino al lado
-// del +, y a simple vista parece otra cosa.
+// Menos tipografico (U+2212): el guion comun se ve corto al lado del +.
 export const CALC_SIGN_CHOICES: CalcSignChoice[] = [
   { sign: '+', symbol: '+', label: 'Sumar' },
   { sign: '-', symbol: '−', label: 'Restar' },
@@ -9,14 +8,10 @@ export const CALC_SIGN_CHOICES: CalcSignChoice[] = [
 
 export const CYCLE_SUFFIX: string = '(ya depende de este campo)'
 
-// Cada fila es una tarjeta como las secciones del sidebar (PanelSection): en oscuro un velo negro
-// la deja apenas mas oscura que el modal, en claro va slate-100.
 export const ROW_CLASSES: string =
   'flex items-center gap-3 rounded-lg border border-border bg-surface-raised p-3 transition-colors hover:border-border-strong dark:bg-black/25'
 
-// El signo activo va relleno de naranja, no en pastilla elevada como el selector de Vista: aca
-// cambia el valor que se calcula, igual que la herramienta activa del lienzo cambia lo que hace un
-// clic, y pasarlo por alto es restar donde se queria sumar.
+// Signo activo relleno y no en pastilla: cambia el valor calculado y no puede pasar desapercibido.
 export const SIGN_TRACK_CLASSES: string =
   'flex shrink-0 gap-0.5 rounded-md border border-border bg-field p-[3px]'
 

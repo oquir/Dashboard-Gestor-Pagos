@@ -1,7 +1,6 @@
 import type { PdfCell, PdfTable, PdfTableLocation } from '../../types'
 
-// Recorre una tabla y sus anidadas, de afuera hacia adentro. La profundidad de la de afuera es la
-// que se le pasa; cada nivel suma uno.
+// De afuera hacia adentro; cada nivel suma uno de profundidad.
 export function findTableIn(
   table: PdfTable,
   tableId: string,
@@ -43,8 +42,7 @@ export function findCellIn(
   return null
 }
 
-// Aplica `fn` a la tabla `tableId`, este donde este. Devuelve la misma referencia si nada cambio,
-// para que el historial no registre un paso vacio.
+// Misma referencia si nada cambio: el historial no registra un paso vacio.
 export function mapTableIn<T extends PdfTable>(
   table: T,
   tableId: string,

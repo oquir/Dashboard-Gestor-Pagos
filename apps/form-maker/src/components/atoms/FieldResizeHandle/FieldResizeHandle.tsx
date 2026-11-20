@@ -18,7 +18,7 @@ export function FieldResizeHandle({
     onResize,
   })
 
-  // En un campo angosto el tirador redondo lo tapa entero, asi que se cae a una barra.
+  // En un campo angosto el tirador redondo lo taparia entero: se usa una barra.
   const isCompact: boolean = rowColumns / colSpan >= 8
   const handleProps: FieldResizeHandleVariantProps = {
     isResizing,

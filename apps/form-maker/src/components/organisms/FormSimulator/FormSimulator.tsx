@@ -45,8 +45,7 @@ export function FormSimulator() {
         </div>
       </header>
 
-      {/* En desktop cada panel scrollea por su cuenta y ocupa todo el alto; abajo de lg la
-          pagina vuelve a scrollear entera para no aplastar los dos en media pantalla. */}
+      {/* Desde lg cada panel scrollea por su cuenta; abajo, la pagina entera. */}
       <div className="min-h-0 flex-1 overflow-auto px-3 py-4 sm:px-6 sm:py-6 lg:overflow-hidden">
         <div className="mx-auto grid max-w-7xl gap-4 lg:h-full lg:grid-cols-[minmax(0,2fr)_minmax(0,420px)]">
           <div className="min-w-0 lg:min-h-0 lg:overflow-auto">

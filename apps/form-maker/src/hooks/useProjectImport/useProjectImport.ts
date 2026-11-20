@@ -6,9 +6,8 @@ import type { ProjectFileLoad, ProjectFileSummary } from '../../types'
 import { UNREADABLE_FILE_MESSAGE } from './useProjectImport.constants'
 import type { UseProjectImportResult } from './useProjectImport.types'
 
-// Abrir un formulario exportado: lee el archivo, deja ver que trae y lo carga cuando se confirma.
-// Lo comparten el asistente de inicio y el modal del panel derecho. La lectura y la validacion
-// viven en lib/projectFile; aca queda el estado de la eleccion y la escritura en el store.
+// Abrir un formulario exportado: lee, muestra que trae y lo carga al confirmar. Lo comparten el
+// asistente y el panel derecho; lectura y validacion en lib/projectFile.
 export function useProjectImport(): UseProjectImportResult {
   const restoreDraft = useFormStore((state) => state.restoreDraft)
   const markSaved = useFormStore((state) => state.markSaved)
@@ -36,8 +35,7 @@ export function useProjectImport(): UseProjectImportResult {
 
     const { draft } = result
     restoreDraft(draft)
-    // Se guarda en el acto y no con el autoguardado: recargar dentro de esos tres minutos
-    // devolveria el borrador anterior, o ninguno, en vez del formulario que se acaba de abrir.
+    // Se guarda en el acto: recargar antes del autoguardado devolveria el borrador anterior.
     saveDraft({
       formSteps: draft.formSteps,
       introModal: draft.introModal,

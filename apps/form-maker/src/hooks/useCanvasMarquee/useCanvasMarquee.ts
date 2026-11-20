@@ -7,13 +7,9 @@ import { MARQUEE_ACTIVATION_PX } from './useCanvasMarquee.constants'
 import type { MarqueeGesture, ScrollPoint } from './useCanvasMarquee.types'
 import { clipToPort, scrollOffset, shiftRect } from './useCanvasMarquee.utils'
 
-// El marco de la seleccion multiple. En este modo todo suma: un clic en un campo lo agrega o lo
-// quita, el marco agrega lo que toca y un clic en el vacio limpia. Arrastrar desde encima de un
-// campo tambien abre un marco, porque el documento esta inerte y desde aca ningun campo se mueve.
-//
-// El marco vive en el espacio de scroll del puerto: ahi un punto del documento no se mueve cuando
-// la rueda desplaza a mitad del gesto, asi que la esquina de origen queda pegada a lo que se pulso.
-// Devuelve el rectangulo a dibujar en coordenadas de la ventana, ya recortado al puerto, o null.
+// Marco de la seleccion multiple: todo suma (clic agrega o quita, el marco agrega, el vacio
+// limpia). Vive en el espacio de scroll del puerto, asi el origen no se mueve si la rueda desplaza
+// a mitad del gesto. Devuelve el rectangulo en coordenadas de ventana, recortado al puerto.
 export function useCanvasMarquee(enabled: boolean): SelectionRect | null {
   const [marquee, setMarquee] = useState<SelectionRect | null>(null)
 
@@ -49,8 +45,7 @@ export function useCanvasMarquee(enabled: boolean): SelectionRect | null {
       )
       const hits: string[] = []
 
-      // getBoundingClientRect ya viene escalado por el zoom, igual que el marco que dibuja el
-      // puntero: comparar no necesita saber cuanto vale la escala.
+      // getBoundingClientRect ya viene escalado, igual que el marco: no hace falta la escala.
       for (const element of getFieldElements()) {
         const fieldId: string | undefined = element.dataset.fieldId
 
@@ -74,8 +69,7 @@ export function useCanvasMarquee(enabled: boolean): SelectionRect | null {
     }
 
     function handlePointerDown(event: PointerEvent): void {
-      // Sobre una barra de scroll el objetivo es el puerto mismo, porque la raiz del lienzo cubre
-      // todo lo demas: ahi manda la barra.
+      // Sobre una barra de scroll el objetivo es el puerto: ahi manda la barra.
       if (event.button !== 0 || event.target === port || !(event.target instanceof Element)) return
 
       const offset: ScrollPoint = scrollOffset(port)
@@ -107,8 +101,8 @@ export function useCanvasMarquee(enabled: boolean): SelectionRect | null {
       endGesture()
       if (wasMarquee) return
 
-      // Sin arrastre fue un clic: el campo bajo el puntero entra o sale, y el vacio limpia. Se busca
-      // por rects y no con elementsFromPoint, que ignora a los nodos con pointer-events-none.
+      // Sin arrastre fue un clic. Por rects y no elementsFromPoint, que ignora los nodos
+      // pointer-events-none.
       const hit: HTMLElement | undefined = getFieldElements().find((element) =>
         pointInRect(event.clientX, event.clientY, element.getBoundingClientRect()),
       )
@@ -119,8 +113,8 @@ export function useCanvasMarquee(enabled: boolean): SelectionRect | null {
       else state.selectField(null)
     }
 
-    // Escape cancela el marco y devuelve la seleccion con la que empezo. En captura y cortando la
-    // propagacion: el atajo global de Escape limpia la seleccion, y aca se la quiere restaurar.
+    // Escape restaura la seleccion inicial. En captura y sin propagar: el Escape global la
+    // limpiaria.
     function handleKeyDown(event: KeyboardEvent): void {
       if (event.key !== 'Escape' || !gesture) return
 

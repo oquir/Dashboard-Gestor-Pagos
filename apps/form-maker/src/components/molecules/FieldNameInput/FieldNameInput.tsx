@@ -23,9 +23,7 @@ export function FieldNameInput({ field }: FieldNameInputProps) {
   const hasError: boolean = isEmpty || isTaken
   const showsPreview: boolean = draft !== null && !hasError && slug !== draft
 
-  // Un nombre repetido no se corrige solo: antes se guardaba con sufijo y el autor se quedaba
-  // creyendo que habia escrito el otro, con las formulas apuntando al campo equivocado. El
-  // borrador se conserva junto con el error para que la correccion se haga aca y no en silencio.
+  // Un nombre repetido no se corrige solo: queda el borrador con el error para corregirlo aca.
   function commit(): void {
     if (draft === null || hasError) return
 

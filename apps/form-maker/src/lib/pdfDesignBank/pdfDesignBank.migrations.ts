@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from 'uuid'
 
-// Pasos de migracion del diseño guardado, por version de origen. Trabajan sobre el objeto crudo,
-// sin suponer su forma: un campo que no esta se deja como venga y el schema decide despues. Un hueco
-// en la cadena para la migracion y el diseño no se lee (el diseñador empieza en blanco).
+// Migraciones sobre el objeto crudo; el schema decide despues. Un hueco en la cadena deja el diseno
+// sin leer (empieza en blanco).
 
 type Raw = Record<string, unknown>
 
@@ -14,8 +13,8 @@ function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : []
 }
 
-// 1 → 2: la hoja deja de ser una sola tabla (rows) y pasa a una lista de bloques; el texto de la
-// celda pasa a content, y el ancho de cada celda a las columnas de la tabla.
+// 1 → 2: la hoja pasa de una tabla a bloques; el texto de la celda a content y su ancho a las
+// columnas.
 function v1ToV2(design: Raw): Raw {
   const sheets = asArray(design.sheets).map((sheet) => {
     if (!isRecord(sheet)) return sheet

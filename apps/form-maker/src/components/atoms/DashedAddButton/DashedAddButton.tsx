@@ -1,9 +1,7 @@
 import { Tooltip } from '../Tooltip'
 import type { DashedAddButtonProps } from './DashedAddButton.types'
 
-// Igual que IconButton: el title sale en un Tooltip, y como el boton lleva texto no se le pone aria-label.
-// Un boton deshabilitado no recibe el puntero, asi que ahi el globo cuelga de un span que lo envuelve:
-// es lo que deja leer por que no se puede usar.
+// Deshabilitado no recibe el puntero: el Tooltip cuelga de un span que lo envuelve.
 export function DashedAddButton({
   className = '',
   children,

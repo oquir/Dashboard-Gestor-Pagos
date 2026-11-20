@@ -1,7 +1,6 @@
 import type { SelectionRect } from '../../types'
 
-// Aritmetica de la seleccion multiple del lienzo: el rectangulo del marco y los conjuntos de ids.
-// Pura: sin DOM y sin el store.
+// Aritmetica pura de la seleccion multiple: el rectangulo del marco y los conjuntos de ids.
 
 export function normalizeRect(x1: number, y1: number, x2: number, y2: number): SelectionRect {
   return {
@@ -12,8 +11,7 @@ export function normalizeRect(x1: number, y1: number, x2: number, y2: number): S
   }
 }
 
-// Tocar alcanza, como en Figma: exigir que el campo quede entero adentro obligaria a cruzar de borde
-// a borde una fila de ancho completo para agarrar uno solo de sus campos.
+// Tocar alcanza, como en Figma.
 export function rectsIntersect(a: SelectionRect, b: SelectionRect): boolean {
   return a.left <= b.right && a.right >= b.left && a.top <= b.bottom && a.bottom >= b.top
 }
@@ -22,8 +20,8 @@ export function pointInRect(x: number, y: number, rect: SelectionRect): boolean 
   return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom
 }
 
-// Por contenido y no por orden: el marco recalcula la seleccion en cada movimiento del puntero y
-// arma un arreglo nuevo aunque traiga los mismos ids, que no tiene por que llegar al store.
+// Por contenido: el marco arma un arreglo nuevo en cada movimiento, que no tiene por que llegar al
+// store.
 export function sameIdSet(a: string[], b: string[]): boolean {
   if (a === b) return true
   if (a.length !== b.length) return false
@@ -51,8 +49,7 @@ export function mergeIds(base: string[], extra: string[]): string[] {
   return merged
 }
 
-// La misma referencia cuando no hay nada que quitar: el store compara por identidad, y un arreglo
-// nuevo en cada borrado haria redibujar todas las filas aunque la seleccion siga igual.
+// Misma referencia si no hay nada que quitar: el store compara por identidad.
 export function withoutIds(ids: string[], removed: ReadonlySet<string>): string[] {
   return ids.some((id) => removed.has(id)) ? ids.filter((id) => !removed.has(id)) : ids
 }

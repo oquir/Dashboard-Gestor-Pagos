@@ -5,14 +5,13 @@ import type { LeafBindingStatus, MappingNode } from '../../types/payloadMapping'
 import type { SchemaNode, SchemaNodeType } from '../../types/payloadSchema'
 import { isDateRangeField } from '../fieldDate/fieldDate'
 
-// Viven aca y no en payloadMapping.ts porque buildNode las necesita; ese archivo reexporta
-// fieldMatchesLeaf para quien la pida desde afuera, asi el ciclo de imports queda en un solo sentido.
+// Aca porque buildNode las necesita; payloadMapping.ts las reexporta y el ciclo de imports va en un
+// solo sentido.
 export function fieldMatchesSchemaType(fieldType: string, schemaType: SchemaNodeType): boolean {
   switch (schemaType) {
     case 'number':
-      // El checkbox cuenta como numero porque el contrato no tiene booleanos: se mapea a 0 o 1.
-      // Sin esta excepcion cualquier checkbox mapeado mostraria un aviso de tipo imposible de
-      // quitar. Los selects contra hojas numericas siguen avisando: es un hueco conocido.
+      // El checkbox cuenta como numero: el contrato no tiene booleanos (0 o 1). Los selects contra
+      // hojas numericas siguen avisando: hueco conocido.
       return NUMERIC_FIELD_TYPES.includes(fieldType) || fieldType === 'checkbox'
     case 'boolean':
       return fieldType === 'checkbox'
@@ -23,8 +22,7 @@ export function fieldMatchesSchemaType(fieldType: string, schemaType: SchemaNode
   }
 }
 
-// Lo mismo, pero mirando el campo y no solo su tipo: un rango de fechas es un objeto
-// { desde, hasta }, y ninguna hoja escalar del contrato lo puede recibir.
+// Un rango de fechas es un objeto: ninguna hoja escalar lo recibe.
 export function fieldMatchesLeaf(field: DateCapableField, schemaType: SchemaNodeType): boolean {
   return !isDateRangeField(field) && fieldMatchesSchemaType(field.type, schemaType)
 }

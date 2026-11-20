@@ -14,10 +14,8 @@ import { CanvasToolPicker, HistoryButtons, PerformanceModeToggle } from '../../.
 import { PdfZoomControl } from '../PdfZoomControl'
 import { MERGE_BUTTON_CLASSES, SELECTION_COUNT_CLASSES } from './PdfToolbar.constants'
 
-// La barra flotante del diseñador de PDF: la misma del lienzo del formulario (CanvasToolbar) con las
-// mismas piezas, sin + Fila ni + Grupo repetible, que no existen aca, y con el zoom del lienzo. Va como hermana del area que
-// hace scroll y no adentro, para que no se desplace con las hojas. La herramienta y el historial son
-// los del store del PDF (usePdfDesignStore), no los del formulario.
+// La misma barra que la del formulario, sin + Fila ni + Grupo repetible y con zoom. Va fuera del
+// area que hace scroll; herramienta e historial son los de usePdfDesignStore.
 export function PdfToolbar() {
   const tool = usePdfDesignStore((state) => state.tool)
   const setTool = usePdfDesignStore((state) => state.setTool)

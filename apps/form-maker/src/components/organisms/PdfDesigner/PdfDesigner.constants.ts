@@ -9,8 +9,7 @@ export const STATUS_DOT_CLASSES: Record<PdfSaveStatus['tone'], string> = {
 export const ICON_BUTTON_CLASSES: string =
   'flex items-center justify-center rounded-md border border-border p-1.5 text-fg-muted hover:cursor-pointer hover:border-border-strong hover:text-fg'
 
-// Con la mano puesta el puntero es una mano abierta, y cerrada mientras se arrastra. Va en el <main>
-// que hace scroll: las hojas, adentro del shadow root, quedan inertes y heredan el cursor.
+// Va en el <main> que hace scroll: las hojas del shadow root quedan inertes y heredan el cursor.
 export const HAND_CURSOR_CLASSES: string = 'cursor-grab select-none active:cursor-grabbing'
 
 export const PUBLISH_BUTTON_CLASSES: string =

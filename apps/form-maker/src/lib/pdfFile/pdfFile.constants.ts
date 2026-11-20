@@ -1,11 +1,6 @@
-// La forma del .html que publica FormMaker. Sube cuando cambie como se escriben los data-fm-* (no
-// cuando cambie el diseño guardado en localStorage, que tiene su propia version). Un archivo de
-// una version mas nueva no se abre: se perderia lo que esta version no sabe leer.
-// 2 (2026-11-18): las celdas con componente (data-fm-cell="component", data-fm-component y
-// data-fm-config). Un archivo de la 1 se sigue abriendo igual.
-// 3 (2026-11-18): las clases del diseño (data-fm-classes y un <style> en el <head>); el relleno y la
-// alineacion de cada celda salen de ese <style>, y una celda de texto ya no lleva data-fm-cell. Los
-// de la 1 y la 2 se siguen abriendo.
+// Version del formato del .html (los data-fm-*), aparte de la del guardado. Uno mas nuevo no se
+// abre. 2: celdas con componente. 3: clases del diseno y <style> en el <head>. Los anteriores se
+// siguen abriendo.
 export const PDF_FILE_FORMAT_VERSION: number = 3
 
 // Los atributos que dejan reabrir el diseño. SelectPdf los ignora.
@@ -24,16 +19,15 @@ export const FILE_ATTR = {
   cell: 'data-fm-cell',
   // Las propiedades de la barra lateral de una celda, en JSON: negrilla, alineacion, bordes…
   props: 'data-fm-props',
-  // El CSS que el autor escribio en "Estilos en línea". El style del elemento es la mezcla final
-  // (lo del diseñador mas eso) y no se puede separar de vuelta.
+  // Los estilos en linea del autor: el style del elemento es la mezcla y no se puede separar.
   style: 'data-fm-style',
 } as const
 
 // Sin esto el navegador pone 8 px de margen al body y todo se corre respecto del lienzo.
 export const BASE_CSS: string = 'body { margin: 0; }'
 
-// Solo al imprimir con Ctrl+P (printPdfHtml): no va en el archivo publicado, porque el papel lo pone
-// el back. Sin print-color-adjust el navegador quita los fondos (los grises) al imprimir.
+// Solo al imprimir con Ctrl+P (el papel lo pone el back). Sin print-color-adjust se pierden los
+// fondos.
 export const PRINT_CSS: string =
   '@page { size: letter; margin: 5mm; }\n' +
   'html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }'

@@ -75,8 +75,7 @@ export function CanvasToolbar() {
               <Plus size={12} weight="Filled" /> <span className={labelClasses}>Fila</span>
             </button>
           </Tooltip>
-          {/* Deshabilitado y no oculto en el modal de entrada: la barra no cambia de ancho al pasar
-            de un lienzo al otro. */}
+          {/* Deshabilitado y no oculto en el modal: la barra no cambia de ancho. */}
           <Tooltip
             content={
               isIntro

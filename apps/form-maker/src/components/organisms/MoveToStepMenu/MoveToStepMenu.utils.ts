@@ -2,8 +2,7 @@ import type { FormStep, IntroModalStep } from '../../../types'
 import type { CanvasTarget } from '../../../types'
 import type { MoveTargetOption, MoveTargetSection } from './MoveToStepMenu.types'
 
-// Los pasos a los que se puede mudar la seleccion, agrupados como en el panel de Steps. El activo no
-// se ofrece: mudarse al paso donde ya se esta no es una mudanza.
+// El paso activo no se ofrece.
 export function buildMoveSections(
   formSteps: FormStep[],
   introSteps: IntroModalStep[],
@@ -13,7 +12,6 @@ export function buildMoveSections(
   const intro: MoveTargetOption[] = toOptions('introStep', introSteps, active)
   const sections: MoveTargetSection[] = []
 
-  // Igual que en CanvasTabs: sin modal de entrada, un titulo "Formulario" solo repetiria lo obvio.
   if (form.length > 0) {
     sections.push({
       key: 'formStep',

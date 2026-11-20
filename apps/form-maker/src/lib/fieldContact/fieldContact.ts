@@ -4,16 +4,9 @@ import type { PatternRule, PhoneKind } from '../../types/fieldContact'
 import { EMAIL_FORMAT, PHONE_FORMATS } from './fieldContact.constants'
 import type { ContactField } from './fieldContact.types'
 
-// Telefono y correo: texto con un formato de fabrica. No son otro valor -- siguen siendo un string,
-// se mapean a hojas string y se validan con z.string() -- sino un patron que viene puesto, mas el
-// type del input, que en el celular abre el teclado que corresponde. El telefono ademas elige que
-// numero pide -- celular, fijo o fax, que es cualquiera de los dos
-// con extension --, y cada uno trae su patron.
-//
-// El patron de fabrica no se guarda en el campo: sale de aca al armar el schema. Asi un borrador
-// viejo o uno recien soltado validan igual, y corregir el patron alcanza a todos los formularios
-// sin migrar nada. El que escriba el autor lo reemplaza entero, no se suma: dos regex sobre el
-// mismo texto darian dos mensajes para un solo error.
+// Telefono y correo: texto con formato de fabrica y el type que abre el teclado del celular. El
+// patron no se guarda en el campo, sale de aca: corregirlo alcanza a todos sin migrar. El del autor
+// lo reemplaza entero.
 
 export function isContactField(type: string): boolean {
   return CONTACT_FIELD_TYPES.includes(type)
@@ -23,8 +16,7 @@ export function isPhoneField(type: string): boolean {
   return type === TEL_FIELD_TYPE
 }
 
-// Ausente es celular: es lo que pide casi todo formulario, y lo que piden los dos telefonos de la
-// plantilla ICA, que asi no tienen que declararlo.
+// Ausente es celular, lo que pide casi todo formulario.
 export function phoneKindOf(field: ContactField): PhoneKind {
   return field.phoneKind ?? 'celular'
 }
@@ -36,8 +28,7 @@ export function builtInFormatOf(field: ContactField): PatternRule | undefined {
   return undefined
 }
 
-// El patron que de verdad se aplica. Un patron propio sin mensaje toma el del tipo: "Ingrese un
-// correo valido" sigue siendo cierto aunque el autor haya cambiado la regex.
+// Un patron propio sin mensaje toma el del tipo.
 export function effectivePattern(
   field: ContactField,
   rules: FieldValidationRules,

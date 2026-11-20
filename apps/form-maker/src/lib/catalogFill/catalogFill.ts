@@ -3,28 +3,20 @@ import type { ExportedField } from '../../types'
 import type { CatalogFill } from '../../types'
 import type { RuntimeValues } from '../../types'
 
-// Copia columnas de la opcion elegida a otros campos. Es lo que hace que al elegir una actividad
-// se llenen solos su codigo CIIU y su tarifa: campos de solo lectura que muestran datos del
-// catalogo, no cosas que alguien tipee.
-//
-// La declaracion viaja en el export, asi que el consumidor hace exactamente esto con la respuesta
-// de su propio endpoint. La unica diferencia es de donde salen las opciones: aca del banco de
-// catalogos o de los datos de mentira, alla de la API.
+// Copia columnas de la opcion elegida a otros campos (codigo CIIU y tarifa de la actividad). Viaja
+// en el export: el consumidor hace lo mismo con su endpoint.
 
 export function hasFills(field: ExportedField): boolean {
   return (field.dataSource?.fills?.length ?? 0) > 0
 }
 
-// Que el campo declare que llena una columna es la unica senal de que esa columna importa para
-// este catalogo. Con ella el buscador distingue "esta actividad no trae tarifa" -- un dato que
-// falta, y hay que verlo -- de "este catalogo no tiene tarifas", donde no habria nada que avisar.
+// Declarar que llena una columna dice que importa: el buscador distingue "esta actividad no trae
+// tarifa" de "el catalogo no tiene tarifas".
 export function fillsColumn(field: ExportedField, column: CatalogColumn): boolean {
   return (field.dataSource?.fills ?? []).some((fill) => fill.column === column)
 }
 
-// Devuelve los valores a escribir, indexados por nombre de campo. Quien llama los mezcla en el
-// ambito que corresponda -- la fila del grupo, no el root -- porque esta funcion no sabe ni tiene
-// por que saber en que repeticion esta parada.
+// Valores por nombre de campo; quien llama los mezcla en su ambito (la fila del grupo, no el root).
 export function resolveFills(
   field: ExportedField,
   selected: unknown,
@@ -40,9 +32,8 @@ export function resolveFills(
 
   const values: RuntimeValues = {}
 
-  // Sin opcion elegida, o con una columna que el catalogo no trae, el destino se vacia. Dejarle
-  // la tarifa de la actividad anterior es peor que no mostrar nada: el impuesto se seguiria
-  // calculando con ella y el numero pareceria correcto.
+  // Sin opcion o sin columna el destino se vacia: dejar la tarifa anterior calcularia mal sin
+  // aviso.
   for (const fill of fills) {
     const value: unknown = option?.[fill.column]
     values[fill.field] = value === undefined ? '' : value

@@ -1,16 +1,8 @@
 import type { ValorAnual } from '../types'
 
-// Los valores publicados, para que el simulador arranque calculando algo real. No son inventados
-// como podrian serlo unas tarifas: la UVT sale de una resolucion de la DIAN y el SMMLV de un
-// decreto, hay un unico numero por ano y es publico.
-//
-// Aun asi son datos de prueba, igual que los catalogos de mentira: el aplicativo que consume el
-// JSON los pide a su endpoint, y aca el autor puede reemplazarlos pegando los suyos. Se ordenan del
-// mas nuevo al mas viejo porque el que se mira es el de arriba.
-//
-// Los de 2026 estan verificados contra la resolucion 000238 de 2025 y el decreto del salario
-// minimo; los anteriores son los publicados de cada ano y conviene contrastarlos antes de liquidar
-// una declaracion vieja con ellos.
+// UVT (resolucion DIAN) y SMMLV (decreto) publicados, del mas nuevo al mas viejo. Son datos de
+// prueba: el aplicativo real los pide a su endpoint. 2026 verificado (Res. 000238 de 2025);
+// contrastar los anteriores antes de usarlos.
 export const VALORES_POR_DEFECTO: ValorAnual[] = [
   { anio: 2026, uvt: 52374, smmlv: 1750905 },
   { anio: 2025, uvt: 49799, smmlv: 1423500 },

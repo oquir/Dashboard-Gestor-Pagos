@@ -9,16 +9,9 @@ import type { CanvasToolItem, PdfDesignState, PdfSaveResult } from '../../types'
 import type { CanvasTool } from '../../types/ui'
 import { isEditableTarget, isPointerOverCanvas } from './usePdfDesignerShortcuts.utils'
 
-// Los atajos del diseñador de PDF, mientras esta montado: Ctrl+Z / Ctrl+Y / Ctrl+Shift+Z sobre el
-// historial del PDF (no el del formulario), Ctrl+S guarda ya mismo, Ctrl+P imprime el diseño y no la
-// pagina, Ctrl + / - / 0 hacen zoom en el
-// lienzo y Escape suelta la seleccion. V / M / H eligen la herramienta y Espacio sostenido es la mano
-// temporal, como en el lienzo del formulario. Los del formulario se apagan con el diseñador abierto
-// (useKeyboardShortcuts).
-//
-// Dentro de un input o un textarea, Ctrl+Z es el deshacer del texto: el del diseño no se mete a
-// mitad de una palabra. Un clic en el lienzo saca el foco del input (queda en el body), asi que
-// despues de tocar una celda manda el del diseño.
+// Atajos del disenador de PDF: deshacer y rehacer de su historial, Ctrl+S, Ctrl+P (imprime el
+// diseno), zoom, Escape, V/M/H y Espacio. Los del formulario se apagan mientras esta abierto. En un
+// input, Ctrl+Z es el del texto.
 export function usePdfDesignerShortcuts(): void {
   useEffect(() => {
     // La herramienta de antes de sostener Espacio; null mientras Espacio no esta sostenido.
@@ -67,8 +60,7 @@ export function usePdfDesignerShortcuts(): void {
 
       const key: string = event.key.toLowerCase()
 
-      // Ctrl+P imprime el diseño (el mismo .html que se publica), no la app. Vale tambien con el
-      // foco en un input: ese atajo nunca es de un campo.
+      // Ctrl+P imprime el diseno (el .html que se publica), tambien con foco en un input.
       if (key === 'p' && !event.shiftKey && !event.altKey) {
         event.preventDefault()
         if (!state.design) return
@@ -92,8 +84,7 @@ export function usePdfDesignerShortcuts(): void {
         return
       }
 
-      // El zoom del lienzo le gana al del navegador, como en el formulario: "=" ademas de "+"
-      // porque sin Shift es lo que reporta esa tecla.
+      // Le gana al zoom del navegador; "=" porque sin Shift esa tecla lo reporta.
       if (key === '+' || key === '=') {
         event.preventDefault()
         state.setZoom(stepPdfZoom(state.zoom, 1))

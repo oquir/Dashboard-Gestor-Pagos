@@ -1,22 +1,9 @@
 export const TIPO_DOCUMENTO_NIT: string = '2'
 
-// Solo digitos, con un largo entre min y max, y ademas descarta los valores de mentira que la
-// gente escribe para pasar de pantalla. Tres piezas:
-//   (?!0)            no arranca en cero: ningun documento colombiano lo hace, y de paso mata los
-//                    0000000 y los 0000001, que el chequeo de repetidos no alcanza.
-//   (?!([0-9])\1+$)  no son todos el mismo digito: 1111111, 99999999, etc. La captura pide un
-//                    digito y \1+ exige que lo que sigue hasta el final sea ese mismo.
-//   [0-9]{min,max}   la longitud, dentro del patron y no en minLength/maxLength, para que un valor
-//                    mal escrito de un unico mensaje en vez de tres.
-// El \1 se escribe \\1 aca a proposito: el patron viaja al consumidor dentro de un string que
-// este ejecuta con new Function, asi que la barra pasa por JSON.stringify y por el parser de JS
-// antes de llegar al RegExp. Por eso mismo los digitos van como [0-9] y no como \d: donde se
-// puede evitar una barra invertida, se evita.
-//
-// Se arma con una funcion en vez de repetir el texto en cada constante: los dos patrones solo se
-// diferencian en el largo, y copiarlos es la manera de que en un mes uno tenga el lookahead y
-// otro no. El telefono y el correo ya no estan aca: sus patrones los traen los tipos tel y email
-// (lib/fieldContact).
+// Solo digitos, de largo min..max, sin valores de relleno: (?!0) no arranca en cero;
+// (?!([0-9])\1+$) no son todos el mismo digito; el largo va en el patron para dar un solo mensaje.
+// \\1 y [0-9] a proposito: el patron viaja en un string que el consumidor ejecuta con new Function,
+// y cada barra invertida pasa por JSON y por el parser de JS.
 function digitosSinRellenos(min: number, max: number): string {
   return `^(?!0)(?!([0-9])\\1+$)[0-9]{${min},${max}}$`
 }
@@ -28,15 +15,12 @@ export const NIT_PATTERN: string = digitosSinRellenos(6, 9)
 
 export const DOCUMENTO_MESSAGE: string = 'Ingrese un documento válido'
 
-// El mensaje cuelga del .regex(), y la variante de NIT tiene un solo regex: este texto sale igual
-// si escribieron diez digitos, letras o todos iguales. Por eso nombra el DV sin afirmar que ese
-// fue el error -- "sin el digito de verificacion" es una instruccion, no un diagnostico.
+// Un solo regex da un solo mensaje para cualquier fallo: por eso nombra el DV como instruccion y no
+// como diagnostico.
 export const NIT_MESSAGE: string = 'Ingrese un NIT válido, sin el dígito de verificación'
 
-// Los campos numericos de la declaracion que NO llevan plata. Todo renglon de valor se aproxima
-// al millar, asi que lo que se escribe a mano son las excepciones y no los treinta y pico que si
-// redondean: un renglon nuevo entra redondeando, que es lo correcto por defecto, y el que no
-// deberia hacerlo se agrega aca.
+// Los numericos que NO llevan plata: se nombran las excepciones, asi un renglon nuevo entra
+// redondeando por defecto.
 export const FIELDS_WITHOUT_ROUNDING: string[] = [
   // Una tarifa del 4 por mil aproximada al millar es 0, y con ella todo impuesto de actividad.
   'tarifa_x_mil',
@@ -44,23 +28,13 @@ export const FIELDS_WITHOUT_ROUNDING: string[] = [
   'dv',
   // Un conteo de establecimientos, no un valor.
   'numero_establecimientos',
-  // Es un renglon numerado -- el 18 -- pero lo que lleva son kilovatios de capacidad instalada y
-  // no pesos, y la regla de aproximar al millar habla de valores.
+  // Renglon 18: kilovatios, no pesos.
   'generacion_energia_kw',
 ]
 
-// Los unicos calculados que pueden dar negativo, y por eso los unicos que se recortan a 0. Los
-// `number` se marcan todos sin lista: los veintiseis ya declaraban min: 0, salvo la tarifa, que
-// tampoco es negativa nunca.
-//
-// Los demas calculados quedan afuera porque no hace falta: unos son sumas de no-negativos -- el
-// impuesto de actividad, el total impuesto, el de avisos y tableros, el total a cargo -- y los
-// renglones 33, 34 y 38 ya vienen recortados por su propio max(..., 0). El 35 hereda el recorte
-// del 33, del que sale, y el 40 suma el 38 con un aporte voluntario que declara min: 0.
-//
-// La diferencia entre recortar aca y recortar en el script no es de estilo: el clamp avisa en
-// pantalla que el calculo dio negativo y se recorto, y en el 38 eso saltaria cada vez que hay
-// saldo a favor, que es un caso normal y no un error del autor.
+// Los unicos calculados que pueden dar negativo y se recortan a 0 (los number ya declaran min: 0).
+// Los demas son sumas de no negativos o ya vienen con max(..., 0). El recorte avisa en pantalla: en
+// el 38 saltaria con cada saldo a favor, que es normal.
 export const CALCULATED_WITHOUT_NEGATIVE: string[] = [
   // r10 = ingresos nacionales - ingresos fuera del municipio.
   'total_ingresos_ordinarios',
@@ -68,12 +42,10 @@ export const CALCULATED_WITHOUT_NEGATIVE: string[] = [
   'total_ingresos_gravables',
 ]
 
-// La declaracion no lleva decimales en ningun renglon: los de plata se aproximan al millar, el DV
-// es un digito, los establecimientos se cuentan y los kilovatios vienen enteros.
+// La declaracion no lleva decimales en ningun renglon.
 export const TEMPLATE_DECIMALS: number = 0
 
-// La unica excepcion. Una tarifa puede ser 4, 7,5 o 6, y declarando un decimal la columna se lee
-// pareja -- 4,0 / 7,5 / 6,0 -- en vez de saltar entre enteros y decimales.
+// La excepcion: con un decimal la columna se lee pareja (4,0 / 7,5 / 6,0).
 export const DECIMALS_BY_FIELD: Record<string, number> = {
   tarifa_x_mil: 1,
 }
@@ -81,37 +53,22 @@ export const DECIMALS_BY_FIELD: Record<string, number> = {
 // El prefijo de todo renglon de plata, que son los numericos fuera de FIELDS_WITHOUT_ROUNDING.
 export const MONEY_PREFIX: string = '$'
 
-// La unidad de los que no llevan plata y tienen una. El DV y los establecimientos no la tienen.
-// La tarifa dice X1000 y no ‰, igual que en el buscador de actividades: el por mil se confunde
-// con un por ciento.
+// La unidad de los que no llevan plata. X1000 y no ‰: el por mil se confunde con el por ciento.
 export const SUFFIX_BY_FIELD: Record<string, string> = {
   tarifa_x_mil: 'X1000',
   generacion_energia_kw: 'kW',
 }
 
-// Los ids de EXTEMPORANEIDAD y OTRA dentro del catalogo tipos_sancion, escritos a mano porque el
-// editor de condiciones todavia no ofrece las opciones de un catalogo para elegir. Son los unicos
-// literales de la plantilla atados al contenido de un catalogo: si algun dia se reordena, esto se
-// rompe en silencio.
+// Ids a mano de EXTEMPORANEIDAD y OTRA en tipos_sancion (el editor de condiciones aun no ofrece
+// opciones de catalogo). Si el catalogo se reordena, se rompe en silencio.
 export const TIPO_SANCION_EXTEMPORANEIDAD: string = '1'
 
 export const TIPO_SANCION_OTRA: string = '4'
 
-// La sancion por extemporaneidad del renglon 31, entera dentro del script del campo: los parametros
-// del municipio, la eleccion de la base y la regla del articulo 641, en ese orden y en un solo
-// lugar.
-//
-// Va aca y no repartida entre el prelude y el codigo, aunque el prelude tambien sea editable. El
-// motivo no es tecnico sino de uso: un municipio pide cambiar el 5% por un 10%, o liquidar sobre
-// otro renglon, y quien atiende ese pedido abre el renglon 31, ve la regla completa y la cambia.
-// Repartida en dos pantallas hay que saber de antemano que la mitad esta en otro lado, y una regla
-// que hay que ir a buscar es una regla que se termina reescribiendo mal.
-//
-// La plantilla la siembra como texto inicial; de ahi en mas vive en logic.script y es del autor del
-// formulario. Nada de esto se recompila para cambiarlo.
-//
-// Lleva tildes a proposito, al reves que los comentarios del codigo: esto es contenido que se lee
-// dentro del editor, igual que los rotulos de los campos.
+// Renglon 31 entero dentro del script del campo (parametros del municipio, base y articulo 641):
+// quien atiende un pedido abre el renglon y ve la regla completa, sin buscar la mitad en el
+// prelude. La plantilla lo siembra; despues es del autor.
+// Lleva tildes a proposito: es contenido que se lee dentro del editor.
 export const SANCION_EXTEMPORANEIDAD_SCRIPT: string = `// --- Parámetros del municipio ---
 // La ley fija estos valores como techo: un municipio solo puede bajarlos.
 
@@ -159,17 +116,9 @@ if (meses <= 0) return 0;
 
 return max(min(base * POR_MES * meses, base * TOPE), UVT * MINIMA_UVT);`
 
-// Los intereses de mora del renglon 37, con el mismo criterio que la sancion: la regla entera
-// dentro del script del campo, parametros arriba y calculo abajo.
-//
-// La base va como una linea suelta y no incrustada en la formula porque es lo que mas cambia de un
-// municipio a otro. El unico renglon que no puede ir ahi es el 38: es el que consume estos
-// intereses, asi que leerlo cerraria un ciclo. El 33, el 34, el 35 y el 25 se probaron contra
-// fieldGraph y ninguno lo cierra.
-//
-// Devuelve undefined -- campo tecleable -- cuando no hay fecha limite con que comparar. Un 0
-// bloqueado seria indistinguible de un calculo hecho que dio cero, y hasta hoy este renglon se
-// escribia a mano: sin tabla cargada tiene que seguir pudiendose.
+// Renglon 37, con el mismo criterio que la sancion. La base va suelta porque es lo que mas cambia;
+// no puede ser el 38, que consume estos intereses (ciclo). Sin fecha limite devuelve undefined
+// (tecleable): un 0 bloqueado pareceria un calculo hecho.
 export const INTERES_MORA_SCRIPT: string = `// --- Parámetros del municipio ---
 
 // Tasa de interés moratorio, efectiva anual. Es la de usura para consumo y
@@ -209,18 +158,15 @@ if (dias <= 0) return 0;
 // No es el redondeo al más cercano del resto de los renglones.
 return ceil((base * (TASA_ANUAL / DIAS_ANIO) * dias) / 1000) * 1000;`
 
-// Lo que el contribuyente declara por actividad tiene que sumar lo mismo que el renglon 16. Si no,
-// esta declarando ingresos que no reparte entre sus actividades, que es evadir el impuesto.
-//
-// Se compara con una tolerancia de un peso y no con === por la coma flotante. Hoy los dos lados se
-// aproximan al millar y darian exactos, pero la regla no tiene por que depender de eso.
+// Lo declarado por actividad tiene que sumar el renglon 16 (si no, es evasion). Tolerancia de un
+// peso por la coma flotante.
 export const INGRESOS_ACTIVIDADES_SCRIPT: string =
   'return abs(sum({{ingresos_gravados}}) - {{total_ingresos_gravables}}) < 1;'
 
 export const INGRESOS_ACTIVIDADES_MESSAGE: string =
   'La suma de los ingresos gravados de las actividades debe ser igual al renglón 16 (Total ingresos gravables).'
 
-// El neto sin recortar, que comparten los renglones 33 y 34: uno lo toma en positivo y el otro
-// en negativo. Va como expresion suelta -- sin return -- porque se interpola dentro de max(...).
+// El neto sin recortar que comparten el 33 y el 34; sin return porque se interpola dentro de
+// max(...).
 export const SALDO_NETO: string =
   '{{total_impuesto_a_cargo}} - {{valor_exencion_exoneracion_impuesto}} - {{retenciones_a_favor}} - {{autorretenciones_a_favor}} - {{anticipo_liquidado_anio_anterior}} + {{anticipo_anio_siguiente}} + {{valor_sancion}} - {{saldo_favor_periodo_anterior}}'

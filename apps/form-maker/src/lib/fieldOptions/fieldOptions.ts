@@ -6,10 +6,9 @@ import {
 import type { ApiBinding, CanvasField, FieldOption } from '../../types'
 import type { InlineCapableField } from './fieldOptions.types'
 
-// Quien pone las opciones de un select. Solo un campo que no va al contrato -excluido del payload o
-// enviado como concepto- las lleva escritas a mano; uno mapeado -o uno sin decidir todavia- las
-// recibe del consumidor, que consulta el catalogo por su apiBinding.path. Un concepto no tiene
-// ruta de la cual inferir un catalogo. Volver al contrato descarta las opciones a proposito.
+// Quien pone las opciones de un select: solo un campo fuera del contrato (excluido o concepto) las
+// lleva a mano; uno mapeado o sin decidir las recibe del catalogo del consumidor. Volver al
+// contrato las descarta a proposito.
 
 export function isOptionBasedField(type: string): boolean {
   return OPTION_BASED_FIELD_TYPES.includes(type)
@@ -19,8 +18,7 @@ export function isMultiValueField(type: string): boolean {
   return MULTI_VALUE_FIELD_TYPES.includes(type)
 }
 
-// Un dataSource declara que las opciones las trae un catalogo. Permitir ademas opciones a mano
-// dejaria el JSON con dos ordenes contradictorias y el consumidor tendria que adivinar cual gana.
+// Con dataSource no hay opciones a mano: el JSON tendria dos ordenes contradictorias.
 export function allowsManualOptions(field: CanvasField): boolean {
   const kind: ApiBinding['kind'] | undefined = field.apiBinding?.kind
 
@@ -35,11 +33,7 @@ export function exportableOptions(field: CanvasField): FieldOption[] | undefined
   return allowsManualOptions(field) ? field.options : undefined
 }
 
-// Si las opciones van en una sola linea. Ausente es como siempre -- una debajo de otra --, asi que
-// ningun borrador ya guardado cambia de aspecto al aparecer la propiedad.
-//
-// Es solo presentacion: no toca el valor, ni el schema, ni cuantas opciones se pueden elegir. Un
-// radio_group elige una sola por construccion, en linea o en columna.
+// Ausente: una debajo de otra. Solo presentacion: no toca valor, schema ni cuantas se eligen.
 export function supportsInlineOptions(type: string): boolean {
   return INLINE_CAPABLE_FIELD_TYPES.includes(type)
 }

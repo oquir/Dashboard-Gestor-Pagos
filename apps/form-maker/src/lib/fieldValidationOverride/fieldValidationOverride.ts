@@ -1,13 +1,12 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { FieldValidationOverride } from '../../types/field'
 
-// Manipulacion de las validaciones condicionales de un campo. El orden de la lista es semantico:
-// al validar gana el primer override cuya condicion se cumpla, y si ninguna se cumple queda la
-// validacion de base. Mantener este archivo sin React ni store, como el resto de lib/.
+// Validaciones condicionales de un campo. El orden es semantico: gana el primer override que se
+// cumpla; si ninguno, la base.
 
 export function createValidationOverride(): FieldValidationOverride {
-  // Nace apuntando a nada: el editor obliga a elegir el campo observado antes de que sirva, y
-  // exportarlo asi tampoco hace dano porque resolveValidations descarta los que no resuelven.
+  // Nace sin campo observado: el editor obliga a elegirlo, y resolveValidations descarta los que no
+  // resuelven.
   return {
     id: uuidv4(),
     when: { fieldId: '', operator: 'equals', value: '' },
@@ -15,8 +14,7 @@ export function createValidationOverride(): FieldValidationOverride {
   }
 }
 
-// Un override que observaba al campo borrado se elimina entero. No hay medio override util: sin
-// condicion aplicaria siempre, y eso convertiria una regla condicional en la validacion de base.
+// Sin condicion aplicaria siempre: se elimina entero.
 export function pruneOverridesReferencing(
   overrides: FieldValidationOverride[] | undefined,
   fieldId: string,

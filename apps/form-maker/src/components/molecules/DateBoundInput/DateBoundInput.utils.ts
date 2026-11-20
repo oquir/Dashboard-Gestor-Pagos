@@ -8,8 +8,7 @@ export function boundMode(bound: DateBound | undefined): DateBoundMode {
   return bound.kind
 }
 
-// Entre "Hace…" y "Dentro de…" se conserva la cantidad y la unidad: corregir la direccion de
-// "Hace 18 años" no obliga a volver a escribir el 18.
+// Entre Hace y Dentro de se conservan la cantidad y la unidad.
 export function boundForMode(
   mode: DateBoundMode,
   current: DateBound | undefined,

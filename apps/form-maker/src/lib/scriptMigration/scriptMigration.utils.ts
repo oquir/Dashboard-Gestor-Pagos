@@ -1,13 +1,9 @@
 import { AGGREGATE_TO_HELPER, PRECEDENCE, UNARY_PRECEDENCE } from './scriptMigration.constants'
 import type { FormulaNode } from './scriptMigration.types'
 
-// Impresor del AST de formula como expresion JS. El resultado lo va a leer y editar una persona,
-// asi que no alcanza con que sea correcto: tiene que salir con la forma en que estaba escrito.
-// Por eso los parentesis van por precedencia y no envolviendo todo por las dudas.
+// Imprime el AST como JS legible: parentesis por precedencia, no por las dudas.
 
-// Un hijo lleva parentesis si liga mas flojo que su padre, y tambien si liga igual y esta a la
-// derecha: el parser es asociativo a izquierda, asi que un binario de igual precedencia ahi solo
-// aparece si la fuente traia parentesis, y a - (b - c) no es lo mismo que a - b - c.
+// Parentesis si liga mas flojo que el padre, o igual y a la derecha (a - (b - c) no es a - b - c).
 function wrap(text: string, precedence: number, parent: number, isRight: boolean): string {
   const needed: boolean = precedence < parent || (precedence === parent && isRight)
 
@@ -19,8 +15,7 @@ export function printNode(node: FormulaNode, parent: number, isRight: boolean): 
     case 'number':
       return String(node.value)
 
-    // La sintaxis de su epoca, de una sola llave, y no fieldRefText: esto es el paso 2 -> 3 de la
-    // migracion, y el paso 6 -> 7 lleva su salida a {{x}} como a cualquier script de entonces.
+    // Sintaxis de una llave: el paso 6 -> 7 la lleva despues a {{x}}.
     case 'ref':
       return `{${node.name}}`
 

@@ -4,8 +4,7 @@ import { useFormStore } from '../../../store'
 import type { SelectionRect } from '../../../types'
 import { MARQUEE_CLASSES } from './CanvasToolLayer.constants'
 
-// Monta la mano y el marco y dibuja el rectangulo. Vive aparte de Canvas para que el marco, que
-// cambia en cada movimiento del puntero, redibuje solo este nodo y no el lienzo entero.
+// Aparte de Canvas: el marco cambia en cada movimiento y redibuja solo este nodo.
 export function CanvasToolLayer() {
   const canvasTool = useFormStore((state) => state.canvasTool)
   const marquee: SelectionRect | null = useCanvasMarquee(canvasTool === 'select')

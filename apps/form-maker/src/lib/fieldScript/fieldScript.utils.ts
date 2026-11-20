@@ -3,19 +3,11 @@ import type { ScriptRef } from '../../types/fieldScript'
 import { REF_PATTERN } from './fieldScript.constants'
 import type { ScanFrame, ScanResult } from './fieldScript.types'
 
-// Recorrido de la fuente distinguiendo codigo de texto. Existe porque sustituir a ciegas con una
-// expresion regular falla en dos casos silenciosos: un {{campo}} dentro de un string rompe el JS
-// al sustituirlo -- "falta {{x}}" quedaria como "falta __v["x"]" -- y uno dentro de un comentario
-// inventa una dependencia que el script no lee, que en el grafo es una arista falsa capaz de
-// cerrar un ciclo inexistente.
-//
-// Limite conocido: no se detectan las expresiones regulares literales. Separar /foo/ de una
-// division obliga a seguir el contexto de la expresion entera, y para que esto rompa hace falta
-// un regex con un nombre de campo entre llaves dobles, algo que ningun cuantificador escribe.
+// Recorre la fuente distinguiendo codigo de texto: sustituir con regex rompia un {{x}} dentro de un
+// string, y uno en un comentario inventaba una dependencia. Limite conocido: no detecta regex
+// literales.
 
-// Devuelve la posicion siguiente al string, o el salto de linea si quedo sin cerrar. Cortar en el
-// salto es lo que evita que una comilla suelta se trague el resto del script y apague las
-// referencias de mas abajo; el error de sintaxis lo reporta despues new Function.
+// Corta en el salto de linea si el string no cierra: una comilla suelta no se traga el resto.
 function skipQuoted(source: string, start: number, quote: string): number {
   let i: number = start + 1
 
@@ -36,9 +28,7 @@ function skipQuoted(source: string, start: number, quote: string): number {
   return source.length
 }
 
-// El patron es parametro por la migracion de la sintaxis vieja de una llave, que recorre con este
-// mismo codigo: lo delicado es distinguir codigo de texto, y copiarlo dejaria dos sitios que
-// arreglar. Tiene que llevar la bandera sticky, porque se prueba en cada llave y no se busca.
+// El patron es parametro por la migracion de la sintaxis vieja; tiene que ser sticky.
 export function scanScript(
   source: string,
   knownNames: Set<string>,
@@ -109,9 +99,8 @@ export function scanScript(
         const known: boolean = knownNames.has(name)
         refs.push({ name, start: i, end: i + match[0].length, known })
 
-        // Solo se sustituye lo que es un campo de verdad. Un {{x}} que no lo es se deja intacto y
-        // queda en `refs` como desconocido: no hay JS legitimo que se escriba asi, asi que es un
-        // typo o un campo que ya no existe, y validateFieldScript lo da como error.
+        // Solo se sustituye un campo real; un {{x}} desconocido queda intacto en refs y
+        // validateFieldScript lo da como error.
         if (known) {
           pieces.push(source.slice(copied, i), `${SCRIPT_VALUES_PARAM}[${JSON.stringify(name)}]`)
           i += match[0].length

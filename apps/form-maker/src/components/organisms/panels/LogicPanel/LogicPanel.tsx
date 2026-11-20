@@ -15,8 +15,7 @@ export function LogicPanel({ field }: { field: CanvasField }) {
   const otherFields: CanvasField[] = useDependencyCandidates(field.id)
   const isAlwaysDisabled = Boolean(field.alwaysDisabled)
 
-  // Un campo presentacional no tiene valor: se puede ocultar, pero no habilitar,
-  // ni calcular, ni observar desde una regla.
+  // Un presentacional no tiene valor: se puede ocultar, pero no habilitar, calcular ni observar.
   if (isPresentationalField(field.type)) {
     return (
       <div className="flex flex-col gap-3">

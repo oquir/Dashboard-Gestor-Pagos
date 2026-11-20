@@ -7,9 +7,8 @@ import type {
 } from './useFieldContextMenu.types'
 import { getMenuPosition } from './useFieldContextMenu.utils'
 
-// Menu contextual del campo (clic derecho). El alto real depende de la pestana abierta y no se
-// conoce antes de pintar, asi que no se estima: se le entrega el alto maximo que cabe desde donde
-// se abrio y el cuerpo hace scroll dentro de ese limite.
+// Menu contextual del campo: no se estima su alto; recibe el maximo que cabe y el cuerpo hace
+// scroll.
 export function useFieldContextMenu({
   menu,
   onClose,

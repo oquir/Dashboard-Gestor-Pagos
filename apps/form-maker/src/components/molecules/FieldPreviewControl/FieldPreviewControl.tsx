@@ -64,9 +64,6 @@ function withFrame(title: string | undefined, control: ReactNode) {
   )
 }
 
-// De donde salen las opciones, como una ficha punteada mas al final de la fila. Primero fue un
-// recuadro que reemplazaba al control -- y todos los tipos de opciones se veian iguales -- y despues
-// un renglon aparte, que cortaba el control. Los select lo dicen en su propio texto.
 function ghostNote(note: OptionsNote, classes: string) {
   return (
     <Tooltip content={GHOST_NOTE_TITLE[note]}>
@@ -84,7 +81,6 @@ function optionLabel(option: FieldOption, isPlaceholder: boolean) {
   )
 }
 
-// El texto de muestra entre el prefijo y el sufijo, apagados como en el simulador.
 function withAffixes(field: CanvasField, sample: string) {
   const prefix: string | undefined = affixOf(field, 'prefix')
   const suffix: string | undefined = affixOf(field, 'suffix')
@@ -98,7 +94,7 @@ function withAffixes(field: CanvasField, sample: string) {
   )
 }
 
-// Un trazo fino y no el Check de la libreria, que a este tamano se ve como una mancha.
+// Trazo propio: el Check de la libreria a este tamano es una mancha.
 function checkMark() {
   return (
     <svg aria-hidden="true" viewBox="0 0 12 12" className="h-3 w-3">
@@ -116,7 +112,6 @@ function checkMark() {
 
 export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
   const options: PreviewOptions = previewOptions(field)
-  // Si el autor puso un placeholder, el lienzo muestra ese en vez del texto de muestra del tipo.
   const placeholder: string | undefined = placeholderOf(field)
 
   switch (field.type) {
@@ -158,8 +153,7 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
         </div>,
       )
 
-    // Siempre en linea en el lienzo, tenga o no inlineOptions: en columna se confundia con una lista
-    // de checkboxes.
+    // Siempre en linea en el lienzo: en columna se confundia con un checkbox group.
     case 'radio_group':
       return withFrame(
         field.title,
@@ -239,8 +233,6 @@ export function FieldPreviewControl({ field }: FieldPreviewControlProps) {
         </div>
       )
 
-    // La lista del navegador solo aparece al escribir, asi que en el lienzo lo que lo distingue de
-    // un texto comun es cuantas sugerencias tiene.
     case 'datalist':
       return (
         <div className={INPUT_CLASSES}>

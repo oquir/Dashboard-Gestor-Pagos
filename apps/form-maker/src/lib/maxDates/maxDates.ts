@@ -13,9 +13,7 @@ import {
   PERIODOS_POR_PERIODICIDAD,
 } from './maxDates.constants'
 
-// Las reglas de las fechas maximas de presentacion: cuantos periodos tiene un ano, como se arma la
-// tabla por defecto y como se busca una fecha puntual. Busqueda y aritmetica puras, sin React ni
-// store, igual que rowLayout o fieldRounding.
+// Fechas maximas de presentacion: periodos por ano, tabla por defecto y busqueda. Puro.
 
 const UN_DIGITO: RegExp = /^[0-9]$/
 
@@ -23,10 +21,8 @@ const FECHA_TEXTO: RegExp = /^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/
 
 const MS_POR_DIA: number = 86400000
 
-// "YYYY/MM/DD" a milisegundos UTC, o null si no es una fecha. Se parsea a mano en vez de pasarle el
-// texto a Date porque el formato decide el huso: "2025/03/31" se lee como medianoche LOCAL y
-// "2025-03-31" como medianoche UTC. Mezclar los dos da un dia de diferencia segun donde se corra,
-// y un dia de diferencia aca es la linea entre estar en fecha y deber una sancion.
+// A UTC a mano: Date lee "AAAA/MM/DD" como local y "AAAA-MM-DD" como UTC, y un dia de diferencia es
+// una sancion.
 export function aUtc(fecha: string): number | null {
   const match: RegExpMatchArray | null = fecha.trim().match(FECHA_TEXTO)
   if (!match) return null
@@ -38,8 +34,7 @@ export function aUtc(fecha: string): number | null {
 
   const ms: number = Date.UTC(anio, mes - 1, dia)
 
-  // Date.UTC no rechaza un 31 de febrero, lo corre al 3 de marzo. Se compara la vuelta para que una
-  // fecha que no existe se reporte como invalida en vez de resolverse a otra.
+  // Date.UTC corre el 31 de febrero al 3 de marzo: se compara la vuelta.
   const vuelta = new Date(ms)
 
   return vuelta.getUTCMonth() === mes - 1 && vuelta.getUTCDate() === dia ? ms : null
@@ -54,20 +49,14 @@ export function diasEntre(desde: string, hasta: string): number | null {
   return Math.round((b - a) / MS_POR_DIA)
 }
 
-// "Mes o fraccion de mes" de `desde` a `hasta`, que es como cuenta el atraso la sancion por
-// extemporaneidad: un solo dia tarde ya cuenta como un mes entero.
-//
-// Se cuenta por calendario y no dividiendo dias entre 30. Ningun mes dura 30 dias salvo cuatro, asi
-// que la division se desfasa un dia cada dos meses y termina cobrando un mes de mas -- y un mes de
-// mas aca es el 5% del impuesto. Los meses completos salen de la diferencia de anio y mes, y la
-// fraccion es haber pasado el dia del mes del vencimiento.
+// Mes o fraccion, como cuenta la sancion: un dia tarde es un mes. Por calendario y no dividiendo
+// por 30, que cobraria un mes de mas.
 export function mesesOFraccion(desde: string, hasta: string): number | null {
   const a: number | null = aUtc(desde)
   const b: number | null = aUtc(hasta)
   if (a === null || b === null) return null
 
-  // En fecha o antes no hay atraso. El limite es el ultimo dia habil para presentar, asi que
-  // presentar ese mismo dia no es tarde.
+  // Presentar el mismo dia del limite no es tarde.
   if (b <= a) return 0
 
   const inicio = new Date(a)
@@ -79,8 +68,7 @@ export function mesesOFraccion(desde: string, hasta: string): number | null {
   return fin.getUTCDate() > inicio.getUTCDate() ? completos + 1 : completos
 }
 
-// El dia de hoy en el mismo formato que usa la tabla. Recibe la fecha en vez de leer el reloj para
-// que se pueda comprobar sin tocar la hora del sistema.
+// Recibe la fecha para poder probarlo sin tocar el reloj.
 export function enTexto(fecha: Date): string {
   const mes: string = String(fecha.getMonth() + 1).padStart(2, '0')
   const dia: string = String(fecha.getDate()).padStart(2, '0')
@@ -92,18 +80,12 @@ export function periodosDe(periodicidad: Periodicidad): number {
   return PERIODOS_POR_PERIODICIDAD[periodicidad]
 }
 
-// Cuantas fechas deberia traer un ano segun lo que declara. Sirve para ver de un vistazo que un
-// volcado llego incompleto, que es la falla que de otro modo aparece recien el dia que alguien
-// consulta justo el periodo que falta.
+// Para ver de un vistazo que un volcado llego incompleto.
 export function fechasEsperadas(regla: ReglaAnio): number {
   return periodosDe(regla.periodicidad) * (regla.tipoDigito === 'ninguno' ? 1 : DIGITOS)
 }
 
-// El digito del documento sobre el que se valida, o null si no hay ninguno legible ahi.
-//
-// Devolver null y no un numero es lo que arregla dos fallas mudas del primer boceto: Number("") da
-// 0, asi que un documento vacio elegia la fecha del digito 0 -- una fecha equivocada con cara de
-// correcta -- y un NIT con letra daba NaN, que no coincide con nada y se iba sin decir por que.
+// null y no un numero: Number("") da 0 (elegiria el digito 0) y una letra da NaN.
 export function digitoDe(
   documento: string,
   tipo: Exclude<TipoDigitoValidacion, 'ninguno'>,
@@ -135,10 +117,8 @@ export function buscarFechaLimite(
   return regla.fechas.find((f) => f.periodo === periodo && f.digito === digito)?.fecha
 }
 
-// Los `cantidad` anos gravables mas recientes que se pueden declarar, uno por ano y sin digito. El
-// desplazamiento hace las dos cosas a la vez: corre cual es el ultimo ano declarable y sobre que
-// ano cae su vencimiento. Con offset 1 y ano en curso 2026 salen los gravables 2016 a 2025, el
-// ultimo venciendo en 2026.
+// Los anos gravables mas recientes, uno por ano. Con offset 1 y 2026 salen 2016-2025, el ultimo
+// venciendo en 2026.
 export function generarReglasAnuales(
   anioActual: number,
   cantidad: number,
@@ -160,9 +140,7 @@ export function generarReglasAnuales(
   return reglas
 }
 
-// Cambia la fecha de un ano anual, devolviendo una tabla nueva. Solo toca el periodo 1 y solo de
-// los anos sin digito: es el unico caso que el panel deja editar a mano, porque los demas son de 6
-// a 120 fechas y eso se carga pegando, no tecleando.
+// Solo el periodo 1 de los anos sin digito: lo unico que el panel deja editar a mano.
 export function conFechaAnual(
   fechas: FechasMaximasPresentacion,
   kind: DeclaracionKind,
@@ -179,10 +157,8 @@ export function conFechaAnual(
   }
 }
 
-// Retencion y autorretencion salen vacias a proposito. El builder solo trae plantilla de industria
-// y comercio, y sus fechas son bimestrales o mensuales segun el municipio: generarlas seria dar por
-// buenos unos datos que nadie dio, la misma razon por la que no se inventan tarifas. La estructura
-// ya esta, asi que cargarlas es pegar el volcado.
+// Retencion y autorretencion vacias a proposito: generarlas inventaria datos. Se cargan pegando el
+// volcado.
 export function generarFechasPorDefecto(anioActual: number): FechasMaximasPresentacion {
   return {
     municipioId: '',

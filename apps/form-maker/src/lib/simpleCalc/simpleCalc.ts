@@ -22,15 +22,10 @@ import {
 import type { CalcShape } from './simpleCalc.types'
 import { readCalcShape } from './simpleCalc.utils'
 
-// Calculo sin codigo: la traduccion entre una lista de campos con signo (mas un multiplicador y un
-// piso en cero) y el texto de logic.script, en los dos sentidos. Nada de React ni del store.
-//
-// No hay un modelo guardado aparte del script: el modal lo lee al abrir y escribe uno nuevo al
-// aplicar. Asi logic.script sigue siendo el unico lugar donde se calcula un campo, y ni el borrador
-// ni el export se enteran de que este editor existe.
+// Calculo sin codigo: traduce entre campos con signo (mas multiplicador y piso) y logic.script, en
+// los dos sentidos. Sin modelo aparte: el script sigue siendo la unica verdad.
 
-// Desde otro grupo, o desde fuera de todos, la columna de un grupo llega al script como arreglo
-// (formRuntime) y un + la pegaria como texto: por eso importa en que grupo esta el campo editado.
+// Desde otro grupo la columna llega como array y + la pegaria como texto.
 function findEditedGroupId(formSteps: FormStep[], fieldId: string): string | undefined {
   for (const step of formSteps) {
     const groupId: string | undefined = findGroupIdForField(step.rows, fieldId)
@@ -40,9 +35,8 @@ function findEditedGroupId(formSteps: FormStep[], fieldId: string): string | und
   return undefined
 }
 
-// Solo campos numericos de los pasos del formulario, sin el propio campo. Uno que ya depende del
-// campo editado sigue en la lista pero marcado: elegirlo cerraria un ciclo, que es lo mismo que
-// la revision de exportacion bloquea.
+// Numericos del formulario sin el propio; los que dependen de el se marcan (elegirlos cerraria un
+// ciclo).
 export function buildCalcTermOptions(
   formSteps: FormStep[],
   field: CanvasField,
@@ -109,9 +103,7 @@ function termRefText(option: CalcTermOption): string {
   return option.aggregated ? `sum(${ref})` : ref
 }
 
-// El texto copia letra por letra el estilo de la plantilla ICA (una linea, " + " y " - ", punto y
-// coma al final): es lo que deja reabrir en el modal los renglones que ya trae. Devuelve null si
-// falta algo para escribirlo, y entonces no hay nada que aplicar.
+// Copia el estilo de la plantilla ICA para reabrir sus renglones. null si falta algo.
 export function buildSimpleCalcScript(calc: SimpleCalc, index: CalcTermIndex): string | null {
   if (calc.terms.length === 0) return null
   if (calc.multiplier !== null && !Number.isFinite(calc.multiplier)) return null
@@ -146,10 +138,8 @@ function compactScript(text: string): string {
   return text.replace(ALL_WHITESPACE_PATTERN, '').replace(TRAILING_SEMICOLON_PATTERN, '')
 }
 
-// Devuelve el calculo solo si el script es exactamente lo que buildSimpleCalcScript escribiria con
-// el: se lee con manga ancha y despues se regenera y se compara sin espacios. Asi el modal nunca
-// toma como suyo un script que no sabria volver a escribir igual (un sum() de mas, parentesis
-// sueltos, un campo que no es numerico o que ya no existe).
+// Solo si el script es exactamente lo que buildSimpleCalcScript escribiria: se lee con manga ancha,
+// se regenera y se compara.
 export function parseSimpleCalcScript(script: string, index: CalcTermIndex): SimpleCalc | null {
   const trimmed: string = script.trim()
   if (!RETURN_ON_SAME_LINE.test(trimmed)) return null

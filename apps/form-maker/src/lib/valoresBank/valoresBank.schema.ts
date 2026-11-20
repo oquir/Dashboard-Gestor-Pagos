@@ -1,7 +1,6 @@
 import { z } from 'zod'
 
-// El mismo schema valida lo que se pega y lo que ya estaba guardado, igual que en el banco de
-// fechas: si se validaran distinto, entraria por una puerta algo que la otra rechaza.
+// El mismo schema valida lo pegado y lo guardado.
 export const valorAnualSchema = z.object({
   anio: z.number().int().positive(),
   uvt: z.number().nonnegative(),

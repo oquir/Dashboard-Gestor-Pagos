@@ -137,19 +137,11 @@ export function resolveTemplateConditions<T extends { rows: CanvasRow[] }>(steps
   return steps
 }
 
-// Prende las tres propiedades numericas sobre el paso entero en vez de campo por campo. Son
-// reglas del formulario completo, y declararlas treinta y pico de veces significaria que el
-// renglon numero treinta y seis se agrega sin ellas y nadie lo nota.
-//
-// Cada una tiene su alcance:
-//   formato   -- todos. Hasta una tarifa de 1,5 se lee mejor con la convencion local.
-//   redondeo  -- todos menos los que no llevan plata, que van en roundingExceptions.
-//   signo     -- todos los `number`, que ya declaraban min: 0, y solo los calculados nombrados
-//                en clampedCalculated, que son los que de verdad pueden dar negativo.
-//   decimales -- todos el mismo, salvo los de decimalsByField. La declaracion no lleva decimales
-//                en ningun renglon; la tarifa es la unica excepcion.
-//   prefijo   -- el de plata en los mismos que redondean. Los que no llevan plata no lo llevan, y
-//                los que tienen otra unidad la reciben como sufijo de suffixByField.
+// Prende las propiedades numericas sobre todo el paso, no campo por campo: asi un renglon nuevo no
+// las olvida.
+// Alcances: formato a todos; redondeo menos roundingExceptions; signo a los number y a
+// clampedCalculated; decimales iguales salvo decimalsByField; prefijo $ donde se redondea y sufijo
+// de suffixByField en el resto.
 export function applyNumericDefaults<T extends { rows: CanvasRow[] }>(
   steps: T[],
   defaults: NumericDefaults,

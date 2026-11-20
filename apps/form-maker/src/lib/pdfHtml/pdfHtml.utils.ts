@@ -8,9 +8,7 @@ import {
   TABLE_SCOPE,
 } from './pdfHtml.constants'
 
-// Cierra hasta `name` incluido, si esta abierto antes de toparse con un limite. Un cierre sin
-// apertura (o del otro lado de una celda) se ignora, como en el navegador: "</span>" no puede
-// cerrar la tabla de afuera.
+// Un cierre sin apertura (o del otro lado de una celda) se ignora, como en el navegador.
 export function closeElement(stack: PdfHtmlElement[], name: string): void {
   const limits: ReadonlySet<string> =
     name === 'table' ? NO_LIMITS : TABLE_PARTS.has(name) ? TABLE_ONLY : TABLE_SCOPE
@@ -18,8 +16,7 @@ export function closeElement(stack: PdfHtmlElement[], name: string): void {
   if (at > 0) stack.length = at
 }
 
-// Lo que una apertura cierra sola: una celda cierra la celda abierta de su fila, una fila cierra
-// la fila (y su celda), una seccion de tabla la anterior, un bloque el <p> abierto y un <li> el <li>.
+// Lo que una apertura cierra sola: celda, fila, seccion de tabla, <p> y <li>.
 export function closeImplied(stack: PdfHtmlElement[], name: string): void {
   let at: number = -1
   if (CELL_TAGS.has(name)) at = findOpen(stack, (open) => CELL_TAGS.has(open), ROW_LIMITS)
@@ -61,11 +58,8 @@ export interface Tag {
   end: number
 }
 
-// Lee la etiqueta que empieza en `start` ("<"). null si ese "<" no abre una etiqueta (un "< 3" en
-// el texto). Sin ">" de cierre, la etiqueta llega hasta el final del texto, como en el navegador.
-//
-// Las regex son "sticky" (y) y leen desde lastIndex: un html.slice(index) por atributo copiaria el
-// resto del documento cada vez, y con una plantilla de 400 KB eso es cuadratico.
+// null si ese "<" no abre etiqueta; sin ">" llega hasta el final. Regex sticky desde lastIndex: un
+// slice por atributo seria cuadratico.
 export function readTag(html: string, start: number): Tag | null {
   let index: number = start + 1
   const closing: boolean = html[index] === '/'

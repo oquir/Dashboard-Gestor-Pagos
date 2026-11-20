@@ -9,6 +9,5 @@ export interface RowToolbarProps {
   row: CanvasRow
   listeners?: DraggableHandle['listeners']
   attributes?: DraggableHandle['attributes']
-  // Fija sin hover cuando la fila contiene el campo seleccionado.
   pinned: boolean
 }

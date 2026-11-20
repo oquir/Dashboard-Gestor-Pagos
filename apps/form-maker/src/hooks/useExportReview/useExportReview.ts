@@ -7,10 +7,8 @@ import { useFormStore } from '../../store'
 import type { FormProblem } from '../../types'
 import type { PendingReveal, UseExportReviewResult } from './useExportReview.types'
 
-// Revision antes de exportar. Corre al darle Exportar y no mientras se edita, para no cobrarle
-// nada al lienzo en cada tecla. Sin problemas descarga directo; con problemas deja la lista para el
-// modal, donde los errores bloquean la descarga y los avisos no. La deteccion vive en
-// lib/formDiagnostics; aca queda cuando correrla y a donde lleva cada problema.
+// Revision antes de exportar: corre al dar Exportar, no mientras se edita. Sin problemas descarga
+// directo; los errores bloquean y los avisos no. La deteccion vive en lib/formDiagnostics.
 export function useExportReview(): UseExportReviewResult {
   const setCanvasViewMode = useFormStore((state) => state.setCanvasViewMode)
   const setActiveCanvas = useFormStore((state) => state.setActiveCanvas)
@@ -19,8 +17,7 @@ export function useExportReview(): UseExportReviewResult {
   const setSidebarTab = useFormStore((state) => state.setSidebarTab)
   const setSidebarOpen = useFormStore((state) => state.setSidebarOpen)
   const [problems, setProblems] = useState<FormProblem[] | null>(null)
-  // El nodo del campo recien existe despues del commit que cambia de paso: la vista se lleva hasta
-  // ahi en un efecto, igual que la barra del lienzo con la fila que acaba de agregar.
+  // El nodo del campo existe recien despues del commit que cambia de paso: se revela en un efecto.
   const [pendingReveal, setPendingReveal] = useState<PendingReveal | null>(null)
 
   useEffect(() => {
@@ -47,8 +44,7 @@ export function useExportReview(): UseExportReviewResult {
   }
 
   function requestExport(): void {
-    // Se lee con getState y no con selectores: la revision corre una vez por click, y suscribirse
-    // haria que el panel se volviera a dibujar con cada cambio del formulario.
+    // getState: corre una vez por clic, y suscribirse redibujaria el panel con cada cambio.
     const { formSteps, introModal, formScript } = useFormStore.getState()
     const found: FormProblem[] = diagnoseForm({
       formSteps,

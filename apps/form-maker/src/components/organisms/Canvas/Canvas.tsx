@@ -23,10 +23,8 @@ export function Canvas() {
 
   const isIntro = activeCanvas.type === 'introStep'
 
-  // Soltar la seleccion al pulsar cualquier punto vacio del lienzo, margen de paneo incluido: se
-  // busca hacia arriba un campo/fila/grupo en vez de comparar contra un contenedor puntual, que se
-  // rompe con envoltorios decorativos de por medio (el marco del modal). Solo en Mover: con otra
-  // herramienta el documento es inerte y la seleccion la maneja useCanvasMarquee.
+  // Clic en vacio suelta la seleccion. Busca hacia arriba un campo, fila o grupo: comparar contra
+  // un contenedor fallaba con envoltorios decorativos. Solo en Mover.
   function handleCanvasPointerDown(event: PointerEvent<HTMLDivElement>): void {
     if (canvasTool !== 'move') return
 
@@ -57,10 +55,8 @@ export function Canvas() {
       className={TOOL_ROOT_CLASSES[canvasTool]}
       onPointerDown={handleCanvasPointerDown}
     >
-      {/* Con la mano o el marco el documento queda inerte: sin puntero no hay arrastre de dnd-kit,
-          ni redimensionado, ni menu contextual, ni cromo por hover, y el puntero lo atiende el
-          puerto. La paleta sigue soltando campos, porque dnd-kit resuelve la colision por rects y
-          no por eventos de puntero. */}
+      {/* Con la mano o el marco el documento queda inerte (sin dnd-kit, resize ni menu). La
+          paleta sigue soltando: dnd-kit choca por rects, no por eventos. */}
       <div
         ref={contentRef}
         style={contentStyle}

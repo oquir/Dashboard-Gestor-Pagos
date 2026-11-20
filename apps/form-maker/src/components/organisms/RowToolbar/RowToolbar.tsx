@@ -11,9 +11,8 @@ import type { RowToolbarMenu, RowToolbarProps } from './RowToolbar.types'
 
 export function RowToolbar({ row, listeners, attributes, pinned }: RowToolbarProps) {
   const removeRow = useFormStore((state) => state.removeRow)
-  // El estado de los dos desplegables vive aca y no dentro de cada menu por dos razones: los hace
-  // excluyentes sin que ninguno sepa del otro, y la barra necesita saber que hay uno abierto para
-  // no desvanecerse justo cuando el puntero sale de la fila hacia el desplegable.
+  // El estado de los menus vive aca: son excluyentes y la barra no se desvanece mientras hay uno
+  // abierto.
   const [openMenu, setOpenMenu] = useState<RowToolbarMenu | null>(null)
 
   function toggleMenu(menu: RowToolbarMenu): void {

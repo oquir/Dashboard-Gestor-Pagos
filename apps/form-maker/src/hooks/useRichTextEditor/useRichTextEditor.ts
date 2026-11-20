@@ -10,27 +10,23 @@ import {
   restoreSelection,
 } from './useRichTextEditor.utils'
 
-// El estado del editor de texto con formato. Pinta el modelo creando nodos, nunca por innerHTML, y
-// lee de vuelta con serializeRichText, que es el que sanea. La seleccion se guarda antes de abrir el
-// input del enlace porque mover el foco al input la pierde.
+// Estado del editor de texto con formato: pinta el modelo creando nodos (nunca innerHTML) y lee con
+// serializeRichText, que sanea. La seleccion se guarda antes de abrir el input del enlace.
 export function useRichTextEditor({
   value,
   onChange,
 }: UseRichTextEditorParams): UseRichTextEditorResult {
   const editorRef = useRef<HTMLDivElement | null>(null)
   const savedRange = useRef<Range | null>(null)
-  // El contenido que el DOM ya muestra: lo ultimo que se pinto o que el propio editor mando al store,
-  // null antes del primer pintado. Se compara por referencia porque los paneles guardan tal cual el
-  // contenido que reciben, asi que el eco de lo recien escrito vuelve como el mismo objeto.
+  // Lo que el DOM ya muestra (null antes del primer pintado). Por referencia: el eco de lo escrito
+  // vuelve como el mismo objeto.
   const shown = useRef<RichTextContent | undefined | null>(null)
   const [linkOpen, setLinkOpen] = useState<boolean>(false)
   const [linkValue, setLinkValue] = useState<string>('')
   const [error, setError] = useState<string>('')
 
-  // Se pinta al montar y cuando value llega distinto de lo que ya se muestra: deshacer o rehacer. El
-  // eco de lo que se acaba de escribir no se repinta, porque eso moveria el cursor al final. Sin el
-  // repintado, deshacer dejaria el texto viejo en pantalla y el siguiente blur lo volveria a escribir
-  // en el store, pisando lo deshecho. Cambiar de campo sigue remontando: el panel le pasa una key por campo.
+  // Repinta si value llega distinto de lo mostrado (deshacer). El eco no se repinta: moveria el
+  // cursor. Sin repintar, el siguiente blur pisaria lo deshecho.
   useEffect(() => {
     if (!editorRef.current || value === shown.current) return
 
@@ -46,10 +42,8 @@ export function useRichTextEditor({
     onChange(content)
   }
 
-  // Pegar siempre entra como texto plano, igual que Ctrl+Shift+V. El HTML del portapapeles mete en
-  // el DOM del editor estilos, clases y atributos que el serializador no guarda pero que siguen
-  // ahi hasta remontar, y con ellos el editor dejaba de mostrar lo que el modelo tiene. El formato
-  // se pone despues con los botones. insertText respeta el deshacer nativo del contentEditable.
+  // Pegar entra como texto plano: el HTML del portapapeles deja estilos en el DOM que el modelo no
+  // tiene. insertText respeta el deshacer nativo.
   function pastePlainText(event: ClipboardEvent<HTMLDivElement>): void {
     event.preventDefault()
 

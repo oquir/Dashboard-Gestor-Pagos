@@ -1,5 +1,5 @@
-// Consultas al DOM del lienzo que comparten hooks y organismos de carpetas distintas. Los atributos
-// data-* son el contrato: el lienzo los pone y esto los busca. Sin React y sin el store.
+// Consultas al DOM del lienzo compartidas entre carpetas. Los atributos data-* son el contrato. Sin
+// React ni store.
 
 export function getCanvasScrollPort(): HTMLElement | null {
   return document.querySelector<HTMLElement>('[data-canvas-scroll]')
@@ -17,8 +17,7 @@ export function getFieldElement(fieldId: string): HTMLElement | null {
   return document.querySelector<HTMLElement>(`[data-field-id="${fieldId}"]`)
 }
 
-// Los chips de campo del lienzo. Solo hay un paso montado a la vez, asi que no hace falta acotar la
-// busqueda al paso activo.
+// Solo hay un paso montado: no hace falta acotar.
 export function getFieldElements(): HTMLElement[] {
   return Array.from(document.querySelectorAll<HTMLElement>('[data-field-id]'))
 }

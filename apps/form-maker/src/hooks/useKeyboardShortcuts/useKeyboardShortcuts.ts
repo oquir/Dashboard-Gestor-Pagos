@@ -11,9 +11,8 @@ import type { CanvasTarget } from '../../types/placement'
 import type { CanvasTool, CanvasToolItem } from '../../types/ui'
 import { isEditableTarget, isPointerOverCanvas } from './useKeyboardShortcuts.utils'
 
-// Atajos globales del constructor. Ctrl/Cmd+S guarda el mismo borrador que el autoguardado; se monta
-// en App, sobre FormBuilder, para que tambien funcione con el simulador abierto. El zoom, las
-// herramientas y la seleccion solo tienen sentido con el lienzo a la vista.
+// Atajos globales del constructor. Ctrl/Cmd+S guarda el borrador; se monta en App para funcionar
+// con el simulador abierto. Zoom, herramientas y seleccion solo con el lienzo a la vista.
 export function useKeyboardShortcuts() {
   useEffect(() => {
     // La herramienta de antes de sostener Espacio; null mientras Espacio no esta sostenido.
@@ -30,8 +29,7 @@ export function useKeyboardShortcuts() {
       const isMod = event.ctrlKey || event.metaKey
       const state: FormState = useFormStore.getState()
 
-      // Las teclas sueltas son el camino de teclado al cromo que ahora se esconde: si el unico modo
-      // de borrar un campo fuera pasar el puntero por encima, quien no usa mouse se queda afuera.
+      // Teclas sueltas: el camino de teclado al cromo que solo aparece con hover.
       if (!isMod) {
         if (state.isSimulatorOpen || state.isPdfDesignerOpen || !state.setupConfig.isComplete) {
           return
@@ -40,9 +38,8 @@ export function useKeyboardShortcuts() {
 
         const isCanvasView: boolean = state.canvasViewMode === 'canvas'
 
-        // Espacio sostenido es la mano temporal de Figma. Solo con el puntero sobre el lienzo: con
-        // el foco en un boton de los paneles, Espacio tiene que seguir activandolo. preventDefault
-        // tambien en la repeticion, o el puerto se desplazaria como con un Espacio comun.
+        // Espacio sostenido es la mano temporal (Figma), solo con el puntero sobre el lienzo: en un
+        // boton de los paneles, Espacio lo activa. preventDefault tambien en la repeticion.
         if (event.key === ' ' && isCanvasView && isPointerOverCanvas()) {
           event.preventDefault()
           if (event.repeat || toolBeforeSpace !== null) return
@@ -66,8 +63,7 @@ export function useKeyboardShortcuts() {
 
         if (state.selectedFieldIds.length === 0) return
 
-        // Con el menu contextual abierto, Escape lo cierra (su propio listener) y ademas
-        // deselecciona: las dos cosas son "cancelar", asi que se dejan juntas a proposito.
+        // Escape cierra el menu contextual y ademas deselecciona: los dos son cancelar.
         if (event.key === 'Escape') {
           state.selectField(null)
           return
@@ -98,13 +94,12 @@ export function useKeyboardShortcuts() {
         return
       }
 
-      // Con el simulador o el diseñador de PDF no hay lienzo del formulario: ni pasos, ni deshacer
-      // (el PDF tendra su propio historial), ni seleccion, ni zoom.
+      // Con el simulador o el PDF no hay lienzo del formulario: ni pasos, ni deshacer, ni
+      // seleccion, ni zoom.
       if (state.isSimulatorOpen || state.isPdfDesignerOpen) return
 
-      // Ctrl + flecha: el paso anterior o el siguiente, de a uno. Solo Ctrl: Alt + flecha es atras y
-      // adelante del navegador, Ctrl+Alt + flecha gira la pantalla en muchos equipos con graficos
-      // Intel, y Cmd + flecha es atras en el Mac. Dentro de un input queda el salto por palabras.
+      // Ctrl+flecha, de a uno. Solo Ctrl: Alt+flecha es atras del navegador, Ctrl+Alt gira la
+      // pantalla en equipos Intel y Cmd+flecha es atras en Mac.
       const stepOffset: 1 | -1 | undefined = STEP_NAVIGATION_OFFSETS[event.key]
 
       if (stepOffset !== undefined && event.ctrlKey && !event.metaKey && !event.altKey) {
@@ -112,8 +107,7 @@ export function useKeyboardShortcuts() {
         if (isEditableTarget(event.target)) return
 
         event.preventDefault()
-        // A mitad de un arrastre no: cambiar de paso desmontaria la fila o el campo que cuelga del
-        // puntero. Para llevarlo a otro paso esta soltarlo sobre su pestana.
+        // No a mitad de un arrastre: desmontaria lo que cuelga del puntero.
         if (state.rowDrag !== null || state.draggingFieldId !== null) return
 
         const steps: CanvasTarget[] = orderedSteps(state.formSteps, state.introModal.steps)
@@ -122,8 +116,7 @@ export function useKeyboardShortcuts() {
         return
       }
 
-      // Deshacer y rehacer el formulario. Dentro de un input o del editor de scripts manda el
-      // historial de texto de cada uno: el del formulario no se mete a mitad de una palabra.
+      // Dentro de un input o del editor de scripts manda su propio historial de texto.
       if (key === 'z' || key === 'y') {
         if (!state.setupConfig.isComplete || isEditableTarget(event.target)) return
 
@@ -133,8 +126,7 @@ export function useKeyboardShortcuts() {
         return
       }
 
-      // Seleccionar todo el paso. Dentro de un input o fuera de la vista lienzo queda el Ctrl+A del
-      // navegador, que ahi si significa algo.
+      // Dentro de un input, o fuera del lienzo, queda el Ctrl+A del navegador.
       if (key === 'a') {
         if (!state.setupConfig.isComplete || state.canvasViewMode !== 'canvas') return
         if (isEditableTarget(event.target)) return
@@ -144,10 +136,8 @@ export function useKeyboardShortcuts() {
         return
       }
 
-      // El zoom del lienzo se queda con el atajo del navegador: la pagina es una pantalla fija, asi
-      // que lo unico que tiene sentido acercar es el lienzo. Con el simulador abierto no hay lienzo.
-      // Se escucha "=" ademas de "+" porque en casi todos los teclados comparten tecla y sin Shift
-      // el navegador reporta "=", que es lo que la gente teclea de verdad.
+      // El zoom del lienzo se queda con el atajo del navegador (la pagina es fija). "=" ademas de
+      // "+": sin Shift esa tecla reporta "=".
       if (key === '+' || key === '=') {
         event.preventDefault()
         state.setCanvasZoom(zoomIn(state.canvasZoom))
@@ -160,8 +150,7 @@ export function useKeyboardShortcuts() {
       }
     }
 
-    // El blur cubre soltar Espacio con la ventana en segundo plano, que nunca manda keyup: sin el,
-    // la mano quedaria puesta al volver.
+    // El blur cubre soltar Espacio con la ventana en segundo plano (nunca llega keyup).
     function handleKeyUp(event: KeyboardEvent): void {
       if (event.key !== ' ' || toolBeforeSpace === null) return
 

@@ -3,13 +3,8 @@ import { formulaToScript, upgradeFieldRefs } from '../scriptMigration/scriptMigr
 import { DRAFT_SCHEMA_VERSION } from './persistence.constants'
 import type { DraftMigration, FieldMigration, LooseDraft } from './persistence.types'
 
-// Cadena de migraciones del borrador. Existe porque el borrador vive en localStorage y la forma
-// del store cambia seguido: sin version, cada cambio de shape hace que Zod rechace lo guardado y
-// el usuario pierda el trabajo con "borrador invalido" como unica explicacion.
-//
-// Van indexadas por la version de la que salen: MIGRATIONS[1] lleva de 1 a 2. Trabajan sobre el
-// objeto crudo, antes de validar, y por eso no pueden suponerle forma a nada: lo unico que hacen
-// es agregar o transformar claves y dejar que Zod juzgue el resultado.
+// Migraciones del borrador, indexadas por version de origen (MIGRATIONS[1] lleva de 1 a 2).
+// Trabajan sobre el objeto crudo antes de validar: agregan o transforman claves y Zod juzga.
 
 function isRecord(value: unknown): value is LooseDraft {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -31,10 +26,8 @@ function mapStepFields(step: unknown, migrate: FieldMigration): unknown {
   }
 }
 
-// Los dos lienzos donde vive un campo. Hasta la version 5 habia un tercero, el almacen de partes,
-// cuyos componentes guardaban su propio `logic`; las migraciones 2 y 3 lo recorrian por eso. Se
-// sigue mapeando `savedComponents` si el borrador lo trae, porque las migraciones viejas corren
-// antes que la 4 -> 5 que lo borra, y un componente a medio migrar podria romper el paso siguiente.
+// Tambien savedComponents (el almacen, hasta la v5): las migraciones viejas corren antes de la 4 ->
+// 5 que lo borra.
 function mapDraftFields(draft: LooseDraft, migrate: FieldMigration): LooseDraft {
   const introModal: unknown = draft.introModal
 
@@ -55,14 +48,8 @@ function mapDraftFields(draft: LooseDraft, migrate: FieldMigration): LooseDraft 
   }
 }
 
-// Una formula que no parsea no se tira ni se lleva puesto el borrador entero: se conserva como
-// comentario dentro del script, donde el autor la ve y la puede terminar de escribir. El campo
-// deja de calcular -- undefined conserva lo que escriba el usuario -- en vez de inventar un valor.
-//
-// El caso es real y no defensivo: el editor de formulas guardaba lo que se tipeara aunque no
-// compilara, asi que un autoguardado a mitad de una palabra deja exactamente esto. Descartar el
-// borrador entero por un campo a medio escribir seria un castigo desproporcionado, y dejarlo caer
-// en silencio -- que es lo que hace Zod ahora que el esquema ya no declara `formula` -- es peor.
+// Una formula que no parsea se conserva como comentario en el script (el editor guardaba lo
+// tecleado a medias). El campo deja de calcular en vez de inventar.
 function preservedFormula(formula: string): string {
   const quoted: string = formula
     .split('\n')
@@ -96,9 +83,7 @@ function formulaToScriptEffect(effect: unknown): unknown {
   }
 }
 
-// Tabla chica: cubre lo que alguien tipea de verdad en ese cuadro para un campo de formulario.
-// Lo que no esta ahi no se inventa -- se conserva como comentario CSS, igual que preservedFormula
-// conserva una formula que no compilaba.
+// Lo que no esta en la tabla se conserva como comentario CSS.
 const TAILWIND_TO_CSS: Record<string, string> = {
   'font-bold': 'font-weight: 700',
   'font-semibold': 'font-weight: 600',
@@ -140,9 +125,7 @@ function classesToCss(classes: string): string {
   return mapped.join('\n')
 }
 
-// `customClasses` en un objeto de estilos (campo, fila o tooltip) pasa a `customCss` con la
-// traduccion de arriba. `holder` es generico porque los tres casos comparten la misma forma de
-// migracion aunque vivan en claves distintas del campo (`styles`, `tooltip`).
+// Campo, fila y tooltip comparten la misma forma de migracion.
 function migrateStyleHolder(holder: unknown): unknown {
   if (!isRecord(holder) || typeof holder.customClasses !== 'string') return holder
 
@@ -174,8 +157,7 @@ function mapStepRows(step: unknown, migrate: RowMigration): unknown {
   }
 }
 
-// mapDraftFields ya sabe recorrer los dos lienzos, pero solo llega a `row.fields`: los estilos de
-// la fila viven un nivel mas arriba, asi que hace falta un recorrido propio para `row.styles`.
+// mapDraftFields no llega a row.styles: hace falta este recorrido.
 function mapDraftRows(draft: LooseDraft, migrate: RowMigration): LooseDraft {
   const introModal: unknown = draft.introModal
 
@@ -208,9 +190,8 @@ function ruleFormulasToScripts(field: LooseDraft): LooseDraft {
   }
 }
 
-// El espacio de nombres contra el que el compilador viejo decidia que {x} era un campo: los dos
-// lienzos juntos, como el export. Un campo sin nombre toma el slug de su rotulo, que es el que le
-// pone migrateFieldNames al cargar y por lo tanto el que ese compilador llegaba a ver.
+// Los nombres contra los que el compilador viejo decidia que {x} era campo (los dos lienzos; un
+// campo sin nombre toma el slug de su rotulo).
 function collectDraftNames(draft: LooseDraft): Set<string> {
   const names = new Set<string>()
   const introModal: unknown = draft.introModal
@@ -295,9 +276,8 @@ function upgradeGroupCheckRefs(group: LooseDraft, names: Set<string>): LooseDraf
   }
 }
 
-// Todos los sitios donde se escribe un script: el del campo, los efectos de sus reglas, las
-// comprobaciones de grupo y el preludio. El preludio tambien, aunque no pueda leer campos: un
-// {campo} ahi era un error, y sin migrarlo pasaria a ser un objeto literal que nadie denuncia.
+// Todos los sitios con script, el preludio tambien: un {campo} ahi pasaria a ser un objeto literal
+// sin aviso.
 function upgradeDraftRefs(draft: LooseDraft): LooseDraft {
   const names: Set<string> = collectDraftNames(draft)
   const withFields: LooseDraft = mapDraftFields(draft, (field) =>
@@ -323,28 +303,24 @@ const MIGRATIONS: Record<number, DraftMigration> = {
   2: (draft) => mapDraftFields(draft, formulaToScriptField),
   // 3 -> 4: los efectos de regla dejan la formula y hablan el mismo lenguaje que el campo.
   3: (draft) => mapDraftFields(draft, ruleFormulasToScripts),
-  // 4 -> 5: se elimina el almacen de partes. Mover campos entre pasos lo dejo sin uso.
-  //
-  // Se borra la clave a proposito en vez de dejar que Zod la ignore: el esquema usa z.object, que
-  // descarta lo que no declara, asi que el borrador validaria igual -- pero seguiria arrastrando
-  // los componentes en localStorage para siempre, invisibles y sin nada que los pueda leer.
+  // 4 -> 5: se borra el almacen de partes. La clave se borra a proposito: z.object la ignoraria y
+  // quedaria en localStorage para siempre.
   4: (draft) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- se saca de la copia a proposito
     const { savedComponents, ...resto } = draft
 
     return resto
   },
-  // 5 -> 6: las clases de Tailwind del campo, la fila y el tooltip pasan a ser CSS plano. Tailwind
-  // escanea el fuente del consumidor, no el JSON exportado, asi que una clase ahi solo funcionaba
-  // por casualidad.
+  // 5 -> 6: Tailwind del campo, la fila y el tooltip a CSS plano (en el consumidor solo funcionaba
+  // por casualidad).
   5: (draft) => mapDraftRows(mapDraftFields(draft, fieldClassesToCss), rowClassesToCss),
-  // 6 -> 7: las referencias a campos pasan de {campo} a {{campo}}. Solo las que el compilador de
-  // entonces sustituia, asi el script migrado compila al mismo cuerpo y el simulador calcula igual.
+  // 6 -> 7: {campo} a {{campo}}, solo lo que el compilador de entonces sustituia: compila al mismo
+  // cuerpo.
   6: upgradeDraftRefs,
 }
 
-// Un hueco en la cadena corta el recorrido y devuelve el borrador con su version vieja, que es
-// exactamente lo que el esquema rechaza despues. Preferible a estamparle una version que no tiene.
+// Un hueco en la cadena devuelve la version vieja, que el esquema rechaza: mejor que estampar una
+// version falsa.
 export function migrateDraft(draft: LooseDraft): LooseDraft {
   let current: LooseDraft = draft
   let version: number = typeof draft.schemaVersion === 'number' ? draft.schemaVersion : 1

@@ -8,13 +8,11 @@ import {
 import { useFormStore } from '../../../store/formStore'
 import { Tooltip } from '../../atoms'
 
-// El interruptor del modo de bajo rendimiento de las barras flotantes. Es una preferencia de la app y
-// no de un lienzo: vive en useFormStore y vale igual en el formulario y en el diseñador de PDF.
+// Preferencia de la app y no de un lienzo: vale en el formulario y en el PDF.
 export function PerformanceModeToggle() {
   const isLowPerformance = useFormStore((state) => state.isLowPerformance)
   const toggleLowPerformance = useFormStore((state) => state.toggleLowPerformance)
-  // Cuenta los clics: es la key del icono, que al remontarse repite el giro. En 0 (montaje inicial,
-  // estado guardado) no hay giro.
+  // Cuenta los clics: es la key del icono y al remontarse repite el giro. En 0 no gira.
   const [spin, setSpin] = useState<number>(0)
 
   return (

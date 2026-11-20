@@ -21,8 +21,8 @@ export function useFieldScriptEditor({
 
   const source: string = field.logic.script ?? ''
 
-  // El propio campo entra en los nombres conocidos: asi {{mi_campo}} se sustituye y se puede avisar
-  // de la autorreferencia, en vez de marcarlo como un campo que no existe.
+  // El propio campo cuenta como conocido: asi se avisa la autorreferencia en vez de marcarlo
+  // desconocido.
   const knownNames: Set<string> = useKnownFieldNames()
 
   const validation: ScriptValidation = useMemo(
@@ -30,9 +30,8 @@ export function useFieldScriptEditor({
     [source, knownNames, formScript],
   )
 
-  // El ciclo se avisa, no se bloquea: el script es texto libre y trabar la escritura a mitad de
-  // una palabra seria pelearse con quien escribe. Los editores de condiciones si lo bloquean
-  // porque ahi se elige de una lista y no hay estado intermedio.
+  // El ciclo se avisa y no se bloquea: el script es texto libre. Las condiciones si lo bloquean (se
+  // eligen de una lista).
   const cycle: string | null = useMemo(() => {
     const graph: FieldGraph = buildFieldGraph([field, ...candidates])
     const found: string[] | null = topologicalOrder(graph).cycle
@@ -47,7 +46,7 @@ export function useFieldScriptEditor({
     return found ? [found] : []
   })
 
-  // El calculo sin codigo solo suma y resta numeros: en un campo de texto no tiene nada que armar.
+  // El calculo sin codigo solo suma y resta numeros.
   const offersSimpleCalc: boolean = isNumericField(field.type)
   const [isSimpleCalcOpen, setIsSimpleCalcOpen] = useState<boolean>(false)
 

@@ -9,12 +9,8 @@ import {
 } from './scriptMigration.constants'
 import type { Cursor, FormulaArity, FormulaNode, FormulaToken } from './scriptMigration.types'
 
-// Tokenizer y descenso recursivo del lenguaje de formulas. Estaba en lib/formula, que era la
-// implementacion de un lenguaje vivo; ahora es solo el lector del formato muerto, y por eso se
-// mudo aca junto al impresor. Del original quedo la mitad: el evaluador se fue entero, porque
-// nadie vuelve a calcular una formula, solo a traducirla.
-//
-// Todo lo de aca lanza; es parseFormula quien atrapa y devuelve null.
+// Tokenizer y descenso recursivo del lenguaje de formulas, ya muerto: solo se lee para traducirlo.
+// Lanza; parseFormula atrapa.
 
 function tokenize(source: string): FormulaToken[] {
   const tokens: FormulaToken[] = []
@@ -68,8 +64,7 @@ function isOp(token: FormulaToken | undefined, text: string): boolean {
   return token !== undefined && token.kind === 'op' && token.text === text
 }
 
-// Un agregado recibia un nombre de campo pelado, no una expresion: leia la columna de un grupo
-// repetible. Que sumOf(1 + 2) no compilara era a proposito.
+// Un agregado recibia un nombre pelado (una columna de grupo), no una expresion.
 function parseAggregate(cursor: Cursor, callee: string): FormulaNode {
   cursor.index += 1
   const token: FormulaToken | undefined = peek(cursor)
@@ -124,8 +119,7 @@ function parsePrimary(cursor: Cursor): FormulaNode {
     return { kind: 'number', value: Number.parseFloat(token.text) }
   }
 
-  // Un identificador era una llamada solo si le seguia un parentesis; si no, el nombre de un
-  // campo. Por eso no habia palabras reservadas: un campo podia llamarse "max" sin chocar.
+  // Un identificador era llamada solo con parentesis: un campo podia llamarse max.
   if (token.kind === 'ident') {
     cursor.index += 1
     if (isOp(peek(cursor), '(')) return parseCall(cursor, token.text)
@@ -157,9 +151,7 @@ function parseUnary(cursor: Cursor): FormulaNode {
   return parsePrimary(cursor)
 }
 
-// La precedencia es la cadena de llamadas: expresion (+ -) baja a termino (* /), que baja a
-// unario y a primario. El bucle while, en vez de recursion a la derecha, es lo que da la
-// asociatividad por izquierda que el impresor despues da por sentada.
+// La precedencia es la cadena de llamadas; el while da la asociatividad a izquierda.
 function parseTerm(cursor: Cursor): FormulaNode {
   let left: FormulaNode = parseUnary(cursor)
 

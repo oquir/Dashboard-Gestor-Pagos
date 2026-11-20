@@ -1,5 +1,5 @@
-// La lista blanca del HTML libre del PDF. Solo lo que sirve para maquetar una declaracion impresa:
-// tablas, texto, imagenes y <style>. Lo demas se desenvuelve (queda su texto) o se borra entero.
+// Lista blanca del HTML libre: tablas, texto, imagenes y <style>. Lo demas se desenvuelve o se
+// borra.
 export const ALLOWED_TAGS: ReadonlySet<string> = new Set([
   'table',
   'thead',
@@ -141,8 +141,7 @@ export const ALLOWED_ATTRIBUTES: ReadonlySet<string> = new Set([
   'href',
 ])
 
-// Los atributos de los componentes del diseñador (data-fm-sello, data-fm-texto…): SelectPdf los
-// ignora y el lector los usa para reabrir el diseño.
+// Atributos de los componentes: SelectPdf los ignora y el lector los usa para reabrir.
 export const DATA_FM_ATTRIBUTE: RegExp = /^data-fm-[a-z0-9-]+$/
 
 // Una variable sola, como src="{Code}": la imagen la pone el back al reemplazar.

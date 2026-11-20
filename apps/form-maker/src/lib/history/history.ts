@@ -1,8 +1,6 @@
 import type { BurstGate, HistorySnapshot } from '../../types'
 
-// Las piezas del historial que no dependen de zundo ni del store: que se guarda en cada paso, cuando
-// dos estados son el mismo documento y como se agrupan los cambios en rafagas. El cableado con zundo
-// vive en formStore.ts.
+// Piezas del historial sin zundo ni store; el cableado vive en formStore.ts.
 
 export function toHistorySnapshot(state: HistorySnapshot): HistorySnapshot {
   return {
@@ -15,9 +13,7 @@ export function toHistorySnapshot(state: HistorySnapshot): HistorySnapshot {
   }
 }
 
-// Solo el documento decide si hubo un paso. El paso activo y la seleccion viajan en el snapshot pero
-// no cuentan: sin esto, cada clic en un campo o en una pestana llenaria el historial de pasos que no
-// cambian nada.
+// Solo el documento decide si hubo un paso: la seleccion y el paso activo no cuentan.
 export function sameDocument(a: HistorySnapshot, b: HistorySnapshot): boolean {
   return (
     sameValue(a.formSteps, b.formSteps) &&
@@ -27,13 +23,8 @@ export function sameDocument(a: HistorySnapshot, b: HistorySnapshot): boolean {
   )
 }
 
-// Deja pasar el primer cambio de una rafaga y se traga los que llegan antes de que se cumpla la
-// ventana desde el anterior. El que pasa es el que guarda el estado de ANTES de la rafaga, que es a
-// donde tiene que volver deshacer; los tragados no guardan nada.
-//
-// reset() va en cada deshacer y rehacer: zundo solo vacia los pasos de rehacer cuando registra un
-// cambio, y un cambio tragado justo despues de deshacer los dejaria vivos, listos para pisar lo que
-// se acaba de escribir.
+// Deja pasar el primer cambio de una rafaga (guarda el estado de antes) y traga los demas. reset()
+// en cada deshacer: si no, un cambio tragado dejaria vivo el rehacer.
 export function createBurstGate(windowMs: number, now: () => number = Date.now): BurstGate {
   let lastChange: number = Number.NEGATIVE_INFINITY
 
@@ -52,11 +43,8 @@ export function createBurstGate(windowMs: number, now: () => number = Date.now):
   return { wrap, reset }
 }
 
-// Igualdad por contenido que corta en la primera referencia igual. Una referencia distinta no siempre
-// es un cambio: varias acciones rearman pasos y filas enteros sin cambiar nada -soltar un campo donde
-// estaba, el blur de un editor que confirma el mismo texto- y cada una dejaria un paso vacio, que
-// Ctrl+Z "deshace" sin que se vea nada. Gracias a la estructura compartida casi todo el arbol sigue
-// siendo la misma referencia, asi que el recorrido solo baja por lo que se rearmo.
+// Por contenido, cortando en la primera referencia igual: rearmar sin cambiar nada no deja un paso
+// vacio.
 function sameValue(a: unknown, b: unknown): boolean {
   if (a === b) return true
   if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false

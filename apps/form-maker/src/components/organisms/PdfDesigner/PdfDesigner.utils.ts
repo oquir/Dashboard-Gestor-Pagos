@@ -9,6 +9,6 @@ export function savedStatus(lastSavedAt: string | null, saveError: string | null
     })
     return { tone: 'saved', label: `Guardado a las ${time}` }
   }
-  // "Sin cambios guardados" se leia como "tienes cambios sin guardar" (docs/Plan-PDF-UX-P2.md).
+  // "Sin cambios guardados" se leia como "tienes cambios sin guardar".
   return { tone: 'idle', label: 'Sin cambios' }
 }

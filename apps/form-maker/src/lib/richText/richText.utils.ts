@@ -2,9 +2,8 @@ import type { RichTextLeaf } from '../../types'
 import { ALLOWED_PROTOCOLS } from './richText.constants'
 import type { MarkState, StyleLike } from './richText.types'
 
-// Solo se aceptan http, https y mailto; a lo que no trae esquema se le antepone https. Corre en
-// tres momentos -al insertar el enlace, al serializar y al cargar el borrador- y los tres hacen
-// falta: localStorage se puede editar a mano desde las devtools.
+// Solo http, https y mailto (sin esquema, https). Corre al insertar, al serializar y al cargar el
+// borrador.
 export function safeHref(raw: string | null | undefined): string | undefined {
   if (!raw) return undefined
 
@@ -20,16 +19,15 @@ export function safeHref(raw: string | null | undefined): string | undefined {
       const url: URL = new URL(candidate)
       if (ALLOWED_PROTOCOLS.includes(url.protocol)) return url.toString()
     } catch {
-      // sigue: una URL que no parsea simplemente no se acepta
+      // Una URL que no parsea no se acepta.
     }
   }
 
   return undefined
 }
 
-// Pegar ya entra siempre como texto plano (pastePlainText), pero el HTML todavia llega al editor
-// al soltar un texto arrastrado desde Word o Google Docs, y esos no traen <b> ni <i>: traen spans
-// con font-weight y text-decoration. Sin esto, ese formato se perderia al serializar.
+// Al soltar texto arrastrado desde Word llegan spans con estilo, no <b> ni <i>: sin esto se
+// perderia el formato.
 export function marksFromStyle(style: StyleLike | undefined): MarkState {
   if (!style) return {}
 

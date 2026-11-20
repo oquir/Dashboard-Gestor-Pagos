@@ -7,8 +7,6 @@ import { canMoveBlock, findBlock } from '../../../../lib/pdfDesignEdit'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { PanelSection } from '../../../molecules'
 
-// El bloque de HTML libre seleccionado: el escape para lo que el editor visual no sabe hacer. Es el
-// lugar natural del <style> de la plantilla (las clases que despues se ponen en celdas y tablas).
 export function PdfHtmlBlockPanel() {
   const design = usePdfDesignStore((state) => state.design)
   const selection = usePdfDesignStore((state) => state.selection)

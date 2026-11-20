@@ -12,9 +12,8 @@ import {
 } from './JsonCode.constants'
 import { renderTokens } from './JsonCode.utils'
 
-// Solo se pintan las filas que se ven (useJsonViewport). La lista mide lo que medirian todas, asi el
-// scroll es el de siempre, y su ancho minimo sale de la linea mas larga para que el scroll
-// horizontal no cambie de largo mientras se baja. Ctrl+F abre el buscador propio (useJsonCode).
+// Solo pinta las filas visibles (useJsonViewport). El ancho minimo sale de la linea mas larga para
+// que el scroll horizontal no cambie al bajar.
 export function JsonCode({ json, valueClassName, className, captureFind = false }: JsonCodeProps) {
   const {
     rootRef,

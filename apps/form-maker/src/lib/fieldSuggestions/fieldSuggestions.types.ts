@@ -1,5 +1,4 @@
-// Lo minimo para leer las sugerencias, estructural para que entren CanvasField y ExportedField
-// sin que esta carpeta conozca ninguno.
+// Estructural, para que entren CanvasField y ExportedField.
 export interface SuggestionsField {
   type: string
   suggestions?: string[]

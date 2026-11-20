@@ -10,10 +10,8 @@ import { renderVerticalTextPng } from '../../lib/pdfVerticalText'
 import { usePdfDesignStore } from '../../store/pdfDesignStore'
 import type { PdfFileNotice, PdfFileRead } from '../../types'
 
-// Publicar y abrir el .html del PDF, sin back (docs/Pendientes-PDF.md §3.5): publicar es descargar
-// <impuesto>_v<N>.html con N uno mas que la ultima, y abrir es leer archivos locales. El aviso de
-// lo que paso vive aca, en estado local: es de la pantalla, no del diseño. Las reglas estan en
-// lib/pdfFile; este hook solo las conecta con el store y con los archivos del navegador.
+// Publicar y abrir el .html del PDF sin back: publicar descarga <impuesto>_v<N>.html con la N
+// siguiente. El aviso vive en estado local. Las reglas estan en lib/pdfFile.
 export function usePdfFile(): {
   notice: PdfFileNotice | null
   dismissNotice: () => void
@@ -40,8 +38,8 @@ export function usePdfFile(): {
     })
   }
 
-  // Varios archivos: vale el de N mas alta (los demas solo se cuentan). Reemplazar el diseño es un
-  // paso de deshacer, por eso no se pide confirmacion.
+  // Con varios archivos vale el de N mas alta. Reemplazar el diseno se deshace, asi que no se
+  // confirma.
   async function openFiles(files: FileList | null): Promise<void> {
     const { design, loadDesign } = usePdfDesignStore.getState()
     if (!design || !files || files.length === 0) return

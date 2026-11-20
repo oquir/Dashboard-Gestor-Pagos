@@ -1,8 +1,7 @@
 import { Tooltip } from '../Tooltip'
 import type { IconButtonProps } from './IconButton.types'
 
-// El title de un boton de iconos se pinta con Tooltip y no con el globo nativo del navegador, y pasa a
-// ser su nombre accesible (aria-label) salvo que el llamador ponga uno. Sin title es un button normal.
+// El title se pinta con Tooltip y, si no hay aria-label, pasa a ser el nombre accesible.
 export function IconButton({
   className = '',
   children,

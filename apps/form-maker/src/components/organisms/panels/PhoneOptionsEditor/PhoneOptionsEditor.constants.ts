@@ -9,7 +9,6 @@ export const KIND_CHOICES: { kind: PhoneKind; label: string }[] = [
   { kind: 'fax', label: 'Fax' },
 ]
 
-// El mismo control segmentado que Fecha única / Rango de fechas, con una columna por opción.
 export const KIND_TRACK_CLASSES: string =
   'grid grid-cols-3 gap-0.5 rounded-md border border-border bg-field p-[3px]'
 

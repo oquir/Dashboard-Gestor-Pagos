@@ -2,9 +2,7 @@ import { HighlightStyle } from '@codemirror/language'
 import { EditorView } from '@codemirror/view'
 import { tags } from '@lezer/highlight'
 
-// Los colores salen de los tokens de index.css y no de dos temas de CodeMirror intercambiados:
-// el modo oscuro de la app se redefine por variable, asi que apuntando a las mismas el editor
-// cambia solo y no hace falta pasarle isDarkMode ni recrear extensiones al alternar.
+// Colores de los tokens de index.css: el tema oscuro cambia solo, sin recrear extensiones.
 export const SCRIPT_THEME = EditorView.theme({
   '&': {
     fontSize: '12px',
@@ -17,8 +15,8 @@ export const SCRIPT_THEME = EditorView.theme({
   '.cm-scroller': {
     fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
     lineHeight: '1.6',
-    // Explicito y no heredado del tema base: es lo que convierte el max-height del editor en scroll
-    // propio. Sin esto el alto se recorta y las ultimas lineas quedan inalcanzables.
+    // Explicito: convierte el max-height en scroll propio; sin el las ultimas lineas quedan
+    // inalcanzables.
     overflow: 'auto',
   },
   '.cm-content': { padding: '6px 0' },
@@ -46,8 +44,6 @@ export const SCRIPT_THEME = EditorView.theme({
     color: 'var(--ui-fg-strong)',
   },
 
-  // Una referencia se pinta como ficha para que se lea distinta del JS que la rodea sin tener que
-  // contar llaves. La desconocida va en rojo: es un error, no un aviso.
   '.cm-field-ref': {
     backgroundColor: 'var(--ui-brand-surface)',
     color: 'var(--ui-brand-fg)',

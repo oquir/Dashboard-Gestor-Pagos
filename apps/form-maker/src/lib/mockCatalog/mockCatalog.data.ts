@@ -1,19 +1,8 @@
 import type { CatalogOption } from '../../types'
 
-// Volcado literal de los endpoints de catalogo, sin retocar: los ids y las etiquetas son los que
-// devuelve la API de verdad, incluidas sus rarezas (CUNDINAMARCA aparece dos veces, "V ALLE DEL
-// CAUCA" viene con el espacio partido). Corregirlas aca haria que el simulador mintiera justo
-// donde tiene que ser fiel. Archivo generado: regenerar desde el volcado, no editar a mano.
-//
-// ACTIVIDADES salio de un volcado aparte, con otra forma: cada fila trae idDeclaracion, codigoCIIU,
-// descripcion y tarifaXMil. Se toma idDeclaracion como id porque la plantilla ya lleva un campo
-// "Codigo" separado para el CIIU, asi que no pueden ser el mismo valor; el CIIU va en "code", que
-// es lo que el buscador muestra como titulo de cada fila.
-//
-// Falta la columna "tarifa": la primera conversion la descarto y el volcado ya no esta, asi que
-// ninguna actividad la trae hoy y el buscador dibuja la fila sin distintivo. Se recupera de dos
-// maneras, sin inventar nada: volviendo a pasar el volcado por el generador, o pegandolo en la
-// pestaña Catalogos nombrando la columna tarifaXMil.
+// Volcado literal de los endpoints, con sus rarezas: corregirlas haria mentir al simulador. Archivo
+// generado: no editar a mano. ACTIVIDADES usa idDeclaracion como id y el CIIU en code. Falta la
+// columna tarifa: se recupera regenerando o pegando en Catalogos con tarifaXMil.
 
 export const TIPOS_DOCUMENTO: CatalogOption[] = [
   { id: '1', label: 'CEDULA' },

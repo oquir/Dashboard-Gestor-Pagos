@@ -8,10 +8,8 @@ import { MAX_DATES_KEY } from './maxDatesBank.constants'
 import { fechasMaximasSchema, storedMaxDatesSchema } from './maxDatesBank.schema'
 import { candidateObjects, primeraReglaPorAnio } from './maxDatesBank.utils'
 
-// Donde viven las fechas maximas mientras se prueba. Es el banco de catalogos otra vez: datos que
-// el consumidor saca de su propio endpoint, que el simulador necesita para poder probar y que NO
-// entran ni al borrador ni al export. Que no se filtren no es una promesa sino un hecho del codigo:
-// ni exportForm ni persistence nombran este modulo.
+// Banco de fechas del simulador: no entra al borrador ni al export (ni exportForm ni persistence lo
+// nombran).
 
 const VACIO: StoredMaxDates = { source: 'default', custom: null }
 
@@ -37,9 +35,7 @@ export function usesCustomMaxDates(stored: StoredMaxDates): boolean {
   return stored.source === 'custom' && stored.custom !== null
 }
 
-// La tabla que rige ahora mismo. La generada se recalcula cada vez a proposito -- sigue al reloj,
-// asi que en enero aparece el ano nuevo sin que nadie toque nada -- y por eso mismo es de solo
-// lectura: editar cualquier fecha saca una copia propia, que es lo que hace el panel.
+// La generada sigue al reloj y es de solo lectura: editar saca una copia propia.
 export function maxDatesEnUso(
   stored: StoredMaxDates,
   anioActual: number,
@@ -49,9 +45,7 @@ export function maxDatesEnUso(
     : generarFechasPorDefecto(anioActual)
 }
 
-// Se pega el objeto entero del endpoint, sin nombrar columnas. A diferencia de un catalogo -- una
-// lista plana de la que hay que decir cual clave es el id -- esta respuesta ya viene con la forma
-// que se necesita, asi que lo unico que hace falta es comprobar que la tenga.
+// Se pega el objeto entero del endpoint: ya viene con la forma, solo se valida.
 export function parseMaxDatesPaste(raw: string): MaxDatesParseResult {
   if (raw.trim() === '') return { fechas: null, error: 'Pegá la respuesta del endpoint.' }
 

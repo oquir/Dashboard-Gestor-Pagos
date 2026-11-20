@@ -9,8 +9,8 @@ import {
   VERSION_IN_NAME,
 } from './pdfFile.constants'
 
-// Piezas del generador y del lector, privadas a lib/pdfFile. Escribir atributos y CSS vive en
-// lib/pdfHtml, porque los componentes (lib/pdfComponents) tambien escriben HTML.
+// Piezas privadas de lib/pdfFile; atributos y CSS viven en lib/pdfHtml (tambien los usan los
+// componentes).
 export { pdfAttributes as attrs, pdfCssText as cssText } from '../pdfHtml'
 
 // Dos decimales bastan: los px que salen de mm traen colas como 37.78544…
@@ -93,8 +93,8 @@ export function legacyWarnings(nodes: PdfHtmlNode[]): string[] {
     for (const node of list) {
       if (node.type === 'text') {
         if (parent === 'style') {
-          // Lo de @media print no lo ve el convertidor (pinta como pantalla): 17 de las 22
-          // plantillas traen ahi un body verde de pruebas, y avisarlo seria ruido.
+          // El convertidor no ve @media print: 17 de 22 plantillas traen ahi un body verde de
+          // pruebas.
           if (BODY_SELECTOR.test(node.text.replace(PRINT_MEDIA, ''))) hasBodyStyle = true
           if (/@page\b/i.test(node.text)) hasPage = true
           continue

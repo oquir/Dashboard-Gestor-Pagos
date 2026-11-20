@@ -1,8 +1,6 @@
 import type { ValorAnual } from '../../types/valores'
 
-// Busqueda de la fila de un ano dentro de la tabla de valores anuales. Aritmetica pura, sin React,
-// sin store y sin localStorage: la capa que guarda es lib/valoresBank y los helpers que la exponen
-// a un script son lib/scriptValores.
+// Busqueda pura por ano; guarda lib/valoresBank y la expone lib/scriptValores.
 
 export function buscarValores(valores: ValorAnual[], anio: number): ValorAnual | null {
   if (!Number.isFinite(anio) || anio <= 0) return null
@@ -10,9 +8,7 @@ export function buscarValores(valores: ValorAnual[], anio: number): ValorAnual |
   return valores.find((valor) => valor.anio === anio) ?? null
 }
 
-// El ano de un "YYYY/MM/DD" o "YYYY-MM-DD", que es como viaja `hoy` en el RuntimeContext. Devuelve
-// 0 y no NaN cuando el texto no sirve: un 0 no encuentra ninguna fila y se comporta como "no hay
-// dato", mientras que un NaN se arrastraria hasta la comparacion sin decir nada.
+// 0 y no NaN si el texto no sirve: no encuentra fila y es "no hay dato".
 export function anioDeTexto(fecha: string): number {
   const anio: number = Number.parseInt(fecha.slice(0, 4), 10)
 

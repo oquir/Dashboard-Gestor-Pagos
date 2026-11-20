@@ -3,9 +3,7 @@ import { Button } from '../../atoms'
 import { CrashPanel } from '../../molecules'
 import type { SimulatorCrashScreenProps } from './SimulatorCrashScreen.types'
 
-// El simulador corre los scripts del autor y se carga en un chunk aparte, asi que es lo mas
-// probable que falle: un script que rompe lo que pinta el simulador, o el chunk que no baja. Aca
-// el editor no se toco, por eso basta con cerrar el simulador para volver a el sin perder nada.
+// Corre scripts del autor en su propio chunk: es lo mas probable que falle. Basta con cerrarlo.
 export function SimulatorCrashScreen({ message }: SimulatorCrashScreenProps) {
   const setSimulatorOpen = useFormStore((state) => state.setSimulatorOpen)
 

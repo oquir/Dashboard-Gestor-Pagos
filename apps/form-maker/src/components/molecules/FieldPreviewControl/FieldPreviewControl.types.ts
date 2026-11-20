@@ -4,11 +4,10 @@ export interface FieldPreviewControlProps {
   field: CanvasField
 }
 
-// Por que un campo de opciones no muestra las suyas: llegan del catalogo, o todavia no se escribieron.
+// Por que no se ven las opciones propias: vienen del catalogo o todavia no hay.
 export type OptionsNote = 'catalog' | 'empty'
 
-// Las opciones que se dibujan en un campo de opciones. Si no tiene propias van dos de muestra y una
-// nota que dice por que.
+// Sin opciones propias van dos de muestra y una nota que dice por que.
 export interface PreviewOptions {
   items: FieldOption[]
   isPlaceholder: boolean

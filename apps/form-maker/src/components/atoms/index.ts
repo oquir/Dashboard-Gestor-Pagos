@@ -1,4 +1,4 @@
-// Atomos: las piezas minimas de la interfaz. No usan otros componentes.
+// Atomos: piezas minimas, no usan otros componentes.
 export * from './Button'
 export * from './CodeBlock'
 export * from './CopyIconButton'

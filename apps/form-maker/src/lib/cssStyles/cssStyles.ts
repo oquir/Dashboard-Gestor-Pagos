@@ -2,16 +2,11 @@ import type { CssStyleMap, FieldStyles, FieldTooltip } from '../../types'
 import type { RowStyles } from '../../types'
 import { splitDeclarations, toCamelCase } from './cssStyles.utils'
 
-// Traduce el CSS que el autor escribe a mano (el modelo) al objeto plano que el `style` de React
-// espera (el contrato de salida). Reemplaza a las clases de Tailwind: el consumidor no tiene este
-// codigo fuente escaneado por Tailwind, asi que una clase solo se aplicaria ahi por casualidad
-// -- medido, la mitad funcionaba y la mitad no, el peor modo de fallar. No hay saneado: el `style`
-// de React no ejecuta nada, solo asigna propiedades e ignora en silencio las invalidas, y la
-// frontera de confianza del archivo ya la puso `logic.script` con `new Function`.
+// CSS escrito a mano (el modelo) a objeto plano para el style de React (el contrato). Reemplaza a
+// Tailwind, que en el consumidor solo funcionaba por casualidad. Sin saneado: style no ejecuta
+// nada.
 
-// Parte por `;`, ignora comentarios y lo que no tenga forma "propiedad: valor". El indexOf del
-// primer ":" es a proposito: un valor como "url(http://x.png)" tiene sus propios ":" que no hay
-// que partir.
+// Corta en el primer ":" a proposito: url(http://x.png) tiene los suyos.
 export function parseCssText(text: string): CssStyleMap {
   const result: CssStyleMap = {}
 
@@ -29,10 +24,8 @@ export function parseCssText(text: string): CssStyleMap {
   return result
 }
 
-// El texto libre gana: es la cascada normal de CSS -- la ultima declaracion manda -- y es lo que
-// hace que el lienzo pinte lo mismo que va a pintar el consumidor. Solo se usa al exportar; el
-// lienzo divide el campo en dos elementos (ver CanvasFieldChip) y aplica esta misma funcion sobre
-// la caja pintada, nunca sobre la que lleva `gridColumn`.
+// El texto libre gana (cascada normal): el lienzo pinta como el consumidor. Se aplica a la caja
+// pintada, nunca a la que lleva gridColumn.
 export function resolveFieldStyles(styles: FieldStyles): CssStyleMap {
   const merged: CssStyleMap = {}
 
@@ -44,8 +37,7 @@ export function resolveFieldStyles(styles: FieldStyles): CssStyleMap {
   return { ...merged, ...parseCssText(styles.customCss ?? '') }
 }
 
-// undefined cuando no hay nada que decir, para que la fila siga sin clave `styles` en el JSON --
-// misma razon por la que ExportedRow.styles es opcional y ExportedField.styles no.
+// undefined si no hay nada: la fila sigue sin clave styles en el JSON.
 export function resolveRowStyles(styles: RowStyles | undefined): CssStyleMap | undefined {
   if (!styles) return undefined
 
@@ -62,9 +54,8 @@ export function resolveTooltipStyles(tooltip: FieldTooltip): CssStyleMap {
   return parseCssText(tooltip.customCss ?? '')
 }
 
-// Las declaraciones que el navegador no reconoce, para avisar donde se escriben sin bloquear: lo
-// que este no reconoce puede funcionar en el del consumidor. CSS.supports es API de navegador:
-// falta en un script de verificacion con tsx, y sin la guarda ahi explotaria.
+// Para avisar sin bloquear: puede funcionar en el navegador del consumidor. La guarda es porque
+// CSS.supports no existe en tsx.
 export function unsupportedDeclarations(text: string): string[] {
   if (typeof CSS === 'undefined' || typeof CSS.supports !== 'function') return []
 

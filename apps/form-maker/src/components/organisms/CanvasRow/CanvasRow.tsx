@@ -32,13 +32,9 @@ export function CanvasRow({
   const rowDropTarget = useFormStore((state) => state.rowDropTarget)
   const isRowDragActive = useFormStore((state) => state.rowDrag !== null)
   const zonePlacement = dragPlacement?.rowId === row.id ? dragPlacement : null
-  // El hueco que se abre ya dice donde va a caer, asi que la linea solo hace falta para avisar de
-  // que ahi no puede ir: una fila de un grupo intentando salirse de el.
+  // Solo se marca el rechazo: el hueco ya dice donde cae.
   const rejected = rowDropTarget?.rowId === row.id && !rowDropTarget.isValid
-  // La fila que contiene el campo seleccionado se queda con su marco y su barra a la vista, sin
-  // hover: es el camino que le queda a quien navega con el teclado o desde una pantalla tactil. Solo
-  // con una seleccion unica y con la herramienta de mover: con varios seleccionados serian N juegos
-  // de tiradores fijos, y con la mano o el marco el cromo no responde.
+  // Cromo fijo solo con seleccion unica y Mover: es el camino del teclado y de lo tactil.
   const pinnedFieldId: string | null = canvasTool === 'move' ? singleSelectedId : null
   const pinned: boolean = row.fields.some((field) => field.id === pinnedFieldId)
 
@@ -47,8 +43,7 @@ export function CanvasRow({
     setDragRef(node)
   }
 
-  // Shift, Ctrl o Cmd suman sin soltar lo que ya estaba. Con la seleccion multiple todo suma; ahi
-  // este clic solo llega desde el teclado, porque el del mouse lo atiende el marco.
+  // Shift, Ctrl o Cmd suman a la seleccion.
   function handleFieldClick(event: MouseEvent<HTMLButtonElement>, fieldId: string): void {
     if (canvasTool === 'select' || event.shiftKey || event.ctrlKey || event.metaKey) {
       toggleFieldSelection(fieldId)
@@ -65,17 +60,15 @@ export function CanvasRow({
       data-row-id={row.id}
       style={
         {
-          // Lo estructural va al final para que gane: si el CSS libre del autor nombrara
-          // grid-template-columns o transform no puede pisar lo que controla el sistema de filas.
+          // Lo estructural al final: el CSS libre del autor no puede pisar la grilla.
           ...resolveRowStyles(row.styles),
           gridTemplateColumns: `repeat(${row.columns}, minmax(0, 1fr))`,
           transform: offsetY === 0 ? undefined : `translateY(${offsetY}px)`,
           '--enter-index': enterIndex,
         } as CSSProperties
       }
-      // La clase de transicion depende del mismo estado que el transform, asi que al soltar las dos
-      // desaparecen en el mismo commit: el navegador no tiene que animar la vuelta a cero y la fila
-      // no pega el salto de deshacer el desplazamiento que ya se convirtio en su sitio real.
+      // La transicion depende del mismo estado que el transform: al soltar se van juntas y la fila
+      // no salta.
       className={`group/row relative col-span-16 grid gap-3 rounded-md border-2 p-3 ${
         enterIndex === undefined ? '' : ENTER_ROW_CLASSES
       } ${
@@ -83,8 +76,8 @@ export function CanvasRow({
           ? 'transition-transform duration-200 ease-[cubic-bezier(0.34,1.6,0.5,1)]'
           : 'transition-colors'
       } ${
-        // Invisible y no atenuada: las vecinas se corren justo su alto y pasarian por encima de un
-        // fantasma. El hueco que queda es la propia fila, que ahora vuela con el cursor.
+        // Invisible y no atenuada: las vecinas se corren su alto y pasarian por encima de un
+        // fantasma.
         isDragging ? 'opacity-0' : ''
       } ${getRowBorderClasses({ isOver, isEmpty: row.fields.length === 0, pinned })}`}
     >

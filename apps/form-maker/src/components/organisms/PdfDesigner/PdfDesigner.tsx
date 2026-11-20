@@ -9,7 +9,7 @@ import { useFormStore } from '../../../store'
 import { usePdfDesignStore } from '../../../store/pdfDesignStore'
 import type { PdfTaxType } from '../../../types'
 import { Tooltip } from '../../atoms'
-// Por la carpeta y no por el indice de moleculas: arrastra sonner, que solo debe cargar este chunk.
+// Por la carpeta y no por el indice: arrastra sonner, que solo debe cargar este chunk.
 import { Toaster } from '../../molecules/Toaster'
 import { PdfCanvas } from '../pdf/PdfCanvas'
 import { PdfFileNotice } from '../pdf/PdfFileNotice'
@@ -24,10 +24,8 @@ import {
 } from './PdfDesigner.constants'
 import { savedStatus } from './PdfDesigner.utils'
 
-// El diseñador del PDF de la declaracion, a pantalla completa como el simulador y cargado aparte
-// con React.lazy: la barra lateral a la izquierda, las hojas a la derecha. La plantilla es la del
-// impuesto: la que diga la URL (?impuesto=…) si es uno conocido, o si no la del formulario abierto.
-// Ver docs/Pendientes-PDF.md.
+// A pantalla completa y en su propio chunk. La plantilla es la del impuesto de la URL (?impuesto=)
+// o, si no, la del formulario abierto.
 export function PdfDesigner() {
   const formType = useFormStore((state) => state.setupConfig.formType)
   const setPdfDesignerOpen = useFormStore((state) => state.setPdfDesignerOpen)
@@ -42,7 +40,7 @@ export function PdfDesigner() {
   const { notice, dismissNotice, publish, openFiles } = usePdfFile()
   const tool = usePdfDesignStore((state) => state.tool)
 
-  // La URL se lee una vez al montar: no cambia mientras el diseñador esta abierto.
+  // La URL se lee una vez al montar.
   const taxType: PdfTaxType | null = useMemo(
     () => resolvePdfTaxType(formType, readPdfEntryParams(window.location.search)),
     [formType],
@@ -58,7 +56,7 @@ export function PdfDesigner() {
   const status = savedStatus(lastSavedAt, saveError)
   const isReady: boolean = design !== null && design.taxType === taxType
 
-  // La mano desplaza el <main> (el puerto, que lleva data-canvas-scroll). Solo con las hojas montadas.
+  // La mano desplaza el <main> (data-canvas-scroll), solo con las hojas montadas.
   useCanvasPan(isReady && tool === 'hand')
 
   return (
@@ -155,8 +153,8 @@ export function PdfDesigner() {
           <aside className="w-80 shrink-0 overflow-y-auto border-r border-border bg-surface">
             <PdfSidebar />
           </aside>
-          {/* La barra cuelga de este contenedor y no del <main>, que es el que hace scroll: asi
-              queda quieta sobre las hojas. */}
+          {/* La barra cuelga de este contenedor y no del <main> que hace scroll: queda quieta
+              sobre las hojas. */}
           <div className="relative flex min-w-0 flex-1 flex-col">
             <main
               data-canvas-scroll

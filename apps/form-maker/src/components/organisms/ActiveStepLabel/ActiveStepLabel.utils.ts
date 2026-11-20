@@ -1,8 +1,7 @@
 import type { CanvasTarget, FormStep, IntroModalStep } from '../../../types'
 import type { ActiveStepDescription } from './ActiveStepLabel.types'
 
-// El numero es la posicion dentro de su propio grupo, igual que el chip y el bloque "Paso activo" del
-// panel derecho: el 3 del rotulo tiene que ser el 3 que se ve en la grilla.
+// El numero es la posicion dentro de su grupo, igual que el chip y "Paso activo".
 export function describeActiveStep(
   formSteps: FormStep[],
   introSteps: IntroModalStep[],

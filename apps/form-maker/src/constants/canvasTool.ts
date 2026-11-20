@@ -1,7 +1,6 @@
 import type { CanvasToolItem } from '../types'
 
-// La lista canonica de herramientas del lienzo. El atajo sale de aca tanto para el teclado como
-// para el title de cada boton, asi los dos no pueden anunciar teclas distintas.
+// Lista canonica: el atajo sale de aca para el teclado y para el title, asi no pueden diferir.
 export const CANVAS_TOOLS: CanvasToolItem[] = [
   { tool: 'move', label: 'Mover', shortcut: 'V' },
   { tool: 'select', label: 'Selección múltiple', shortcut: 'M' },

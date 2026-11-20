@@ -11,9 +11,7 @@ import { Label } from '../../../atoms'
 import { PanelSection } from '../../../molecules'
 import { PdfNumberField } from '../PdfNumberField'
 
-// La tabla de la celda seleccionada: filas y columnas alrededor de esa celda, combinar el rectangulo
-// seleccionado (Shift+clic en el lienzo) o dividir la celda combinada, y los anchos. Lo que no se
-// puede hacer queda deshabilitado y no escondido, para que la barra no cambie de forma.
+// Lo que no se puede hacer se deshabilita y no se oculta: la barra no cambia de forma.
 export function PdfTablePanel() {
   const design = usePdfDesignStore((state) => state.design)
   const selection = usePdfDesignStore((state) => state.selection)

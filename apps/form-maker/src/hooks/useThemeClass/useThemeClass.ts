@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
 import { useFormStore } from '../../store'
 
-// El modo oscuro de Tailwind es por clase, asi que hay que reflejar el estado del store en el
-// elemento raiz: sin esto ninguna variante dark: se aplica.
+// Dark mode de Tailwind por clase: refleja el estado en el elemento raiz.
 export function useThemeClass() {
   const isDarkMode = useFormStore((state) => state.isDarkMode)
 

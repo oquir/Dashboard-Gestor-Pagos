@@ -1,6 +1,5 @@
-// El marco hace de input: borde, fondo y foco pasan al contenedor, y el input de adentro queda
-// transparente. Asi el $ se lee dentro de la caja, como en un formulario de papel, y el foco y el
-// rojo de error rodean al numero y a su unidad juntos.
+// El marco hace de input (borde, fondo y foco) y el input de adentro es transparente: el $ se lee
+// dentro de la caja.
 export const FRAME_BASE_CLASSES: string =
   'flex w-full items-center gap-1.5 rounded-md border bg-field px-2.5 text-sm transition-colors has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-surface-raised'
 

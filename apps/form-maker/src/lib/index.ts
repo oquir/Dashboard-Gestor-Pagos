@@ -1,7 +1,6 @@
-// Libs del builder. Las que solo usan el simulador o el diseñador de PDF no estan aca: se importan
-// por su carpeta, para que sigan detras del React.lazy de FormSimulator o de PdfDesigner. Entre
-// libs se importa por la carpeta.
-// Fuera de este indice: catalogFill, formRuntime, mockCatalog, pdfComponents, pdfDesign, pdfDesignBank, pdfDesignEdit, pdfFile, pdfHtml, pdfTable, pdfTemplates, pdfVerticalText, runtimeCondition, runtimeDerived, runtimePayload, runtimeValidation, scriptDates, scriptRuntime, scriptValores, zodHydrate.
+// Libs del builder. Las del simulador y del PDF no estan: se importan por carpeta, detras del
+// React.lazy. Fuera: catalogFill, formRuntime, mockCatalog, pdf*, runtime*, scriptDates,
+// scriptRuntime, scriptValores, zodHydrate.
 export * from './baseTemplate'
 export * from './canvasDom'
 export * from './canvasSelection'

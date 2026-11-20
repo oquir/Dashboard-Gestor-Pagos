@@ -12,15 +12,13 @@ import type { MaxDatesAnioRowProps } from './MaxDatesAnioRow.types'
 export function MaxDatesAnioRow({ regla, onEditFecha }: MaxDatesAnioRowProps) {
   const esperadas: number = fechasEsperadas(regla)
   const completo: boolean = regla.fechas.length === esperadas
-  // Solo el caso simple se teclea. Los demas van de 6 a 120 fechas, y eso no lo carga nadie a mano.
+  // Solo el caso simple se escribe a mano; los demas tienen de 6 a 120 fechas.
   const editable: boolean = regla.periodicidad === 'anual' && regla.tipoDigito === 'ninguno'
 
   return (
     <li className="flex items-center justify-between gap-2">
       <div className="flex min-w-0 flex-col">
         <span className="text-xs font-medium tabular-nums text-fg">{regla.anio}</span>
-        {/* Anual y sin digito es el caso por defecto y el input de al lado ya lo dice: repetirlo
-            en los diez anos son diez lineas identicas que no informan nada. */}
         {!editable && (
           <span className={`${HINT_CLASSES} truncate`}>
             {PERIODICIDAD_LABEL[regla.periodicidad]} · {DIGITO_LABEL[regla.tipoDigito]}

@@ -22,20 +22,16 @@ import type {
 } from '../types'
 import { focusOf, reconcilePdfView } from './pdfDesignStore.utils'
 
-// El store del diseño del PDF, aparte de useFormStore a proposito: tiene su propio historial de
-// deshacer (otro temporal de zundo), porque deshacer en el PDF no debe tocar el formulario ni al
-// reves. Tampoco comparte el borrador: guarda en su propia llave por impuesto (usePdfDesignAutosave).
-// Solo lo importa el diseñador, que se carga con React.lazy: store/index.ts no lo reexporta.
-//
-// Las reglas viven en lib/pdfDesignEdit y lib/pdfTable; aca solo se eligen sobre que celda o tabla
-// actuan (la seleccion) y como queda la seleccion despues.
+// Store del diseno del PDF, aparte a proposito: su propio historial (deshacer en el PDF no toca el
+// formulario) y su propia llave por impuesto (usePdfDesignAutosave). Solo lo importa el disenador
+// (React.lazy). Las reglas viven en lib/pdfDesignEdit y lib/pdfTable; aca se elige sobre que actuan
+// y como queda la seleccion.
 
 const historyGate: BurstGate = createBurstGate(HISTORY_BURST_MS)
 
 type SetState = Parameters<StateCreator<PdfDesignState>>[0]
 
-// Aplica un cambio al diseño. Si no cambio nada devuelve el mismo estado: zustand no avisa y el
-// historial no registra un paso vacio.
+// Sin cambios devuelve el mismo estado: zustand no avisa y el historial no registra un paso vacio.
 function editDesign(set: SetState, fn: (design: PdfDesign) => PdfDesign): void {
   set((state) => {
     if (!state.design) return state
@@ -44,8 +40,8 @@ function editDesign(set: SetState, fn: (design: PdfDesign) => PdfDesign): void {
   })
 }
 
-// Una operacion sobre la tabla de la seleccion, desde su celda del foco. `select` dice como queda la
-// seleccion despues (por defecto, igual).
+// Sobre la tabla de la seleccion desde la celda del foco; select dice como queda la seleccion (por
+// defecto, igual).
 function editFocusedTable(
   set: SetState,
   fn: (target: PdfTable, cellId: string, anchorId: string) => PdfTable,
@@ -166,7 +162,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
       const design: PdfDesign = edit.addBlock(state.design, sheetId, kind)
       if (design === state.design) return state
 
-      // Lo nuevo queda seleccionado, para seguir editandolo sin buscarlo.
+      // Lo nuevo queda seleccionado.
       const blocks = design.sheets.find((sheet) => sheet.id === sheetId)?.blocks ?? []
       const added = blocks[blocks.length - 1]
       const selection: PdfSelection | null =
@@ -188,7 +184,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
       return design === state.design ? state : reconcilePdfView({ ...state, design })
     }),
 
-  // La hoja activa sigue al bloque: si paso a otra hoja, lo nuevo se agrega alla.
+  // La hoja activa sigue al bloque.
   moveBlock: (blockId, offset) =>
     set((state) => {
       if (!state.design) return state
@@ -230,8 +226,8 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
   setCellHtml: (cellId, html) =>
     editDesign(set, (design) => edit.setCellHtml(design, cellId, html)),
 
-  // Un componente que pasa a HTML deja su HTML de verdad, el mismo que publicaria: es la salida para
-  // el machetazo que el componente casi cubre.
+  // Un componente que pasa a HTML deja el HTML que publicaria: la salida para lo que el componente
+  // casi cubre.
   setCellContentKind: (cellId, kind) =>
     editDesign(set, (design) => {
       const content = edit.findCell(design, cellId)?.cell.content
@@ -261,7 +257,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
   updateTableStyle: (tableId, patch) =>
     editDesign(set, (design) => edit.updateTableStyle(design, tableId, patch)),
 
-  // Cerrar el editor (null) no cambia de pestaña; abrir una clase lleva a la de Documento.
+  // Cerrar el editor (null) no cambia de pestana; abrir una clase lleva a Documento.
   setEditingClass: (name) =>
     set((state) => {
       if (state.editingClass === name) return state
@@ -279,7 +275,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
 
   updateClass: (name, patch) => editDesign(set, (design) => edit.updateClass(design, name, patch)),
 
-  // El editor sigue abierto sobre la clase con su nombre nuevo.
+  // El editor sigue abierto sobre la clase renombrada.
   renameClass: (from, to) => {
     const before: PdfDesign | null = get().design
     editDesign(set, (design) => edit.renameClass(design, from, to))
@@ -320,7 +316,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
 
   removeColumn: () => editFocusedTable(set, (target, cellId) => table.removeColumn(target, cellId)),
 
-  // Combinar deja viva la celda de arriba a la izquierda del rectangulo: esa queda seleccionada.
+  // Combinar deja la celda de arriba a la izquierda, y esa queda seleccionada.
   mergeSelection: () => {
     const state: PdfDesignState = get()
     const focus = focusOf(state.selection)
@@ -388,7 +384,7 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
 
 const PDF_HISTORY_OPTIONS: ZundoOptions<PdfDesignState, PdfHistorySnapshot> = {
   partialize: (state) => ({ design: state.design, selection: state.selection }),
-  // Por referencia alcanza: cada edicion que no cambia nada devuelve el mismo diseño.
+  // Por referencia: una edicion sin cambios devuelve el mismo diseno.
   equality: (a, b) => a.design === b.design,
   limit: HISTORY_LIMIT,
   handleSet: (handleSet) =>
@@ -399,8 +395,8 @@ export const usePdfDesignStore: UseBoundStore<
   Mutate<StoreApi<PdfDesignState>, [['temporal', StoreApi<TemporalState<PdfHistorySnapshot>>]]>
 > = create<PdfDesignState>()(temporal(createPdfDesignState, PDF_HISTORY_OPTIONS))
 
-// Deshacer y rehacer escriben con el set crudo de zundo y no se registran. Despues se repara la
-// vista: una seleccion que apunta a algo que ya no existe, o una hoja activa que se fue.
+// Deshacer y rehacer escriben con el set crudo de zundo y no se registran; despues se repara la
+// vista (seleccion u hoja que ya no existen).
 function travelPdfHistory(direction: 'undo' | 'redo'): void {
   historyGate.reset()
 

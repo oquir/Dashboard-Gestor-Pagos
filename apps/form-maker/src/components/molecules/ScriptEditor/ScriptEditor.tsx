@@ -22,8 +22,7 @@ export function ScriptEditor({
 }: ScriptEditorProps) {
   const hostRef = useRef<HTMLDivElement | null>(null)
   const viewRef = useRef<EditorView | null>(null)
-  // Lo que cambia en cada render viaja por ref y no por dependencia del efecto: si el editor se
-  // recreara al cambiar el callback o la lista de campos, se perderia el cursor en cada tecla.
+  // Por ref y no como dependencia: recrear el editor perderia el cursor en cada tecla.
   const onChangeRef = useRef(onChange)
   const knownNamesRef = useRef(knownNames)
 
@@ -32,9 +31,7 @@ export function ScriptEditor({
     knownNamesRef.current = knownNames
   })
 
-  // Solo al montar. `value` es el contenido inicial y de ahi en mas lo sostiene CodeMirror -- el
-  // efecto de abajo trae los cambios de afuera --, y el id, la etiqueta y el placeholder no cambian
-  // mientras el panel vive. Depender de cualquiera de los cuatro rearmaria el editor entero.
+  // Solo al montar: depender de value, id, etiqueta o placeholder rearmaria el editor entero.
   useEffect(() => {
     const host: HTMLDivElement | null = hostRef.current
     if (!host) return
@@ -75,10 +72,8 @@ export function ScriptEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- rearmar el editor tiraria el cursor
   }, [])
 
-  // Cambios que vienen de afuera -- deshacer, cargar un borrador. La comparacion es lo que impide
-  // pisar el documento mientras alguien escribe. Este dispatch entra al historial de CodeMirror, asi
-  // que otro documento (el script de otro campo) no puede llegar por aca: viene con un editor nuevo
-  // por key, o un Ctrl+Z adentro devolveria el texto anterior sobre el campo nuevo.
+  // Cambios de afuera (deshacer, borrador). Entra al historial de CodeMirror: otro documento tiene
+  // que llegar con un editor nuevo (key), nunca por aca.
   useEffect(() => {
     const view: EditorView | null = viewRef.current
     if (!view || view.state.doc.toString() === value) return
@@ -86,8 +81,7 @@ export function ScriptEditor({
     view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: value } })
   }, [value])
 
-  // Los dos limites viajan como estilo del host y el editor los hereda: es la unica forma de que
-  // CodeMirror, que se dibuja adentro y no acepta clases, respete un alto decidido desde afuera.
+  // Los limites van como estilo del host: CodeMirror no acepta clases para su alto.
   return (
     <div
       ref={hostRef}

@@ -7,12 +7,9 @@ import {
 } from '../../constants/canvasViewport'
 import type { ViewportInput, ViewportLayout } from '../../types/canvasViewport'
 
-// Geometria del lienzo libre: cuanto mide el documento, cuanto margen de paneo lo rodea y donde
-// queda la vista al volver al inicio. Solo hace cuentas; medir el puerto y aplicar el resultado es
-// cosa de useCanvasViewport.
-//
-// El margen es scroll de verdad y no un translate propio: la rueda, el trackpad, las barras y el
-// autoscroll de dnd-kit siguen funcionando, y dnd-kit no tiene que volver a medir nada.
+// Geometria del lienzo libre: tamano del documento, margen de paneo e inicio. Solo cuentas; medir y
+// aplicar es de useCanvasViewport. El margen es scroll de verdad: rueda, barras y autoscroll de
+// dnd-kit siguen funcionando.
 export function getViewportLayout({
   portWidth,
   portHeight,
@@ -25,8 +22,7 @@ export function getViewportLayout({
   const documentWidth: number = Math.max(0, Math.min(maxWidth, portWidth - 2 * DOCUMENT_GUTTER_PX))
   const panX: number = Math.round(portWidth * CANVAS_PAN_ROOM_RATIO)
   const panY: number = Math.round(portHeight * CANVAS_PAN_ROOM_RATIO)
-  // La franja donde vive el documento: el puerto entero si el documento entra, o el documento
-  // escalado con su aire si el zoom lo hace mas ancho. De ahi para afuera empieza el margen.
+  // El puerto entero si el documento entra, o el documento escalado con su aire.
   const stageWidth: number = Math.max(portWidth, documentWidth * zoom + 2 * DOCUMENT_GUTTER_PX)
   const rootWidth: number = Math.round(stageWidth + 2 * panX)
   const padding: number = DOCUMENT_VERTICAL_GUTTER_PX + panY
@@ -34,8 +30,7 @@ export function getViewportLayout({
   return {
     documentWidth,
     rootWidth,
-    // Sin este piso, un documento corto a zoom bajo no dejaria scroll suficiente para llegar a la
-    // posicion de inicio y la vista quedaria recortada contra el final.
+    // Piso para que un documento corto a zoom bajo deje llegar al inicio.
     rootMinHeight: portHeight + 2 * panY,
     paddingTop: padding,
     paddingBottom: padding,

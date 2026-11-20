@@ -13,9 +13,7 @@ const reglaAnioSchema = z.object({
   fechas: z.array(fechaLimiteSchema),
 })
 
-// Se exporta ademas del envoltorio porque es el mismo schema con el que se valida lo que alguien
-// pega del endpoint: si el pegado y lo guardado se validaran distinto, entraria por una puerta algo
-// que la otra rechaza.
+// El mismo schema valida lo pegado y lo guardado.
 export const fechasMaximasSchema = z.object({
   municipioId: z.union([z.number(), z.string()]),
   ica: z.array(reglaAnioSchema),

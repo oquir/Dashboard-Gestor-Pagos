@@ -1,5 +1,4 @@
-// Las APIs suelen envolver la lista en {data: [...]} o {content: [...]}: se busca el primer
-// arreglo que traiga el objeto antes de rendirse, porque es lo que uno pega sin pensar.
+// Busca el primer arreglo ({data: [...]} o {content: [...]}): es lo que uno pega sin pensar.
 export function findArray(parsed: unknown): unknown[] | null {
   if (Array.isArray(parsed)) return parsed
   if (typeof parsed !== 'object' || parsed === null) return null

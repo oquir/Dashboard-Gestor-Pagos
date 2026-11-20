@@ -13,8 +13,7 @@ import { PanelSection } from '../../../molecules'
 import { PdfNumberField } from '../PdfNumberField'
 import { MARGIN_SIDES } from './PdfDocumentPanel.constants'
 
-// Lo que vale para todo el PDF: la letra y el margen. El margen que se escribe aca es el EXTRA; el
-// total real (5 mm del back + el extra) se muestra al lado para que nadie tenga que sumar.
+// El margen que se escribe es el extra; el total (5 mm del back + extra) se muestra al lado.
 export function PdfDocumentPanel() {
   const design = usePdfDesignStore((state) => state.design)
   const setMargins = usePdfDesignStore((state) => state.setMargins)

@@ -28,8 +28,8 @@ export function MaxDatesPanel() {
   const fechas: FechasMaximasPresentacion = maxDatesEnUso(stored, anioActual)
   const isCustom: boolean = usesCustomMaxDates(stored)
 
-  // Editar cualquier cosa saca una copia propia. La tabla generada se recalcula con el reloj -- en
-  // enero aparece el ano nuevo sola -- asi que si aceptara cambios los perderia sin avisar.
+  // Editar saca una copia propia: la tabla generada se recalcula con el reloj y perderia los
+  // cambios.
   function edit(next: FechasMaximasPresentacion): void {
     setMaxDates(next)
   }

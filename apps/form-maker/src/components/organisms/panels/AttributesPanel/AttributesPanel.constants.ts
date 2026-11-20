@@ -4,7 +4,6 @@ export const SOURCE_BADGE_CLASSES: string =
 export const SOURCE_LINK_CLASSES: string =
   'self-start text-xs font-medium text-brand-strong hover:cursor-pointer hover:underline'
 
-// Estaba debajo del nombre tecnico, en FieldNameInput; es la unica explicacion de la seccion.
 export const GENERAL_DESCRIPTION: string =
   'Con este nombre lo referencian las fórmulas y el formulario generado. Se normaliza a minúsculas con guiones bajos y tiene que ser único en todo el formulario.'
 

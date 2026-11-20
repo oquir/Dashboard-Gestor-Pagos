@@ -1,12 +1,8 @@
 import { PDF_EDGE_GUARD_PX } from '../../../../constants'
 import type { SheetOverflow } from './PdfSheetView.types'
 
-// Cuanto se sale el contenido de una hoja, en px de verdad: offsetHeight/offsetWidth no cambian con
-// el transform del zoom. Medio pixel de tolerancia: el redondeo de los px de mm no es un desborde.
-//
-// A lo ancho se mira cada bloque: una tabla cuyas columnas suman mas que el espacio crece hasta la
-// suma (table-layout fixed) y su borde derecho cae en lo que la hoja recorta. Se mide contra el
-// resguardo de los bordes (PDF_EDGE_GUARD_PX), que es parte del espacio pero no de las tablas.
+// En px reales (offset no cambia con el zoom), con medio pixel de tolerancia. A lo ancho se mide
+// cada bloque contra el resguardo de bordes (PDF_EDGE_GUARD_PX).
 export function measureSheetOverflow(flow: HTMLElement, boxHeight: number): SheetOverflow {
   const limit: number = flow.clientWidth - PDF_EDGE_GUARD_PX
   let widest: number = 0

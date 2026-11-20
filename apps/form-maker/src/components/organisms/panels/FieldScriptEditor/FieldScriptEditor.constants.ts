@@ -6,8 +6,7 @@ export const READS_CLASSES: string =
 export const SCRIPT_PLACEHOLDER: string =
   'return {{total_ingresos_nacionales}} - {{ingresos_fuera_municipio}};'
 
-// El respaldo de uvt() es lo que hay que saber de los helpers con tabla: un 0 haria desaparecer en
-// silencio cualquier piso o tope escrito en UVT, asi que devuelven null y el autor pone el valor.
+// uvt() sin tabla devuelve null y no 0: un 0 borraria en silencio pisos y topes escritos en UVT.
 export const SCRIPT_DESCRIPTION: string =
   'Calcula el valor del campo con JavaScript y se vuelve a correr cada vez que cambia algo que lee. Devolvé el resultado con return: reemplaza lo que haya escrito el usuario, y return undefined lo deja como está. {{campo}} lee otro campo (escribí {{ o usá Ctrl+Espacio). También tenés value, index y funciones como sum, max o round. fechaLimite, diasDeMora y mesesDeMora salen de la pestaña Fechas; uvt y smmlv, de Catálogos. Sin datos cargados devuelven null o 0, así que dejá un respaldo: uvt() ?? 52374.'
 

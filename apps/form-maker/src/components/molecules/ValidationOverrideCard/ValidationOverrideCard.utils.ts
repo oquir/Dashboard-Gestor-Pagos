@@ -1,5 +1,4 @@
-// Un input vacio tiene que borrar la regla, no guardarla como 0: dejar el campo en blanco quiere
-// decir "esto lo hereda de la validacion de base".
+// Vacio borra la regla (hereda de la base), no la guarda como 0.
 export function toNumberOrUndefined(raw: string): number | undefined {
   if (raw.trim() === '') return undefined
 

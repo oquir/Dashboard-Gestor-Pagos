@@ -2,9 +2,8 @@ import type { CanvasRow } from '../../types'
 import type { FieldRename } from '../../types'
 import { FALLBACK_NAME } from './fieldName.constants'
 
-// El nombre tecnico es la identidad del campo hacia afuera: con el se referencian las formulas,
-// las condiciones y todo el export. Tiene que ser unico y valido como identificador del lenguaje
-// de formulas, de ahi que se quiten acentos y no pueda empezar por un digito.
+// La identidad del campo hacia afuera: unico y valido como identificador (sin acentos ni digito
+// inicial).
 
 export function slugifyFieldName(label: string): string {
   const withoutAccents: string = label.normalize('NFD').replace(/\p{Diacritic}/gu, '')
@@ -42,15 +41,8 @@ export function collectFieldNames(rows: CanvasRow[], exceptFieldId?: string): Se
   return names
 }
 
-// Segunda linea de defensa del nombre unico, detras del editor. Un borrador editado a mano desde
-// las devtools, o guardado por una version anterior a la regla, puede traer dos campos con el
-// mismo nombre; antes se les creia y entraban los dos.
-//
-// Renombrar el repetido no arregla las formulas que lo referenciaban -- con dos campos homonimos
-// ya eran ambiguas, porque el export indexa por nombre y un Map se queda con uno solo. Lo que si
-// hace es volver el conflicto deterministico y visible: el primero conserva el nombre, asi que las
-// referencias siguen apuntando a un campo real, y el segundo queda reportado en `renamed` para que
-// quien carga el borrador sepa que revisar.
+// Segunda defensa del nombre unico (borradores manipulados o viejos): el primero conserva el nombre
+// y el repetido se renombra y se reporta en renamed.
 export function migrateFieldNames(
   rows: CanvasRow[],
   taken: Set<string>,
@@ -63,8 +55,7 @@ export function migrateFieldNames(
       const name: string = uniqueFieldName(candidate, taken)
       taken.add(name)
 
-      // Solo es un renombre si el campo ya traia nombre: rellenar el de uno que venia sin el es
-      // una migracion y no hay nada que revisar.
+      // Rellenar un nombre que faltaba no es un renombre.
       if (field.name && name !== field.name) {
         renamed.push({ from: field.name, to: name, label: field.label })
       }

@@ -8,7 +8,7 @@ export interface PreviewDateRangeInputProps {
   format: DateFormatId | undefined
   withTime: boolean
   max: string
-  // Las clases las arma PreviewFieldControl, que ya sabe si el campo esta en rojo.
+  // Las arma PreviewFieldControl, que sabe si el campo esta en rojo.
   className: string
   onChange: (value: unknown) => void
 }

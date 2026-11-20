@@ -20,9 +20,8 @@ import type {
 } from '../../types'
 import { emptyGroupItem, reconcileState } from './useFormPreview.utils'
 
-// El unico sitio donde el simulador toca el store, y solo para alimentar a buildFormExport.
-// Las respuestas viven aca, en el arbol de componentes, nunca en el store: son desechables y
-// cambiar de vista las descarta. Cambiar despues a react-hook-form seria reemplazar este hook.
+// Unico contacto del simulador con el store, solo para buildFormExport. Las respuestas viven en el
+// arbol, nunca en el store.
 export function useFormPreview(): FormPreviewApi {
   const formSteps = useFormStore((state) => state.formSteps)
   const setupConfig = useFormStore((state) => state.setupConfig)
@@ -32,16 +31,15 @@ export function useFormPreview(): FormPreviewApi {
   const maxDates = useFormStore((state) => state.maxDates)
   const valores = useFormStore((state) => state.valores)
 
-  // El simulador solo ve el JSON exportado. Si algo falta en el contrato, se rompe aca igual
-  // que se romperia en el aplicativo que lo consume.
+  // El simulador solo ve el JSON exportado: si falta algo en el contrato, se rompe aca como en el
+  // consumidor.
   const model: RuntimeModel = useMemo(
     () => buildRuntimeModel(buildFormExport(formSteps, setupConfig, introSteps, formScript)),
     [formSteps, setupConfig, introSteps, formScript],
   )
 
   const [state, setState] = useState<PreviewState>(() => createInitialState(model))
-  // Los errores se revelan por clave, no de golpe: un campo al que todavia no se llego nunca
-  // aparece en rojo. El panel de resultados si los lista todos, que es la vista global.
+  // Errores revelados por clave: un campo al que no se llego nunca aparece en rojo.
   const [revealed, setRevealed] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
@@ -49,9 +47,8 @@ export function useFormPreview(): FormPreviewApi {
     setState((previous) => reconcileState(model, previous))
   }, [model])
 
-  // Las dos tablas entran por fuera del modelo, igual que le van a entrar al consumidor: el JSON
-  // exportado por un lado y las respuestas de sus endpoints por otro. Se resuelve aca cual de las
-  // tres listas de vencimientos aplica para que los helpers no tengan que saber que declaracion es.
+  // Las tablas entran por fuera del modelo, como al consumidor. Aca se elige que lista de
+  // vencimientos aplica.
   const context: RuntimeContext = useMemo(() => {
     const ahora = new Date()
 
@@ -81,11 +78,9 @@ export function useFormPreview(): FormPreviewApi {
             : {}
         const field: ExportedField | undefined = model.fieldsByName.get(name)
 
-        // Las columnas de la opcion elegida se copian a sus campos hermanos, y se copian al mismo
-        // ambito: sin eso, elegir la actividad de la fila 3 llenaria la tarifa de la fila 1.
-        //
-        // El catalogo se arma solo cuando el campo declara rellenos. catalogOptions sobre
-        // actividades construye 425 opciones y esto corre en cada tecla de cada campo.
+        // Las columnas de la opcion elegida se copian en el mismo ambito (la tarifa de la fila 3,
+        // no de la 1). El catalogo solo se arma si el campo declara rellenos: esto corre en cada
+        // tecla.
         const filled: RuntimeValues =
           field && hasFills(field)
             ? resolveFills(

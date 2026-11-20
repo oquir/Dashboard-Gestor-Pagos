@@ -1,8 +1,6 @@
 import type { CatalogFill, FieldDataSource } from '../../types'
 
-// Al borrar el campo padre se pierde el filtro, no el catalogo: municipio sigue siendo municipio
-// aunque ya no haya departamento que lo parametrice. Lo mismo con un destino de relleno: se cae
-// esa relacion sola, no las demas ni el catalogo.
+// Al borrar el padre se pierde el filtro, no el catalogo; igual con un destino de relleno.
 export function pruneDataSourceReferencing(
   dataSource: FieldDataSource | undefined,
   fieldId: string,

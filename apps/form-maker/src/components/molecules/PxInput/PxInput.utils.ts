@@ -1,8 +1,6 @@
 import { PLAIN_PX } from './PxInput.constants'
 
-// Devuelve el numero cuando el valor guardado son pixeles pelados, y null cuando es cualquier otra
-// cosa. FieldStyles guarda una cadena CSS libre, asi que alguien pudo escribir "1rem" o "5%" a
-// mano: eso es valido y el panel no tiene por que reescribirlo solo por abrirlo.
+// El numero si son px pelados; null si es otra cosa ("1rem" es valido y no se reescribe).
 export function toPxAmount(value: string): string | null {
   if (value.trim() === '') return ''
 

@@ -7,18 +7,9 @@ import {
 } from './numberFormat.constants'
 import type { FormattableField } from './numberFormat.types'
 
-// Como se ve un numero en pantalla y como vuelve a entrar cuando lo editan. La regla que gobierna
-// todo el archivo, y de la que depende que el resto del simulador no se entere de que esto existe:
-//
-//   EL TEXTO FORMATEADO NO SALE DEL INPUT. El estado guarda un numero de verdad.
-//
-// No es una preferencia de estilo. buildPayload mete el valor del estado en el JSON sin parsearlo
-// y toScriptNumber lo lee con parseFloat, y parseFloat("1.000") es 1: un "1.000" filtrado al
-// estado seria un error de tres ordenes de magnitud, en silencio, en una declaracion de impuestos.
-//
-// El formateador esta escrito a mano en vez de con Intl.NumberFormat porque tiene que hacer ida y
-// vuelta exacto con parseFormattedNumber, e Intl puede emitir caracteres que el parser no espera
-// -- varios locales usan U+00A0 como separador de miles.
+// Como se ve y como vuelve a entrar un numero. REGLA: el texto formateado no sale del input; el
+// estado guarda un numero (parseFloat("1.000") es 1). A mano y no con Intl: tiene que hacer ida y
+// vuelta exacta con el parser.
 
 const ALLOWED_TEXT: RegExp = /^-?[\d.]*,?\d*$/
 
@@ -32,18 +23,13 @@ export function exportableFormatting(field: FormattableField): boolean | undefin
   return field.formatted && supportsFormatting(field.type) ? true : undefined
 }
 
-// Agrupa la parte entera de a tres. Sin `decimals` declarado los decimales solo aparecen si los
-// hay -- 1000 se muestra "1.000" y no "1.000,00" -- y con `decimals` se muestran siempre esos, con
-// sus ceros: una tarifa de 6 sale "6,0" y la columna queda pareja con la de 7,5.
-//
-// Rellenar con ceros no puede mentir, porque 6 y 6,0 son el mismo numero. Recortar si podria, y
-// por eso el recorte no vive aca sino en applyDecimals, que cambia el valor de verdad.
+// Sin decimals, los decimales solo si los hay; con decimals, siempre esos con sus ceros. Rellenar
+// no miente; recortar si, y eso vive en applyDecimals.
 export function formatNumber(value: number, decimals?: number): string {
   if (!Number.isFinite(value)) return ''
   if (Math.abs(value) >= MAX_FORMATTABLE) return String(value)
 
-  // toFixed antes de recortar los ceros es lo que mata la cola de la coma flotante: 0.1 + 0.2
-  // llega como 0.30000000000000004 y sale "0,3".
+  // toFixed antes de recortar ceros mata la cola de la coma flotante.
   const fixed: string = Math.abs(value).toFixed(decimals ?? MAX_DISPLAY_DECIMALS)
   const [whole, rest] = fixed.split('.')
   const shown: string = decimals === undefined ? (rest ?? '').replace(/0+$/, '') : (rest ?? '')
@@ -54,21 +40,13 @@ export function formatNumber(value: number, decimals?: number): string {
   return value < 0 ? `-${body}` : body
 }
 
-// El punto es SIEMPRE separador de miles y la coma SIEMPRE el decimal, que es la lectura de la
-// localizacion del formulario: por eso "1.000" son mil y no uno. La contra conocida es que quien
-// tipee "1.5" con la costumbre inglesa obtiene 15; es ambiguo de verdad y se eligio el lado que
-// le sirve a quien llena una declaracion colombiana.
-//
-// Devuelve null cuando el texto no es un numero. Que hacer con eso lo decide el input, que lo
-// trata como campo vacio: es lo mismo que hacia el type="number" nativo con un valor invalido.
+// El punto es siempre miles y la coma siempre decimal: "1.5" a la inglesa da 15, a favor de quien
+// declara en Colombia. null si no es numero (el input lo trata como vacio).
 export function parseFormattedNumber(text: string): number | null {
   const trimmed: string = text.trim()
   if (trimmed.length === 0) return null
 
-  // Digitos, puntos de miles y a lo sumo una coma decimal, y al menos un digito. La guarda va aca
-  // y no solo en el filtro de tipeo porque esta es la funcion que decide que se vuelve numero:
-  // sin ella Number() leeria "1e5" como cien mil, y la garantia dependeria de que alguien se
-  // haya acordado de llamar antes a sanitizeNumericInput.
+  // Esta funcion decide que es numero: sin la guarda, Number() leeria "1e5".
   if (!ALLOWED_TEXT.test(trimmed) || !HAS_DIGIT.test(trimmed)) return null
 
   const normalized: string = trimmed.split(GROUP_SEPARATOR).join('').replace(DECIMAL_SEPARATOR, '.')
@@ -77,19 +55,13 @@ export function parseFormattedNumber(text: string): number | null {
   return Number.isFinite(parsed) ? parsed : null
 }
 
-// Lo que se puede tipear. Al pasar de type="number" a type="text" se pierde el rechazo nativo,
-// asi que la lista blanca se escribe aca -- y termina siendo mas estricta que la del navegador,
-// que aceptaba "1e5" como numero valido de punto flotante.
-//
-// `allowNegative` llega como booleano y no como el campo entero para que este archivo siga siendo
-// solo sobre texto: quien decide la politica de signo es lib/fieldSign. Cuando es falso el menos
-// se descarta como cualquier otro caracter, asi que tampoco entra pegando desde el portapapeles.
+// Lista blanca de tecleo (type text perdio el rechazo nativo). allowNegative llega como booleano:
+// la politica de signo es de lib/fieldSign.
 export function sanitizeNumericInput(raw: string, allowNegative = true, decimals?: number): string {
   const negative: boolean = allowNegative && raw.trimStart().startsWith('-')
   const body: string = raw.replace(/[^\d.,]/g, '')
 
-  // Una sola coma. Con dos el texto dejaria de parsear y no habria numero que guardar, asi que se
-  // impide escribirlas en vez de descartar el valor despues.
+  // Una sola coma: con dos el texto no parsea.
   const first: number = body.indexOf(DECIMAL_SEPARATOR)
   if (first === -1) return negative ? `-${body}` : body
 
@@ -99,8 +71,7 @@ export function sanitizeNumericInput(raw: string, allowNegative = true, decimals
     .split(DECIMAL_SEPARATOR)
     .join('')
 
-  // Con decimals en 0 se corta EN la coma, no solo se le saca la coma: pegar "1234,56" tiene que
-  // dar 1234 y no 123456, que seria el valor equivocado por dos ordenes de magnitud.
+  // Con decimals 0 se corta EN la coma: "1234,56" da 1234, no 123456.
   const single: string =
     decimals === 0
       ? whole
@@ -109,12 +80,8 @@ export function sanitizeNumericInput(raw: string, allowNegative = true, decimals
   return negative ? `-${single}` : single
 }
 
-// Recorta la parte entera a `max` digitos. Es el tope de longitud aplicado al tecleo, y cuenta
-// digitos y no caracteres: un "1.234" pegado del portapapeles son cuatro digitos, no cinco, y la
-// coma y el menos no son digitos de nadie. La regla y el por que viven en lib/fieldLength; aca
-// llega como numero suelto, igual que `allowNegative`, para que este archivo siga siendo de texto.
-//
-// Solo saca por la derecha, que es lo que hace un maxLength.
+// Recorta la parte entera a max digitos (no caracteres), por la derecha. La regla vive en
+// lib/fieldLength.
 export function capIntegerDigits(text: string, max: number | undefined): string {
   if (max === undefined || max < 1) return text
 
@@ -123,9 +90,7 @@ export function capIntegerDigits(text: string, max: number | undefined): string 
   const comma: number = body.indexOf(DECIMAL_SEPARATOR)
   const whole: string = comma === -1 ? body : body.slice(0, comma)
 
-  // Los separadores se guardan aparte y solo entran cuando detras viene un digito: asi el recorte
-  // no deja un punto colgando al final. Y si nunca se recorto, sale el texto tal como entro --
-  // borrarle el punto a un "1." a medio tipear se lo sacaria de abajo de los dedos.
+  // Los separadores entran solo si sigue un digito; sin recorte el texto sale tal cual.
   let kept = ''
   let pending = ''
   let digits = 0
@@ -152,9 +117,7 @@ export function capIntegerDigits(text: string, max: number | undefined): string 
   return `${negative ? '-' : ''}${kept}${rest}`
 }
 
-// El texto mientras el campo esta enfocado: sin agrupar, para poder editarlo, pero con coma
-// decimal. La coma no es opcional aca -- el parser lee el punto como separador de miles, asi que
-// mostrar "1.5" y volver a leerlo daria 15.
+// Enfocado: sin agrupar pero con coma decimal (mostrar "1.5" y releerlo daria 15).
 export function toEditableText(value: unknown): string {
   if (value === undefined || value === null || value === '') return ''
 
@@ -165,8 +128,7 @@ export function toEditableText(value: unknown): string {
   return String(value)
 }
 
-// El texto en reposo. Un campo sin `formatted` tambien pasa por aca: no se agrupa, pero igual se
-// muestra con coma decimal, porque el parser es el mismo para los dos.
+// Sin formatted tambien usa coma decimal: el parser es el mismo.
 export function formatForDisplay(field: FormattableField, value: unknown): string {
   if (value === undefined || value === null || value === '') return ''
   if (!field.formatted || !supportsFormatting(field.type)) return toEditableText(value)

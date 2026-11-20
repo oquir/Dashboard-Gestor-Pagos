@@ -6,14 +6,8 @@ import { CrashPanel } from '../../molecules'
 import { BACKUP_LABEL, BUTTON_CLASSES } from './AppCrashScreen.constants'
 import type { AppCrashScreenProps, BackupStatus } from './AppCrashScreen.types'
 
-// Lo que queda en pantalla cuando la app entera falla al pintar. Lo que se cambio despues del
-// ultimo guardado solo vive en memoria, asi que antes de recargar se ofrece bajarlo en el mismo
-// archivo de Exportar, que se vuelve a abrir con Abrir... o Cargar formulario.
-//
-// No se guarda en localStorage a proposito: si el estado quedo con una forma rara, pisaria el
-// ultimo borrador bueno con uno que parseDraft rechaza al recargar, y se perderia todo. La
-// descarga no reemplaza nada. Lee el store con getState para no suscribirse: aca no hay nada que
-// repintar si cambia.
+// Ofrece descargar lo no guardado antes de recargar. No escribe localStorage a proposito: un estado
+// roto pisaria el ultimo borrador bueno.
 export function AppCrashScreen({ message }: AppCrashScreenProps) {
   const [backup, setBackup] = useState<BackupStatus>('idle')
   const hasProject: boolean = useFormStore.getState().setupConfig.isComplete

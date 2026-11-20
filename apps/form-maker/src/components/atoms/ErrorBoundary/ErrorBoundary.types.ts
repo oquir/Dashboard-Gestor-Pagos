@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
 
 export interface ErrorBoundaryProps {
-  // Lo que se pinta en lugar de children cuando algo debajo falla al renderizar. reset vuelve a
-  // intentar pintar children desde cero.
+  // Se pinta en lugar de children si el render falla; reset vuelve a intentarlo.
   fallback: (message: string, reset: () => void) => ReactNode
   children: ReactNode
 }

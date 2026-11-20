@@ -9,19 +9,11 @@ import type {
 } from '../../types/fieldScript'
 import { scanScript } from './fieldScript.utils'
 
-// API publica del script de campo: de texto con {{campo}} a cuerpo de funcion ejecutable, mas las
-// dependencias que ese texto declara al leerlas. Nada de React ni del store entra aca.
-//
-// lib/formula existia justamente para no ejecutar texto del usuario. Esto hace lo contrario y es
-// deliberado: el calculo de un campo pasa a ser codigo, y quien consuma el export lo va a correr
-// con new Function igual que ya corre los schemas de Zod. De este lado no se ejecuta nada, solo
-// se compila y se valida; ejecutar es cosa del runtime.
-//
-// Ninguna funcion de aca lanza: el error viaja en el resultado, porque el editor las llama en
-// cada tecla y necesita pintar el mensaje sin envolver todo en try/catch.
+// Script de campo: de texto con {{campo}} a cuerpo ejecutable mas sus dependencias. Aca solo se
+// compila y valida; ejecutar es del runtime (el consumidor usa new Function). Ninguna funcion
+// lanza: el error viaja en el resultado.
 
-// El unico sitio que escribe la sintaxis de una referencia: los mensajes, el autocompletado y la
-// migracion la arman con esto, asi que cambiarla otra vez seria tocar esta linea y REF_PATTERN.
+// El unico sitio que escribe la sintaxis de una referencia (junto con REF_PATTERN).
 export function fieldRefText(name: string): string {
   return `{{${name}}}`
 }
@@ -34,9 +26,7 @@ export function unknownRefsMessage(names: string[]): string {
     : `${refs} no son campos del formulario.`
 }
 
-// Las referencias que encuentra `pattern` con el mismo recorrido del compilador. Existe para la
-// migracion de la sintaxis vieja: lo que hay que reescribir ahi es exactamente lo que el
-// compilador de entonces sustituia, ni una referencia mas ni una menos.
+// Para la migracion de la sintaxis vieja: reescribe exactamente lo que ese compilador sustituia.
 export function findScriptRefs(
   source: string,
   knownNames: Set<string>,
@@ -66,10 +56,8 @@ export function compileScript(source: string, knownNames: Set<string>): ScriptCo
   return { code, refs, reads, unknown }
 }
 
-// El preludio se pega delante del cuerpo en vez de correrse aparte: asi sus funciones quedan en
-// ambito sin ceremonia -- se declaran y ya --, y como el compilado se cachea por texto, repetirlo
-// en cada campo no cuesta nada. Que devuelva un objeto de helpers era la alternativa y obliga a
-// un `return` que nadie recuerda escribir.
+// El preludio va delante del cuerpo: sus funciones quedan en ambito sin ceremonia, y el compilado
+// se cachea por texto.
 export function composeScriptBody(code: string, prelude?: string): string {
   const shared: string = prelude?.trim() ?? ''
 
@@ -98,9 +86,8 @@ export function validateFieldScript(
 
   if (isEmpty) return { ...compiled, error: null, isEmpty, isValid: true }
 
-  // Una referencia desconocida es error: con llaves dobles no hay JS legitimo que se escriba asi.
-  // Va antes que la sintaxis porque el {{x}} que queda sin sustituir casi siempre tambien rompe
-  // el parseo, y "Unexpected token '{'" no le dice a nadie que el campo no existe.
+  // La referencia desconocida va antes que la sintaxis: el {{x}} sin sustituir suele romper el
+  // parseo con un mensaje que no dice nada.
   if (compiled.unknown.length > 0) {
     return { ...compiled, error: unknownRefsMessage(compiled.unknown), isEmpty, isValid: false }
   }
@@ -108,8 +95,8 @@ export function validateFieldScript(
   const ownError: string | null = checkScriptSyntax(compiled.code)
   if (ownError) return { ...compiled, error: ownError, isEmpty, isValid: false }
 
-  // El cuerpo solo se comprueba primero para poder decir de quien es el problema: sin este paso,
-  // un preludio roto se reporta como error de los cuarenta campos del formulario.
+  // El cuerpo solo primero, para saber de quien es el error: si no, un preludio roto se reporta en
+  // cuarenta campos.
   const body: string = composeScriptBody(compiled.code, prelude)
   const sharedError: string | null = body === compiled.code ? null : checkScriptSyntax(body)
 
@@ -121,12 +108,8 @@ export function validateFieldScript(
   }
 }
 
-// El preludio no puede leer campos: es funciones y constantes puras, y los valores entran por
-// argumento. Sin esta regla habria que decidir que significa {{ingresos}} fuera de todo ambito, y
-// dentro de un grupo repetible esa pregunta no tiene una respuesta unica.
-//
-// Cuenta cualquier {{x}}, sea campo o no: aca ninguno puede sustituirse, y todos rompen igual.
-// Con alguno presente no se revisa la sintaxis, porque el error seria ese mismo {{x}} otra vez.
+// El preludio no puede leer campos: solo funciones y constantes puras (en un grupo repetible {{x}}
+// no tendria respuesta unica). Con algun {{x}} no se revisa la sintaxis.
 export function validatePrelude(source: string): PreludeValidation {
   // El codigo sustituido se descarta: escanear es la unica forma de ver si nombro algun campo.
   const refs: ScriptRef[] = scanScript(source, new Set<string>()).refs
@@ -136,9 +119,7 @@ export function validatePrelude(source: string): PreludeValidation {
   return { refs, error, isEmpty, isValid: error === null && refs.length === 0 }
 }
 
-// Un resultado no finito es "no se pudo calcular" y sale como null, que es exactamente lo que
-// hacia la division por cero en el lenguaje de formulas. Sin esto un Infinity se guardaria como
-// valor del campo y viajaria al payload.
+// Un resultado no finito sale como null (no se pudo calcular): un Infinity viajaria al payload.
 export function normalizeScriptResult(value: unknown): unknown {
   if (typeof value === 'number') return Number.isFinite(value) ? value : null
 

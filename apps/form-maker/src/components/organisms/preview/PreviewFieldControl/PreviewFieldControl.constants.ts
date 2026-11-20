@@ -16,6 +16,5 @@ export const OPTION_ROW_CLASSES: string =
 
 export const STACKED_OPTIONS_CLASSES: string = 'flex flex-col gap-1'
 
-// wrap y no nowrap: en linea es una preferencia de disposicion, no una promesa de que entren. Con
-// cuatro opciones largas en pocas columnas se pasan a la siguiente en vez de desbordar la fila.
+// wrap: con opciones largas pasan a la siguiente linea en vez de desbordar.
 export const INLINE_OPTIONS_CLASSES: string = 'flex flex-wrap items-center gap-x-4 gap-y-1'

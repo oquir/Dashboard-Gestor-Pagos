@@ -1,8 +1,6 @@
 import type { FormulaArity } from './scriptMigration.types'
 
-// El alfabeto del lenguaje viejo. IDENT_START deja fuera los digitos, asi que un nombre de campo
-// no puede empezar por numero: es lo que permite decidir si un token es cifra o identificador
-// mirando solo el primer caracter.
+// IDENT_START sin digitos: un nombre no empieza por numero.
 export const DIGIT = /[0-9]/
 export const IDENT_START = /[A-Za-z_]/
 export const IDENT_PART = /[A-Za-z0-9_]/
@@ -10,8 +8,7 @@ export const WHITESPACE = /\s/
 
 export const FORMULA_OPERATORS: string[] = ['+', '-', '*', '/', '(', ')', ',']
 
-// Solo la aridad: el parser la necesita para rechazar una llamada mal escrita, pero nadie vuelve a
-// evaluar estas funciones. Sus implementaciones viven ahora en SCRIPT_HELPERS.
+// Solo la aridad, para rechazar llamadas mal escritas; nadie las evalua.
 export const FORMULA_ARITY: Record<string, FormulaArity> = {
   abs: { minArgs: 1, maxArgs: 1 },
   min: { minArgs: 1, maxArgs: Number.POSITIVE_INFINITY },
@@ -23,17 +20,14 @@ export const FORMULA_ARITY: Record<string, FormulaArity> = {
   dvNit: { minArgs: 1, maxArgs: 1 },
 }
 
-// Precedencia de los operadores del lenguaje viejo, para decidir cuando hacen falta parentesis
-// al imprimir. Los cuatro son asociativos a izquierda, igual que en JS.
+// Para decidir parentesis al imprimir; todos asociativos a izquierda.
 export const PRECEDENCE: Record<string, number> = { '+': 1, '-': 1, '*': 2, '/': 2 }
 
 export const UNARY_PRECEDENCE: number = 3
 
-// Los agregados se vuelven helpers normales porque en el script la columna de un grupo llega como
-// array de verdad: sumOf(x) era sintaxis especial, sum({x}) es una llamada con un array adentro.
+// sumOf(x) era sintaxis especial; en el script la columna llega como array y es sum({x}).
 export const AGGREGATE_TO_HELPER: Record<string, string> = { sumOf: 'sum', countOf: 'count' }
 
-// La referencia de una sola llave, tal cual la reconocia el compilador hasta la version 6 del
-// borrador. Congelada a proposito: la migracion tiene que reescribir exactamente lo que ese
-// compilador sustituia, asi que no puede seguir los cambios de REF_PATTERN.
+// La referencia de una llave del compilador hasta la v6, congelada: la migracion reescribe
+// exactamente lo que ese compilador sustituia.
 export const LEGACY_REF_PATTERN: RegExp = /\{[ \t]*([A-Za-z_][A-Za-z0-9_]*)[ \t]*\}/y

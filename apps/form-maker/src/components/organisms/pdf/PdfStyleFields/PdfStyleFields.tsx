@@ -13,11 +13,8 @@ import {
   VERTICAL_ALIGNS,
 } from './PdfStyleFields.constants'
 
-// Letra, alineacion, bordes y fondo: lo mismo para una celda que para una clase. Son grupos sin
-// tarjeta propia: el panel de la celda los mete en una sola ("Estilo de la celda") y el editor de
-// clases en el suyo (docs/Plan-PDF-UX-P2.md). Cada boton muestra
-// lo que de verdad tiene (lo propio o, si no, lo de sus clases), y elegir lo que ya da la clase
-// borra lo propio en vez de repetirlo: asi el .html no vuelve a llenarse de estilos sueltos.
+// Lo mismo para una celda que para una clase. Cada boton muestra lo que la celda tiene de verdad
+// (propio o de sus clases), y elegir lo que ya da la clase borra lo propio.
 export function PdfStyleFields({
   idPrefix,
   value,
@@ -32,7 +29,7 @@ export function PdfStyleFields({
   const inheritedBorders: PdfCellBorders = inherited.borders ?? NO_BORDERS
   const borders: PdfCellBorders = value.borders ?? inheritedBorders
 
-  // Un valor igual al heredado no se guarda: undefined vuelve a heredar.
+  // Igual al heredado no se guarda: undefined vuelve a heredar.
   function own<T>(next: T, base: T): T | undefined {
     return JSON.stringify(next) === JSON.stringify(base) ? undefined : next
   }

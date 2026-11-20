@@ -9,7 +9,6 @@ export interface UseExportReviewResult {
   close: () => void
 }
 
-// Lo que hay que llevar a la vista despues del commit que cambia de paso.
 export interface PendingReveal {
   kind: 'field' | 'row' | 'band'
   id: string

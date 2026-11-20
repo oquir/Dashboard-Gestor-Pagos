@@ -37,16 +37,10 @@ import {
   textHtml,
 } from './pdfComponents.utils'
 
-// Los componentes de celda del PDF (docs/Pendientes-PDF.md §3.3): solo el machetazo que se repite
-// entre municipios -- imagen, texto vertical, NIT con DV, firmas, codigo de barras, QR y sello. La
-// casilla y la fila repetible quedaron fuera por decision del usuario (2026-11-18).
-//
-// Un componente es una configuracion; su HTML sale de aca, el mismo para el lienzo y para el .html
-// final (cambia solo lo que el lienzo no puede pintar: lo que llena el back sale como una caja de
-// muestra del mismo tamaño). Solo tablas, imagenes y bloques: nada de flex ni grid, que el WebKit
-// viejo del back no entiende. Lo que sale pasa despues por el saneo como cualquier HTML libre: un
-// src que no es seguro se cae ahi. Pura, sin DOM: el PNG del texto vertical lo dibuja quien llama
-// (ctx.renderVerticalText). Fuera de lib/index.ts, como el resto del diseñador.
+// Componentes de celda del PDF (imagen, texto vertical, NIT con DV, firmas, codigo de barras, QR y
+// sello). Su HTML sale de aca, igual para el lienzo y el .html; solo tablas, imagenes y bloques (el
+// WebKit del back no entiende flex ni grid). Pasa por el saneo. Pura: el PNG del texto vertical lo
+// dibuja quien llama.
 
 export function createPdfComponent(type: PdfComponentType): PdfComponent {
   return structuredClone(COMPONENT_DEFAULTS[type])
@@ -94,8 +88,7 @@ export function cleanPdfVariable(value: string): string {
   return value.replace(/[{}\s]/g, '')
 }
 
-// Lo que conviene saber de la imagen de un componente antes de publicar. check es lo que se supo
-// al cargarla (lo hace la barra lateral; aca no hay DOM). Avisos, no bloqueos.
+// Avisos, no bloqueos; check viene de la barra lateral (aca no hay DOM).
 export function pdfImageWarnings(
   src: string,
   check: PdfImageCheck,
@@ -153,10 +146,9 @@ function base64Bytes(src: string): number | null {
   return Math.floor((data.length * 3) / 4)
 }
 
-// --- Cada componente ---
 
-// Sin imagen, o con una que pone el back ({Logo}), el lienzo muestra una caja. En el archivo, sin
-// imagen sale una marca vacia: no pinta nada y deja reabrir el componente.
+// Sin imagen o con {Logo}: caja en el lienzo y marca vacia en el archivo (deja reabrir el
+// componente).
 function imageHtml(component: PdfImageComponent, ctx: PdfComponentContext): string {
   const src: string = component.src.trim()
   const attributes: string = componentAttributes(component)
@@ -176,8 +168,7 @@ function imageHtml(component: PdfImageComponent, ctx: PdfComponentContext): stri
   )
 }
 
-// El PNG lo dibuja quien llama. Sin <canvas> (o en un script sin DOM) sale texto con writing-mode:
-// se ve en un navegador moderno, aunque el WebKit del back lo pinte mal.
+// Sin <canvas> sale texto con writing-mode (el WebKit del back lo pinta mal).
 function verticalTextHtml(component: PdfVerticalTextComponent, ctx: PdfComponentContext): string {
   const attributes: string = componentAttributes(component)
   const text: string = component.text.trim() === '' ? '' : component.text
@@ -239,8 +230,6 @@ function nitHtml(component: PdfNitComponent, ctx: PdfComponentContext): string {
   return table(componentAttributes(component), {}, [cells.join('')])
 }
 
-// Una columna por quien firma, del mismo ancho: el espacio para firmar, la raya con el titulo y los
-// detalles debajo. La alineacion la pone la celda de afuera.
 function signaturesHtml(component: PdfSignaturesComponent, ctx: PdfComponentContext): string {
   const columns: string = component.signers
     .map((signer) => {
@@ -268,8 +257,7 @@ function signaturesHtml(component: PdfSignaturesComponent, ctx: PdfComponentCont
   return table(componentAttributes(component), { tableLayout: 'fixed' }, [columns])
 }
 
-// Codigo de barras y QR: un <img src="{variable}"> que el back llena. En el lienzo no hay imagen
-// todavia, asi que sale una muestra del mismo tamaño.
+// Un <img src="{variable}"> que llena el back; en el lienzo, una muestra del mismo tamano.
 function backImageHtml(
   component: PdfBarcodeComponent | PdfQrComponent,
   width: number,
@@ -294,9 +282,8 @@ function backImageHtml(
   )
 }
 
-// Como lo hacen las 6 plantillas a mano que lo traen: la imagen y encima el texto en un <span>
-// absoluto, corrido con translate para que top/left sean su centro. Va tambien con -webkit-transform
-// mientras el back siga en el WebKit viejo, que no entiende transform sin prefijo.
+// Como las plantillas a mano: imagen y texto absoluto centrado con translate. Tambien
+// -webkit-transform, por el WebKit viejo del back.
 function stampHtml(component: PdfStampComponent, ctx: PdfComponentContext): string {
   const src: string = component.src.trim()
   const showImage: boolean = src !== '' && !(ctx.mode === 'canvas' && VARIABLE_SOURCE.test(src))

@@ -10,9 +10,8 @@ export function samePortSize(a: PortSize | null, b: PortSize): boolean {
   return a !== null && a.width === b.width && a.height === b.height
 }
 
-// Que punto del documento esta bajo el centro de la vista. Se divide por la escala leida del DOM y
-// no por el zoom del store: asi da igual si el transform nuevo ya se aplico, y el punto queda en
-// pixeles de maquetacion, que son los unicos que el zoom no cambia.
+// Se divide por la escala leida del DOM, no por el zoom del store: da igual si el transform nuevo
+// ya se aplico.
 export function captureAnchor(port: HTMLElement, content: HTMLElement): ViewAnchor {
   const portRect: DOMRect = port.getBoundingClientRect()
   const rect: DOMRect = content.getBoundingClientRect()
@@ -24,9 +23,7 @@ export function captureAnchor(port: HTMLElement, content: HTMLElement): ViewAnch
   }
 }
 
-// Devuelve ese punto al centro de la vista con los rects de despues del cambio. Corrige X ademas de
-// Y porque el borde izquierdo del documento ahora si se mueve: la raiz cambia de ancho con el zoom y
-// con el puerto, y el documento va centrado en ella.
+// Corrige X ademas de Y: la raiz cambia de ancho con el zoom y el documento va centrado.
 export function restoreAnchor(port: HTMLElement, content: HTMLElement, anchor: ViewAnchor): void {
   const portRect: DOMRect = port.getBoundingClientRect()
   const rect: DOMRect = content.getBoundingClientRect()

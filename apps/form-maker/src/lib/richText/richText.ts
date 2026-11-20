@@ -11,14 +11,11 @@ import {
 import type { DomLike, MarkState } from './richText.types'
 import { applyMarks, marksFromStyle, mergeLeaves, safeHref } from './richText.utils'
 
-// El contenido con formato se guarda estructurado, nunca como HTML: asi el consumidor lo pinta
-// con componentes y jamas necesita dangerouslySetInnerHTML. Un blob de HTML habria convertido el
-// JSON exportado en marcado ejecutable.
+// Contenido con formato estructurado, nunca HTML: el consumidor no necesita
+// dangerouslySetInnerHTML.
 
-// El serializador es el saneador. Recorre el DOM con lista blanca: respeta las etiquetas de
-// formato, tira el subarbol entero de script y compania, y lo demas lo aplana a texto. Tambien
-// lee estilos en linea, porque al pegar desde Word el formato llega como spans con estilo y solo
-// con la lista blanca se perderia.
+// El serializador es el saneador: lista blanca sobre el DOM; script y compania se tiran enteros.
+// Lee estilos en linea (lo que llega de Word).
 export function serializeRichText(root: DomLike): RichTextContent {
   const paragraphs: RichTextParagraph[] = []
   let current: RichTextLeaf[] = []

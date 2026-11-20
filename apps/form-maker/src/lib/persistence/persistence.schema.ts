@@ -3,9 +3,8 @@ import { DATE_FORMAT_IDS } from '../../constants/dateFormats'
 import { safeHref } from '../richText/richText.utils'
 import { DRAFT_SCHEMA_VERSION } from './persistence.constants'
 
-// Forma del borrador guardado. Ademas de validar, sanea: aca esta el tercer paso de safeHref,
-// despues del editor y del serializador. Hace falta porque un borrador se puede manipular a mano
-// desde las devtools, asi que un enlace javascript: podria entrar por esta puerta.
+// Forma del borrador; ademas sanea (tercer paso de safeHref): un borrador se puede manipular desde
+// las devtools.
 
 const richTextLeafSchema = z
   .object({
@@ -91,8 +90,7 @@ const fieldConditionSchema = z.object({
   value: z.union([z.string(), z.number(), z.boolean()]).optional(),
 })
 
-// Va despues de fieldConditionSchema porque lo necesita. Sin esta rama un borrador con overrides
-// los perderia al cargar sin decir nada: z.object descarta las claves que no declara.
+// Sin esta rama los overrides se perderian sin aviso (z.object descarta lo no declarado).
 const fieldValidationsSchema = fieldValidationRulesSchema.extend({
   overrides: z
     .array(
@@ -122,16 +120,14 @@ const fieldRuleSchema = z.object({
   effects: z.array(ruleEffectSchema),
 })
 
-// `dependencies`, `typeScript` y `formula` ya no se declaran: z.object descarta lo que no conoce,
-// asi que un borrador viejo entra sin ellos y esas claves mueren solas al volver a guardar.
+// dependencies, typeScript y formula ya no se declaran: se pierden solos al volver a guardar.
 const fieldLogicSchema = z.object({
   script: z.string().optional(),
   rules: z.array(fieldRuleSchema).optional(),
 })
 
-// El idConcepto se pide numero y nada mas: un 0 o un decimal es un problema del formulario, no del
-// archivo, y exigir aca un entero positivo tiraria el borrador entero. Lo reporta la revision de
-// exportacion.
+// idConcepto solo numero: un 0 o un decimal lo reporta la revision; exigir mas tiraria el borrador
+// entero.
 const apiBindingSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('mapped'), path: z.string() }),
   z.object({ kind: z.literal('excluded') }),
@@ -167,8 +163,7 @@ const canvasFieldSchema = z.object({
   labelFor: z.string().optional(),
   content: richTextContentSchema.optional(),
   tooltip: fieldTooltipSchema.optional(),
-  // Sin esta linea la propiedad se pierde sola: z.object descarta lo que el esquema no declara,
-  // asi que el borrador guardaria el redondeo y al recargar volveria sin el y sin un solo aviso.
+  // Sin esta linea el redondeo se perderia al recargar (z.object).
   rounding: z.boolean().optional(),
   formatted: z.boolean().optional(),
   allowsNegative: z.boolean().optional(),
@@ -234,8 +229,7 @@ const setupConfigSchema = z.object({
   introModalSteps: z.number(),
 })
 
-// La version va como literal y no como numero: un borrador que la cadena de migraciones no pudo
-// llevar hasta la actual tiene que ser rechazado aca, no cargado a medias.
+// Version literal: un borrador que no llego a la actual se rechaza, no se carga a medias.
 export const draftPayloadSchema = z.object({
   schemaVersion: z.literal(DRAFT_SCHEMA_VERSION),
   formSteps: z.array(stepSchema),

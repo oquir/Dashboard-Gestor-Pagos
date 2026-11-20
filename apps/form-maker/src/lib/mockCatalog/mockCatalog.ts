@@ -6,9 +6,8 @@ import { catalogEntriesFor, usesCustomCatalog } from '../catalogBank'
 import { isOptionBasedField } from '../fieldOptions'
 import { MOCK_BY_LEAF, MOCK_CATALOGS, MOCK_OPTION_COUNT } from './mockCatalog.constants'
 
-// Un campo mapeado no lleva opciones: las inyecta el consumidor consultando el catalogo.
-// Para poder simularlo se generan opciones deterministas a partir de la ruta, salvo cuando
-// el campo declara un dataSource, que es la unica pista que el JSON da sobre que catalogo pedir.
+// Un campo mapeado recibe opciones del consumidor; aca se generan deterministas por la ruta, salvo
+// con dataSource.
 export function catalogOptions(
   field: ExportedField,
   values: RuntimeValues = {},
@@ -37,14 +36,13 @@ export function catalogOptions(
     return MOCK_BY_LEAF[leaf] ?? placeholderOptions(leaf)
   }
 
-  // Ni catalogo ni ruta: no hay de donde sacar opciones. Aun asi se inventan, porque un select
-  // vacio y obligatorio deja el formulario sin salida y eso no se puede ni probar ni reportar.
-  // El unico vacio legitimo es el de arriba: esperar a que elijan el campo padre.
+  // Sin catalogo ni ruta igual se inventan: un select vacio y obligatorio dejaria el formulario sin
+  // salida.
   return placeholderOptions(field.name)
 }
 
-// Lo que el autor cargo en el banco manda: si el catalogo esta activo se usa entero, aunque el
-// filtro por padre no devuelva nada. Mezclarlo con el dato de mentira daria listas incoherentes.
+// Si el catalogo del banco esta activo se usa entero: mezclarlo con el de mentira daria listas
+// incoherentes.
 function fromCatalog(catalogId: string, bank: CatalogBank, parentId?: string): CatalogOption[] {
   if (usesCustomCatalog(bank, catalogId)) {
     return catalogEntriesFor(bank, catalogId, parentId).map((entry): CatalogOption => ({
@@ -68,10 +66,7 @@ function placeholderOptions(prefix: string): CatalogOption[] {
   }))
 }
 
-// La bandera existe para avisar en pantalla que esas opciones son inventadas, y que nadie las
-// confunda con un catalogo real. Solo un campo de opciones puede tener catalogo: un texto mapeado
-// no lo tiene, aunque comparta la ruta. Ni las opciones autoradas ni las cargadas en el banco son
-// simuladas: alguien las puso a mano.
+// Para avisar en pantalla que las opciones son inventadas; las autoradas o del banco no lo son.
 export function isSimulatedCatalog(field: ExportedField, bank: CatalogBank = {}): boolean {
   if (!isOptionBasedField(field.type)) return false
   if (field.options && field.options.length > 0) return false

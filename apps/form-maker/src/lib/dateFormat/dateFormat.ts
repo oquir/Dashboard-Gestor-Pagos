@@ -9,11 +9,9 @@ import {
 } from './dateFormat.constants'
 import type { PatternSlot } from './dateFormat.types'
 
-// El formato de un campo fecha es de afuera: como la ve quien llena el formulario y como la recibe la
-// API. Por dentro el valor es siempre AAAA-MM-DD (o AAAA-MM-DDTHH:mm), que es lo que comparan el
-// schema, los limites, las condiciones y los scripts. Convertir en el borde, y solo ahi, es lo que
-// deja todo lo demas sin tocar -- la misma idea que el punto de miles de un numero, salvo que esta
-// vez el texto formateado si sale: es lo que pide la API.
+// El formato es del borde: por dentro el valor es siempre AAAA-MM-DD (o con THH:mm), que comparan
+// el schema, los limites, las condiciones y los scripts. El texto formateado si sale, porque lo
+// pide la API.
 
 export function datePattern(format: DateFormatId, withTime: boolean): string {
   return withTime ? `${format}${TIME_SUFFIX}` : format
@@ -35,9 +33,8 @@ function patternSlots(pattern: string): PatternSlot[] {
   return slots
 }
 
-// Lo que se ve mientras se escribe: los digitos en sus lugares y los separadores puestos solos. Un
-// separador solo aparece cuando ya hay un digito para despues, asi borrar hacia atras nunca se
-// traba en una barra que vuelve a aparecer.
+// Los separadores se ponen solos, y solo si ya hay un digito despues: borrar hacia atras no se
+// traba.
 export function maskDateText(text: string, pattern: string): string {
   const digits: string = text.replace(/\D/g, '')
   let masked: string = ''
@@ -81,9 +78,7 @@ export function parseDateText(text: string, pattern: string): string | null {
   return `${date}T${parts.HH}:${parts.mm}`
 }
 
-// El valor interno escrito en el patron, o null si no es un valor completo. Con hora exige la hora:
-// una fecha sola a medio escribir en un campo con hora tiene que seguir viendose como se escribio,
-// no completarse con un 00:00 que el usuario no puso.
+// null si no es completo. Con hora la exige: no se completa con un 00:00 que el usuario no puso.
 export function formatIsoValue(value: string, pattern: string, withTime: boolean): string | null {
   const match: RegExpMatchArray | null = value.match(withTime ? ISO_DATETIME : ISO_DATE)
   if (!match) return null
@@ -99,8 +94,7 @@ export function formatIsoValue(value: string, pattern: string, withTime: boolean
   return pattern.replace(TOKEN_PATTERN, (token) => parts[token])
 }
 
-// Lo que muestra el input: un valor completo en el patron, y cualquier otra cosa -- un texto a medio
-// escribir, una fecha que no existe -- tal cual, para que el usuario vea lo que tecleo.
+// Lo que no es un valor completo se muestra tal cual, para que se vea lo tecleado.
 export function displayDateText(value: unknown, pattern: string, withTime: boolean): string {
   if (typeof value !== 'string') return ''
 

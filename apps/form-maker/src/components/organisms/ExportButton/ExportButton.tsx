@@ -7,9 +7,8 @@ import { Tooltip } from '../../atoms'
 
 const LABEL: string = 'Revisar el formulario y descargarlo como JSON'
 
-// El boton es el dueño de la revision y de su modal, igual que SaveButton lo es de useSaveButton.
-// Lo montan el panel derecho y el chip que lo reemplaza cuando esta plegado, que nunca coexisten:
-// asi nunca hay dos useExportReview vivos y ninguno de los dos necesita recibir props.
+// Dueno de la revision y su modal. El panel y el chip nunca coexisten: hay un solo useExportReview
+// vivo.
 export function ExportButton({ iconOnly = false }: ExportButtonProps) {
   const { problems, hasErrors, requestExport, exportAnyway, goTo, close } = useExportReview()
 

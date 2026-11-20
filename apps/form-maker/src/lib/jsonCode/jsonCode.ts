@@ -8,12 +8,8 @@ import type {
 } from '../../types'
 import { foldSearchText } from './jsonCode.utils'
 
-// Resaltado, plegado y busqueda del JSON que se muestra en el lienzo. Es un tokenizador propio y no
-// una libreria porque solo hay que distinguir cuatro cosas sobre un JSON que ya se sabe bien formado.
-//
-// La busqueda existe porque la vista solo pinta las lineas que se ven (ver useJsonViewport): el
-// Ctrl+F del navegador no encuentra lo que no esta en el DOM, asi que la vista trae el suyo. Busca
-// sobre el texto entero, plegado o no, y no sobre lo pintado.
+// Resaltado, plegado y busqueda del JSON con un tokenizador propio. La busqueda va sobre el texto
+// entero porque la vista solo pinta lo visible.
 
 // La clave se reconoce por los dos puntos que la siguen, que es lo que la separa de un texto.
 const TOKEN_RE: RegExp =
@@ -129,17 +125,14 @@ export function computeVisibleRows(model: JsonModel, collapsed: Set<number>): Js
   return visible
 }
 
-// El texto de cada linea preparado para buscar: sin sangria y plegado. Se arma una vez por JSON y
-// no en cada tecla del buscador; las posiciones coinciden con las del contenido sin plegar.
+// Texto de busqueda por linea, sin sangria y plegado; se arma una vez por JSON.
 export function buildJsonSearchIndex(model: JsonModel): string[] {
   return model.lines.map((line, index) =>
     foldSearchText(line.text.slice(model.rows[index].indent.length)),
   )
 }
 
-// Todas las coincidencias, en orden de lectura. Un tramo encontrado no se vuelve a usar: buscar "aa"
-// en "aaaa" da dos, como el buscador del navegador. La consulta va tal cual, espacios incluidos:
-// buscar `"name": ` tiene sentido en un JSON.
+// Sin solaparse ("aa" en "aaaa" da dos), como el navegador; la consulta va tal cual.
 export function findJsonMatches(searchIndex: string[], query: string): JsonMatch[] {
   const needle: string = foldSearchText(query)
   if (needle.length === 0) return []
@@ -158,8 +151,7 @@ export function findJsonMatches(searchIndex: string[], query: string): JsonMatch
   return matches
 }
 
-// Abre los contenedores plegados que esconden la linea, para poder llevar la vista hasta ella.
-// Devuelve el mismo Set si no habia nada que abrir, asi el estado no cambia de identidad.
+// Abre lo plegado que tapa la linea; el mismo Set si no hay nada que abrir.
 export function expandToLine(model: JsonModel, collapsed: Set<number>, line: number): Set<number> {
   let next: Set<number> | null = null
 
@@ -194,9 +186,7 @@ export function groupHighlightsByLine(
   return byLine
 }
 
-// Caracteres de la fila mas larga, con el " … }," de una plegada. La lista virtual fija su ancho
-// minimo con esto: medido solo sobre las filas pintadas, el scroll horizontal cambiaria de largo
-// mientras uno baja.
+// Ancho de la fila mas larga, para el ancho minimo de la lista virtual.
 export function longestRowLength(model: JsonModel, rows: JsonVisibleRow[]): number {
   let longest: number = 0
 

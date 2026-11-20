@@ -31,8 +31,7 @@ export function usePayloadPreviewCanvas(): UsePayloadPreviewCanvasResult {
     )
     const mappingTree: MappingNode = buildMappingTree(PAYLOAD_SCHEMA, allFields)
     const orphans: OrphanBinding[] = findOrphanBindings(PAYLOAD_SCHEMA, allFields)
-    // La raiz del contrato es un objeto, y la lista de conceptos se le cuelga al final, donde la
-    // manda el consumidor.
+    // La lista de conceptos va al final de la raiz, donde la manda el consumidor.
     const summary: JsonNode = {
       ...(toPlainSummary(mappingTree) as { [key: string]: JsonNode }),
       [CONCEPTS_PAYLOAD_KEY]: summarizeConcepts(allFields),

@@ -1,9 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
 import type { FieldRule, RuleEffect } from '../../types'
 
-// Manipulacion de las reglas de un campo. El orden de la lista es semantico: al evaluar, el script
-// del campo corre primero y despues cada regla que aplique pisa el valor, en este orden.
-// Condiciones y efectos llevan id propio para poder listarlos y reordenarlos sin usar el indice.
+// Reglas de un campo. El orden es semantico: corre el script y despues cada regla que aplique pisa
+// el valor, en orden. Ids propios para listar y reordenar.
 
 export function createFieldRule(): FieldRule {
   return { id: uuidv4(), matchAll: true, when: [], effects: [] }
@@ -33,9 +32,7 @@ export function moveRule(rules: FieldRule[], ruleId: string, offset: number): Fi
   return next
 }
 
-// Limpia las referencias a un campo que se acaba de borrar. Una regla que se queda sin ninguna
-// condicion se descarta entera: sin condiciones aplicaria siempre, que es lo contrario de lo
-// que el usuario habia escrito.
+// Una regla sin condiciones se descarta: aplicaria siempre, lo contrario de lo escrito.
 export function pruneRulesReferencing(
   rules: FieldRule[] | undefined,
   fieldId: string,

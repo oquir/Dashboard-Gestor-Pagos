@@ -18,8 +18,7 @@ export function StepTabChip({
   removeIconSize = 12,
   className = '',
 }: StepTabChipProps) {
-  // Apagada salvo que haya una mudanza en curso que esta pestana pueda recibir: fuera de eso no
-  // debe competir por ningun drop, y una pestana rechazada tampoco acepta el suyo.
+  // Solo acepta drops durante una mudanza que esta pestana puede recibir.
   const { setNodeRef, isOver } = useDroppable({
     id: `tab-${canvasTarget.type}-${canvasTarget.stepId}`,
     data: { canvasTarget },
@@ -27,17 +26,13 @@ export function StepTabChip({
   })
   const buttonRef = useRef<HTMLButtonElement | null>(null)
 
-  // Con Ctrl + flecha el paso cambia sin pasar por esta grilla, que pasados ~40 pasos rueda: la
-  // pestana activa se trae a la vista. "nearest" no mueve nada si ya se ve, como tras un clic.
+  // Con Ctrl+flecha el paso cambia sin tocar la grilla: la pestana activa se trae a la vista.
   useEffect(() => {
     if (active) buttonRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
   }, [active])
 
-  // Todas las pestanas son su numero, la activa incluida: la activa se distingue por el relleno de
-  // marca y su halo, no por expandirse con el titulo. Expandirla movia la grilla entera cada vez
-  // que se cambiaba de paso -- justo lo que no puede pasar mientras se apunta a una de estas
-  // pestanas con una fila colgando del puntero. El titulo vive en el bloque "Paso activo" y sigue
-  // a un hover de distancia, en el Tooltip.
+  // Todas son numero, la activa tambien: expandirla movia la grilla bajo el puntero durante un
+  // arrastre.
   const chipClasses: string = active
     ? 'bg-brand-strong text-on-brand-strong ring-[3px] ring-brand/20'
     : 'bg-surface-raised text-fg-soft hover:bg-surface-inset hover:text-fg-strong'

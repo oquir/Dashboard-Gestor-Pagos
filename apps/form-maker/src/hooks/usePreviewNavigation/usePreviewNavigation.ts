@@ -4,10 +4,8 @@ import type { ExportedStep } from '../../types/exportForm'
 import type { FormPreviewApi } from '../../types/formPreview'
 import type { UsePreviewNavigationResult } from './usePreviewNavigation.types'
 
-// El recorrido del simulador: en que paso esta, si el modal de entrada sigue arriba y si el
-// formulario ya se envio. No valida nada por su cuenta — le pide a useFormPreview que revele los
-// errores del paso y solo avanza si quedo limpio, que es la regla de que la validacion es por
-// pantalla y bloquea la navegacion.
+// Recorrido del simulador: paso actual, modal de entrada y envio. No valida por su cuenta: pide
+// revelar los errores del paso y solo avanza si quedo limpio.
 export function usePreviewNavigation(preview: FormPreviewApi): UsePreviewNavigationResult {
   const [introOpen, setIntroOpen] = useState<boolean>(true)
   const [introIndex, setIntroIndex] = useState<number>(0)

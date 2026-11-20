@@ -5,9 +5,8 @@ import { LABEL_CHIP_STYLE, PLACEHOLDER_BORDER, PLACEHOLDER_STYLE } from './pdfCo
 
 // Piezas para escribir el HTML de los componentes, privadas a lib/pdfComponents.
 
-// Texto del autor con {Var}: escapado, cada salto de linea un <br> y los espacios seguidos se
-// conservan ("{DocContador}   T.P."; en HTML se juntarian en uno). En el lienzo las variables van
-// resaltadas, como en una celda de texto; en el archivo, tal cual, para que el back las reemplace.
+// Escapado, cada salto un <br> y los espacios seguidos se conservan. En el lienzo las variables van
+// resaltadas; en el archivo, tal cual para el back.
 export function textHtml(text: string, mode: PdfComponentMode): string {
   return text
     .split('\n')
@@ -58,8 +57,6 @@ export function element(
   return inner === null ? opening : `${opening}${inner}</${name}>`
 }
 
-// La caja de muestra del lienzo: lo que el back llena o la imagen que falta. Mide lo que medira lo
-// de verdad, y lleva al centro un rotulo de que es.
 export function placeholder(
   attributes: string,
   width: number,

@@ -1,14 +1,9 @@
 import { PDF_CANVAS_CLASS as C } from '../../../../constants'
 
-// La hoja de estilos del shadow root del lienzo. Los tokens de la app (--color-brand…) si cruzan al
-// shadow root, porque las variables CSS se heredan; las clases de Tailwind no. Cada var() trae su
-// color de respaldo por si el token cambia de nombre. Lo que dibuja la edicion (seleccion, hover,
-// guias) usa sombras y outlines, que no ocupan espacio: el contenido mide lo mismo que en el PDF.
-// El padding de abajo (96px) deja la leyenda de la ultima hoja por encima de la barra flotante.
-//
-// Modo de bajo rendimiento: la regla global .low-performance de index.css no cruza el shadow root,
-// y :host-context no existe en Firefox ni Safari. Por eso PdfCanvas pone data-low-performance en
-// el .doc y la ultima regla de abajo apaga las animaciones y transiciones de las hojas.
+// Estilos del shadow root del lienzo: los tokens (var) cruzan, las clases de Tailwind no. La
+// edicion usa sombras y outlines, que no ocupan espacio. Bajo rendimiento: .low-performance no
+// cruza el shadow root y :host-context no existe en Firefox ni Safari, asi que se usa
+// data-low-performance en .doc.
 export const CANVAS_CSS: string = `
 @keyframes pdf-sheet-in { from { opacity: 0; translate: 0 12px; } }
 @keyframes pdf-select-in { from { box-shadow: inset 0 0 0 4px var(--color-brand, #f97316); } }

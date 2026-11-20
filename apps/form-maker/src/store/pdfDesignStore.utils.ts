@@ -13,9 +13,8 @@ export function focusOf(
   }
 }
 
-// Repara la vista despues de un cambio que pudo borrar lo seleccionado (quitar una fila, una hoja,
-// deshacer): una seleccion que apunta a algo que ya no existe se suelta, y la hoja activa vuelve a
-// la primera si la suya se fue. Devuelve el mismo estado si no hay nada que reparar.
+// Tras un cambio que pudo borrar lo seleccionado (fila, hoja, deshacer): suelta la seleccion
+// huerfana y vuelve a la primera hoja si la activa se fue. Mismo estado si no hay nada que reparar.
 export function reconcilePdfView(state: PdfDesignState): PdfDesignState {
   const design = state.design
   if (!design) return state

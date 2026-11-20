@@ -4,12 +4,8 @@ import type { TransferCheck, TransferPayload } from '../../types/transfer'
 import { findLabelFor } from '../fieldKind/fieldKind'
 import { findNearestFit, getFreeRuns, sortByColumn } from '../rowLayout/rowLayout'
 
-// Mudanzas entre pasos, como funciones puras: sin React y sin el store. Es el nucleo compartido por
-// las dos cargas -un campo o una fila entera- para que las reglas no se dupliquen. Cuando aparezca
-// la tercera carga, aqui solo se agrega el caso; las reglas ya estan escritas.
-//
-// El nombre no entra en juego: allFieldNames ya es global a los dos lienzos, asi que un campo
-// mudado conserva su name y su id, y ninguna referencia por id se rompe por el hecho de mudarse.
+// Mudanzas entre pasos, puras: nucleo comun de mudar un campo o una fila. El campo conserva nombre
+// e id (allFieldNames es global), asi que ninguna referencia se rompe.
 
 const ALLOWED: TransferCheck = { allowed: true }
 
@@ -25,8 +21,7 @@ export function canTransfer(rows: CanvasRow[], payload: TransferPayload): Transf
   const row: CanvasRow | undefined = rows.find((candidate) => candidate.id === payload.rowId)
   if (!row) return { allowed: false, reason: 'La fila ya no existe.' }
 
-  // Misma regla que al reordenar: arrastrar una fila nunca la saca de su grupo. Mudarla de paso la
-  // sacaria por definicion, porque el grupo vive en groups[] del paso de origen.
+  // Una fila de un grupo no cambia de paso: el grupo vive en el paso de origen.
   if (row.groupId !== undefined) {
     return { allowed: false, reason: 'Una fila de un grupo repetible no se puede mover de paso.' }
   }
@@ -34,9 +29,8 @@ export function canTransfer(rows: CanvasRow[], payload: TransferPayload): Transf
   return ALLOWED
 }
 
-// Los que viajan juntos. El vinculo de labelFor se mira en los dos sentidos: da igual si agarraste
-// el campo o su etiqueta, la pareja se muda entera o el labelFor quedaria apuntando a otra pantalla.
-// La etiqueta va primero para que aterrice a la izquierda de su campo, que es donde se espera.
+// labelFor en los dos sentidos: la pareja se muda entera. La etiqueta primero, para que quede a la
+// izquierda.
 export function transferGroup(rows: CanvasRow[], fieldId: string): CanvasField[] {
   const fields: CanvasField[] = rows.flatMap((row) => row.fields)
   const field: CanvasField | undefined = fields.find((candidate) => candidate.id === fieldId)
@@ -51,9 +45,7 @@ export function transferGroup(rows: CanvasRow[], fieldId: string): CanvasField[]
   return field.labelFor ? [field, partner] : [partner, field]
 }
 
-// Coloca en el paso destino los campos que viajan juntos y devuelve sus filas ya resueltas. Se
-// prueba fila por fila y, si ninguna tiene hueco, se pide una nueva: rechazar la mudanza dejaria al
-// usuario haciendo sitio a mano en un paso que ni siquiera esta viendo.
+// Fila por fila y, si ninguna tiene hueco, una nueva: no se rechaza la mudanza.
 export function planLanding(
   rows: CanvasRow[],
   moving: CanvasField[],
@@ -65,14 +57,11 @@ export function planLanding(
     let landed = false
 
     for (const row of result) {
-      // Un grupo repetible no recibe mudanzas: el campo caeria dentro de un item del array sin que
-      // nadie lo haya pedido, y con el apiBinding que trae eso es un mapeo silencioso.
+      // Un grupo repetible no recibe mudanzas: con su apiBinding seria un mapeo silencioso.
       if (row.groupId !== undefined) continue
 
-      // A proposito no se usa resolvePlacement: su ultimo recurso mete el campo recortado en el
-      // tramo mas ancho. Soltandolo a mano eso esta bien, porque lo estas viendo; mudandolo a un
-      // paso que no tenes delante seria estrecharlo sin avisar. O entra entero, o se busca otra
-      // fila. El ancho es del campo, no del sitio donde cae.
+      // Sin resolvePlacement a proposito: su ultimo recurso recorta el campo, y en un paso que no
+      // se ve seria estrecharlo sin avisar. Entra entero o va a otra fila.
       const colStart: number | null =
         field.colSpan <= row.columns
           ? findNearestFit(getFreeRuns(row.fields, row.columns), 1, field.colSpan)
@@ -87,8 +76,8 @@ export function planLanding(
 
     if (landed) continue
 
-    // La pareja se intenta mantener junta, pero si no cabe en ninguna parte se separa antes que
-    // rechazar la mudanza: un campo a 16 columnas y su etiqueta no entran en la misma fila.
+    // La pareja se separa antes que rechazar la mudanza (un campo de 16 columnas y su etiqueta no
+    // entran juntos).
     const fresh: CanvasRow = createRow()
 
     fresh.fields = [{ ...field, colStart: 1, colSpan: Math.min(field.colSpan, fresh.columns) }]
@@ -98,11 +87,8 @@ export function planLanding(
   return result
 }
 
-// Lo que una mudanza deja a contramano: un campo del modal de entrada que depende de uno del
-// formulario. El modal se responde antes, asi que esa dependencia siempre veria el campo vacio, y
-// los paneles no la ofrecen (dependencyCandidates). Al reves no se avisa: el formulario puede
-// depender del modal, que ya tiene el valor. Se avisa en vez de borrar porque el autor decide a que
-// reasignarla, y borrarla en silencio cambiaria el formulario sin que lo note.
+// Lo que queda a contramano: un campo del modal que depende de uno del formulario (siempre lo veria
+// vacio). Se avisa en vez de borrar: el autor decide.
 export function collectCrossingRefs(
   otherSideRows: CanvasRow[],
   moving: CanvasField[],
@@ -121,8 +107,8 @@ export function collectCrossingRefs(
   return [...labels]
 }
 
-// Las mismas fuentes por id que removeFieldsEverywhere limpia al borrar un campo. Las referencias de
-// un script van por nombre y no por id, asi que no entran aqui: el nombre viaja con el campo.
+// Las mismas fuentes por id que limpia removeFieldsEverywhere; las del script van por nombre y
+// viajan con el campo.
 function referencedIds(field: CanvasField): string[] {
   const ids: string[] = []
 

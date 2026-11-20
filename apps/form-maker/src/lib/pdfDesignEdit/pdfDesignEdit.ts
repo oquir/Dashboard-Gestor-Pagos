@@ -26,9 +26,8 @@ import { isValidPdfClassName, pdfClassTokens } from '../pdfDesign'
 import { cellsInRect, createTable, selectionRect } from '../pdfTable'
 import { findCellIn, findTableIn, mapTableIn } from './pdfDesignEdit.utils'
 
-// Las ediciones del diseño entero: hojas, bloques, celdas y tablas donde sea que esten (tambien
-// anidadas). Puras y sin store. Lo que no cambia nada devuelve la misma referencia del diseño: el
-// historial de deshacer compara por referencia y asi no registra pasos vacios.
+// Ediciones puras del diseno entero, tambien anidadas. Sin cambios devuelve la misma referencia: el
+// historial no registra pasos vacios.
 
 export function findTable(design: PdfDesign, tableId: string): PdfTableLocation | null {
   for (const sheet of design.sheets) {
@@ -131,8 +130,7 @@ export function setCellHtml(design: PdfDesign, cellId: string, html: string): Pd
   )
 }
 
-// Reemplaza el componente de la celda (o pone uno donde habia otra cosa). Uno igual al que ya tiene
-// no cambia nada: la barra lateral lo arma de nuevo en cada tecla.
+// Uno igual no cambia nada: la barra lo arma en cada tecla.
 export function setCellComponent(
   design: PdfDesign,
   cellId: string,
@@ -146,17 +144,14 @@ export function setCellComponent(
   )
 }
 
-// Hasta donde se puede anidar: la celda vive en una tabla de profundidad d, y su tabla nueva seria
-// d + 1.
+// La celda vive en una tabla de profundidad d; la nueva seria d + 1.
 export function canNestTable(design: PdfDesign, cellId: string): boolean {
   const location = findCell(design, cellId)
   return location !== null && location.depth < PDF_MAX_TABLE_DEPTH
 }
 
-// Cambia lo que lleva la celda. Lo que se pueda se conserva: el texto pasa a HTML escapado (se ve
-// igual), el HTML a texto sin etiquetas y un componente a su texto. Una tabla que se cambia por
-// otra cosa se pierde, pero Ctrl+Z la devuelve. Un componente nuevo arranca como imagen; el de un
-// componente a HTML lo arma el store, que tiene con que dibujar el texto vertical.
+// Conserva lo que pueda (texto a HTML escapado, HTML a texto, componente a su texto). Una tabla
+// reemplazada se pierde, pero Ctrl+Z la devuelve.
 export function setCellContentKind(
   design: PdfDesign,
   cellId: string,
@@ -215,9 +210,7 @@ export function removeBlock(design: PdfDesign, blockId: string): PdfDesign {
   }))
 }
 
-// Sube o baja un bloque. En el borde de su hoja pasa a la vecina -- al final de la anterior o al
-// principio de la siguiente --, asi el orden del documento se mantiene: es como se parte en hojas
-// una plantilla vieja que entro entera en la hoja 1. En el borde del documento no hace nada.
+// En el borde de su hoja pasa a la vecina: asi se parte en hojas una plantilla vieja.
 export function moveBlock(design: PdfDesign, blockId: string, offset: -1 | 1): PdfDesign {
   const sheetIndex: number = design.sheets.findIndex((sheet) =>
     sheet.blocks.some((block) => block.id === blockId),
@@ -264,8 +257,7 @@ export function setHtmlBlock(design: PdfDesign, blockId: string, html: string): 
   )
 }
 
-// Las celdas del rectangulo seleccionado (una sola si ancla y foco coinciden). Vacio sin seleccion
-// de celdas. La usan el lienzo, para pintarla, y el store, para aplicarle un estilo.
+// Celdas del rectangulo seleccionado; las usan el lienzo y el store.
 export function selectedCellIds(design: PdfDesign, selection: PdfSelection | null): string[] {
   if (selection?.kind !== 'cells') return []
 
@@ -310,7 +302,6 @@ export function sheetOf(design: PdfDesign, id: string): string | null {
   )
 }
 
-// --- Clases del diseño ---
 
 // El primer "claseN" libre, para una clase recien creada que despues se renombra.
 export function nextClassName(design: PdfDesign): string {
@@ -337,8 +328,7 @@ export function updateClass(design: PdfDesign, name: string, patch: PdfClassPatc
   return changed ? { ...design, classes } : design
 }
 
-// Cambia el nombre en la clase y en cada celda que la lleva. Un nombre invalido o ya usado no hace
-// nada: la barra lateral lo avisa antes.
+// Un nombre invalido o usado no hace nada: la barra lo avisa antes.
 export function renameClass(design: PdfDesign, from: string, to: string): PdfDesign {
   if (from === to || !isValidPdfClassName(to)) return design
   if (!design.classes.some((item) => item.name === from)) return design
@@ -386,9 +376,8 @@ export function setCellsClass(
   )
 }
 
-// "Nueva clase con este estilo": la clase toma lo propio de la celda del foco (botones y estilos en
-// linea) y se pone en todas las seleccionadas, que sueltan lo que ahora les da la clase. Lo que una
-// celda tenga distinto se le queda, encima de la clase.
+// La clase toma lo propio de la celda del foco, y las seleccionadas sueltan lo que ahora da la
+// clase; lo distinto se queda encima.
 export function createClassFromCell(
   design: PdfDesign,
   cellIds: string[],
@@ -508,8 +497,8 @@ function mapBlocks(design: PdfDesign, fn: (block: PdfBlock) => PdfBlock): PdfDes
   return changed ? { ...design, sheets } : design
 }
 
-// undefined borra la clave; un valor igual al que ya tiene no cambia nada (misma referencia).
-// NoInfer: T sale del objeto, no del parche (si no, T se deduce como el tipo del parche).
+// undefined borra la clave; igual valor, misma referencia. NoInfer: T sale del objeto, no del
+// parche.
 function applyPatch<T extends object>(target: T, patch: Partial<NoInfer<T>>): T {
   const next: Record<string, unknown> = { ...(target as Record<string, unknown>) }
   let changed: boolean = false

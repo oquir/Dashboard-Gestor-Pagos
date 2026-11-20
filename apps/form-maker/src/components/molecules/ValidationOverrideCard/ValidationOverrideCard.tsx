@@ -27,8 +27,7 @@ export function ValidationOverrideCard({
   const removeOverride = useFormStore((state) => state.removeFieldValidationOverride)
 
   const observed = candidates.find((candidate) => candidate.id === override.when.fieldId)
-  // El campo observado puede haber cambiado de tipo desde que se escribio la condicion, asi que
-  // los operadores se recalculan en vez de confiar en el que quedo guardado.
+  // Los operadores se recalculan: el campo observado pudo cambiar de tipo.
   const availableOperators: ConditionOperator[] = observed
     ? operatorsForField(observed)
     : operatorsForFieldType('text')

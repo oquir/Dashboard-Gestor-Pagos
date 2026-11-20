@@ -16,11 +16,10 @@ export interface DerivedResult {
   issues: RuntimeIssue[]
 }
 
-// Resuelve los campos calculados de un ambito en orden topologico, para que cuando le toque a uno
-// sus dependencias ya esten resueltas.
+// Calculados de un ambito en orden topologico.
 
-// Primero el script del campo y despues cada regla que aplique, pisando el valor en el orden de la
-// lista. `computed` marca lo que se calculo, que es lo que el simulador pinta como solo lectura.
+// El script y despues cada regla que aplique, en orden. computed marca lo calculado (solo lectura
+// en el simulador).
 export function computeDerivedValues(
   fields: ExportedField[],
   base: RuntimeValues,
@@ -31,15 +30,14 @@ export function computeDerivedValues(
   const plan: DerivedPlan = planDerivedFields(fields)
   const byName: Map<string, ExportedField> = new Map(fields.map((field) => [field.name, field]))
   const values: RuntimeValues = { ...base }
-  // La vista coaccionada se mantiene en paralelo y se actualiza junto con `values`: un campo
-  // calculado es dependencia del siguiente, y tiene que llegarle ya con su tipo.
+  // La vista coaccionada se actualiza junto con values: el siguiente calculado la lee ya con su
+  // tipo.
   const scriptValues: RuntimeValues = coerceValues(values, model)
   const computed: Record<string, boolean> = {}
   const clamped: Record<string, boolean> = {}
   const issues: RuntimeIssue[] = []
 
-  // undefined es "no toques lo que escribio el usuario": ni se asigna ni cuenta como calculado,
-  // asi que el campo sigue siendo suyo. Vale igual para el script del campo y para un efecto.
+  // undefined es no tocar lo escrito: ni se asigna ni cuenta como calculado.
   function apply(run: ScriptRunResult, name: string, current: unknown): [unknown, boolean] {
     if (run.error) {
       issues.push({ kind: 'script', field: name, message: run.error })
@@ -53,8 +51,7 @@ export function computeDerivedValues(
     const field: ExportedField | undefined = byName.get(name)
     if (!field) continue
 
-    // Si no hay script ni regla que aplique, se conserva lo que el usuario escribio. Por eso un
-    // campo calculado solo a veces necesita una base que lo devuelva a su valor neutro.
+    // Sin script ni regla que aplique se conserva lo escrito.
     let next: unknown = values[name]
     let touched = false
 
@@ -101,17 +98,12 @@ export function computeDerivedValues(
       }
     }
 
-    // El redondeo va antes de publicar el valor, no despues: el campo de abajo lo lee de
-    // scriptValues en la misma pasada, y aproximarlo mas tarde dejaria la cadena de renglones con
-    // dos verdades -- una en pantalla y otra en el calculo siguiente.
-    //
-    // Solo si algo lo produjo. Un campo calculado cuyo script devolvio undefined sigue siendo del
-    // usuario, y a lo que el usuario escribe lo redondea el blur del simulador.
+    // Redondeo antes de publicar: el campo de abajo lo lee en la misma pasada. Solo si algo lo
+    // produjo: lo escrito por el usuario lo redondea el blur.
     if (touched) {
       next = applyDecimals(field, applyRounding(field, next))
 
-      // El recorte va despues del redondeo y antes de publicar, igual que el: si se recortara
-      // mas tarde el campo de abajo leeria el negativo que en pantalla ya no esta.
+      // El recorte despues del redondeo y antes de publicar, por lo mismo.
       const clamp = clampNegative(field, next)
       next = clamp.value
       if (clamp.clamped) clamped[name] = true

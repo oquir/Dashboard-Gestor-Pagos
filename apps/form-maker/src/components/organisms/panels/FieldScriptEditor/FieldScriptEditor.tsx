@@ -47,8 +47,8 @@ export function FieldScriptEditor({ field, candidates }: FieldScriptEditorProps)
         </Button>
       )}
 
-      {/* Un editor por campo: CodeMirror guarda en su historial el cambio de documento, y con el
-          mismo editor un Ctrl+Z adentro le devolvia a este campo el script del anterior. */}
+      {/* Un editor por campo (key): con el mismo, Ctrl+Z adentro devolvia el script del campo
+          anterior. */}
       <ScriptInput
         key={field.id}
         id="field-script"

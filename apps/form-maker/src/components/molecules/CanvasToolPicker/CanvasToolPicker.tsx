@@ -9,9 +9,7 @@ import { Tooltip } from '../../atoms'
 import { TOOL_ICONS } from './CanvasToolPicker.constants'
 import type { CanvasToolPickerProps } from './CanvasToolPicker.types'
 
-// Mover / Seleccion multiple / Mano, con su atajo. Lo comparten la barra del lienzo del formulario y
-// la del diseñador de PDF: la lista (CANVAS_TOOLS) es una, asi que las dos anuncian las mismas teclas.
-// Quien lo monta decide donde guarda la herramienta elegida.
+// Lo comparten las barras del formulario y del PDF; quien lo monta guarda la herramienta.
 export function CanvasToolPicker({ tool, onSelect }: CanvasToolPickerProps) {
   return (
     <div className={CANVAS_TOOLBAR_GROUP_CLASSES}>

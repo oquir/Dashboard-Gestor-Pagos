@@ -17,15 +17,9 @@ import type { FieldDataSource } from '../../types/field'
 import type { RichTextLeaf } from '../../types/richText'
 import type { KeyTable } from './formRequires.types'
 
-// Una tabla por cada objeto del export que tiene claves opcionales o donde suelen aparecer las
-// nuevas. Cada una cubre todas las claves de su tipo -- el compilador lo exige --, asi que agregar
-// una clave al export obliga a decidir aca si es esqueleto o capacidad. Si ademas su valor sale de
-// una lista cerrada sobre la que el consumidor decide (un tipo, un operador, un formato), hay que
-// declararlo tambien por valor en formRequires.utils: ese paso el compilador no lo puede exigir.
-//
-// Sin tabla quedan los objetos que son esqueleto puro: el script compilado, la variante de una
-// validacion, el relleno de catalogo, la opcion, la configuracion de archivo y el parrafo de texto
-// enriquecido. El dia que alguno gane una clave opcional, necesita la suya.
+// Una tabla por objeto del export con claves opcionales; el compilador exige cubrir todas, asi que
+// una clave nueva obliga a clasificarla. Si su valor sale de una lista cerrada, declararlo tambien
+// por valor en formRequires.utils (eso el compilador no lo exige).
 
 export const SETUP_CONFIG_KEYS: KeyTable<ExportedSetupConfig> = {
   hasIntroModal: 'core',
@@ -165,8 +159,7 @@ export const GROUP_CHECK_KEYS: KeyTable<ExportedGroupCheck> = {
   message: 'core',
 }
 
-// Un helper cuenta donde aparece como identificador suelto: no despues de un punto (Math.max no
-// es el helper max) ni pegado a una comilla (__v["max"] es un campo que se llama asi).
+// Como identificador suelto: no tras un punto (Math.max) ni pegado a una comilla (__v["max"]).
 export const HELPER_PATTERNS: [string, RegExp][] = SCRIPT_HELPER_NAMES.map((name) => [
   name,
   new RegExp(`(?<![\\w$."'])${name}(?![\\w$])`),

@@ -1,5 +1,4 @@
-// Coma o punto como separador decimal: quien no programa escribe 0,15 y quien si, 0.15. Nada de
-// miles ni de notacion cientifica; un factor asi no los necesita.
+// Coma o punto decimal (0,15 o 0.15); sin miles ni notacion cientifica.
 export const MULTIPLIER_PATTERN: RegExp = /^-?\d+(?:[.,]\d+)?$/
 
 export const INVALID_MULTIPLIER_MESSAGE: string =

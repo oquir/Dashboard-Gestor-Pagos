@@ -4,24 +4,15 @@ import type { ScriptFunction, ScriptFunctionResult } from '../../types'
 import type { RuntimeContext } from '../../types'
 import { buildScriptFunction, composeScriptBody } from '../fieldScript'
 
-// Sin tabla de vencimientos los helpers de fecha no encuentran nada y devuelven null y 0. Es lo que
-// tiene que pasar: un formulario que no depende de fechas, o uno al que no se le cargaron, corre
-// igual. `hoy` queda vacio porque sin fecha limite nunca se llega a compararlo.
+// Sin tabla los helpers de fecha devuelven null y 0: un formulario sin fechas corre igual.
 export const EMPTY_CONTEXT: RuntimeContext = { reglas: [], hoy: '', valores: [] }
 
-// Cache de compilacion, indexada por el cuerpo ya compuesto -- preludio incluido -- y no por el
-// nombre del campo, igual que hydrateFieldSchemas se indexa por el texto del schema. Dos campos
-// con el mismo script comparten la funcion, y sobre todo: resolveRuntime llama al calculo una vez
-// por ambito en cada tecla, asi que sin cache habria un new Function por campo por pulsacion.
-//
-// Vive a nivel de modulo a proposito. Es lo unico que sobrevive entre llamadas, que es justo lo
-// que hace falta; crece con la cantidad de textos distintos que se escriban en la sesion, que en
-// la practica son unas pocas decenas de cadenas cortas.
+// Cache de compilacion por el cuerpo compuesto (preludio incluido): sin ella habria un new Function
+// por campo en cada tecla. A nivel de modulo a proposito.
 const CACHE: Map<string, ScriptFunction | null> = new Map()
 
-// El error de compilacion se guarda aparte porque en la cache un fallo es null, y sin esto habria
-// que recompilar en cada tecla justo el script que esta roto -- que es el caso mas frecuente
-// mientras alguien escribe.
+// El error se guarda aparte: en la cache un fallo es null, y sin esto se recompilaria el script
+// roto en cada tecla.
 const ERRORS: Map<string, string> = new Map()
 
 export function compileCached(compiled: string, prelude: string): ScriptFunctionResult {
@@ -37,12 +28,9 @@ export function compileCached(compiled: string, prelude: string): ScriptFunction
   return built
 }
 
-// Lo que ve el script bajo {{campo}}, coaccionado por el tipo del campo que lo declara. Sin esto
-// {{a}} + {{b}} sobre dos numeros concatena los textos que vienen del input -- "5" + "3" es
-// "53" --, que es el peor error posible en una calculadora de impuestos porque no falla, miente.
+// Coaccionado por tipo: sin esto "5" + "3" daria "53", que no falla, miente.
 export function coerceForScript(value: unknown, type: string): unknown {
-  // La columna de un grupo repetible llega como array; se coacciona elemento por elemento con el
-  // tipo de la columna, no del array.
+  // Una columna de grupo llega como array: elemento por elemento.
   if (Array.isArray(value)) return value.map((item) => coerceForScript(item, type))
   if (NUMERIC_FIELD_TYPES.includes(type)) return toScriptNumber(value)
   if (type === 'checkbox') return Boolean(value)

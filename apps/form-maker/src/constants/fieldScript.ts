@@ -1,13 +1,8 @@
-// Lo que el runtime inyecta en el ambito de cada script. Los helpers se pasan como parametros con
-// nombre y no dentro de un objeto contenedor para que se llamen sueltos -- sum(x) y no lib.sum(x) --
-// y para que el editor pueda ofrecerlos como identificadores reales.
-//
-// Reemplaza a FORMULA_FUNCTIONS de constants/formula.ts, que sigue en pie mientras exista el
-// lenguaje viejo. roundTo y el digito de verificacion estan duplicados a proposito durante la
-// migracion: acoplar el modulo nuevo al que se va a borrar seria peor que repetir dos funciones.
+// Lo que el runtime inyecta en cada script, como parametros sueltos (sum(x), no lib.sum(x)) para
+// que el editor los ofrezca. roundTo y el DV estan duplicados con constants/formula.ts a proposito
+// hasta borrar el lenguaje viejo.
 
-// Todo lo que no sea un numero legible vale 0: un campo vacio, un texto o un valor ausente.
-// Es la semantica del lenguaje y el consumidor tiene que copiarla.
+// Lo que no sea un numero legible vale 0. Es semantica del lenguaje: el consumidor la copia.
 export function toScriptNumber(value: unknown): number {
   if (typeof value === 'number') return Number.isFinite(value) ? value : 0
   if (typeof value === 'boolean') return value ? 1 : 0
@@ -22,8 +17,8 @@ export function toScriptNumber(value: unknown): number {
   return 0
 }
 
-// Aplana un nivel de arrays: la columna de un grupo repetible llega como array, asi que
-// sum({{impuesto_actividad}}) y sum(a, b) tienen que ser la misma llamada.
+// Aplana un nivel: la columna de un grupo llega como array, y sum({{x}}) y sum(a, b) son la misma
+// llamada.
 function toNumbers(args: unknown[]): number[] {
   const flat: number[] = []
 
@@ -76,24 +71,15 @@ export const SCRIPT_HELPERS: Record<string, (...args: unknown[]) => number> = {
   dvNit: (...args) => digitoVerificacion(toScriptNumber(args[0])),
 }
 
-// Los de fecha van aparte porque no son puros: necesitan la tabla de vencimientos del municipio,
-// que no viaja en el export y le llega al runtime como un segundo dato. Aca estan solo los nombres
-// -- la implementacion vive en lib/scriptDates, que este archivo no puede importar sin poner a
-// constants a depender de lib.
-//
-// Son parte del contrato con el consumidor igual que el resto: lo que se exporta en `compiled` los
-// llama por nombre, asi que del otro lado tienen que existir y significar lo mismo.
+// Solo los nombres: la implementacion vive en lib/scriptDates (constants no importa lib). Son
+// contrato con el consumidor: compiled los llama por nombre.
 export const DATE_HELPER_NAMES: string[] = ['fechaLimite', 'diasDeMora', 'mesesDeMora']
 
-// La UVT y el salario minimo del ano. Impuros por lo mismo que los de fecha -- salen del banco de
-// valores, que tampoco viaja en el export -- y con la implementacion en lib/scriptValores.
-//
-// Devuelven null, no 0, cuando el ano no esta cargado: un 0 haria desaparecer sin ruido cualquier
-// piso o tope expresado en UVT. El autor pone el respaldo a la vista con `uvt() ?? 52374`.
+// UVT y SMMLV del ano (lib/scriptValores). Devuelven null y no 0 si falta el ano: el autor pone el
+// respaldo con uvt() ?? 52374.
 export const VALUE_HELPER_NAMES: string[] = ['uvt', 'smmlv']
 
-// Todos los que necesitan el RuntimeContext, en el orden en que se pasan. Existe para que los dos
-// sitios que los enumeran -- los nombres y los valores -- no puedan quedar en distinto orden.
+// Los que necesitan el RuntimeContext, en orden de paso: nombres y valores no pueden desalinearse.
 export const CONTEXT_HELPER_NAMES: string[] = [...DATE_HELPER_NAMES, ...VALUE_HELPER_NAMES]
 
 export const SCRIPT_HELPER_NAMES: string[] = [
@@ -101,12 +87,10 @@ export const SCRIPT_HELPER_NAMES: string[] = [
   ...CONTEXT_HELPER_NAMES,
 ]
 
-// El objeto de valores no se nombra nunca a mano: {{campo}} se compila a __v["campo"]. El guion
-// bajo doble es para que no choque con una variable del autor.
+// {{campo}} se compila a __v["campo"]; el guion doble evita choques con variables del autor.
 export const SCRIPT_VALUES_PARAM: string = '__v'
 
-// `value` es lo que el usuario tenga escrito en el campo e `index` la repeticion dentro de un
-// grupo repetible. Fuera de un grupo, `index` es 0.
+// value: lo escrito en el campo; index: la repeticion dentro de un grupo (0 fuera de grupo).
 export const SCRIPT_CONTEXT_PARAMS: string[] = [SCRIPT_VALUES_PARAM, 'value', 'index']
 
 // El orden manda: es el mismo con el que el runtime pasa los argumentos.
@@ -116,8 +100,7 @@ export const SCRIPT_PARAM_NAMES: string[] = [
   ...CONTEXT_HELPER_NAMES,
 ]
 
-// La contraparte de los nombres de arriba, derivada del mismo objeto para que no puedan
-// desalinearse: si se declararan por separado, agregar un helper en un lado y no en el otro
-// correria todos los argumentos siguientes sin que nada avise.
+// Derivada del mismo objeto que los nombres: si se desalinearan, se correrian los argumentos sin
+// aviso.
 export const SCRIPT_HELPER_VALUES: ((...args: unknown[]) => number)[] =
   Object.values(SCRIPT_HELPERS)

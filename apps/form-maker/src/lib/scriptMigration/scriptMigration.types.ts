@@ -1,5 +1,4 @@
-// El AST del lenguaje de formulas, que ya nadie escribe. Vive aca y no en src/types porque no es
-// parte del modelo: es la forma intermedia por la que pasa un borrador viejo camino al script.
+// AST del lenguaje de formulas: forma intermedia de la migracion, no del modelo.
 
 export interface FormulaToken {
   kind: 'number' | 'ident' | 'op'

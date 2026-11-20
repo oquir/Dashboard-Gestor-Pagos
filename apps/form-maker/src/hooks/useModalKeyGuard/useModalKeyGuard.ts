@@ -1,15 +1,9 @@
 import { type KeyboardEvent as ReactKeyboardEvent, useEffect, useRef } from 'react'
 import type { UseModalKeyGuardResult } from './useModalKeyGuard.types'
 
-// Aisla el teclado de un modal abierto desde el sidebar, con el campo que edita seleccionado
-// detras. Los atajos globales escuchan en window: con el foco en un boton del modal, o en el body
-// tras un clic en el fondo o al quitar el boton que lo tenia, Escape deseleccionaria el campo y
-// desmontaria el modal, Suprimir borraria el campo y Ctrl+A cambiaria la seleccion.
-//
-// No frena todo en captura como el calculo sin codigo: asi tambien se le quitaria a CodeMirror,
-// que atiende el teclado con listeners propios (Enter acepta el autocompletado, Ctrl+Space lo
-// abre, Ctrl+Z deshace dentro del editor). Lo que nace dentro del dialogo llega a sus controles y
-// se frena al salir de el; lo que nace afuera se frena en captura, antes de llegar a nadie.
+// Aisla el teclado de un modal abierto con el campo seleccionado detras: Escape, Suprimir y Ctrl+A
+// lo afectarian. No frena todo en captura para no quitarle el teclado a CodeMirror: lo de adentro
+// se frena al salir del dialogo; lo de afuera, en captura.
 
 // Ctrl+S pasa siempre: frenarlo no anula el atajo, se lo deja al "Guardar como" del navegador.
 function isSaveShortcut(event: KeyboardEvent | ReactKeyboardEvent): boolean {

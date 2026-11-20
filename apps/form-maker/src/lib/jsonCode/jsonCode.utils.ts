@@ -1,9 +1,5 @@
-// Pliega el texto para buscar sin distinguir mayusculas ni tildes ("ano" encuentra "Año").
-//
-// Se pliega caracter por caracter y cada uno queda de un solo caracter, asi el texto plegado mide
-// lo mismo que el original y las posiciones de lo encontrado sirven tal cual para resaltar el texto
-// real. Un normalize('NFD') de la cadena entera separaria cada tilde en su propio caracter y
-// correria todas las posiciones de ahi en adelante.
+// Sin mayusculas ni tildes, caracter por caracter: el largo no cambia y las posiciones sirven para
+// resaltar.
 export function foldSearchText(text: string): string {
   let folded: string = ''
 

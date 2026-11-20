@@ -1,3 +1,3 @@
-// Interfaz publica del store. banksSlice y los .utils/.constants son internos. pdfDesignStore
-// tampoco esta: solo lo usa el diseñador de PDF, que se carga con React.lazy.
+// Interfaz publica del store. Internos: banksSlice y los .utils/.constants. pdfDesignStore tampoco
+// esta: solo lo usa el disenador (React.lazy).
 export * from './formStore'

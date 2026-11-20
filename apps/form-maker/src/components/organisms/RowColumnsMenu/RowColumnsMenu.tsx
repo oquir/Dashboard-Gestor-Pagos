@@ -6,9 +6,7 @@ import { useFormStore } from '../../../store'
 import type { RowColumnsMenuProps } from './RowColumnsMenu.types'
 import { Tooltip } from '../../atoms'
 
-// El abierto/cerrado lo lleva la barra que lo contiene, no este componente: asi los dos menus son
-// excluyentes sin conocerse y la barra sabe que tiene que quedarse a la vista mientras haya uno
-// desplegado.
+// El abierto/cerrado lo lleva la barra: los menus son excluyentes sin conocerse.
 export function RowColumnsMenu({ rowId, columns, isOpen, onToggle, onClose }: RowColumnsMenuProps) {
   const updateRowColumns = useFormStore((state) => state.updateRowColumns)
   const containerRef = useRef<HTMLDivElement | null>(null)

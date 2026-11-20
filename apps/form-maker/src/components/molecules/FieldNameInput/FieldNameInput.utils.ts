@@ -1,8 +1,7 @@
 import { collectFieldNames } from '../../../lib'
 import type { FormStep, IntroModalStep } from '../../../types'
 
-// Los nombres se comparan contra los dos lienzos, no contra el activo: el export los mezcla en un
-// unico espacio de nombres, asi que un campo del modal de intro choca con uno del formulario.
+// Contra los dos lienzos: el export mezcla modal y formulario en un solo espacio de nombres.
 export function takenFieldNames(
   formSteps: FormStep[],
   introSteps: IntroModalStep[],

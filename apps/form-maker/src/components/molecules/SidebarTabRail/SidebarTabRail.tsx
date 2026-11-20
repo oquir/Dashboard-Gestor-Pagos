@@ -28,8 +28,8 @@ export function SidebarTabRail({
             {dividerBefore.includes(tab.id) && (
               <span aria-hidden className={RAIL_DIVIDER_CLASSES} />
             )}
-            {/* El globo sale siempre: con el panel abierto el encabezado nombra solo la pestana
-                activa, y las otras siete quedaban como iconos sin nombre. */}
+            {/* Tooltip siempre: con el panel abierto solo la pestana activa tiene nombre
+                visible. */}
             <Tooltip content={tab.label} placement="right">
               <button
                 type="button"

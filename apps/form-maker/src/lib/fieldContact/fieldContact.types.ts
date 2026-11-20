@@ -1,7 +1,6 @@
 import type { PhoneKind } from '../../types/fieldContact'
 
-// Lo minimo para decidir el formato de fabrica, estructural para que entren CanvasField y
-// ExportedField sin que esta carpeta conozca ninguno.
+// Estructural, para que entren CanvasField y ExportedField.
 export interface ContactField {
   type: string
   phoneKind?: PhoneKind

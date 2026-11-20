@@ -1,5 +1,4 @@
-// Los dos grupos de pestanas solo se rotulan cuando hay dos: con el modal apagado, "Formulario"
-// repetiria el titulo del bloque que ya esta arriba.
+// Los grupos solo se rotulan cuando hay dos.
 export const GROUP_CAPTION_CLASSES: string =
   'mb-1.5 block text-[9px] font-semibold uppercase tracking-wider text-fg-muted'
 

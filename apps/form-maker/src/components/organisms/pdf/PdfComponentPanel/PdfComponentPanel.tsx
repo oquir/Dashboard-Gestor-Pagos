@@ -17,9 +17,6 @@ import { PdfTextField } from '../PdfTextField'
 import type { PdfComponentPanelProps } from './PdfComponentPanel.types'
 import { DIRECTIONS, DOCUMENT_FONT, HAS_VARIABLE } from './PdfComponentPanel.constants'
 
-// El componente de la celda: arriba cual (cambiarlo empieza el nuevo con lo de siempre; Ctrl+Z
-// devuelve el anterior), abajo lo suyo. Lo que llena el back (codigo de barras, QR) solo pide el
-// nombre de la variable; en el lienzo se ve una muestra del mismo tamaño.
 export function PdfComponentPanel({ cellId, component }: PdfComponentPanelProps) {
   const setCellComponent = usePdfDesignStore((state) => state.setCellComponent)
   const update = (next: PdfComponent): void => setCellComponent(cellId, next)
@@ -330,8 +327,7 @@ export function PdfComponentPanel({ cellId, component }: PdfComponentPanelProps)
   )
 }
 
-// Un valor opcional del componente: undefined borra la clave, para que el JSON del .html no lleve
-// "width": null ni una clave vacia.
+// undefined borra la clave: el JSON del .html no lleva nulls ni claves vacias.
 function withOptional<T extends PdfComponent, K extends keyof T>(
   component: T,
   key: K,

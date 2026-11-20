@@ -4,10 +4,8 @@ import { collectRuleRefs, ruleScriptSources } from '../fieldRule/fieldRule'
 import type { TopologicalResult } from './fieldGraph.types'
 import { scriptRefIds } from './fieldGraph.utils'
 
-// Un unico grafo de dependencias entre campos. Existe porque las relaciones estan repartidas en
-// cuatro sitios distintos del modelo y hay que mirarlas juntas: un ciclo puede cruzarlos. Eran
-// siete hasta que el script se comio a la formula, a las dependencias declaradas a mano y al
-// typeScript que nunca se ejecutaba.
+// Un unico grafo de dependencias entre campos: las relaciones viven en cuatro sitios del modelo y
+// un ciclo puede cruzarlos.
 
 export function buildNameToIdIndex(fields: CanvasField[]): Map<string, string> {
   const index: Map<string, string> = new Map()
@@ -19,8 +17,7 @@ export function buildNameToIdIndex(fields: CanvasField[]): Map<string, string> {
   return index
 }
 
-// Las cuatro fuentes de aristas, todas normalizadas a ids. Los scripts referencian campos por
-// nombre, de ahi el indice byName: sin el, un ref quedaria fuera del grafo sin avisar.
+// Las cuatro fuentes de aristas, normalizadas a ids; los scripts usan nombres, de ahi byName.
 export function fieldDependencies(
   field: CanvasField,
   byName: Map<string, string>,
@@ -51,14 +48,12 @@ export function fieldDependencies(
 export function buildFieldGraph(fields: CanvasField[]): FieldGraph {
   const byId: Map<string, CanvasField> = new Map(fields.map((field) => [field.id, field]))
   const byName: Map<string, string> = buildNameToIdIndex(fields)
-  // Se arma una vez y no por campo: el compilador del script la consulta para cada {{x}} y armarla
-  // adentro del bucle volveria cuadratica la construccion del grafo.
+  // Una vez y no por campo: dentro del bucle seria cuadratico.
   const knownNames: Set<string> = new Set(byName.keys())
   const edges: Map<string, string[]> = new Map()
 
   for (const field of fields) {
-    // Se descartan las referencias a campos que ya no existen: un binding viejo apuntando a un
-    // campo borrado meteria un nodo fantasma y el orden topologico no cerraria nunca.
+    // Sin referencias a campos borrados: un nodo fantasma impediria cerrar el orden.
     edges.set(
       field.id,
       fieldDependencies(field, byName, knownNames).filter((id) => byId.has(id)),
@@ -103,9 +98,8 @@ export function findCycle(graph: FieldGraph): string[] | null {
   return null
 }
 
-// Barre la lista emitiendo lo que ya tiene todas sus dependencias resueltas, hasta que una
-// vuelta entera no logra emitir nada. Lo que quede sin emitir es justamente lo que esta en un
-// ciclo. Nunca lanza: devuelve el orden parcial y el ciclo aparte, para que quien llame decida.
+// Emite lo que ya tiene sus dependencias hasta que una vuelta no emite nada: lo que queda es el
+// ciclo. Nunca lanza.
 export function topologicalOrder(graph: FieldGraph): TopologicalResult {
   const order: string[] = []
   const emitted = new Set<string>()
@@ -133,9 +127,8 @@ export function topologicalOrder(graph: FieldGraph): TopologicalResult {
   return { order, unresolved, cycle: unresolved.length > 0 ? findCycle(graph) : null }
 }
 
-// Guarda de los editores: responde si atar `fieldId` a `dependsOnFieldId` cerraria un ciclo.
-// Camina todas las aristas, no solo las del tipo que se esta editando, porque un ciclo puede
-// mezclarlas (A.visibleWhen mira a B y la formula de B lee A).
+// Guarda de los editores: si atar fieldId a dependsOnFieldId cerraria un ciclo, mirando todas las
+// aristas.
 export function wouldCreateCycle(
   graph: FieldGraph,
   fieldId: string,

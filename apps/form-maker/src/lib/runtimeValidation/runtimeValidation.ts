@@ -21,9 +21,8 @@ import { coerceValues, runFieldScript } from '../scriptRuntime/scriptRuntime'
 import { firstZodMessage, hydrateFieldSchemas } from '../zodHydrate/zodHydrate'
 import { checkKey, coerceValue, effectiveSchemaSource, fieldKey } from './runtimeValidation.utils'
 
-// Valida todo el formulario contra los schemas de Zod hidratados desde el export.
-// Devuelve dos cosas distintas: `errors` es lo que el usuario hizo mal llenando el formulario,
-// `issues` es lo que esta mal en el formulario en si (un schema que no compila, un ciclo).
+// Valida contra los schemas hidratados. errors: lo que lleno mal el usuario; issues: lo que esta
+// mal en el formulario.
 export function validateRuntime(
   model: RuntimeModel,
   snapshot: RuntimeSnapshot,
@@ -49,13 +48,8 @@ export function validateRuntime(
   }
 }
 
-// El ambito en el que corre una comprobacion: el root con las columnas del grupo aplanadas a
-// arrays, que es lo que hace que sum({{ingresos_gravados}}) tenga algo que sumar.
-//
-// Las columnas se arman desde snapshot.groups y no desde snapshot.root.values, que ya trae unas.
-// No son las mismas: resolveRuntime mete en el root las de la PRIMERA pasada, y las definitivas son
-// las de la tercera. Para una columna que el usuario teclea da igual, pero sumar una calculada por
-// la copia vieja daria un numero distinto al que se ve en pantalla.
+// Ambito de una comprobacion: root con las columnas del grupo como arrays. Desde snapshot.groups
+// (tercera pasada) y no de root.values (primera): una calculada daria otro numero.
 function buildCheckScope(
   model: RuntimeModel,
   root: RuntimeValues,
@@ -70,10 +64,8 @@ function buildCheckScope(
   return coerceValues({ ...root, ...groupColumns(model, values) }, model)
 }
 
-// Falso reprueba, verdadero pasa. Los dos casos raros -- que el script reviente o que no devuelva
-// nada -- se tratan igual y a proposito: son un error del formulario, no del contribuyente, asi que
-// se reportan como issue y dejan pasar. Bloquear a alguien por un bug del autor lo deja encerrado
-// en el paso sin nada que pueda corregir.
+// Falso reprueba, verdadero pasa. Si el script revienta o no devuelve nada es error del formulario:
+// se reporta y deja pasar.
 function runGroupCheck(
   check: ExportedGroupCheck,
   prelude: string,
@@ -97,9 +89,7 @@ function runGroupCheck(
   return { failed: !run.value, error: null }
 }
 
-// Las comprobaciones de grupo van aparte del recorrido de campos porque no miran un valor: comparan
-// la columna entera contra el resto del formulario, asi que necesitan un solo ambito comun y no uno
-// por repeticion. El ambito se arma una vez para todas: montarlo aplana cada columna del grupo.
+// Aparte de los campos: comparan la columna entera con un solo ambito comun.
 function collectCheckErrors(
   model: RuntimeModel,
   snapshot: RuntimeSnapshot,
@@ -149,8 +139,8 @@ function collectErrors(
     // Un campo oculto no se renderiza ni se valida: es la precedencia del contrato.
     if (!scope.visible[field.name]) continue
 
-    // El schema se elige con los valores del scope, no con el nombre del campo: uno con variantes
-    // condicionales valida distinto segun lo que haya en el campo que observa.
+    // El schema se elige con los valores del scope: las variantes condicionales dependen de lo que
+    // observan.
     const source: string | undefined = effectiveSchemaSource(field, scope.values)
     if (source === undefined) continue
 

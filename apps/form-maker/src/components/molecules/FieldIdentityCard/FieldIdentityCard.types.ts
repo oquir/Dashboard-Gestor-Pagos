@@ -2,7 +2,6 @@ import type { CanvasField } from '../../../types'
 
 export interface FieldIdentityCardProps {
   field: CanvasField
-  // La etiqueta externa que aporta el texto visible, si la hay: lo que se muestra es lo que ve el
-  // contribuyente, no lo que el campo guarda en su propio label.
+  // La etiqueta externa que aporta el texto visible, si la hay.
   linkedLabel: CanvasField | null
 }

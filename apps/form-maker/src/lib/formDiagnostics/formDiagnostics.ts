@@ -16,20 +16,13 @@ import {
   scriptProblems,
 } from './formDiagnostics.utils'
 
-// Revision del formulario antes de exportar. Junta en una sola lista lo que los editores ya avisan
-// por separado -- scripts que no compilan, ciclos, mapeos huerfanos, conceptos sin id o repetidos,
-// CSS no reconocido -- y lo que nadie revisaba: la regex de `pattern` y de las condiciones
-// `matches`, y los scripts de los efectos de reglas.
-//
-// Un error es algo que se sabe roto y bloquea la exportacion; un aviso puede ser a proposito. Los
-// `⚠ tipo` y la cobertura del payload quedan fuera a proposito: siguen en Mapeo API y en la vista
-// Payload. Sin React ni store, y sin nada del simulador: corre del lado del builder y no puede
-// arrastrar el chunk perezoso.
+// Revision antes de exportar: junta lo que los editores avisan por separado y lo que nadie revisaba
+// (regex de pattern y matches, scripts de efectos). Error: roto, bloquea. Aviso: puede ser a
+// proposito. ⚠ tipo y cobertura quedan fuera a proposito. No arrastra nada del simulador.
 
 export function diagnoseForm(input: DiagnoseFormInput): FormProblem[] {
   const items: LocatedItems = locateItems(input)
-  // Los mismos nombres que arma buildFormExport: los dos lienzos comparten espacio de nombres, asi
-  // que cada {{x}} se juzga con el mismo criterio con que se va a compilar.
+  // Los mismos nombres que buildFormExport: cada {{x}} se juzga como se va a compilar.
   const knownNames: Set<string> = new Set(items.fields.map((located) => located.field.name))
   const prelude: PreludeCheck = checkPrelude(input.formScript)
   const owners: Map<number, CanvasField[]> = conceptOwners(

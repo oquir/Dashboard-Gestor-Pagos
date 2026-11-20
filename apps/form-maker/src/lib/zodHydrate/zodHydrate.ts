@@ -7,10 +7,8 @@ export interface HydratedSchema {
   error: string | null
 }
 
-// Es el unico camino que tiene el consumidor: el export solo lleva el schema como string,
-// no las validaciones crudas. Simularlo aca es lo que hace fiel a la vista previa.
-// El fallo se devuelve como texto en vez de propagarse: un schema mal escrito tiene que verse
-// como un problema de ese campo, no tumbar el formulario entero.
+// El unico camino del consumidor: el export lleva el schema como string. El fallo vuelve como
+// texto: un schema roto es problema de ese campo.
 export function hydrateZodSchema(source: string | undefined): HydratedSchema {
   if (!source || source.trim() === '') return { schema: null, error: null }
 
@@ -28,9 +26,8 @@ export function hydrateZodSchema(source: string | undefined): HydratedSchema {
   }
 }
 
-// El mapa va indexado por el texto del schema y no por el nombre del campo, porque un campo con
-// variantes condicionales tiene mas de uno y cual aplica depende de lo que el usuario lleve
-// escrito. Como efecto secundario, dos campos con el mismo schema comparten el validador.
+// Por texto del schema: un campo con variantes tiene varios, y dos campos iguales comparten
+// validador.
 export function hydrateFieldSchemas(fields: ExportedField[]): {
   schemas: Map<string, z.ZodType>
   issues: RuntimeIssue[]

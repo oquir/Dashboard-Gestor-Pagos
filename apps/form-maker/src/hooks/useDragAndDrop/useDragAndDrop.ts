@@ -26,15 +26,12 @@ import {
 } from './useDragAndDrop.utils'
 
 const OVERLAY_MODIFIERS: Modifier[] = [centerOverlayOnCursor]
-// La fila no se centra en el cursor: se dibuja del tamano real y conserva el punto por donde se
-// agarro, que es lo que hace que parezca que uno lleva la seccion en la mano y no una ficha.
+// La fila no se centra: conserva el punto por donde se agarro.
 const ROW_OVERLAY_MODIFIERS: Modifier[] = []
 
-// Todo el cableado de arrastrar y soltar: de la paleta a una fila, del almacen a una fila, de una
-// fila a otra y la fila entera cambiando de sitio. App solo monta el DndContext y el DragOverlay.
-// Con Shift se resaltan las columnas de la fila para elegir donde empieza el campo; con Shift+Ctrl
-// la columna donde se pulso Ctrl queda anclada y el puntero define el final, asi que el arrastre
-// tambien redimensiona. Los modificadores se leen en vivo durante el arrastre.
+// Todo el arrastrar y soltar: de la paleta a una fila, entre filas y filas enteras. Shift resalta
+// las columnas para elegir el inicio; Shift+Ctrl ancla el inicio y el puntero define el final. Los
+// modificadores se leen en vivo.
 export function useDragAndDrop(): DragAndDropReturn {
   const addFieldToRow = useFormStore((state) => state.addFieldToRow)
   const moveField = useFormStore((state) => state.moveField)
@@ -50,8 +47,7 @@ export function useDragAndDrop(): DragAndDropReturn {
   const isLowPerformance = useFormStore((state) => state.isLowPerformance)
   const [activeDrag, setActiveDrag] = useState<ActiveDrag | null>(null)
 
-  // Todo esto va en refs y no en estado: se actualiza en cada movimiento del puntero y en cada
-  // tecla, y volver a renderizar a ese ritmo haria el arrastre a tirones.
+  // En refs y no en estado: cambia en cada movimiento y en cada tecla.
   const activeDragRef = useRef<ActiveDrag | null>(null)
   const hoveredRowIdRef = useRef<string | null>(null)
   const hoveredBandIdRef = useRef<string | null>(null)
@@ -69,9 +65,7 @@ export function useDragAndDrop(): DragAndDropReturn {
     return GRID_BASE_COLUMNS
   }, [])
 
-  // recomputePlacement corre en cada pointermove, o sea unas cien veces por segundo, y casi
-  // siempre para dejar todo igual. Escribir al store igual crea un estado nuevo y obliga a cada
-  // suscriptor a reevaluar su selector, asi que solo se escribe cuando el valor cambia de verdad.
+  // Corre unas cien veces por segundo: solo se escribe al store cuando el valor cambia.
   const applyPlacement = useCallback(
     (next: DragPlacement | null): void => {
       if (samePlacement(useFormStore.getState().dragPlacement, next)) return
@@ -145,8 +139,7 @@ export function useDragAndDrop(): DragAndDropReturn {
       const hoveredBandId: string | null = hoveredBandIdRef.current
       const pointerY: number = pointerRef.current.y
 
-      // Los dos salen del mismo `over`, asi que nunca hay ambos a la vez. La fila se mira primero
-      // porque la banda solo gana donde no hay ninguna: su cabecera y su relleno.
+      // La fila primero: la banda solo gana en su cabecera y su relleno.
       if (hoveredRowId) {
         const element: HTMLElement | null = getRowElement(hoveredRowId)
         const edge = element ? getDropEdgeAtPointer(element, pointerY) : null
@@ -171,8 +164,7 @@ export function useDragAndDrop(): DragAndDropReturn {
   const recompute = useCallback((): void => {
     const drag = activeDragRef.current
 
-    // Arrastrar una fila no coloca nada en columnas. Sin este corte, mantener Shift durante el
-    // arrastre calcularia una colocacion de campo fantasma sobre la fila que hay debajo.
+    // Arrastrar una fila no coloca nada: sin este corte, Shift calcularia una colocacion fantasma.
     if (drag?.source === 'canvas-row') {
       applyPlacement(null)
       recomputeRowDrop(drag.row)
@@ -240,9 +232,8 @@ export function useDragAndDrop(): DragAndDropReturn {
     setActiveDrag(drag)
     activeDragRef.current = drag
     anchorRef.current = null
-    // Al store y no a una ref porque lo leen tres componentes: la banda para encender su zona de
-    // soltar, la grilla para apartar las filas y la previsualizacion para dibujarse del mismo
-    // tamano. Son dos escrituras por arrastre, no cien por segundo.
+    // Al store porque lo leen la banda, la grilla y la previsualizacion; son dos escrituras por
+    // arrastre.
     setRowDrag(drag?.source === 'canvas-row' ? measureRow(drag.row.id) : null)
     // Lo leen las pestanas de paso para encenderse como destino de mudanza, igual que rowDrag.
     setDraggingFieldId(drag?.source === 'canvas-field' ? drag.field.id : null)
@@ -254,8 +245,7 @@ export function useDragAndDrop(): DragAndDropReturn {
     hoveredRowIdRef.current = overData?.rowId ?? null
     hoveredBandIdRef.current = overData?.bandGroupId ?? null
 
-    // Al store porque lo mira la previsualizacion, y solo cuando cambia de verdad: esto corre en
-    // cada movimiento del puntero igual que el resto.
+    // Al store solo cuando cambia: corre en cada movimiento.
     const nextTarget: CanvasTarget | null = overData?.canvasTarget ?? null
     if (!sameCanvasTarget(useFormStore.getState().hoveredTransferTarget, nextTarget)) {
       setHoveredTransferTarget(nextTarget)
@@ -278,8 +268,7 @@ export function useDragAndDrop(): DragAndDropReturn {
     const overData = over?.data.current as
       { rowId?: string; canvasTarget?: CanvasTarget } | undefined
 
-    // Soltar sobre una pestana se resuelve antes que nada: el destino es otro lienzo, asi que ni la
-    // colocacion en columnas ni el reordenamiento de filas tienen nada que decir.
+    // Soltar sobre una pestana va primero: el destino es otro lienzo.
     if (overData?.canvasTarget) {
       if (data?.source === 'canvas-field') {
         moveFieldsToStep([(data.field as CanvasField).id], overData.canvasTarget)
@@ -289,8 +278,7 @@ export function useDragAndDrop(): DragAndDropReturn {
       return
     }
 
-    // La fila no se guia por `over` sino por el destino ya resuelto: el iman puede haberla llevado
-    // al borde de una banda, que es otra fila distinta de la que hay bajo el cursor.
+    // Por el destino resuelto y no por over: el iman pudo llevarla al borde de una banda.
     if (data?.source === 'canvas-row') {
       if (rowDropTarget?.isValid) moveRow((data.row as CanvasRow).id, rowDropTarget)
       return
@@ -313,9 +301,7 @@ export function useDragAndDrop(): DragAndDropReturn {
     sensors,
     activeDrag,
     collisionDetection: pointerFirstCollision,
-    // Sobre una pestana la previsualizacion se encoge a una ficha, y una ficha si se centra en el
-    // cursor: asi queda pegada al puntero en vez de flotando donde estaba el borde de la fila. En
-    // bajo rendimiento es ficha todo el viaje (ver DragPreview), asi que tambien va centrada.
+    // Sobre una pestana, y siempre en bajo rendimiento, la ficha va centrada en el cursor.
     overlayModifiers:
       activeDrag?.source === 'canvas-row' && !hoveredTransferTarget && !isLowPerformance
         ? ROW_OVERLAY_MODIFIERS

@@ -2,9 +2,8 @@ import type { PdfClass } from '../../types'
 
 export const GRAY: string = '#f1f1f1'
 
-// Las clases de la plantilla del ICA: cortas y para combinar ("celda negrita derecha"), en vez de
-// repetir el mismo style en cada una de sus ~250 celdas. El orden importa: con dos que digan lo
-// mismo gana la de mas abajo (arriba le gana a la alineacion al medio de celda y suelta).
+// Clases cortas para combinar en vez de repetir el style en ~250 celdas. Con dos iguales gana la de
+// mas abajo.
 export const ICA_CLASS = {
   cell: 'celda',
   bare: 'suelta',
@@ -24,8 +23,7 @@ export const ICA_CLASSES: PdfClass[] = [
     verticalAlign: 'middle',
     borders: { top: true, right: true, bottom: true, left: true },
   },
-  // Una celda de una tabla de adentro (casillas, firmas): sin bordes y sin relleno de alto, para que
-  // la fila de afuera no crezca.
+  // Sin bordes ni relleno de alto: la fila de afuera no crece.
   { name: ICA_CLASS.bare, verticalAlign: 'middle', css: 'padding: 0 2px' },
   { name: ICA_CLASS.top, verticalAlign: 'top' },
   { name: ICA_CLASS.bold, bold: true },
@@ -38,13 +36,9 @@ export const ICA_CLASSES: PdfClass[] = [
   { name: ICA_CLASS.indent, css: 'padding-left: 12px' },
 ]
 
-// Las 10 columnas de la tabla del ICA, medidas para que quepan las variables mas largas de cada
-// columna sin partirse: el rotulo vertical, el numero del renglon y 8 mas. Un renglon usa 5 para el
-// texto (488 px) y 3 para el valor (238 px). En las actividades: nombre (c1-c2), codigo CIIU (c3),
-// ingresos (c4, la de {IngresosNetosGravablesSecundaria14}), tarifa (c5-c6) e impuesto (c7-c9).
-// La ultima va sin ancho y se queda con lo que sobre (64 px): con table-layout fixed, si los anchos
-// sumaran mas que el espacio la tabla creceria hasta la suma y se saldria de la hoja. El espacio es
-// 778 menos el resguardo de los bordes (PDF_EDGE_GUARD_PX a cada lado), 776.
+// 10 columnas medidas para las variables mas largas: rotulo vertical, renglon y 8 mas (texto 488
+// px, valor 238 px). La ultima sin ancho: con table-layout fixed una suma mayor desbordaria la hoja
+// (776 px utiles).
 export const ICA_COLUMN_WIDTHS: (number | undefined)[] = [
   30,
   22,
@@ -58,14 +52,13 @@ export const ICA_COLUMN_WIDTHS: (number | undefined)[] = [
   undefined,
 ]
 
-// Un valor largo (un correo, una direccion) se parte en vez de empujar la hoja: un PDF mas ancho
-// que 778 px el convertidor lo encoge entero.
+// Un valor largo se parte: un PDF mas ancho que 778 px el convertidor lo encoge entero.
 export const ICA_TABLE_STYLE: string = 'word-wrap: break-word'
 
 export const ICA_FONT_SIZE: number = 8
 
-// Cuantas actividades caben: las 15 del grupo repetible de la plantilla del formulario
-// (DEFAULT_GROUP_MAX). La 1 es la principal; de la 2 a la 15, las variables Secundaria1…14.
+// Las 15 del grupo repetible (DEFAULT_GROUP_MAX): la 1 es la principal y la 2 a la 15, Secundaria1
+// a 14.
 export const ICA_ACTIVITY_COUNT: number = 15
 
 // Alto de cada rotulo vertical, a la medida de su seccion.

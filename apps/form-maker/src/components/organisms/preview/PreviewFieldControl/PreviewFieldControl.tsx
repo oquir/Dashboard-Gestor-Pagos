@@ -67,12 +67,8 @@ export function PreviewFieldControl({
         />
       )
 
-    // El redondeo y el formato se aplican al salir del campo, no mientras se escribe: uno haria
-    // imposible tipear -- 499 pasaria a 0 en cuanto se escribe el 4 -- y el otro movetia el cursor
-    // de lugar en cada punto insertado. Un campo calculado va deshabilitado y un input
-    // deshabilitado nunca dispara blur, asi que su valor lo redondea runtimeDerived. El onChange
-    // que recibimos ya viene atado a su grupo y su repeticion, asi que esto funciona igual
-    // adentro de un grupo repetible.
+    // Redondeo y formato al salir del campo: mientras se escribe harian imposible tipear. El
+    // calculado va deshabilitado (sin blur): lo redondea runtimeDerived.
     case 'number':
     case 'calculated': {
       const prefix: string | undefined = affixOf(field, 'prefix')
@@ -88,7 +84,7 @@ export function PreviewFieldControl({
         />
       )
 
-      // Sin afijos queda el input de siempre: el marco solo aparece cuando hay algo que enmarcar.
+      // Sin afijos, el input de siempre.
       return prefix || suffix ? (
         <PreviewAffixFrame prefix={prefix} suffix={suffix} invalid={invalid}>
           {numberInput}
@@ -98,7 +94,7 @@ export function PreviewFieldControl({
       )
     }
 
-    // El valor es lo escrito, se elija una sugerencia o no: por eso valida y viaja como un texto.
+    // El valor es lo escrito, se elija una sugerencia o no.
     case 'datalist':
       return (
         <PreviewDatalistInput
@@ -113,8 +109,8 @@ export function PreviewFieldControl({
         />
       )
 
-    // type tel y email no validan nada por si solos fuera de un <form>; lo que traen es el teclado
-    // del celular. El formato lo valida el schema, con el patron de fabrica del tipo.
+    // Fuera de un <form> tel y email no validan; traen el teclado del celular. El formato lo valida
+    // el schema.
     case 'tel':
     case 'email':
       return (
@@ -131,9 +127,8 @@ export function PreviewFieldControl({
         />
       )
 
-    // El valor es el texto que entrega el input, tal cual (AAAA-MM-DD, o AAAA-MM-DDTHH:mm con hora):
-    // es lo que valida el schema y lo que viaja en el payload. El dd/mm/aaaa en pantalla lo pone el
-    // navegador segun su idioma.
+    // El valor es el texto del input (AAAA-MM-DD, con hora AAAA-MM-DDTHH:mm): eso valida el schema
+    // y viaja en el payload.
     case 'date':
       return isDateRangeField(field) ? (
         <PreviewDateRangeInput
@@ -186,9 +181,8 @@ export function PreviewFieldControl({
         />
       )
 
-    // Un search_select existe porque su catalogo es demasiado grande para un desplegable: las 425
-    // actividades por 15 repeticiones eran 6.375 <option> montados de entrada. El buscador tambien
-    // es lo unico que puede mostrar codigo, descripcion y tarifa en columnas separadas.
+    // Para catalogos grandes: 425 actividades por 15 repeticiones eran 6.375 <option>. Ademas
+    // muestra codigo, descripcion y tarifa en columnas.
     case 'search_select':
       return (
         <PreviewSearchSelect

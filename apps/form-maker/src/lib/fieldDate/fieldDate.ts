@@ -3,11 +3,8 @@ import type { DateCapableField, DateFormatId, DateRangeValue } from '../../types
 import { datePattern, formatIsoValue } from '../dateFormat/dateFormat'
 import { DATE_INPUT_MAX, DATETIME_INPUT_MAX } from './fieldDate.constants'
 
-// Un campo fecha guarda una sola fecha o un rango, y cada una con o sin hora. Las dos propiedades
-// son independientes y ausentes por defecto: una sola fecha sin hora, que es lo que era todo campo
-// fecha antes de que existieran. A diferencia de inlineOptions no son presentacion: cambian la
-// forma del valor -- AAAA-MM-DD, AAAA-MM-DDTHH:mm o un objeto { desde, hasta } con cualquiera de
-// los dos --, y con ella el schema, las condiciones que tienen sentido y a que hoja puede ir.
+// Una fecha o un rango, cada uno con o sin hora (ausente: una fecha sin hora). No es presentacion:
+// cambia la forma del valor y con ella el schema, las condiciones y el destino.
 
 export function isDateFieldType(type: string): boolean {
   return type === DATE_FIELD_TYPE
@@ -30,9 +27,8 @@ export function exportableIncludesTime(field: DateCapableField): true | undefine
   return includesTime(field) ? true : undefined
 }
 
-// datetime-local y no datetime: el valor es la hora de reloj del contribuyente, sin huso. Es lo que
-// se escribe en un formulario de un solo pais; convertirla a UTC le cambiaria el dia a quien
-// declara a las 11 de la noche.
+// datetime-local: hora de reloj sin huso; en UTC cambiaria el dia de quien declara a las 11 de la
+// noche.
 export function dateInputType(field: DateCapableField): 'date' | 'datetime-local' {
   return includesTime(field) ? 'datetime-local' : 'date'
 }
@@ -41,8 +37,7 @@ export function dateInputMax(field: DateCapableField): string {
   return includesTime(field) ? DATETIME_INPUT_MAX : DATE_INPUT_MAX
 }
 
-// Ausente es el input del navegador, en su idioma, y AAAA-MM-DD hacia la API: lo que era todo campo
-// fecha antes de que existiera el formato.
+// Ausente: el input del navegador y AAAA-MM-DD hacia la API.
 export function dateFormatOf(field: DateCapableField): DateFormatId | undefined {
   return isDateFieldType(field.type) ? field.dateFormat : undefined
 }
@@ -51,9 +46,7 @@ export function exportableDateFormat(field: DateCapableField): DateFormatId | un
   return dateFormatOf(field)
 }
 
-// El valor como lo recibe la API: cada fecha en el formato del campo, y en un rango las dos puntas.
-// Lo que no es un valor completo (un texto a medio escribir) sale tal cual; el schema ya lo frena
-// antes de que se pueda enviar.
+// Cada fecha en el formato del campo; lo incompleto sale tal cual (el schema ya lo frena).
 export function formatDateForPayload(field: DateCapableField, value: unknown): unknown {
   const format: DateFormatId | undefined = dateFormatOf(field)
   if (format === undefined) return value
@@ -73,8 +66,7 @@ export function formatDateForPayload(field: DateCapableField, value: unknown): u
   return typeof value === 'string' ? formatOne(value) : value
 }
 
-// Lee el rango de lo que haya en el estado sin confiar en su forma: un campo que acaba de pasar de
-// fecha unica a rango todavia tiene un texto, y uno sin tocar no tiene nada.
+// Sin confiar en la forma: un campo recien pasado a rango todavia tiene un texto.
 export function readDateRange(value: unknown): DateRangeValue {
   if (typeof value !== 'object' || value === null) return { desde: '', hasta: '' }
 
@@ -86,8 +78,7 @@ export function readDateRange(value: unknown): DateRangeValue {
   }
 }
 
-// Las dos puntas vacias son "sin valor", no un objeto con dos textos vacios: es lo que hace que
-// isEmpty se cumpla y que un rango opcional sin llenar pase el schema.
+// Dos puntas vacias son sin valor: asi isEmpty se cumple y un rango opcional pasa el schema.
 export function toDateRangeValue(range: DateRangeValue): DateRangeValue | undefined {
   return range.desde === '' && range.hasta === '' ? undefined : range
 }

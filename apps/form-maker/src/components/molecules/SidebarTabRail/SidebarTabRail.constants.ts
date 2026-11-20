@@ -1,8 +1,7 @@
 export const RAIL_TAB_BASE_CLASSES: string =
   'flex h-10 w-10 items-center justify-center rounded-md transition-colors hover:cursor-pointer'
 
-// Naranja lleno a proposito: se probo un tinte de marca (P2.5 de docs/Plan-Form-UX-P2.md) y el
-// usuario pidio volver a este.
+// Naranja lleno a pedido del usuario: el tinte de marca se probo y se descarto.
 export const RAIL_TAB_ACTIVE_CLASSES: string = 'bg-brand text-on-brand'
 
 export const RAIL_TAB_INACTIVE_CLASSES: string =

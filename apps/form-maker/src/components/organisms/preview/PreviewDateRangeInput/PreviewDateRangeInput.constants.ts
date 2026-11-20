@@ -1,6 +1,5 @@
-// Las dos fechas lado a lado mientras quepan, una debajo de la otra si el campo es angosto: un input
-// date no baja de unos 9rem sin cortar el dd/mm/aaaa, y con la hora necesita unos 13rem. Son dos
-// cadenas literales porque Tailwind lee el codigo fuente: una clase armada al vuelo no llega al CSS.
+// Lado a lado mientras quepan: un input date no baja de ~9rem (13rem con hora). Dos literales
+// porque Tailwind lee el codigo fuente.
 export const RANGE_GRID_CLASSES: string = 'grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-2'
 
 export const RANGE_GRID_WITH_TIME_CLASSES: string =

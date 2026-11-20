@@ -7,8 +7,7 @@ import type { FieldGraph } from '../../types/fieldGraph'
 import { DEFAULT_OPERATORS } from './useConditionEditor.constants'
 import type { UseConditionEditorParams, UseConditionEditorResult } from './useConditionEditor.types'
 
-// Un solo hook para las dos condiciones de un campo: `kind` decide si se lee y escribe visibleWhen
-// o enableWhen. Comparten operadores, guardas y editor, asi que no hay dos caminos que mantener.
+// Un hook para las dos condiciones de un campo: kind decide si es visibleWhen o enableWhen.
 export function useConditionEditor({
   field,
   otherFields,

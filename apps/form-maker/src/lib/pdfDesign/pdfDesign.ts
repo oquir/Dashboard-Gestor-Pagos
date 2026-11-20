@@ -47,9 +47,7 @@ import {
   TAX_PARAM,
 } from './pdfDesign.constants'
 
-// Reglas puras del diseño del PDF: medidas de la hoja, el diseño en blanco y de que impuesto es.
-// Sin React ni store. Solo lo usa el diseñador, que se carga con React.lazy: por eso no esta en
-// lib/index.ts y se importa por su carpeta.
+// Reglas puras del diseno del PDF. Solo lo usa el disenador (React.lazy): fuera de lib/index.ts.
 
 // Una hoja nueva no trae nada: la primera tabla o el primer bloque de HTML los agrega el autor.
 export function createBlankSheet(): PdfSheet {
@@ -71,8 +69,7 @@ export function mmToPx(mm: number): number {
   return mm * PDF_PX_PER_MM
 }
 
-// Un margen extra valido: entre 0 y el tope, de a medio mm. Lo que no es un numero vuelve a 0, que
-// es lo mismo que no pedir margen extra: nunca puede bajar de los 5 mm del back.
+// Entre 0 y el tope, de a medio mm; lo que no es numero vuelve a 0.
 export function clampExtraMargin(mm: number): number {
   if (!Number.isFinite(mm) || mm <= 0) return 0
 
@@ -89,9 +86,7 @@ export function normalizeMargins(margins: PdfMargins): PdfMargins {
   }
 }
 
-// Donde cabe el contenido de cada hoja. Los lados salen del relleno del contenedor (valen en todas
-// las hojas) y arriba y abajo del relleno de cada hoja; los 5 mm del back ya estan descontados en
-// los 778 px y en el alto de la hoja.
+// Los 5 mm del back ya estan descontados en los 778 px y en el alto de la hoja.
 export function contentBox(margins: PdfMargins): PdfContentBox {
   return {
     width: PDF_WEB_PAGE_WIDTH_PX - mmToPx(margins.left + margins.right) - 2 * PDF_EDGE_GUARD_PX,
@@ -99,28 +94,20 @@ export function contentBox(margins: PdfMargins): PdfContentBox {
   }
 }
 
-// El CSS en linea de una tabla: solo lo que el autor escribio en "Estilos en línea". Lo fijo del
-// diseñador (collapse, ancho completo, table-layout fixed para que los anchos de columna en px se
-// respeten) va una sola vez en el <style> del documento (pdfStyleSheet), colgado de PDF_TABLE_CLASS.
+// Solo los estilos en linea del autor; lo fijo de las tablas va una vez en pdfStyleSheet.
 export function tableStyleMap(table: PdfTable): CssStyleMap {
   return parseCssText(sanitizeCss(table.style ?? ''))
 }
 
-// El CSS en linea de una celda: solo lo suyo, encima de sus clases. El relleno y la alineacion arriba
-// de siempre estan en el <style> (pdfStyleSheet); antes iban en cada <td> y eran casi la mitad del
-// .html. El lienzo y el generador llaman a esta misma funcion, o no coincidirian.
+// Solo lo propio de la celda; relleno y alineacion van en el <style>. Lienzo y generador usan esta
+// funcion, o no coincidirian.
 export function cellStyleMap(cell: PdfCell): CssStyleMap {
   const hasClasses: boolean = pdfClassTokens(cell.className).length > 0
   return { ...styleMapOf(cell, hasClasses), ...parseCssText(sanitizeCss(cell.style ?? '')) }
 }
 
-// El <style> del documento: la base de las tablas del editor y las clases del diseño, en su orden
-// (con dos clases en una celda gana la de mas abajo, como en cualquier CSS). Lo usan el lienzo,
-// dentro de su shadow root, y el .html, en su <head>.
-//
-// Cada clase sale con dos selectores: ".x" para cualquier elemento (un <span class="x"> del HTML
-// libre) y ".fm-t > tbody > tr > td.x" para las celdas, que tiene que ganarle a la base de la celda
-// (un ".x" solo pesa menos que ".fm-t > tbody > tr > td" y no podria cambiarle el relleno).
+// El <style> del documento (lienzo y .html): base de las tablas y clases en orden (gana la de mas
+// abajo). Cada clase lleva ".x" y ".fm-t > tbody > tr > td.x", que le gana a la base de la celda.
 export function pdfStyleSheet(design: PdfDesign): string {
   const table: string = `.${PDF_TABLE_CLASS}`
   const cell: string = `${table} > tbody > tr > td`
@@ -145,8 +132,7 @@ export function pdfClassTokens(className: string | undefined): string[] {
   return [...new Set((className ?? '').split(/\s+/).filter(Boolean))]
 }
 
-// Lo que la celda recibe de sus clases del diseño, en el orden del <style>: con lo mismo en dos, la
-// de mas abajo gana. Las clases que no son del diseño (las de un <style> a mano) no se ven aca.
+// Lo que dan las clases del diseno, en el orden del <style>; las de un <style> a mano no se ven.
 export function inheritedCellStyle(design: PdfDesign, cell: PdfCell): PdfStyleProps {
   const tokens: Set<string> = new Set(pdfClassTokens(cell.className))
   const merged: PdfStyleProps = {}
@@ -163,9 +149,8 @@ export function isValidPdfClassName(name: string): boolean {
   return PDF_CLASS_NAME_PATTERN.test(name) && !name.startsWith(PDF_RESERVED_CLASS_PREFIX)
 }
 
-// Las propiedades de la barra lateral, como CSS. Con todos los bordes sale un solo "border". Una
-// celda con clases que define sus propios bordes apaga los lados que no lleva (clearBorders): si
-// no, los de la clase seguirian ahi.
+// Con todos los bordes sale un solo border. clearBorders apaga los lados que la celda no lleva, o
+// seguirian los de la clase.
 function styleMapOf(props: PdfStyleProps, clearBorders: boolean): CssStyleMap {
   const map: CssStyleMap = {}
   if (props.fontSize !== undefined) map.fontSize = `${props.fontSize}px`
@@ -195,8 +180,7 @@ function styleMapOf(props: PdfStyleProps, clearBorders: boolean): CssStyleMap {
   return map
 }
 
-// "a: b; c: d" para una regla del <style>. Una llave o un "<" en un valor libre cerraria la regla
-// o la etiqueta antes de tiempo: esa declaracion se cae.
+// Una llave o un "<" cerraria la regla o la etiqueta: esa declaracion se cae.
 function pdfCssDeclarations(map: CssStyleMap): string {
   const safe: CssStyleMap = {}
   for (const [key, value] of Object.entries(map)) {
@@ -205,9 +189,8 @@ function pdfCssDeclarations(map: CssStyleMap): string {
   return pdfCssText(safe)
 }
 
-// La letra de todo el documento. line-height va explicito: el lienzo vive dentro de FormMaker y
-// heredaria su 1.5, mientras que el convertidor arranca en normal. Tampoco puede ser "normal":
-// cada motor lo redondea distinto y la plantilla del ICA dejaba de caber en Firefox (PDF_LINE_HEIGHT).
+// line-height explicito: en el lienzo heredaria el 1.5 de FormMaker, y no puede ser normal
+// (PDF_LINE_HEIGHT).
 export function documentStyleMap(design: PdfDesign): CssStyleMap {
   return {
     fontFamily: fontStack(design.fontFamily),
@@ -224,16 +207,14 @@ export function clampPdfZoom(zoom: number): number {
   return Math.round(clamped * 100) / 100
 }
 
-// Los botones y Ctrl +/- saltan al siguiente multiplo del paso, no suman 25 % a lo que haya: tras
-// acercar con la rueda a 113 %, "+" lleva a 125 % y no a 138 %.
+// Botones y Ctrl +/- saltan al siguiente multiplo del paso (de 113% a 125%).
 export function stepPdfZoom(zoom: number, direction: 1 | -1): number {
   const steps: number = zoom / PDF_ZOOM_STEP
   const next: number = direction === 1 ? Math.floor(steps + 1e-9) + 1 : Math.ceil(steps - 1e-9) - 1
   return clampPdfZoom(next * PDF_ZOOM_STEP)
 }
 
-// El zoom con el que la hoja llena el ancho del lienzo: "Ajustar al ancho" y el zoom al abrir
-// (docs/Plan-PDF-UX-P2.md). Redondeado hacia abajo a 5 % para que no aparezca el scroll horizontal.
+// Ajustar al ancho y zoom al abrir, hacia abajo a 5% para no tener scroll horizontal.
 export function fitPdfZoom(viewportWidth: number): number {
   const paperPx: number = PDF_PAPER_WIDTH_MM * PDF_PX_PER_MM
   const raw: number = (viewportWidth - FIT_GUTTER_PX) / paperPx
@@ -246,8 +227,7 @@ export function wheelPdfZoom(zoom: number, deltaY: number): number {
   return clampPdfZoom(zoom * (1 - deltaY * PDF_ZOOM_WHEEL_FACTOR))
 }
 
-// El relleno de los lados del contenido de cada hoja (PDF_EDGE_GUARD_PX): el lienzo y el generador
-// lo toman de aca, o el borde derecho volveria a perderse en uno de los dos.
+// Lienzo y generador lo toman de aca, o el borde derecho se perderia en uno de los dos.
 export function sheetEdgeStyleMap(): CssStyleMap {
   return {
     paddingLeft: `${PDF_EDGE_GUARD_PX}px`,
@@ -267,15 +247,13 @@ export function taxTypeLabel(taxType: PdfTaxType): string {
   return FORM_TYPES.find((option) => option.value === taxType)?.label ?? taxType
 }
 
-// Lee de la URL lo que pueda traer quien abre FormMaker (?impuesto=autorretencion). Recibe el texto
-// y no window.location, para seguir siendo pura.
+// Recibe el texto y no window.location: sigue siendo pura.
 export function readPdfEntryParams(search: string): PdfEntryParams {
   const impuesto: string | null = new URLSearchParams(search).get(TAX_PARAM)
   return impuesto ? { impuesto } : {}
 }
 
-// De que impuesto es la plantilla: lo que llegue de afuera gana si es un impuesto conocido; si no,
-// el del formulario abierto. null si ninguno de los dos lo dice.
+// Gana la URL si es un impuesto conocido; si no, el del formulario.
 export function resolvePdfTaxType(
   formType: FormType | null,
   entry: PdfEntryParams,

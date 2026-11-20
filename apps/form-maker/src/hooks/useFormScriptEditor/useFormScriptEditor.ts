@@ -9,8 +9,8 @@ export function useFormScriptEditor(): UseFormScriptEditorResult {
   const formScript = useFormStore((state) => state.formScript)
   const setFormScript = useFormStore((state) => state.setFormScript)
 
-  // Solo para pintar: en el preludio ningun {{x}} es legal, sea campo o no, asi que la validacion
-  // no los necesita. El editor si, para que un campo real se vea como ficha y no como un typo.
+  // Solo para pintar: en el preludio ningun {{x}} es legal, pero el editor muestra los campos
+  // reales como ficha.
   const knownNames: Set<string> = useKnownFieldNames()
 
   const validation: PreludeValidation = useMemo(() => validatePrelude(formScript), [formScript])

@@ -10,14 +10,13 @@ export const FORMAT_DESCRIPTION: string =
 export const FORMAT_SELECT_CLASSES: string =
   'rounded-md border border-border bg-field px-2 py-1 text-xs text-fg outline-none focus:border-brand-border'
 
-// El ejemplo que se muestra debajo del formato. Un 31 para que se note cual es el dia y cual el mes.
+// Un 31 para que se note cual es el dia y cual el mes.
 export const SAMPLE_DATE: string = '2025-03-31'
 
 export const SAMPLE_DATETIME: string = '2025-03-31T14:30'
 
 export const OPTION_ROW_CLASSES: string = 'relative flex items-center justify-between gap-2'
 
-// El (i) va al final de la fila, despues del control, como en el encabezado de PanelSection.
 export const OPTION_CONTROL_CLASSES: string = 'flex items-center gap-2'
 
 export const RANGE_DESCRIPTION: string =

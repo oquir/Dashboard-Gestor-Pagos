@@ -10,29 +10,24 @@ export const OPTION_BASED_FIELD_TYPES: string[] = [
 
 export const MULTI_VALUE_FIELD_TYPES: string[] = ['checkbox_group']
 
-// Los que se dibujan uno debajo del otro y pueden pasar a una sola linea. El toggle_group ya es
-// horizontal por naturaleza y un select no tiene donde ponerlas, asi que ninguno de los dos entra.
+// Los que van en columna y pueden pasar a una linea; toggle_group ya es horizontal.
 export const INLINE_CAPABLE_FIELD_TYPES: string[] = ['radio_group', 'checkbox_group']
 
-// Los que llevan numero. `calculated` y `number` son el mismo comportamiento; lo unico que hace
-// de verdad a un campo de solo lectura es alwaysDisabled.
+// calculated y number se comportan igual; lo que hace a un campo de solo lectura es alwaysDisabled.
 export const NUMERIC_FIELD_TYPES: string[] = ['number', 'calculated']
 
 export const TEL_FIELD_TYPE = 'tel'
 
 export const EMAIL_FIELD_TYPE = 'email'
 
-// Texto libre que sugiere una lista mientras se escribe: el <datalist> de HTML. No es un campo de
-// opciones -- el valor es lo escrito, no un id --, asi que valida y se mapea como un texto. Ver
-// lib/fieldSuggestions.
+// Texto libre con <datalist>: el valor es lo escrito, no un id, asi que valida y se mapea como
+// texto.
 export const DATALIST_FIELD_TYPE = 'datalist'
 
-// Texto que trae su propio formato: sin un patron del autor validan contra el del tipo. Ver
-// lib/fieldContact.
+// Traen su propio formato: sin patron del autor validan con el del tipo.
 export const CONTACT_FIELD_TYPES: string[] = [TEL_FIELD_TYPE, EMAIL_FIELD_TYPE]
 
-// Los que admiten un tope de longitud. Los de texto lo cuentan en caracteres y los numericos en
-// digitos de la parte entera, que no es lo mismo; la regla vive en lib/fieldLength.
+// Texto cuenta caracteres; numeros, digitos enteros (lib/fieldLength).
 export const LENGTH_CAPABLE_FIELD_TYPES: string[] = [
   'text',
   'textarea',
@@ -43,8 +38,7 @@ export const LENGTH_CAPABLE_FIELD_TYPES: string[] = [
   'calculated',
 ]
 
-// Los que muestran una caja vacia donde cabe un placeholder. La fecha no: su caja ya muestra el
-// formato. Ver lib/fieldPlaceholder.
+// La fecha no: su caja ya muestra el formato.
 export const PLACEHOLDER_CAPABLE_FIELD_TYPES: string[] = [
   'text',
   'textarea',

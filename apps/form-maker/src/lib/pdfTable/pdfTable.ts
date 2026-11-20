@@ -20,13 +20,9 @@ import {
   rowMetas,
 } from './pdfTable.utils'
 
-// Las operaciones de una tabla del PDF: agregar y quitar filas y columnas, combinar y dividir celdas,
-// anchos. Puras, sin React ni store, y nunca lanzan: lo que no se puede hacer devuelve la misma tabla
-// (la misma referencia, para que el historial no registre un paso vacio).
-//
-// Todas trabajan igual: ubican cada celda en la rejilla (placeCells, el algoritmo de HTML), mueven
-// posiciones y spans con aritmetica, y rearman las filas. Solo tocan su propio nivel: una tabla
-// anidada en una celda viaja dentro de ella sin que nadie la mire.
+// Operaciones de tabla puras que nunca lanzan: lo imposible devuelve la misma tabla. Ubican cada
+// celda en la rejilla (placeCells), mueven con aritmetica y rearman las filas; las anidadas viajan
+// sin tocarse.
 
 export const ALL_BORDERS: PdfCellBorders = { top: true, right: true, bottom: true, left: true }
 
@@ -43,10 +39,8 @@ export function createTable(columnCount: number, rowCount: number): PdfTable {
   }
 }
 
-// Donde empieza cada celda, como lo calcula el navegador: una celda cae en la primera posicion libre
-// de su fila, saltando las que ocupan los rowspan de arriba. Las spans se recortan a lo que cabe, asi
-// que un archivo raro (un rowspan que se sale de la tabla, dos celdas encimadas) se lee igual que el
-// navegador lo pinta en vez de romper la cuenta.
+// Como el navegador: cada celda en la primera posicion libre, saltando los rowspan de arriba; las
+// spans se recortan a lo que cabe.
 export function placeCells(table: PdfTable): {
   placed: PdfPlacedCell[]
   rowCount: number
@@ -83,8 +77,7 @@ export function placeCells(table: PdfTable): {
   return { placed, rowCount, colCount }
 }
 
-// Deja la tabla sana: tantas columnas como pide la celda mas ancha, y una celda vacia en cada hueco
-// de la rejilla. La usan las operaciones al terminar y el lector de archivos.
+// Tantas columnas como la celda mas ancha y una celda vacia en cada hueco.
 export function normalizeTable(table: PdfTable): PdfTable {
   const { placed, rowCount, colCount } = placeCells(table)
   const holes: PdfPlacedCell[] = []
@@ -102,8 +95,7 @@ export function normalizeTable(table: PdfTable): PdfTable {
           ...Array.from({ length: colCount - table.columns.length }, () => ({ id: uuidv4() })),
         ]
       : table.columns
-  // placeCells recorre las celdas en el mismo orden que las filas, asi que se comparan una a una: una
-  // celda distinta es una span que se recorto.
+  // Mismo orden que las filas: una celda distinta es una span recortada.
   const original: PdfCell[] = table.rows.flatMap((row) => row.cells)
   const changed: boolean =
     holes.length > 0 ||
@@ -118,8 +110,7 @@ export function findPlaced(table: PdfTable, cellId: string): PdfPlacedCell | nul
   return placeCells(table).placed.find((item) => item.cell.id === cellId) ?? null
 }
 
-// El rectangulo que va de una celda a otra, agrandado hasta no cortar ninguna celda combinada: si el
-// rectangulo toca un pedazo de una celda, se la lleva entera. Es lo que se puede combinar.
+// Se agranda hasta no cortar ninguna celda combinada: es lo que se puede combinar.
 export function selectionRect(
   table: PdfTable,
   anchorId: string,
@@ -224,8 +215,7 @@ export function insertRow(table: PdfTable, cellId: string, position: PdfRowPosit
   return { ...table, rows: rebuildRows(metas, [...moved, ...added]) }
 }
 
-// Quita la fila donde empieza la celda. Una celda que baja desde esa fila sigue viva en la de abajo,
-// una fila mas corta; la ultima fila no se quita (una tabla sin filas no se puede ni seleccionar).
+// Una celda que baja desde esa fila sigue viva en la de abajo; la ultima fila no se quita.
 export function removeRow(table: PdfTable, cellId: string): PdfTable {
   const { placed, rowCount } = placeCells(table)
   const target: PdfPlacedCell | undefined = placed.find((item) => item.cell.id === cellId)
@@ -309,8 +299,7 @@ export function removeColumn(table: PdfTable, cellId: string): PdfTable {
   return normalizeTable({ ...table, columns, rows: rebuildRows(rowMetas(table), kept) })
 }
 
-// Combina el rectangulo entre dos celdas. Queda la de arriba a la izquierda con todo el espacio; si
-// todas eran texto, los textos no vacios se juntan con un espacio para que no se pierda nada escrito.
+// Queda la de arriba a la izquierda; si todas eran texto, se juntan los textos.
 export function mergeCells(table: PdfTable, anchorId: string, focusId: string): PdfTable {
   const rect: PdfGridRect | null = selectionRect(table, anchorId, focusId)
   if (!rect) return table
@@ -352,8 +341,7 @@ export function mergeCells(table: PdfTable, anchorId: string, focusId: string): 
   return { ...table, rows: rebuildRows(rowMetas(table), [...rest, merged]) }
 }
 
-// Deshace una combinacion: la celda vuelve a 1x1 con su contenido, y cada posicion que ocupaba
-// recibe una celda vacia con sus mismos bordes.
+// Vuelve a 1x1 y cada posicion recibe una celda vacia con sus bordes.
 export function splitCell(table: PdfTable, cellId: string): PdfTable {
   const { placed } = placeCells(table)
   const target: PdfPlacedCell | undefined = placed.find((item) => item.cell.id === cellId)

@@ -1,8 +1,7 @@
 import type { SchemaLeaf, SchemaNode } from '../../types'
 
-// Aplana el contrato en hojas con su ruta completa. Al entrar en un array cada hoja queda marcada
-// con su arrayPath: es lo que permite ofrecer rutas de item solo a los campos de un grupo atado a
-// ese array, y rutas sueltas al resto.
+// Aplana el contrato en hojas con su ruta; las de un array llevan su arrayPath, para ofrecerlas
+// solo a campos de un grupo atado a el.
 export function collectLeaves(
   node: SchemaNode,
   path: string,

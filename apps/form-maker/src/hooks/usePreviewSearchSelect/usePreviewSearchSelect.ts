@@ -6,9 +6,8 @@ import type {
 } from './usePreviewSearchSelect.types'
 import { filterOptions, findSelected } from './usePreviewSearchSelect.utils'
 
-// El modal del search_select: que esta escrito, que opciones sobreviven al filtro y cual quedo
-// elegida. Existe separado del select nativo porque son 425 actividades por 15 repeticiones, asi
-// que lo caro no es filtrar sino montar las opciones.
+// Modal del search_select: texto, opciones filtradas y la elegida. Aparte del select nativo porque
+// montar 425 x 15 opciones es lo caro.
 export function usePreviewSearchSelect({
   options,
   value,
@@ -28,7 +27,7 @@ export function usePreviewSearchSelect({
   useEffect(() => {
     if (!isOpen) return
 
-    // Por ref y no con autoFocus, que las reglas de accesibilidad prohiben sin distinguir este caso del que le preocupa.
+    // Por ref y no con autoFocus, que las reglas de accesibilidad prohiben.
     searchRef.current?.focus()
 
     function onKeyDown(event: KeyboardEvent): void {
@@ -53,9 +52,8 @@ export function usePreviewSearchSelect({
     },
     close: () => setIsOpen(false),
     setQuery,
-    // Elegir es lo unico que se puede hacer aca: el modal no tiene como dejar el campo vacio.
-    // Cambiar de actividad es elegir otra, y si de verdad sobra se borra la fila entera del grupo.
-    // La primera no se puede borrar -- min: 1 -- porque una empresa sin ninguna actividad no existe.
+    // Solo se puede elegir: no hay como dejar el campo vacio. Si sobra, se borra la fila del grupo
+    // (la primera no: min 1).
     choose: (option) => {
       onChange(option.id)
       setIsOpen(false)

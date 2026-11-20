@@ -1,10 +1,8 @@
 import { isPresentationalField } from '../../../../lib'
 import type { CanvasField, CatalogFill } from '../../../../types'
 
-// Los candidatos a recibir una columna: cualquier campo con valor del mismo lienzo, menos el que
-// origina la seleccion. No se filtra por tipo -- el codigo CIIU es texto y la tarifa es numero --
-// ni por si ya esta elegido, porque repetir un destino en dos filas es un error del autor y se ve
-// solo, mientras que esconderlo dejaria la lista cambiando debajo del mouse.
+// Cualquier campo con valor del mismo lienzo menos el origen. Sin filtrar por tipo ni por elegidos:
+// la lista no cambia bajo el mouse.
 export function fillTargetCandidates(fields: CanvasField[], sourceId: string): CanvasField[] {
   return fields.filter(
     (candidate) => candidate.id !== sourceId && !isPresentationalField(candidate.type),

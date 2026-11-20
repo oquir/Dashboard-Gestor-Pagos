@@ -13,7 +13,7 @@ export interface RuleEffectSummary {
 
 export interface RuleSummary {
   id: string
-  // null sin nombre: el numero de la regla ya la identifica.
+  // null: sin nombre, la identifica su numero.
   label: string | null
   when: string
   effects: RuleEffectSummary[]

@@ -11,10 +11,8 @@ import {
 } from '../../../lib/fieldScript/fieldScript'
 import type { ScriptRef } from '../../../types/fieldScript'
 
-// Las tres extensiones que saben del lenguaje del proyecto: pintar las referencias, ofrecerlas al
-// autocompletar y marcar las que no existen. Todas leen los nombres con un getter y no con un
-// valor: las extensiones se crean una sola vez al montar, y recrearlas cuando alguien agrega un
-// campo tiraria el estado del editor -- cursor, historial, el desplegable abierto.
+// Las extensiones leen los nombres con un getter: se crean una sola vez, y recrearlas tiraria
+// cursor, historial y desplegable.
 
 const KNOWN_MARK = Decoration.mark({ class: 'cm-field-ref' })
 const UNKNOWN_MARK = Decoration.mark({ class: 'cm-field-ref-unknown' })
@@ -26,8 +24,7 @@ function scriptRefs(source: string, knownNames: Set<string>): ScriptRef[] {
 function buildDecorations(view: EditorView, knownNames: Set<string>): DecorationSet {
   const builder = new RangeSetBuilder<Decoration>()
 
-  // El recorrido devuelve las referencias en orden de documento, que es lo que RangeSetBuilder
-  // exige; construir el set con rangos desordenados lanza.
+  // En orden de documento, como exige RangeSetBuilder (desordenado lanza).
   for (const ref of scriptRefs(view.state.doc.toString(), knownNames)) {
     builder.add(ref.start, ref.end, ref.known ? KNOWN_MARK : UNKNOWN_MARK)
   }
@@ -54,8 +51,7 @@ export function fieldRefHighlighter(getKnownNames: () => Set<string>) {
   )
 }
 
-// Al aceptar se cierran las llaves que falten. Escribir "{{" con el cierre automatico de brackets
-// deja "{{|}}", y sin mirar lo que ya hay despues del cursor quedaria "{{ingresos}}}}".
+// Cierra las llaves que falten: con el autocierre, "{{" ya deja "}}" despues del cursor.
 function applyFieldRef(name: string) {
   return (view: EditorView, _completion: Completion, from: number, to: number): void => {
     const after: string = view.state.doc.sliceString(to, to + 2)
@@ -78,8 +74,7 @@ export function scriptCompletions(getKnownNames: () => Set<string>) {
   ]
 
   return (context: CompletionContext): CompletionResult | null => {
-    // Dentro de {{ solo campos. Una llave sola ya no abre la lista: es JS -- un bloque, un
-    // objeto -- y ofrecer campos ahi hacia que el Enter para saltar de linea metiera uno.
+    // Dentro de {{ solo campos; una llave sola es JS y no abre la lista.
     const insideRef = context.matchBefore(/\{\{[ \t]*\w*/)
 
     if (insideRef) {
@@ -98,9 +93,8 @@ export function scriptCompletions(getKnownNames: () => Set<string>) {
 
     const word = context.matchBefore(/\w+/)
 
-    // Ctrl+Espacio muestra todo lo que se puede usar aca, y los campos entran ya envueltos en sus
-    // llaves. Mientras se escribe solo salen las funciones: con los campos en cada palabra, un
-    // Enter al final del nombre de una variable la cambiaria por un campo.
+    // Ctrl+Espacio muestra todo; al escribir solo funciones, o un Enter cambiaria una variable por
+    // un campo.
     if (context.explicit) {
       return {
         from: word?.from ?? context.pos,
@@ -123,10 +117,8 @@ export function scriptCompletions(getKnownNames: () => Set<string>) {
   }
 }
 
-// Una referencia que no es un campo es error: con llaves dobles no hay JS legitimo que se escriba
-// asi. El error de sintaxis se reporta como texto en el panel y no aca: el editor solo tiene la
-// fuente con {{campo}}, que no es JS, y lo que de verdad se compila es la version sustituida,
-// donde las posiciones ya no coinciden con las de esta.
+// Una {{x}} desconocida es error. La sintaxis se reporta en el panel: el editor ve la fuente con
+// {{}}, no el JS compilado.
 export function unknownRefDiagnostics(view: EditorView, knownNames: Set<string>): Diagnostic[] {
   return scriptRefs(view.state.doc.toString(), knownNames)
     .filter((ref) => !ref.known)

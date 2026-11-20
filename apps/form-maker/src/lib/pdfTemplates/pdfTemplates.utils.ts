@@ -9,9 +9,8 @@ import type {
 } from '../../types'
 import { ICA_CLASS } from './pdfTemplates.constants'
 
-// Piezas para escribir una plantilla de fabrica como se lee: fila por fila, celda por celda. Cada
-// llamada crea ids nuevos, asi que dos plantillas armadas nunca comparten celdas. Las opciones se
-// vuelven clases del diseño (ICA_CLASSES); solo lo que no tiene clase queda en la celda.
+// Plantillas fila por fila; cada llamada crea ids nuevos. Las opciones se vuelven clases
+// (ICA_CLASSES).
 
 export interface CellOptions {
   colSpan?: number
@@ -53,8 +52,7 @@ export function table(widths: (number | undefined)[], rows: PdfRow[]): PdfTable 
   }
 }
 
-// Una fila de una tabla de adentro (casillas, firmas): sin bordes y sin relleno de alto, para que
-// la fila de afuera no crezca.
+// Sin bordes ni relleno de alto: la fila de afuera no crece.
 export function bare(value: string, options: CellOptions = {}): PdfCell {
   return html(value, { border: false, ...options })
 }

@@ -36,16 +36,14 @@ export interface FieldSpec {
   enableWhen?: TemplateCondition
   rules?: TemplateRule[]
   dataSource?: TemplateDataSource
-  // El campo al que rotula, por nombre: resolveTemplateConditions lo traduce a id como todo lo
-  // demas. Solo tiene sentido en un campo de tipo label.
+  // El campo al que rotula, por nombre (resolveTemplateConditions lo traduce a id). Solo en type
+  // label.
   labelFor?: string
   inlineOptions?: boolean
 }
 
-// Las reglas numericas de la plantilla, cada una con su alcance propio. El formato no lleva
-// lista porque va en todos; el redondeo y el signo si, y por lados opuestos: el redondeo nombra a
-// los que quedan afuera y el signo a los calculados que quedan adentro. El prefijo de plata reusa
-// la lista del redondeo, que es justamente la de los que no llevan plata.
+// Reglas numericas con alcance propio: el redondeo nombra a los excluidos y el signo a los
+// calculados incluidos; el prefijo reusa la lista del redondeo.
 export interface NumericDefaults {
   roundingExceptions: string[]
   clampedCalculated: string[]
@@ -55,8 +53,7 @@ export interface NumericDefaults {
   suffixByField: Record<string, string>
 }
 
-// Como FieldDataSource, pero apuntando a los campos por nombre: los uuid recien existen despues
-// de buildRow, y resolveTemplateConditions los traduce.
+// Como FieldDataSource pero por nombre: los uuid existen recien despues de buildRow.
 export interface TemplateDataSource {
   catalog: string
   dependsOn?: string

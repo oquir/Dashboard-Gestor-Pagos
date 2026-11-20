@@ -24,8 +24,8 @@ import type { StateSlice } from '../types/store'
 
 import { PERFORMANCE_STORAGE_KEY, THEME_STORAGE_KEY } from './formStore.constants'
 
-// Vive aca y no en formStore.ts porque este archivo la necesita; formStore.ts la reexporta para
-// sus componentes de siempre, asi el ciclo de imports queda en un solo sentido.
+// Aca porque este archivo la necesita; formStore.ts la reexporta y el ciclo de imports va en un
+// solo sentido.
 export function findFieldById(rows: CanvasRow[], fieldId: string | null): CanvasField | null {
   if (!fieldId) return null
 
@@ -57,9 +57,8 @@ export function rowsOfTarget(state: StateSlice, target: CanvasTarget): CanvasRow
   return steps.find((step) => step.stepId === target.stepId)?.rows ?? []
 }
 
-// Despues de deshacer o rehacer el documento es otro, y la vista tiene que seguir apuntando a algo
-// que exista en el. El historial ya guarda el paso activo y la seleccion de cada momento, asi que
-// casi nunca hay nada que corregir: esto es la red para cuando no coinciden.
+// Tras deshacer o rehacer la vista tiene que apuntar a algo que exista. El historial ya guarda paso
+// activo y seleccion: esto es la red para cuando no coinciden.
 export function reconcileViewAfterHistory(
   state: StateSlice & { activeCanvas: CanvasTarget; selectedFieldIds: string[] },
 ): { activeCanvas: CanvasTarget; selectedFieldIds: string[]; transferNotice: null } {
@@ -75,15 +74,15 @@ export function reconcileViewAfterHistory(
 
   return {
     activeCanvas,
-    // La misma referencia si no se cayo ninguno: el store compara por identidad.
+    // La misma referencia si no se cayo ninguno.
     selectedFieldIds: kept.length === state.selectedFieldIds.length ? state.selectedFieldIds : kept,
-    // El aviso de cruce hablaba de una mudanza que se acaba de deshacer.
+    // El aviso de cruce era de una mudanza deshecha.
     transferNotice: null,
   }
 }
 
-// El otro lado de la frontera modal / formulario respecto del destino. Es lo que hay que mirar para
-// saber que referencias quedan cruzadas despues de la mudanza.
+// El otro lado de la frontera modal / formulario: ahi quedan las referencias cruzadas tras la
+// mudanza.
 export function rowsAcrossFrom(state: StateSlice, target: CanvasTarget): CanvasRow[] {
   return target.type === 'formStep'
     ? state.introModal.steps.flatMap((step) => step.rows)
@@ -113,8 +112,8 @@ export function getInitialDarkMode(): boolean {
   return window.matchMedia('(prefers-color-scheme: dark)').matches
 }
 
-// Sin una eleccion guardada sigue a Windows: si ahi se apagaron las animaciones, el navegador lo
-// avisa con prefers-reduced-motion y la app arranca en bajo rendimiento. Despues manda el boton.
+// Sin eleccion guardada sigue a prefers-reduced-motion: Windows sin animaciones arranca en bajo
+// rendimiento. Despues manda el boton.
 export function getInitialLowPerformance(): boolean {
   if (typeof window === 'undefined') return false
   const stored = window.localStorage.getItem(PERFORMANCE_STORAGE_KEY)
@@ -124,8 +123,7 @@ export function getInitialLowPerformance(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-// Los tipos de formulario que no son industria y comercio arrancan en blanco: no hay plantilla,
-// asi que cada paso recibe una fila vacia y el usuario construye desde cero.
+// Fuera de industria y comercio no hay plantilla: cada paso arranca con una fila vacia.
 export function buildInitialFormSteps(formType: FormType): FormStep[] {
   const isIndustriaComercio: boolean = formType === 'industria_comercio'
   const stepCount: number = isIndustriaComercio ? INDUSTRIA_COMERCIO_FORM_STEPS : 1
@@ -162,8 +160,7 @@ export function buildInitialIntroSteps(formType: FormType, stepCount: number): I
   })
 }
 
-// Aplica el cambio en los dos lienzos sin averiguar en cual esta el campo. Recorrer de mas es
-// barato y evita que cada accion del store tenga que ramificar por tipo de lienzo.
+// En los dos lienzos sin averiguar en cual esta: recorrer de mas es barato y evita ramificar.
 export function mapFieldEverywhere(
   slice: StateSlice,
   fieldId: string,
@@ -189,10 +186,9 @@ export function mapFieldEverywhere(
   }
 }
 
-// Borra los campos y limpia todo lo que les apuntaba, o quedarian referencias colgando que el export
-// sacaria con el uuid en lugar del nombre: condiciones, reglas, validaciones condicionales, el padre
-// del catalogo y la etiqueta externa. La etiqueta sobrevive sin vinculo en vez de borrarse, igual
-// que un hueco en la fila se conserva. Lo usan borrar campos y borrar un paso, que se lleva los suyos.
+// Borra los campos y limpia lo que les apuntaba (condiciones, reglas, validaciones condicionales,
+// padre del catalogo, etiqueta externa): si no, el export sacaria uuids. La etiqueta sobrevive sin
+// vinculo.
 export function removeFieldsEverywhere(slice: StateSlice, fieldIds: string[]): StateSlice {
   if (fieldIds.length === 0) return slice
 
@@ -273,8 +269,8 @@ export function allFieldNames(slice: StateSlice, exceptFieldId?: string): Set<st
   return collectFieldNames(rows, exceptFieldId)
 }
 
-// Un campo recien soltado no trae opciones aunque su tipo las admita: se configuran despues, y
-// solo si el campo se marca excluido del payload. Uno mapeado las recibe del catalogo en runtime.
+// Sin opciones aunque el tipo las admita: se configuran despues, solo si queda excluido; uno
+// mapeado las recibe del catalogo.
 export function createEmptyField(
   type: string,
   label: string,

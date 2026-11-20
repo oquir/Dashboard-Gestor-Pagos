@@ -21,18 +21,14 @@ import { ENTER_POP_CLASSES } from '../../../constants'
 export function CanvasZoomControl() {
   const canvasZoom = useFormStore((state) => state.canvasZoom)
   const setCanvasZoom = useFormStore((state) => state.setCanvasZoom)
-  // Fuera de la vista lienzo el zoom no significa nada, pero se apaga en vez de esconderse: sus dos
-  // montajes -- la tira del panel y el chip flotante -- cambiarian de ancho al cambiar de vista, y
-  // el chip ademas crece hacia la izquierda. Es la misma razon por la que "+ Grupo repetible" se
-  // deshabilita en el modal de entrada en vez de desaparecer.
+  // Fuera de la vista lienzo se deshabilita y no se oculta: ocultarlo cambiaria el ancho de la tira
+  // y del chip.
   const isCanvasView: boolean = useFormStore((state) => state.canvasViewMode === 'canvas')
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   useClickOutside(containerRef, () => setIsOpen(false), isOpen)
 
-  // El menu se cierra al elegir: es un salto puntual, no un control que se queda manipulando. Para
-  // eso estan la rueda y los atajos, que siguen funcionando con el menu cerrado.
   function apply(zoom: number): void {
     setCanvasZoom(zoom)
     setIsOpen(false)

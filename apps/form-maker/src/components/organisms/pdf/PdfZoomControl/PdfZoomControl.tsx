@@ -18,9 +18,8 @@ import {
   ZOOM_TRIGGER_CLASSES,
 } from './PdfZoomControl.constants'
 
-// El zoom del lienzo del PDF, dentro de la barra flotante: − y + a la vista (el usuario no
-// encontraba como acercar) y, en el porcentaje, un menu con saltos fijos que se abre hacia arriba.
-// Ctrl + rueda y Ctrl + / - / 0 hacen lo mismo.
+// − y + a la vista (el usuario no encontraba como acercar) y en el porcentaje un menu de saltos
+// fijos.
 export function PdfZoomControl() {
   const zoom = usePdfDesignStore((state) => state.zoom)
   const setZoom = usePdfDesignStore((state) => state.setZoom)

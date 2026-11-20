@@ -1,7 +1,5 @@
 export { ADD_LINK_CLASSES, HINT_CLASSES, WARNING_CLASSES } from '../../../constants/uiClasses'
 
-// La tarjeta es la de las filas del calculo sin codigo (CalcTermRow): en oscuro un velo negro la
-// deja apenas mas oscura que el modal, en claro va slate-100.
 export const CARD_CLASSES: string =
   'flex flex-col rounded-lg border border-border bg-surface-raised dark:bg-black/25'
 

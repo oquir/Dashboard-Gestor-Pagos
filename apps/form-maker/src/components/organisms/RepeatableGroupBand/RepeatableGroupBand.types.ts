@@ -5,10 +5,9 @@ export interface RepeatableGroupBandProps {
   group: RepeatableGroup
   rows: CanvasRow[]
   linkedLabels: Map<string, CanvasField>
-  // La banda se aparta entera cuando pasa una fila suelta; rowOffsets solo tiene algo cuando se
-  // reordena dentro del grupo, que es el unico caso en que sus filas se mueven por separado.
+  // La banda se aparta entera con una fila suelta; rowOffsets solo al reordenar dentro del grupo.
   offsetY?: number
-  // Posicion de la banda en el lienzo: escalona su entrada (ENTER_ROW_CLASSES).
+  // Escalona su entrada (ENTER_ROW_CLASSES).
   enterIndex?: number
   rowOffsets?: Map<string, number>
   onFieldContextMenu: (fieldId: string, x: number, y: number) => void

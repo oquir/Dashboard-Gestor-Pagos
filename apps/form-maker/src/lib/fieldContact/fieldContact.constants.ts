@@ -1,34 +1,24 @@
 import type { PatternRule, PhoneKind } from '../../types/fieldContact'
 
-// Desde septiembre de 2021 todo numero colombiano tiene 10 digitos, y lo que separa un celular de
-// un fijo es como arranca. El \1 se escribe \\1 y los digitos van como [0-9] por lo mismo que en
-// los patrones de documento de la plantilla: la regex viaja dentro de un string que el consumidor
-// ejecuta con new Function, y donde se puede evitar una barra invertida, se evita.
-//
-// Celular: empieza por 3. El lookahead descarta los diez digitos iguales -- 3333333333 --, que es
-// el de mentira que se escribe para pasar de pantalla.
+// Desde 2021 todo numero colombiano tiene 10 digitos. \\1 y [0-9] por lo mismo que en la plantilla:
+// viaja en un string que el consumidor ejecuta. Celular: empieza por 3 y no son diez digitos
+// iguales.
 const CELULAR_PATTERN: string = '^(?!([0-9])\\1+$)3[0-9]{9}$'
 
-// Fijo: 60 mas el indicativo de la region y los 7 digitos de siempre (601 Bogota, 604 Antioquia...).
-// El 603 no esta asignado, pero el patron no hace de guia de indicativos: rechazar uno valido por
-// error seria peor que dejar pasar uno que no existe.
+// Fijo: 60, indicativo y 7 digitos. No hace de guia de indicativos: rechazar uno valido seria peor.
 const FIJO_PATTERN: string = '^60[1-8][0-9]{7}$'
 
-// Fax: un celular o un fijo, y al final una extension opcional. No hay norma colombiana para su
-// largo; los conmutadores usan de 3 a 5 digitos y 6 cubre los grandes sin dejar pasar un segundo
-// numero entero. Si un municipio pide otra cosa, una expresion propia en Validaciones la reemplaza.
+// Fax: celular o fijo con extension opcional de hasta 6 digitos. Un municipio puede reemplazarlo
+// con su propia expresion.
 export const MAX_EXTENSION_DIGITS: number = 6
 
-// La extension se escribe con "ext", "ext." o "x", en mayuscula o minuscula y con o sin espacios:
-// 6011234567 ext 123, 6011234567 Ext. 123, 3001234567x45. Las mayusculas van como clases porque el
-// consumidor arma el RegExp sin banderas, asi que no hay `i`. El celular se repite sin sus anclas:
-// el lookahead mira solo los 10 digitos del numero, no la extension.
+// ext, ext. o x, en cualquier caja: las mayusculas van como clases porque el consumidor arma el
+// RegExp sin banderas.
 const EXTENSION_PATTERN: string = `(?:\\s*(?:[eE][xX][tT]\\.?|[xX])\\s*[0-9]{1,${MAX_EXTENSION_DIGITS}})?`
 
 const FAX_PATTERN: string = `^(?:(?!([0-9])\\1{9})3[0-9]{9}|60[1-8][0-9]{7})${EXTENSION_PATTERN}$`
 
-// El mensaje dice la regla y no solo que algo esta mal: los fijos de 7 digitos se siguen
-// escribiendo, y "invalido" a secas no explica que ahora llevan el 60X adelante.
+// El mensaje dice la regla: los fijos de 7 digitos se siguen escribiendo sin el 60X.
 export const PHONE_FORMATS: Record<PhoneKind, PatternRule> = {
   celular: {
     pattern: CELULAR_PATTERN,
@@ -44,15 +34,8 @@ export const PHONE_FORMATS: Record<PhoneKind, PatternRule> = {
   },
 }
 
-// El patron de correo de la spec de HTML5, partido en sus dos mitades para poder leerlo. Lleva dos
-// cambios respecto del original:
-//   - Va anclado con ^ y $. Zod valida con .test(), que busca en cualquier parte del texto: sin
-//     anclas "hola juan@x.com chau" pasaria como correo valido.
-//   - Las clases incluyen A-Z. El original es solo minusculas y aca no hay forma de agregar la
-//     bandera `i`, porque el consumidor arma el RegExp con new RegExp(patron) y sin banderas;
-//     sin esto "Juan@Gmail.com" quedaria rechazado.
-// La bandera /g del original tampoco viaja, y es mejor asi: un regex con /g guarda lastIndex entre
-// llamadas y con .test() daria valido y no valido alternadamente sobre el mismo texto.
+// El patron de correo de HTML5 con dos cambios: anclado (Zod usa .test(), que busca en cualquier
+// parte) y con A-Z (no hay bandera i). Sin /g: guardaria lastIndex y alternaria el resultado.
 const CORREO_LOCAL: string = "[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]"
 
 const CORREO_ETIQUETA: string = '[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?'

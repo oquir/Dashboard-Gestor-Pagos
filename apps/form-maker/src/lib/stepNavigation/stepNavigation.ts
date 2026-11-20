@@ -1,13 +1,10 @@
 import type { FormStep, IntroModalStep } from '../../types/formStructure'
 import type { CanvasTarget } from '../../types/placement'
 
-// Moverse de a un paso con el teclado (Ctrl + flechas). Solo de a uno y sin dar la vuelta: llegar
-// a un paso lejano es recorrer los de en medio, a proposito -- no hay salto directo a un paso, ni
-// al primero ni al ultimo.
+// Ctrl + flechas, de a un paso y sin dar la vuelta: a proposito no hay salto directo.
 
-// Los pasos en el orden en que los recorre el contribuyente: primero los del modal de entrada y
-// despues los del formulario. El panel los muestra al reves -- el formulario arriba, que es donde
-// se trabaja --, pero la flecha sigue el recorrido real del formulario, no la disposicion.
+// En el orden del contribuyente: primero el modal y despues el formulario (el panel los muestra al
+// reves).
 export function orderedSteps(formSteps: FormStep[], introSteps: IntroModalStep[]): CanvasTarget[] {
   return [
     ...introSteps.map((step): CanvasTarget => ({ type: 'introStep', stepId: step.stepId })),
@@ -15,8 +12,7 @@ export function orderedSteps(formSteps: FormStep[], introSteps: IntroModalStep[]
   ]
 }
 
-// null en los extremos, y tambien si el paso activo ya no esta en la lista: ahi no hay un "al lado"
-// que tenga sentido, y elegir uno a ciegas seria peor que no moverse.
+// null en los extremos o si el activo ya no esta.
 export function adjacentStep(
   steps: CanvasTarget[],
   current: CanvasTarget,

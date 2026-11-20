@@ -7,7 +7,6 @@ export interface LabeledRangeSliderProps {
   max: number
   value: number
   onChange: (value: number) => void
-  // Rotulos de los extremos. Sin ellos el tirador no dice contra que escala se esta moviendo.
   minLabel?: string
   maxLabel?: string
 }

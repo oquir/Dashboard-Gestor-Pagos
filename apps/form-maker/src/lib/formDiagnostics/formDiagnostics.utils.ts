@@ -49,8 +49,7 @@ import type {
   ProblemDraft,
 } from './formDiagnostics.types'
 
-// Los detectores de la revision antes de exportar, uno por tipo de problema. Cada uno recibe la
-// cosa ya ubicada en su lienzo, porque el destino de "Ir" necesita saber en que paso vive.
+// Detectores, uno por tipo de problema; cada uno recibe la cosa ubicada en su lienzo para el "Ir".
 
 export function locateItems(input: DiagnoseFormInput): LocatedItems {
   const items: LocatedItems = { fields: [], rows: [], groups: [] }
@@ -132,15 +131,13 @@ export function checkPrelude(formScript: string): PreludeCheck {
     })
   }
 
-  // Con el preludio roto los scripts se validan sin el: si no, su error se repetiria en cada campo
-  // del formulario en vez de reportarse una sola vez. Roto incluye leer campos: un {{x}} ahi
-  // tampoco compila pegado delante de cada script.
+  // Con el preludio roto (o leyendo campos) los scripts se validan sin el: un solo reporte, no uno
+  // por campo.
   return { problems, prelude: validation.isValid ? formScript : undefined }
 }
 
-// Mismo criterio que validateFieldScript, pero separando de quien es el error: el del script solo
-// y el que aparece recien al pegarle el preludio, que suele ser una constante declarada en los
-// dos lados. Asi el mensaje dice cual de las dos cosas hay que mirar.
+// Separa el error del script del que aparece al pegarle el preludio (una constante declarada en los
+// dos).
 function scriptDrafts(
   source: string,
   knownNames: Set<string>,
@@ -153,8 +150,7 @@ function scriptDrafts(
 
   const compiled: ScriptCompileResult = compileScript(source, knownNames)
 
-  // Una referencia que no es campo va primero y sola: ese {{x}} sin sustituir casi siempre es
-  // tambien el error de sintaxis, y reportar los dos seria contar dos veces el mismo problema.
+  // La referencia desconocida va sola: suele ser tambien el error de sintaxis.
   if (compiled.unknown.length > 0) {
     const refs: string = compiled.unknown.map(fieldRefText).join(', ')
     const noun: string = compiled.unknown.length === 1 ? 'que no es un campo' : 'que no son campos'
@@ -271,8 +267,7 @@ export function patternProblems(located: LocatedField): ProblemDraft[] {
   return drafts
 }
 
-// El operador `matches` arma un RegExp con el valor. El simulador lo toma como "no coincide" si el
-// patron no compila, asi que un error aca no rompe nada a la vista: la condicion nunca se cumple.
+// matches con un patron roto nunca se cumple en el simulador: el error no se ve, por eso se revisa.
 export function conditionPatternProblems(located: LocatedField): ProblemDraft[] {
   const { field } = located
   const where: string = fieldWhere(field)
@@ -311,8 +306,8 @@ export function conditionPatternProblems(located: LocatedField): ProblemDraft[] 
   })
 }
 
-// Misma lectura que useApiMappingPanel: una ruta que el contrato no tiene es huerfana, y una hoja
-// que pone el aplicativo receptor no es de nadie en el formulario.
+// Como useApiMappingPanel: una ruta inexistente es huerfana; una hoja del aplicativo no es de
+// nadie.
 export function mappingProblems(located: LocatedField): ProblemDraft[] {
   const binding = located.field.apiBinding
   if (binding?.kind !== 'mapped') return []
@@ -336,10 +331,8 @@ export function mappingProblems(located: LocatedField): ProblemDraft[] {
   return []
 }
 
-// Los tres son errores porque el payload saldria mal sin avisar: sin id el concepto no viaja, con
-// el id repetido dos valores se pisan en la misma fila del backend, y dentro de un grupo la lista
-// plana lo ignora. El builder no deja meter uno en un grupo; ese solo llega en un JSON editado a
-// mano. `owners` se arma una vez para todo el formulario.
+// Errores: sin id no viaja, con id repetido se pisan, y dentro de un grupo la lista plana lo ignora
+// (eso solo llega editando el JSON a mano).
 export function conceptProblems(
   located: LocatedField,
   owners: Map<number, CanvasField[]>,
@@ -441,8 +434,7 @@ export function groupCheckProblems(
   )
 }
 
-// Un solo error por vez: topologicalOrder devuelve el primer ciclo que encuentra. Corregido ese, la
-// siguiente exportacion muestra el que quede.
+// Un ciclo por vez: corregido, la siguiente exportacion muestra el que quede.
 export function cycleProblems(fields: LocatedField[]): ProblemDraft[] {
   const graph: FieldGraph = buildFieldGraph(fields.map((located) => located.field))
   const cycle: string[] | null = topologicalOrder(graph).cycle

@@ -26,8 +26,7 @@ export function toCanvasBlocks(rows: CanvasRow[]): CanvasBlock[] {
   return blocks
 }
 
-// Que se aparta y cuanto para que se abra el hueco donde va a caer la fila. Es la mitad visual de
-// lo que rowOrder resuelve como dato: mismos dos casos y misma frontera de grupo.
+// La mitad visual de rowOrder: mismos dos casos y misma frontera de grupo.
 export function buildRowDisplacement(
   blocks: CanvasBlock[],
   rows: CanvasRow[],
@@ -41,8 +40,6 @@ export function buildRowDisplacement(
 
   const shift: number = rowDrag.height + GRID_GAP_PX
 
-  // Dentro de un grupo el hueco se abre entre las filas de la banda, que son hermanas. Fuera, entre
-  // bloques: una fila suelta nunca entra en una banda, asi que la banda se aparta entera.
   if (dragged.groupId !== undefined) {
     const members: string[] = rows
       .filter((row) => row.groupId === dragged.groupId)
@@ -87,8 +84,7 @@ export function buildRowDisplacement(
   return { rows: rowOffsets, bands: bandOffsets }
 }
 
-// Solo se mueve lo que queda entre el origen y el destino, y siempre un sitio entero: los de arriba
-// bajan o los de abajo suben, nunca las dos cosas.
+// Solo se mueve lo que queda entre el origen y el destino, un sitio entero.
 function displace(
   keys: string[],
   from: number,

@@ -5,10 +5,9 @@ export interface CanvasRowProps {
   row: CanvasRow
   // Indexado por el id del campo al que la etiqueta apunta, no por el de la etiqueta.
   linkedLabels: Map<string, CanvasField>
-  // Cuanto se aparta esta fila, en px, para dejar pasar a la que se esta arrastrando.
+  // Desplazamiento en px para dejar pasar la fila arrastrada.
   offsetY?: number
-  // Posicion del bloque en el lienzo: escalona la entrada (ENTER_ROW_CLASSES). Sin el, la fila no se
-  // anima: las de dentro de una banda ya entran con ella.
+  // Escalona la entrada; sin el no se anima (las filas de una banda entran con ella).
   enterIndex?: number
   onFieldContextMenu: (fieldId: string, x: number, y: number) => void
 }
@@ -16,6 +15,5 @@ export interface CanvasRowProps {
 export interface RowBorderState {
   isOver: boolean
   isEmpty: boolean
-  // La fila contiene el campo seleccionado, asi que se queda marcada sin hover.
   pinned: boolean
 }

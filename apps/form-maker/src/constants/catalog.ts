@@ -19,15 +19,14 @@ export const CATALOG_JUEGOS_PERMITIDOS: string = 'juegos_permitidos'
 
 export const CATALOG_ACTIVIDADES: string = 'actividades'
 
-// Lista cerrada a proposito, igual que PAYLOAD_SCHEMA: un nombre tecleado a mano rompe al
-// consumidor en silencio. Agregar un catalogo es una linea aca y otra en MOCK_CATALOGS.
+// Lista cerrada: un nombre tecleado a mano rompe al consumidor en silencio. Agregar uno: una linea
+// aca y otra en MOCK_CATALOGS.
 export const CATALOGS: CatalogDefinition[] = [
   { id: CATALOG_DEPARTAMENTOS, label: 'Departamentos' },
   { id: CATALOG_MUNICIPIOS, label: 'Municipios', requiresParent: true },
   { id: CATALOG_TIPOS_DOCUMENTO, label: 'Tipos de documento' },
-  // El endpoint se llama ListaTipoPersonaNoConvencional: no es natural contra juridica, sino
-  // consorcio o patrimonio autonomo. La hoja contribuyente.idTipoPersona existe pero ningun campo
-  // de la plantilla la mapea todavia.
+  // ListaTipoPersonaNoConvencional: consorcio o patrimonio autonomo, no natural contra juridica.
+  // Ningun campo la mapea todavia.
   { id: CATALOG_TIPOS_PERSONA, label: 'Tipos de persona (no convencional)' },
   { id: CATALOG_PERIODOS_ANUALES, label: 'Periodos anuales' },
   { id: CATALOG_TIPOS_DECLARACION, label: 'Tipos de declaración' },
@@ -36,8 +35,6 @@ export const CATALOGS: CatalogDefinition[] = [
   { id: CATALOG_ACTIVIDADES, label: 'Actividades' },
 ]
 
-// Las columnas que se pueden copiar a otro campo, ordenadas por lo que se usa de verdad: el
-// codigo y la tarifa son el caso real, la etiqueta y el id existen porque no cuestan nada.
 export const CATALOG_COLUMNS: { id: CatalogColumn; label: string }[] = [
   { id: 'code', label: 'Código' },
   { id: 'tarifa', label: 'Tarifa' },

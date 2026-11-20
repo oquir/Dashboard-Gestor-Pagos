@@ -44,7 +44,6 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       {editor.linkOpen && (
         <div className="flex items-center gap-1">
           <input
-            // el campo aparece por accion explicita del usuario
             autoFocus
             value={editor.linkValue}
             placeholder="https://…"
@@ -61,7 +60,6 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
         </div>
       )}
 
-      {/* un textarea no admite formato en linea */}
       <div
         ref={editor.editorRef}
         contentEditable

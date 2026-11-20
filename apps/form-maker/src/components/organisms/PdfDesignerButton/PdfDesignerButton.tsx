@@ -5,9 +5,8 @@ import { Tooltip } from '../../atoms'
 import { PDF_BUTTON_CLASSES } from './PdfDesignerButton.constants'
 import type { PdfDesignerButtonProps } from './PdfDesignerButton.types'
 
-// La puerta al diseñador de PDF. Hay una plantilla por impuesto, no por formulario, asi que dos
-// formularios del mismo impuesto comparten la misma. Esa leyenda viaja en el tooltip: en la fila de
-// acciones el boton va sin etiqueta y no hay lugar para un renglon debajo.
+// Una plantilla por impuesto, no por formulario: dos formularios del mismo impuesto comparten la
+// misma.
 export function PdfDesignerButton({ iconOnly = false }: PdfDesignerButtonProps) {
   const formType = useFormStore((state) => state.setupConfig.formType)
   const setPdfDesignerOpen = useFormStore((state) => state.setPdfDesignerOpen)

@@ -14,7 +14,7 @@ export function getChipPaddingClasses(isCompact: boolean, isUltraCompact: boolea
   return 'pl-8 pr-8'
 }
 
-// Sin apiBinding es como nace todo campo soltado desde la paleta: todavia nadie decidio si viaja.
+// Sin apiBinding: recien soltado, nadie decidio si viaja.
 export function getFieldDestination(field: CanvasField): FieldDestination {
   if (isPresentationalField(field.type)) return 'none'
   if (!field.apiBinding) return 'pending'

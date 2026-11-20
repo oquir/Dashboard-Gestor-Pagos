@@ -7,8 +7,7 @@ import {
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { PanelSection } from '../../../molecules'
 
-// Las hojas y lo que se agrega a la activa. Cada hoja es su propio bloque con salto de pagina
-// manual: lo que no cabe no pasa solo a la siguiente, se mueve a mano (docs/Pendientes-PDF.md §2.1).
+// Cada hoja es un bloque con salto manual: lo que no cabe se mueve a mano.
 export function PdfSheetsPanel() {
   const design = usePdfDesignStore((state) => state.design)
   const activeSheetId = usePdfDesignStore((state) => state.activeSheetId)

@@ -36,8 +36,8 @@ export function FieldOptionsEditor({ field }: FieldOptionsEditorProps) {
       />
 
       <fieldset className="m-0 border-0 p-0">
-        {/* El rotulo de la seccion ya dice "Opciones": visible seria decirlo dos veces, pero el
-            fieldset necesita su legend para que el lector de pantalla agrupe las entradas. */}
+        {/* Legend oculto: el rotulo de la seccion ya lo dice, pero el lector de pantalla lo
+            necesita. */}
         <legend className="sr-only">Opciones</legend>
         <ul className="flex list-none flex-col gap-2">
           {options.map((option, index) => (

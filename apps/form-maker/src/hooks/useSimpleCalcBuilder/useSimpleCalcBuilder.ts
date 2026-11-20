@@ -24,8 +24,7 @@ import type {
   UseSimpleCalcBuilderResult,
 } from './useSimpleCalcBuilder.types'
 
-// Estado del modal de calculo sin codigo: las filas que se van armando, el multiplicador y el piso,
-// y lo que falta para poder aplicar. Nada toca el store hasta Aplicar, asi Cancelar no deja rastro
+// Estado del modal de calculo sin codigo. Nada toca el store hasta Aplicar: Cancelar no deja rastro
 // y el historial recibe un solo paso.
 
 function emptyTerm(): CalcTermDraft {
@@ -71,11 +70,8 @@ export function useSimpleCalcBuilder({
     firstSelectRef.current?.focus()
   }, [])
 
-  // Fase de captura en window: corre antes que los atajos globales y que el Escape del menu
-  // contextual, sea cual sea el foco (tras un clic en el fondo queda en el body). Sin esto, Delete
-  // borraria el campo que se esta editando y Escape lo deseleccionaria, desmontando el modal con
-  // todo lo armado. Sin preventDefault: escribir, elegir en el select y activar botones siguen
-  // funcionando.
+  // Captura en window: antes que los atajos globales y el Escape del menu. Sin esto Delete borraria
+  // el campo y Escape desmontaria el modal. Sin preventDefault.
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent): void {
       event.stopPropagation()

@@ -1,5 +1,4 @@
-// Lo minimo para decidir como se dibujan las opciones. Va estructural y no como CanvasField para
-// que sirva igual del lado del lienzo que del export, que son dos formas distintas del campo.
+// Estructural: sirve para el lienzo y para el export.
 export interface InlineCapableField {
   type: string
   inlineOptions?: boolean

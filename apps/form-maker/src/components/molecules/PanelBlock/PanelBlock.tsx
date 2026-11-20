@@ -1,10 +1,7 @@
 import type { PanelBlockProps } from './PanelBlock.types'
 
-// Bloque plano separado por una linea que cruza todo el panel, al estilo del panel derecho de
-// Figma. Convive a proposito con PanelSection, que es la tarjeta redondeada con velo: aquella
-// agrupa controles dentro de un panel que ya tiene margenes -- los del sidebar izquierdo -- y esta
-// divide un panel que llega hasta el borde. Unificarlas obligaria a repintar los ocho paneles de la
-// izquierda, que no es lo que se pidio.
+// Bloque plano a todo el ancho (estilo Figma). Convive a proposito con PanelSection, la tarjeta
+// para paneles con margen.
 export function PanelBlock({ title, action, children }: PanelBlockProps) {
   return (
     <section className="border-b border-border px-3 py-3 last:border-b-0">

@@ -14,5 +14,4 @@ export const SUMMARY_WHEN_CLASSES: string = 'text-[11px] text-fg-soft'
 
 export const SUMMARY_EFFECT_CLASSES: string = 'text-[11px] text-fg-muted'
 
-// El script va en una sola linea cortada con puntos suspensivos; entero, en el title.
 export const SUMMARY_CODE_CLASSES: string = 'truncate font-mono text-[11px] text-fg-muted'

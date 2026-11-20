@@ -1,9 +1,7 @@
-// Un salto de linea justo despues de return hace que JS inserte el punto y coma ahi (ASI) y el
-// script devuelva undefined, asi que ese texto no se reconoce aunque el resto encaje.
+// return con salto de linea: ASI cierra ahi y el script devuelve undefined.
 export const RETURN_ON_SAME_LINE: RegExp = /^return[ \t]+\S/
 
-// Igual que el nombre que acepta REF_PATTERN. No se reusa REF_PATTERN porque es sticky y
-// scanScript le mueve el lastIndex.
+// Como REF_PATTERN, que no se reusa porque es sticky y scanScript le mueve el lastIndex.
 export const NAME_PATTERN: RegExp = /^[A-Za-z_][A-Za-z0-9_]*/
 
 export const REF_PADDING_PATTERN: RegExp = /^[ \t]*/

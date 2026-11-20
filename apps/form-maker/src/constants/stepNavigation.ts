@@ -1,5 +1,4 @@
-// Ctrl + flecha cambia de paso. La tecla y su anuncio salen de aca, para que el atajo y el title
-// de las pestanas no puedan decir cosas distintas, igual que CANVAS_TOOLS.
+// La tecla y su anuncio salen de aca: atajo y title no pueden diferir.
 export const STEP_NAVIGATION_OFFSETS: Record<string, 1 | -1> = {
   ArrowLeft: -1,
   ArrowRight: 1,

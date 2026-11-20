@@ -1,7 +1,7 @@
 import type { CatalogOption } from '../../types'
 
-// Sin tildes y en minusculas: las descripciones del catalogo vienen acentuadas y en mayusculas, y
-// nadie escribe "PROPAGACIÓN" en un buscador. NFD separa la tilde de la letra y \p{M} se la lleva.
+// Sin tildes y en minusculas: el catalogo viene acentuado y en mayusculas. NFD separa la tilde y
+// \p{M} se la lleva.
 function normalize(text: string): string {
   return text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
 }

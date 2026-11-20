@@ -3,10 +3,8 @@ import { INPUT_CLASSES } from '../../../../constants'
 import { Label } from '../../../atoms'
 import type { PdfNumberFieldProps } from './PdfNumberField.types'
 
-// Un numero de la barra lateral del PDF (px, mm). Vacio es "sin valor": hereda o vuelve a
-// automatico. Mientras tiene el foco muestra lo que se teclea y no lo guardado: el store puede
-// redondear (el margen va de a medio mm) y pisar el texto a mitad de escribirlo dejaria sin poder
-// teclear "7," o "0.".
+// Vacio es sin valor (hereda). Con foco muestra lo tecleado: el store redondea y pisaria "7," a
+// mitad de escribir.
 export function PdfNumberField({
   id,
   label,

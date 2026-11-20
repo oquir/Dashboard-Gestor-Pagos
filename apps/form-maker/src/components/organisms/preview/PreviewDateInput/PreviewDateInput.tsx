@@ -15,9 +15,8 @@ import {
 } from './PreviewDateInput.constants'
 import type { PreviewDateInputProps } from './PreviewDateInput.types'
 
-// El input date del navegador muestra la fecha en el idioma del navegador y no deja elegir el
-// formato. Con un formato pedido el texto lo dibujamos nosotros, y el calendario sigue siendo el del
-// navegador: un input date invisible que se abre con showPicker desde el boton.
+// El input date no deja elegir formato: con formato pedido el texto lo dibujamos y el calendario es
+// un input date invisible que se abre con showPicker.
 export function PreviewDateInput({
   id,
   ariaLabel,
@@ -52,15 +51,14 @@ export function PreviewDateInput({
   const pattern: string = datePattern(format, withTime)
   const isComplete: boolean = formatIsoValue(value, pattern, withTime) !== null
 
-  // Completo y valido se guarda como AAAA-MM-DD; a medio escribir o imposible (31/02), el texto tal
-  // cual, que el schema rechaza con "Fecha inválida" en vez de dejarlo pasar vacio.
+  // Completo y valido se guarda AAAA-MM-DD; a medio escribir o imposible, el texto tal cual, que el
+  // schema rechaza.
   function handleTextChange(text: string): void {
     const masked: string = maskDateText(text, pattern)
     onChange(parseDateText(masked, pattern) ?? masked)
   }
 
-  // showPicker falla si el navegador no lo tiene o no lo permite en ese momento; el foco es lo que
-  // queda, y con el teclado el input nativo igual se puede usar.
+  // showPicker puede fallar; queda el foco, y el input nativo se usa con teclado.
   function openPicker(): void {
     const picker: HTMLInputElement | null = pickerRef.current
     if (!picker) return

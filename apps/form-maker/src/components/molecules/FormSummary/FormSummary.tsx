@@ -53,7 +53,6 @@ export function FormSummary() {
         </div>
       </div>
 
-      {/* El punto distingue guardado de nunca guardado sin gastar una fila en decirlo. */}
       <div className="flex items-center gap-2 text-[11px] text-fg-muted">
         <span
           className={`h-1.5 w-1.5 shrink-0 rounded-full ring-[3px] ${

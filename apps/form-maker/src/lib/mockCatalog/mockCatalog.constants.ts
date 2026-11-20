@@ -36,10 +36,7 @@ export const MOCK_CATALOGS: Record<string, (parent?: string) => CatalogOption[]>
   [CATALOG_ACTIVIDADES]: () => ACTIVIDADES,
 }
 
-// Catalogos que el JSON todavia no declara: el simulador los reconoce por la hoja del payload a la
-// que el campo esta mapeado. Vive solo aca, el contrato no cambia. Las entradas que ya tienen
-// catalogo declarado se comparten en vez de copiarse, para que no se separen con el tiempo: siguen
-// aca porque cubren a los campos que el autor cree a mano sin declarar dataSource.
+// Catalogos que el JSON aun no declara, reconocidos por la hoja del payload. Solo del simulador.
 export const MOCK_BY_LEAF: Record<string, CatalogOption[]> = {
   idTipoDocumento: TIPOS_DOCUMENTO,
   idTipoPersona: TIPOS_PERSONA,

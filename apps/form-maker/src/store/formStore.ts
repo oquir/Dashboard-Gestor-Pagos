@@ -76,13 +76,9 @@ import {
   stepFieldIds,
 } from './formStore.utils'
 
-// El unico store de la aplicacion. Sostiene los dos lienzos a la vez -formSteps y las pantallas
-// del modal de intro- y casi toda mutacion se aplica al que contenga el id, sin preguntar cual
-// esta activo: de ahi mapRowEverywhere y mapFieldEverywhere.
-//
-// Va envuelto en el middleware temporal de zundo, que lleva el historial de deshacer en un store
-// aparte (useFormStore.temporal). Que se guarda en cada paso y como se agrupan los cambios esta en
-// lib/history.
+// El unico store: sostiene los dos lienzos y casi toda mutacion va al que contenga el id
+// (mapRowEverywhere, mapFieldEverywhere). Historial con zundo en useFormStore.temporal; que se
+// guarda y como se agrupa, en lib/history.
 
 export function findRowById(slice: StateSlice, rowId: string): CanvasRow | null {
   for (const step of slice.formSteps) {
@@ -98,12 +94,11 @@ export function findRowById(slice: StateSlice, rowId: string): CanvasRow | null 
   return null
 }
 
-// Agrupa las rafagas de cambios en un solo paso. Es de modulo porque lo comparten el handleSet de
-// zundo, que registra, y deshacer/rehacer, que lo reinician.
+// Agrupa rafagas en un paso. De modulo: lo comparten handleSet, que registra, y deshacer/rehacer,
+// que lo reinician.
 const historyGate: BurstGate = createBurstGate(HISTORY_BURST_MS)
 
 const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (set) => ({
-  // Los bancos del simulador entran enteros desde su propio archivo, estado y acciones incluidos.
   ...createBanksSlice(set),
   formSteps: [
     {
@@ -147,21 +142,18 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
   setHoveredTransferTarget: (target) => set({ hoveredTransferTarget: target }),
   dismissTransferNotice: () => set({ transferNotice: null }),
   setSidebarOpen: (open) => set({ isSidebarOpen: open }),
-  // Plegado el panel no se renderiza y lo reemplaza CollapsedRightSidebar desde la capa flotante.
-  // No lleva guarda de arrastre: el unico disparador es un boton, que no se puede pulsar con una
-  // fila colgando del cursor. Un atajo de teclado si la necesitaria.
+  // Plegado lo reemplaza CollapsedRightSidebar. Sin guarda de arrastre: solo lo dispara un boton
+  // (un atajo si la necesitaria).
   setRightSidebarOpen: (open) => set({ isRightSidebarOpen: open }),
-  // Sube al store porque ahora lo escribe el panel derecho y lo lee el lienzo, que son dos
-  // subarboles distintos. Es estado de vista, igual que sidebarTab.
+  // En el store porque lo escribe el panel derecho y lo lee el lienzo. Estado de vista.
   setCanvasViewMode: (mode) => set({ canvasViewMode: mode }),
   setSimulatorOpen: (open) => set({ isSimulatorOpen: open }),
-  // El diseñador de PDF es un lienzo propio, no un paso mas: no entra en activeCanvas, cuyo
-  // CanvasTarget supone filas y campos en cada lectura. Su diseño vive en usePdfDesignStore.
+  // El disenador de PDF no entra en activeCanvas (CanvasTarget supone filas y campos). Su diseno
+  // vive en usePdfDesignStore.
   setPdfDesignerOpen: (open) => set({ isPdfDesignerOpen: open }),
-  // Recorta aca y no en cada llamante: la rueda manda valores continuos y los atajos de teclado no
-  // saben del rango.
+  // Se recorta aca: la rueda manda valores continuos y los atajos no saben del rango.
   setCanvasZoom: (zoom) => set({ canvasZoom: clampZoom(zoom) }),
-  // Estado de vista, como el zoom: no viaja en el borrador y al recargar vuelve a Mover.
+  // Estado de vista: no viaja en el borrador y al recargar vuelve a Mover.
   setCanvasTool: (tool) => set({ canvasTool: tool }),
   setSidebarTab: (tab) => set({ sidebarTab: tab }),
   setRightSidebarTab: (tab) => set({ rightSidebarTab: tab }),
@@ -172,8 +164,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
       window.localStorage.setItem(THEME_STORAGE_KEY, next ? 'dark' : 'light')
       return { isDarkMode: next }
     }),
-  // Estado de vista como el tema: nunca entra al borrador, y por eso tampoco crea un paso de
-  // historial (sameDocument solo mira el documento).
+  // Estado de vista: no entra al borrador ni crea paso de historial (sameDocument).
   toggleLowPerformance: () =>
     set((state) => {
       const next = !state.isLowPerformance
@@ -236,9 +227,8 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         selectedFieldIds: NO_SELECTION,
       }
     }),
-  // Un paso se lleva sus campos, asi que lo que los miraba desde otros pasos -o desde el modal- se
-  // limpia igual que al borrarlos uno por uno. Sin esto el export sacaba la condicion con el uuid
-  // del campo muerto y el consumidor la evaluaba contra nada, sin que la revision lo notara.
+  // Lo que miraba a sus campos desde otros pasos o desde el modal se limpia como al borrarlos uno a
+  // uno: si no, el export sacaba la condicion con el uuid del campo muerto.
   removeFormStep: (stepId) =>
     set((state) => {
       if (state.formSteps.length <= 1) return state
@@ -294,8 +284,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         selectedFieldIds: NO_SELECTION,
       }
     }),
-  // Misma limpieza que al borrar un paso del formulario: desde que el formulario puede depender del
-  // modal, borrar "Año gravable" dejaria condiciones apuntando a un campo que ya no existe.
+  // Misma limpieza que al borrar un paso del formulario: el formulario puede depender del modal.
   removeIntroModalStep: (stepId) =>
     set((state) => {
       const removedStep: IntroModalStep | undefined = state.introModal.steps.find(
@@ -340,9 +329,8 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         },
       }
     }),
-  // El clic en la paleta: fila nueva al final del paso activo con el campo adentro, en un solo set
-  // para que Ctrl+Z la deshaga de una vez (addRowToActiveCanvas + addFieldToRow dejarian dos pasos).
-  // La fila nace suelta, nunca dentro de un grupo repetible.
+  // Clic en la paleta: fila nueva al final del paso activo con el campo, en un solo set (un solo
+  // Ctrl+Z). La fila nace fuera de los grupos.
   appendFieldToActiveCanvas: (fieldType) =>
     set((state) => {
       const emptyRow: CanvasRow = createEmptyRow()
@@ -378,8 +366,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
     set((state) => {
       const row = findRowById(state, rowId)
       if (!row) return state
-      // El piso es la cantidad de campos que ya hay: nunca menos de una columna por campo, o
-      // alguno se quedaria sin sitio al reempaquetar.
+      // Nunca menos de una columna por campo: alguno quedaria sin sitio al reempaquetar.
       const nextColumns = Math.max(
         MIN_ROW_COLUMNS,
         Math.min(MAX_ROW_COLUMNS, Math.round(columns)),
@@ -393,9 +380,8 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
     ),
   removeRow: (rowId) =>
     set((state) => {
-      // Los campos de la fila se van con ella, asi que tampoco pueden seguir seleccionados: con un
-      // conjunto, un id colgando haria mentir al contador de la barra del lienzo. Y lo que los
-      // miraba desde otras filas se limpia igual que si se borraran uno por uno.
+      // Los campos se van con la fila: salen de la seleccion (un id colgando haria mentir al
+      // contador) y se limpia lo que los miraba.
       const fieldIds: string[] = (findRowById(state, rowId)?.fields ?? []).map((field) => field.id)
       const pruned: StateSlice = removeFieldsEverywhere(state, fieldIds)
 
@@ -412,9 +398,8 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         selectedFieldIds: withoutIds(state.selectedFieldIds, new Set<string>(fieldIds)),
       }
     }),
-  // Reordenar es solo cambiar de sitio dentro de `rows[]`: el orden de las filas no se guarda en
-  // ningun campo, es el del arreglo. Por eso ni la persistencia ni la exportacion se enteran.
-  // Se aplica al paso que contiene la fila; si el destino esta en otro, reorderRows lo rechaza.
+  // Reordenar es mover dentro de rows[]: el orden es el del arreglo. Un destino en otro paso lo
+  // rechaza reorderRows.
   moveRow: (rowId, target) =>
     set((state) => ({
       formSteps: state.formSteps.map((step) =>
@@ -430,17 +415,13 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         ),
       },
     })),
-  // Mudar de paso no toca el nombre. allFieldNames ya es global a los dos lienzos, asi que el name
-  // y el id viajan intactos y ninguna referencia por id se rompe: lo unico que cambia es en que
-  // pantalla se dibuja. El rodeo por el Almacen si renombraba, porque copiaba en vez de mudar.
-  //
-  // Varios a la vez es la misma mudanza, no una por campo: una sola pasada deja un solo aviso de
-  // cruce con todos los nombres, y la etiqueta de dos seleccionados no viaja dos veces.
+  // Mudar de paso no toca nombre ni id: ninguna referencia se rompe. Varios a la vez en una sola
+  // pasada: un solo aviso de cruce y la etiqueta compartida viaja una vez.
   moveFieldsToStep: (fieldIds, target) =>
     set((state) => {
       const rows: CanvasRow[] = allRows(state)
       const targetRows: CanvasRow[] = rowsOfTarget(state, target)
-      // Soltar un campo en el paso donde ya esta no es una mudanza: ese se saltea y los demas siguen.
+      // Un campo que ya esta en el destino se saltea.
       const alreadyThere: Set<string> = new Set<string>(
         targetRows.flatMap((row) => row.fields.map((field) => field.id)),
       )
@@ -465,8 +446,8 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
           return kept.length === row.fields.length ? row : { ...row, fields: kept }
         })
 
-      // El destino se limpia antes de plantar: la etiqueta enlazada podia vivir ya en este paso, y
-      // sin esto planLanding la duplicaria en vez de moverla.
+      // El destino se limpia antes de plantar: la etiqueta enlazada podia vivir ya ahi y
+      // planLanding la duplicaria.
       const landed: CanvasRow[] = planLanding(strip(targetRows), moving, createEmptyRow)
       const notice: string | null = crossingNotice(
         collectCrossingRefs(rowsAcrossFrom(state, target), moving, target.type === 'introStep'),
@@ -485,25 +466,23 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
               : { ...step, rows: strip(step.rows) },
           ),
         },
-        // Sin esto el campo desaparece de la pantalla y no hay forma de saber si llego.
+        // Se va al destino: si no, el campo desaparece y no se sabe si llego.
         activeCanvas: target,
-        // Siguen seleccionados los pedidos que ahora estan en el destino, hayan viajado o ya
-        // estuvieran ahi; la etiqueta que vino de arrastre, no.
+        // Siguen seleccionados los pedidos que estan en el destino; la etiqueta arrastrada, no.
         selectedFieldIds: fieldIds.filter(
           (fieldId) => movingIds.has(fieldId) || alreadyThere.has(fieldId),
         ),
         transferNotice: notice,
       }
     }),
-  // La fila se muda entera y se agrega al final: sus campos ya caben en ella, es la misma fila. La
-  // posicion se ajusta despues reordenando, que ya se puede arrastrando.
+  // La fila se muda entera al final; la posicion se ajusta despues arrastrando.
   moveRowToStep: (rowId, target) =>
     set((state) => {
       const row = findRowById(state, rowId)
       if (!row) return state
 
-      // Misma regla que al reordenar: una fila no sale de su grupo arrastrandola, y el grupo vive
-      // en el paso de origen. canTransfer dice lo mismo para pintar la pestana como rechazada.
+      // Como al reordenar: una fila no sale de su grupo arrastrandola. canTransfer pinta la pestana
+      // rechazada con la misma regla.
       if (!canTransfer([row], { kind: 'row', rowId }).allowed) return state
 
       const targetRows: CanvasRow[] = rowsOfTarget(state, target)
@@ -594,8 +573,8 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
           return {
             ...step,
             groups: (step.groups ?? []).map((group) => (group.id === groupId ? next : group)),
-            // Cambiar el arrayPath del grupo invalida el mapeo de todos sus campos, por la misma
-            // razon que sacarlos del grupo: la ruta apuntaba al item del array anterior.
+            // Cambiar el arrayPath invalida el mapeo de todos sus campos: la ruta apuntaba al array
+            // anterior.
             rows: movedArray
               ? step.rows.map((row) =>
                   row.groupId === groupId
@@ -638,8 +617,8 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         selectedFieldIds: [newField.id],
       }
     }),
-  // Varios a la vez se borran en una sola pasada: un solo estado nuevo, y una condicion que apuntaba
-  // a cualquiera de los borrados se limpia igual que si fuera el unico (removeFieldsEverywhere).
+  // Varios en una sola pasada: un estado nuevo, y cada condicion que apuntaba a un borrado se
+  // limpia (removeFieldsEverywhere).
   removeFields: (fieldIds) =>
     set((state) => {
       const removed: Set<string> = new Set<string>(fieldIds)
@@ -656,19 +635,17 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
       const targetRow = findRowById(state, targetRowId)
       if (!movedField || !targetRow) return state
 
-      // Sin hueco valido el movimiento se descarta entero: la fila destino queda intacta y el
-      // campo se queda donde estaba. Nunca se desplaza a un vecino para hacer sitio.
+      // Sin hueco valido se descarta entero: nunca se desplaza a un vecino.
       const placement = resolvePlacement(targetRow, movedField.colSpan, requested, fieldId)
       if (!placement) return state
 
-      // Sacar un campo de un grupo le quita el mapeo: su ruta esta dentro del item del array
-      // (actividades[].algo) y fuera del grupo no significa nada.
+      // Sacar un campo de un grupo le quita el mapeo: su ruta (actividades[].algo) no significa
+      // nada fuera.
       const sourceRow = findRowContainingField(state, fieldId)
       const leavesItemScope: boolean =
         sourceRow?.groupId !== targetRow.groupId && movedField.apiBinding?.kind === 'mapped'
-      // Un concepto no puede vivir dentro de un grupo: la lista de conceptos es plana y no sabria a
-      // que repeticion pertenece cada valor. Queda excluido y no suelto -- sigue sin ir al contrato,
-      // y asi conserva las opciones que tuviera escritas a mano.
+      // Un concepto no vive en un grupo (la lista es plana): queda excluido, no suelto, y conserva
+      // sus opciones a mano.
       const entersGroupAsConcept: boolean =
         targetRow.groupId !== undefined && movedField.apiBinding?.kind === 'concept'
 
@@ -710,9 +687,8 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
   setFieldContent: (fieldId, content) =>
     set((state) => mapFieldEverywhere(state, fieldId, (field) => ({ ...field, content }))),
 
-  // El vinculo vive en la etiqueta, no en el campo, asi que solo hay un extremo que mantener.
-  // La relacion es uno a uno: si otra etiqueta ya apuntaba a ese campo, se la desvincula aca
-  // mismo. Que un campo tenga etiqueta externa nunca se guarda, se deduce con hasLinkedLabel.
+  // El vinculo vive en la etiqueta: un solo extremo. Uno a uno: la que ya apuntaba a ese campo se
+  // desvincula. hasLinkedLabel lo deduce.
   setFieldLabelFor: (labelId, targetFieldId) =>
     set((state) => {
       const applyTo = (rows: CanvasRow[]) =>
@@ -768,8 +744,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         return next
       }),
     ),
-  // Declarar un catalogo descarta las opciones autoradas, igual que salir de "excluido":
-  // no se guardan datos que el JSON ya no va a poder llevar.
+  // Declarar un catalogo descarta las opciones a mano: el JSON ya no las podria llevar.
   updateFieldDataSource: (fieldId, dataSource) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => {
@@ -779,8 +754,8 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         return next
       }),
     ),
-  // Reemplaza la seleccion entera, que es lo que hace un clic comun. Elegir lo que ya estaba elegido
-  // no escribe: devolver el mismo estado le ahorra a cada fila volver a dibujarse.
+  // Reemplaza la seleccion (clic comun). Elegir lo ya elegido devuelve el mismo estado: ninguna
+  // fila se redibuja.
   selectField: (fieldId) =>
     set((state) => {
       const current: string[] = state.selectedFieldIds
@@ -795,7 +770,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
     }),
   toggleFieldSelection: (fieldId) =>
     set((state) => ({ selectedFieldIds: toggleId(state.selectedFieldIds, fieldId) })),
-  // La escribe el marco en cada movimiento del puntero: solo llega al store si el conjunto cambio.
+  // La escribe el marco en cada movimiento: solo llega al store si el conjunto cambio.
   setFieldSelection: (fieldIds) =>
     set((state) =>
       sameIdSet(state.selectedFieldIds, fieldIds) ? state : { selectedFieldIds: fieldIds },
@@ -845,7 +820,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
               ? {
                   ...override,
                   ...updates,
-                  // Las reglas se fusionan en vez de reemplazarse: el panel manda un campo por vez.
+                  // Se fusionan: el panel manda una regla por vez.
                   validations: { ...override.validations, ...updates.validations },
                 }
               : override,
@@ -872,8 +847,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         styles: { ...field.styles, ...updates },
       })),
     ),
-  // Un script en blanco se guarda como ausente y no como cadena vacia: asi "este campo no se
-  // calcula" es una sola cosa en el modelo y el export no lleva la clave.
+  // Un script en blanco se guarda como ausente: el export no lleva la clave.
   setFieldScript: (fieldId, script) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => ({
@@ -929,8 +903,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         },
       })),
     ),
-  // Apagarlos borra la clave en vez de guardar false: ausente y false son lo mismo, y una sola de
-  // las dos formas mantiene limpios el borrador y el JSON exportado.
+  // Apagarlos borra la clave: ausente y false son lo mismo.
   setFieldRounding: (fieldId, rounding) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => ({
@@ -973,7 +946,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         dateFormat: format ?? undefined,
       })),
     ),
-  // null es "los que traiga": la ausencia de la clave es un estado con sentido, no un cero.
+  // null es "los que traiga": la ausencia de la clave no es un cero.
   setFieldDecimals: (fieldId, decimals) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => ({
@@ -981,7 +954,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         decimals: decimals ?? undefined,
       })),
     ),
-  // Se guarda lo tecleado sin recortar; vaciarlo borra la clave. Ver lib/fieldAffix.
+  // Lo tecleado sin recortar; vaciarlo borra la clave (lib/fieldAffix).
   setFieldAffix: (fieldId, side, text) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => ({
@@ -989,7 +962,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         [side]: text === '' ? undefined : text,
       })),
     ),
-  // Igual que los afijos: se guarda lo tecleado y un texto vacio borra la clave.
+  // Como los afijos: lo tecleado, y vacio borra la clave.
   setFieldPlaceholder: (fieldId, text) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => ({
@@ -997,7 +970,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         placeholder: text === '' ? undefined : text,
       })),
     ),
-  // Tambien se guarda lo tecleado: una entrada por linea, sin recortar. Ver lib/fieldSuggestions.
+  // Una entrada por linea, sin recortar (lib/fieldSuggestions).
   setFieldSuggestions: (fieldId, text) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => ({
@@ -1005,7 +978,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         suggestions: parseSuggestionsText(text),
       })),
     ),
-  // Celular es el default y no se guarda, igual que admitir negativos: solo fijo y fax dejan la clave.
+  // Celular es el default y no se guarda: solo fijo y fax dejan la clave.
   setFieldPhoneKind: (fieldId, kind) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => ({
@@ -1013,8 +986,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
         phoneKind: kind === 'celular' ? undefined : kind,
       })),
     ),
-  // Esta guarda el false y borra el true, al reves que las dos de arriba: aca lo que hay que
-  // decir es la restriccion, porque admitir negativos es el default.
+  // Guarda el false y borra el true: lo que se dice es la restriccion.
   setFieldAllowsNegative: (fieldId, allows) =>
     set((state) =>
       mapFieldEverywhere(state, fieldId, (field) => ({
@@ -1075,7 +1047,7 @@ const HISTORY_OPTIONS: ZundoOptions<FormState, HistorySnapshot> = {
   partialize: toHistorySnapshot,
   equality: sameDocument,
   limit: HISTORY_LIMIT,
-  // zundo le pasa a handleSet la funcion que guarda el paso; la compuerta decide cuales llegan.
+  // handleSet recibe la funcion que guarda el paso; la compuerta decide cuales llegan.
   handleSet: (handleSet) =>
     historyGate.wrap((pastState: HistoryPastState): void => handleSet(pastState)),
 }
@@ -1084,9 +1056,8 @@ export const useFormStore: UseBoundStore<
   Mutate<StoreApi<FormState>, [['temporal', StoreApi<TemporalState<HistorySnapshot>>]]>
 > = create<FormState>()(temporal(createFormState, HISTORY_OPTIONS))
 
-// Deshacer y rehacer escriben con el set crudo de zundo, asi que no se registran como pasos nuevos.
-// Despues se reconcilia la vista con el documento restaurado: esa escritura solo toca estado de vista
-// y la igualdad del historial la descarta.
+// Deshacer y rehacer escriben con el set crudo de zundo: no son pasos nuevos. Despues se reconcilia
+// la vista; esa escritura solo toca la vista y el historial la descarta.
 function travelHistory(direction: 'undo' | 'redo'): void {
   historyGate.reset()
 
@@ -1102,8 +1073,7 @@ function clearHistory(): void {
   useFormStore.temporal.getState().clear()
 }
 
-// Selectores del lienzo activo. Devuelven NO_ROWS / NO_GROUPS y no un [] recien creado, porque
-// Zustand compara por identidad y un vacio nuevo en cada llamada provoca un bucle de renders.
+// Devuelven NO_ROWS / NO_GROUPS y no un [] nuevo: Zustand compara por identidad.
 export function getActiveRows(state: {
   formSteps: FormStep[]
   introModal: IntroModalState
@@ -1125,7 +1095,7 @@ export function getActiveGroups(state: {
   formSteps: FormStep[]
   activeCanvas: CanvasTarget
 }): RepeatableGroup[] {
-  // El lienzo del modal de intro no admite grupos repetibles: IntroModalStep no tiene `groups`.
+  // El modal de intro no admite grupos repetibles.
   if (state.activeCanvas.type !== 'formStep') return NO_GROUPS
 
   const step = state.formSteps.find((s) => s.stepId === state.activeCanvas.stepId)
@@ -1133,8 +1103,8 @@ export function getActiveGroups(state: {
   return step?.groups ?? NO_GROUPS
 }
 
-// El unico campo que los paneles saben editar: su id si hay exactamente uno seleccionado, y null con
-// ninguno o con varios. Devuelve un primitivo, asi que es estable para useSyncExternalStore.
+// Su id con exactamente uno seleccionado; null con ninguno o varios. Primitivo: estable para
+// useSyncExternalStore.
 export function getSelectedFieldId(state: { selectedFieldIds: string[] }): string | null {
   return state.selectedFieldIds.length === 1 ? state.selectedFieldIds[0] : null
 }

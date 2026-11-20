@@ -1,7 +1,6 @@
 import type { OrigamiLoaderProps } from './OrigamiLoader.types'
 
-// La hoja que se dobla de index.css (.origami-loader). Es la unica animacion que el modo de bajo
-// rendimiento deja viva: un loader quieto parece colgado.
+// Unica animacion que sigue viva en bajo rendimiento: un loader quieto parece colgado.
 export function OrigamiLoader({ label }: OrigamiLoaderProps) {
   return (
     <div role="status" aria-live="polite" className="flex flex-col items-center gap-6">

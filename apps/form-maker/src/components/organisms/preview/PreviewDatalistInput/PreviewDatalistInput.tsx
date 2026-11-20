@@ -1,8 +1,7 @@
 import { useId } from 'react'
 import type { PreviewDatalistInputProps } from './PreviewDatalistInput.types'
 
-// El id de la lista sale de useId y no del nombre del campo: adentro de un grupo repetible cada
-// repeticion dibuja el mismo campo, y con el nombre las listas quedarian con el id repetido.
+// Id de useId y no del nombre: en un grupo repetible cada repeticion dibuja el mismo campo.
 export function PreviewDatalistInput({
   inputId,
   suggestions,

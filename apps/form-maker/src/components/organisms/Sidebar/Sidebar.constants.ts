@@ -16,11 +16,9 @@ export const TABS: SidebarTabItem[] = [
 // Los bancos del simulador: no dependen del campo seleccionado ni viajan en el export.
 export const BANK_TABS: SidebarTab[] = ['catalogs', 'fechas']
 
-// El riel junta tres clases de pestana con iconos iguales (la paleta, las del campo y los bancos):
-// una raya antes de cada grupo nuevo las separa sin agregar texto.
+// Una raya antes de cada grupo de pestanas (paleta, campo, bancos).
 export const RAIL_DIVIDER_BEFORE: SidebarTab[] = ['attributes', 'catalogs']
 
-// Las pestanas que editan el campo seleccionado, a diferencia de Campos, Catalogos y Fechas.
 export const FIELD_TABS: SidebarTab[] = [
   'attributes',
   'validations',

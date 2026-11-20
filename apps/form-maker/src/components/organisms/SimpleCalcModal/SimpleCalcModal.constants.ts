@@ -8,8 +8,7 @@ export const SECTION_COUNT_CLASSES: string = 'text-[11px] tabular-nums text-fg-m
 export const ADD_TERM_CLASSES: string =
   'flex w-full items-center justify-center gap-2 border-border-strong py-2.5 text-fg-soft hover:border-brand-border hover:bg-brand-surface hover:text-brand-fg'
 
-// Las opciones van en tarjetas como las filas (CalcTermRow): el mismo velo en oscuro, slate-100 en
-// claro. Van lado a lado y el control baja al pie con mt-auto, asi quedan a la misma altura.
+// Lado a lado; el control baja al pie con mt-auto para quedar a la misma altura.
 export const OPTION_CARD_CLASSES: string =
   'flex flex-col gap-3 rounded-lg border border-border bg-surface-raised p-4 dark:bg-black/25'
 

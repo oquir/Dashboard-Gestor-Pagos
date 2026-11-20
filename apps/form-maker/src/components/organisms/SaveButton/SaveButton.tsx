@@ -7,10 +7,7 @@ import { Tooltip } from '../../atoms'
 export function SaveButton({ iconOnly = false }: SaveButtonProps) {
   const { lastSavedAt, justSaved, handleSave } = useSaveButton()
 
-  // El sello de hora viaja en el title y no como segunda linea: el boton vive en la fila de
-  // acciones de la cabecera del panel, donde no hay lugar para dos renglones y donde un texto que
-  // aparece y desaparece movería a los botones vecinos. Sin etiqueta el title es lo unico que
-  // nombra el boton, asi que tambien hace de aria-label.
+  // La hora va en el title (y hace de aria-label): una segunda linea moveria los botones vecinos.
   const savedLabel: string = lastSavedAt
     ? `Guardar · guardado ${new Date(lastSavedAt).toLocaleTimeString()}`
     : 'Guardar · todavía sin guardar'

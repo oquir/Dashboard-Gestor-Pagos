@@ -2,9 +2,7 @@ import { JSON_ROW_HEIGHT_PX, JSON_ROW_OVERSCAN } from '../../constants'
 import type { JsonRowRange } from '../../types'
 import type { ClipBounds } from './useJsonViewport.types'
 
-// Los ancestros que recortan la lista, del mas cercano al mas lejano. La vista no sabe quien la
-// desplaza: en el lienzo es el <main> de AppLayout y la lista crece entera; en el panel del
-// simulador es la propia caja de la vista. Se calculan una vez por lista montada.
+// Ancestros que recortan la lista: en el lienzo desplaza <main>; en el simulador, la propia caja.
 export function clippingAncestors(list: HTMLElement): HTMLElement[] {
   const clips: HTMLElement[] = []
 
@@ -29,8 +27,7 @@ export function clipBounds(clips: HTMLElement[]): ClipBounds {
   return { top, bottom }
 }
 
-// Las filas que tocan la franja visible, mas un margen. Todas las filas miden lo mismo (h-5), asi
-// que es una division y no hace falta medir ninguna.
+// Filas que tocan la franja visible mas un margen: todas miden h-5, es una division.
 export function visibleRowRange(
   list: HTMLElement,
   clips: HTMLElement[],
@@ -49,8 +46,7 @@ export function sameRange(a: JsonRowRange, b: JsonRowRange): boolean {
   return a.start === b.start && a.end === b.end
 }
 
-// El primero de los recortes que de verdad desplaza en vertical. La caja de la vista tiene
-// overflow-auto pero en el lienzo crece con su contenido, asi que ahi no es ella sino <main>.
+// El primero que de verdad desplaza en vertical: en el lienzo la caja crece y desplaza <main>.
 function verticalScroller(clips: HTMLElement[]): Element | null {
   const scroller: HTMLElement | undefined = clips.find((clip) => {
     const { overflowY } = getComputedStyle(clip)
@@ -60,9 +56,8 @@ function verticalScroller(clips: HTMLElement[]): Element | null {
   return scroller ?? document.scrollingElement
 }
 
-// Lleva la fila al centro de la franja visible, salvo que ya se vea con aire. A mano y no con
-// scrollIntoView porque la fila puede no estar pintada todavia: la lista virtual la pinta recien
-// cuando el scroll llega.
+// Al centro, salvo que ya se vea con aire. A mano y no con scrollIntoView: la fila puede no estar
+// pintada.
 export function scrollRowIntoView(list: HTMLElement, clips: HTMLElement[], index: number): void {
   const { top, bottom } = clipBounds(clips)
   const rowTop: number = list.getBoundingClientRect().top + index * JSON_ROW_HEIGHT_PX

@@ -6,9 +6,8 @@ import {
 import { Tooltip } from '../../atoms'
 import type { HistoryButtonsProps } from './HistoryButtons.types'
 
-// Deshacer / Rehacer de las barras flotantes. No sabe de que historial son: el del formulario y el
-// del PDF son stores distintos, y cada barra le pasa el suyo. El span que envuelve al boton es
-// porque un boton deshabilitado no recibe el puntero y su tooltip no saldria.
+// No sabe de que historial es (formulario o PDF). El span deja salir el tooltip con el boton
+// deshabilitado.
 export function HistoryButtons({ canUndo, canRedo, onUndo, onRedo }: HistoryButtonsProps) {
   return (
     <div className={CANVAS_TOOLBAR_GROUP_CLASSES}>

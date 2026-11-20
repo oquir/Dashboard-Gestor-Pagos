@@ -1,5 +1,4 @@
-// A cuantos puntos por px CSS se dibuja el PNG. 1 px CSS sale a 0,75 pt; a 300 ppp son unos 3,1
-// puntos, asi que con 4 el texto sale nitido aun impreso, y el PNG de un rotulo sigue en pocos KB.
+// 4 puntos por px: nitido aun impreso, y el PNG sigue en pocos KB.
 export const VERTICAL_TEXT_SCALE: number = 4
 
 // Alto de cada linea respecto de la letra: el "normal" de Arial y compañia.

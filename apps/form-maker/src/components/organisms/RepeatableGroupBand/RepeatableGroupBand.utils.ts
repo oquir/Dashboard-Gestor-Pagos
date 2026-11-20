@@ -1,7 +1,5 @@
 import type { RepeatableGroup } from '../../../types'
 
-// Lo que la banda decia con tres inputs y un select desplegados todo el tiempo, dicho en una linea.
-// Los numeros son los mismos; lo que cambia es que ahora se leen en vez de editarse por accidente.
 export function buildGroupSummary(group: RepeatableGroup): string {
   const activeChecks: number = (group.checks ?? []).filter((check) => check.enabled).length
 

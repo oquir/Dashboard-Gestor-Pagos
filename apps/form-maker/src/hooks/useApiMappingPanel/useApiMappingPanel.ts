@@ -44,14 +44,14 @@ export function useApiMappingPanel({ field }: UseApiMappingPanelParams): UseApiM
     resolvedType && !isHostPath && !fieldMatchesLeaf(field, resolvedType),
   )
 
-  // Los dos lienzos: un campo del modal de entrada tambien puede ir como concepto, y un id repetido
-  // se pisa del otro lado venga de donde venga.
+  // Los dos lienzos: un campo del modal tambien puede ser concepto, y un id repetido se pisa venga
+  // de donde venga.
   const allFields: CanvasField[] = getAllFields([
     ...formSteps.flatMap((step) => step.rows),
     ...introSteps.flatMap((step) => step.rows),
   ])
-  // Un id que no sirve -solo llega de un archivo editado a mano- se muestra como faltante, que es
-  // lo que la revision de exportacion va a decir de el.
+  // Un id invalido (solo llega de un archivo editado a mano) se muestra como faltante, igual que en
+  // la revision.
   const conceptId: number | undefined =
     binding?.kind === 'concept' && isValidConceptId(binding.idConcepto)
       ? binding.idConcepto
@@ -67,8 +67,7 @@ export function useApiMappingPanel({ field }: UseApiMappingPanelParams): UseApiM
 
   const dataSourceCandidates: CanvasField[] = useDependencyCandidates(field.id)
 
-  // Con un catalogo declarado no hay opciones que autorar: salir del contrato deja de arrastrar al
-  // modal.
+  // Con catalogo declarado no hay opciones que autorar: no abre el modal.
   const needsOptionsSetup: boolean =
     isOptionBasedField(field.type) &&
     (field.options ?? []).length === 0 &&

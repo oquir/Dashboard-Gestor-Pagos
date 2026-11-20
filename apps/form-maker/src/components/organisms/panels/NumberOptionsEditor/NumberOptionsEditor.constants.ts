@@ -1,6 +1,5 @@
-// Se ofrece una lista y no un input libre por la misma razon que el catalogo se elige de CATALOGS:
-// un 17 tecleado de mas no falla, solo produce un campo raro que nadie revisa. El tope coincide
-// con MAX_DISPLAY_DECIMALS, que es hasta donde formatNumber muestra sin declaracion.
+// Lista y no input libre: un 17 de mas no falla, solo da un campo raro. El tope es
+// MAX_DISPLAY_DECIMALS.
 export const DECIMAL_CHOICES: number[] = [0, 1, 2, 3, 4]
 
 export const NUMBER_DESCRIPTION: string =
@@ -20,5 +19,4 @@ export const NEGATIVE_DESCRIPTION: string =
 
 export const OPTION_ROW_CLASSES: string = 'flex items-center justify-between gap-2'
 
-// El (i) va al final de la fila, despues del control, como en el encabezado de PanelSection.
 export const OPTION_CONTROL_CLASSES: string = 'flex items-center gap-2'

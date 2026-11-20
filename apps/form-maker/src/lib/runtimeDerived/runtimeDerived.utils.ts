@@ -1,8 +1,7 @@
 import type { ExportedField } from '../../types'
 import type { DerivedPlan } from './runtimeDerived.types'
 
-// Planificacion del orden de calculo. Trabaja sobre nombres, no ids: en el export los ids ya se
-// resolvieron. Es el gemelo de fieldGraph, que hace lo mismo del lado del builder sobre el modelo.
+// Orden de calculo sobre nombres; gemelo de fieldGraph del lado del builder.
 
 export function isDerivedField(field: ExportedField): boolean {
   const hasScript: boolean = Boolean(field.logic.script)
@@ -11,9 +10,8 @@ export function isDerivedField(field: ExportedField): boolean {
   return hasScript || hasRules
 }
 
-// Un campo depende de lo que lee su script, de lo que leen los scripts de sus reglas y de lo que
-// miran las condiciones de esas reglas: si la condicion observa un campo calculado, ese va antes.
-// Todo llega ya resuelto en `reads`, calculado al exportar.
+// Depende de lo que leen su script, los scripts de sus reglas y sus condiciones; llega resuelto en
+// reads.
 export function fieldRefs(field: ExportedField): string[] {
   const refs: string[] = [...(field.logic.script?.reads ?? [])]
 
@@ -35,8 +33,7 @@ export function planDerivedFields(fields: ExportedField[]): DerivedPlan {
   const dependents: Map<string, string[]> = new Map()
 
   for (const field of derived) {
-    // Solo cuentan las dependencias hacia otros campos derivados: los que el usuario escribe ya
-    // tienen valor cuando empieza el calculo. Una autorreferencia se ignora para no trabar el plan.
+    // Solo dependencias hacia otros derivados; una autorreferencia se ignora.
     const own: Set<string> = new Set(
       fieldRefs(field).filter((ref) => names.has(ref) && ref !== field.name),
     )

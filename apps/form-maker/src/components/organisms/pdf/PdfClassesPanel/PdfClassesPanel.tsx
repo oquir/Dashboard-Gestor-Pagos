@@ -17,10 +17,8 @@ import { PanelSection } from '../../../molecules'
 import { PdfStyleFields } from '../PdfStyleFields'
 import { NO_STYLE } from './PdfClassesPanel.constants'
 
-// Las clases del diseño: un estilo con nombre que llevan muchas celdas. En el .html sale una vez, en
-// el <style> del documento, y cada celda dice solo class="…" (antes cada <td> repetia su style
-// entero). Se editan con los mismos botones que una celda; el orden de la lista es el del <style>,
-// asi que con dos clases que digan lo mismo gana la de mas abajo.
+// Un estilo con nombre: sale una vez en el <style> y cada celda lleva class. Con dos clases iguales
+// gana la de mas abajo.
 export function PdfClassesPanel() {
   const design = usePdfDesignStore((state) => state.design)
   const editingClass = usePdfDesignStore((state) => state.editingClass)
@@ -29,8 +27,7 @@ export function PdfClassesPanel() {
   const updateClass = usePdfDesignStore((state) => state.updateClass)
   const renameClass = usePdfDesignStore((state) => state.renameClass)
   const removeClass = usePdfDesignStore((state) => state.removeClass)
-  // El nombre mientras se escribe: se aplica al salir del campo o con Enter, para no renombrar las
-  // celdas en cada tecla ni pasar por nombres a medias.
+  // Se aplica al salir o con Enter: no renombra en cada tecla.
   const [draft, setDraft] = useState<{ for: string; value: string } | null>(null)
   const usage: Map<string, number> = useMemo(
     () => (design ? classUsage(design) : new Map()),
