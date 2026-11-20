@@ -23,7 +23,7 @@ export const SIGN_TRACK_CLASSES: string =
 export const SIGN_ITEM_BASE_CLASSES: string =
   'flex h-7 w-7 items-center justify-center rounded text-sm font-semibold transition-colors hover:cursor-pointer'
 
-export const SIGN_ITEM_ACTIVE_CLASSES: string = 'bg-brand text-on-brand shadow-sm'
+export const SIGN_ITEM_ACTIVE_CLASSES: string = 'bg-brand-strong text-on-brand-strong shadow-sm'
 
 export const SIGN_ITEM_INACTIVE_CLASSES: string =
   'text-fg-muted hover:bg-surface-raised hover:text-fg-strong dark:hover:bg-surface-inset'

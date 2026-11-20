@@ -34,7 +34,7 @@ export const MODE_TRACK_CLASSES: string =
 export const MODE_ITEM_BASE_CLASSES: string =
   'rounded px-2 py-1 text-xs font-medium transition-colors hover:cursor-pointer'
 
-export const MODE_ITEM_ACTIVE_CLASSES: string = 'bg-brand text-on-brand shadow-sm'
+export const MODE_ITEM_ACTIVE_CLASSES: string = 'bg-brand-strong text-on-brand-strong shadow-sm'
 
 export const MODE_ITEM_INACTIVE_CLASSES: string =
   'text-fg-muted hover:bg-surface-raised hover:text-fg-strong dark:hover:bg-surface-inset'

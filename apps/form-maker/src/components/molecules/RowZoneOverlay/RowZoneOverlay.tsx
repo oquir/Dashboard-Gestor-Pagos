@@ -30,7 +30,7 @@ export function RowZoneOverlay({ columns, placement }: RowZoneOverlayProps) {
           <span
             className={`rounded px-1.5 py-0.5 text-[10px] font-semibold whitespace-nowrap ${
               placement.isValid
-                ? 'bg-brand text-on-brand'
+                ? 'bg-brand-strong text-on-brand-strong'
                 : 'bg-red-500 text-white dark:bg-red-400 dark:text-neutral-900'
             }`}
           >

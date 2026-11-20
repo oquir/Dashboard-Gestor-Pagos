@@ -4,7 +4,7 @@ export const TAB_BASE_CLASSES = 'rounded-md px-2 py-1 text-xs font-medium transi
 
 export const TAB_VARIANT_CLASSES: Record<TabVariant, { active: string; inactive: string }> = {
   default: {
-    active: 'bg-brand text-on-brand',
+    active: 'bg-brand-strong text-on-brand-strong',
     inactive:
       'text-slate-500 hover:bg-slate-100 dark:text-neutral-400 dark:hover:bg-neutral-800 hover:cursor-pointer',
   },
