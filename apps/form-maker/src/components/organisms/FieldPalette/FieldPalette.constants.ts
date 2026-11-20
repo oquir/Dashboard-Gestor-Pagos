@@ -5,9 +5,9 @@ import type { PaletteSection } from './FieldPalette.types'
 const SECTION_ORDER: FieldTypeCategory[] = ['basico', 'complejo', 'contenido']
 
 const SECTION_HEADINGS: Record<FieldTypeCategory, string> = {
-  basico: 'Inputs básicos',
-  complejo: 'Inputs complejos',
-  contenido: 'Visor de contenido',
+  basico: 'Campos básicos',
+  complejo: 'Campos con opciones',
+  contenido: 'Contenido',
 }
 
 export const PALETTE_SECTIONS: PaletteSection[] = SECTION_ORDER.map((category) => ({
