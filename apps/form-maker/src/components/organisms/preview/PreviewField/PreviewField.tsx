@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { PREVIEW_FIELD_STACK_CLASSES } from '../../../../constants'
 import { isPresentationalField } from '../../../../lib/fieldKind/fieldKind'
 import { isSimulatedCatalog } from '../../../../lib/mockCatalog/mockCatalog'
 import { isRequiredBySchema } from '../../../../lib/runtimeValidation/runtimeValidation.utils'
@@ -29,7 +30,10 @@ export function PreviewField({
 
   if (field.type === 'label') {
     return (
-      <div style={style} className="flex min-w-0 items-center gap-1 self-end pb-1.5">
+      <div
+        style={style}
+        className={`flex min-w-0 items-center gap-1 self-end pb-1.5 ${PREVIEW_FIELD_STACK_CLASSES}`}
+      >
         <label
           htmlFor={field.labelFor ? `preview-${field.labelFor}` : undefined}
           className="text-sm font-medium text-fg"
@@ -43,7 +47,7 @@ export function PreviewField({
 
   if (isPresentationalField(field.type)) {
     return (
-      <div style={style} className="min-w-0">
+      <div style={style} className={`min-w-0 ${PREVIEW_FIELD_STACK_CLASSES}`}>
         <PreviewFieldControl
           field={field}
           value={undefined}
@@ -62,7 +66,7 @@ export function PreviewField({
   const showLabel: boolean = externalLabel === undefined
 
   return (
-    <div style={style} className="flex min-w-0 flex-col gap-1">
+    <div style={style} className={`flex min-w-0 flex-col gap-1 ${PREVIEW_FIELD_STACK_CLASSES}`}>
       {showLabel && (
         <div className="flex items-center gap-1">
           <label

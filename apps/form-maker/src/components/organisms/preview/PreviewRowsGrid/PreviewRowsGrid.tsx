@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { PREVIEW_ROW_STACK_CLASSES } from '../../../../constants'
 import { fieldKey } from '../../../../lib/runtimeValidation/runtimeValidation.utils'
 import { PreviewField } from '../PreviewField'
 import type { PreviewRowsGridProps } from './PreviewRowsGrid.types'
@@ -19,7 +20,7 @@ export function PreviewRowsGrid({
         return (
           <div
             key={row.rowId}
-            className="grid items-start gap-3"
+            className={`grid items-start gap-3 ${PREVIEW_ROW_STACK_CLASSES}`}
             style={
               {
                 // Los estilos de la fila ya llegan resueltos a CSS plano; gridTemplateColumns va
@@ -29,26 +30,30 @@ export function PreviewRowsGrid({
               } as CSSProperties
             }
           >
-            {row.fields.map((field) => {
-              const key: string = fieldKey(field.name, groupId, itemIndex)
+            {/* Apilada en celular la fila sigue el orden del DOM, no el de colStart: se ordena aca.
+                En desktop no cambia nada, cada campo tiene su columna explicita. */}
+            {[...row.fields]
+              .sort((a, b) => a.colStart - b.colStart)
+              .map((field) => {
+                const key: string = fieldKey(field.name, groupId, itemIndex)
 
-              return (
-                <PreviewField
-                  key={field.fieldId}
-                  field={field}
-                  scope={scope}
-                  catalogBank={preview.catalogBank}
-                  externalLabel={preview.model.externalLabels.get(field.name)}
-                  linkedTooltip={
-                    field.labelFor
-                      ? preview.model.fieldsByName.get(field.labelFor)?.tooltip
-                      : undefined
-                  }
-                  error={preview.revealed[key] ? preview.errors[key] : undefined}
-                  onChange={(value) => preview.setValue(field.name, value, groupId, itemIndex)}
-                />
-              )
-            })}
+                return (
+                  <PreviewField
+                    key={field.fieldId}
+                    field={field}
+                    scope={scope}
+                    catalogBank={preview.catalogBank}
+                    externalLabel={preview.model.externalLabels.get(field.name)}
+                    linkedTooltip={
+                      field.labelFor
+                        ? preview.model.fieldsByName.get(field.labelFor)?.tooltip
+                        : undefined
+                    }
+                    error={preview.revealed[key] ? preview.errors[key] : undefined}
+                    onChange={(value) => preview.setValue(field.name, value, groupId, itemIndex)}
+                  />
+                )
+              })}
           </div>
         )
       })}

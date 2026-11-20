@@ -47,6 +47,8 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 ## Known gaps
 
 - **The consumer (`FrontAutoliquidable`) has drifted from the builder silently**: it copied the runtime on 2026-08-26 and lacks `fieldDate`, `dateFormat`, `dateBound`, `fieldAffix`, `fieldContact` (and drops `datalist` suggestions). The ICA template already uses them. Plan: port the modules; the export already declares `projectMeta.requires`, the consumer must refuse forms asking for words it lacks (both go together). Sharing the runtime as a package is postponed by the user. `pnpm verify` in the consumer runs the real JSON through its runtime.
+- **The consumer must also stack rows on a narrow form**: the simulator does it under 40rem of form width (container query, see `Simulador (FormSimulator)`); the JSON doesn't carry it, so `FrontAutoliquidable` has to copy the rule by hand.
+- **Responsive scope**: the form editor and the PDF designer go down to 1280×720 and no further — phones, tablets and touch are the last item of all (the user's call, 2026-11-20). The canvas squashing fields in proportion (the narrow DV) is accepted as is. Only the simulator targets phones.
 - **No test runner yet.** Vitest planned for the end of development, stable core only (number/date rules, a golden test of the ICA template through `resolveRuntime`, draft migrations). Until then: throwaway `pnpm exec tsx` scripts in the scratchpad.
 - `logic.script` exports **compiled JS**, run by the consumer with `new Function` — the trust boundary (a JSON from someone else = code execution).
 - Zod validates _shape_, not coherence (`colSpan: -999`, a `dataSource` on a `text` field pass).
@@ -82,6 +84,8 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 ## Commands
 
 Package manager is **pnpm** (never npm/yarn/bun).
+
+- **A dependency only the lazy chunks import goes in `optimizeDeps.include`** (`vite.config.ts`: `sonner`, `@codemirror/*`, `@lezer/highlight`). Without it, the first open of the PDF designer or the Lógica tab failed in dev with "Failed to fetch dynamically imported module" (504 Outdated Optimize Dep). **Never run `vite --force` while a dev server is up**: it deletes `node_modules/.vite` before binding the port, under the live server.
 
 - `pnpm dev` / `pnpm build` (typecheck `tsc -b` + build; may exceed the 2-min tool timeout, exit 143 = harness kill, re-run longer) / `pnpm lint` / `pnpm format` / `pnpm preview`
 - `pnpm exec tsx <script>.ts` — throwaway verification. **Run from the project root**, never from inside the scratchpad (pnpm 11 would try to `pnpm install` over the junctioned `node_modules`). Scratchpad needs `package.json` `{"type":"module"}`, absolute imports as `file:///C:/...`, a `node_modules` junction, and a `localStorage` stub installed _before_ a dynamic `import()` of the store.

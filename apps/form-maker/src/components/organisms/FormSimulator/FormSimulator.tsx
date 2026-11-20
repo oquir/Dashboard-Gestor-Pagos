@@ -15,10 +15,10 @@ export function FormSimulator() {
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-surface-sunken text-fg">
-      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-6 py-3">
+      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-4 py-3 sm:px-6">
         <div>
           <h1 className="text-base font-semibold text-fg-strong">Simulador</h1>
-          <p className="text-xs text-fg-muted">
+          <p className="text-xs text-fg-muted max-sm:hidden">
             El formulario funcionando, armado solo con el JSON exportado
           </p>
         </div>
@@ -47,7 +47,7 @@ export function FormSimulator() {
 
       {/* En desktop cada panel scrollea por su cuenta y ocupa todo el alto; abajo de lg la
           pagina vuelve a scrollear entera para no aplastar los dos en media pantalla. */}
-      <div className="min-h-0 flex-1 overflow-auto px-6 py-6 lg:overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-auto px-3 py-4 sm:px-6 sm:py-6 lg:overflow-hidden">
         <div className="mx-auto grid max-w-7xl gap-4 lg:h-full lg:grid-cols-[minmax(0,2fr)_minmax(0,420px)]">
           <div className="min-w-0 lg:min-h-0 lg:overflow-auto">
             <PreviewForm preview={preview} />

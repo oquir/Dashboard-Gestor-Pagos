@@ -9,13 +9,16 @@ import {
   ENTER_RISE_CLASSES,
   ENTER_STEP_BACK_CLASSES,
   ENTER_STEP_FORWARD_CLASSES,
+  PREVIEW_FORM_CONTAINER_CLASSES,
 } from '../../../../constants'
 
 export function PreviewForm({ preview }: PreviewFormProps) {
   const navigation = usePreviewNavigation(preview)
 
   return (
-    <div className="relative min-w-0 rounded-lg border border-border bg-surface p-6">
+    <div
+      className={`${PREVIEW_FORM_CONTAINER_CLASSES} relative min-w-0 rounded-lg border border-border bg-surface p-6`}
+    >
       {navigation.step ? (
         <div
           key={navigation.step.stepId}

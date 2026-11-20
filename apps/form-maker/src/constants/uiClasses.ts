@@ -64,6 +64,18 @@ export const CHROME_PINNED_CLASSES: string = 'opacity-100'
 // largo de su propio nombre (ver CanvasFieldChip).
 export const NARROW_FIELD_HIDDEN_CLASSES: string = '@max-[5rem]:hidden'
 
+// El formulario del simulador en celular: si la tarjeta mide menos de 40rem, cada campo ocupa la
+// fila entera, uno debajo del otro. Container query y no breakpoint de pantalla, porque en desktop
+// el formulario comparte la ventana con los resultados. Los `!` son a proposito: la grilla, la
+// columna y la fila van inline (para ganarle al CSS libre del autor en desktop) y solo un
+// !important les gana. El consumidor tiene que pintar igual (docs/Decisiones.md, Simulador).
+export const PREVIEW_FORM_CONTAINER_CLASSES: string = '@container/form'
+
+export const PREVIEW_ROW_STACK_CLASSES: string = '@max-[40rem]/form:grid-cols-1!'
+
+export const PREVIEW_FIELD_STACK_CLASSES: string =
+  '@max-[40rem]/form:col-span-full! @max-[40rem]/form:row-auto!'
+
 // La barra de herramientas de una fila del lienzo. El disparador y el desplegable los dibujan
 // RowColumnsMenu y RowStylesMenu, que viven en otra carpeta, asi que las clases no pueden quedarse
 // privadas dentro de RowToolbar.
