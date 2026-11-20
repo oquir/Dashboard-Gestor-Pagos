@@ -57,7 +57,6 @@ export function PdfClassesPanel() {
 
   return (
     <PanelSection
-      legibleTitle
       title="Clases del diseño"
       description="Un estilo con nombre para muchas celdas: en el HTML sale una sola vez y cada celda dice solo su nombre, así el archivo queda corto. Con dos clases que digan lo mismo, gana la de más abajo en esta lista."
     >

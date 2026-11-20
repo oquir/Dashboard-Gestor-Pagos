@@ -50,7 +50,6 @@ export function PdfCellPanel() {
   return (
     <>
       <PanelSection
-        legibleTitle
         title="Contenido de la celda"
         aside={
           location.depth > 1 ? (
@@ -148,7 +147,6 @@ export function PdfCellPanel() {
       </PanelSection>
 
       <PanelSection
-        legibleTitle
         title="Clases de la celda"
         description="Una clase es un estilo con nombre que llevan muchas celdas: en el HTML sale una sola vez, y cada celda dice solo su nombre. Si la celda tiene además estilo propio, ese gana sobre la clase."
       >
@@ -192,7 +190,7 @@ export function PdfCellPanel() {
         </Tooltip>
       </PanelSection>
 
-      <PanelSection legibleTitle title="Estilo de la celda">
+      <PanelSection title="Estilo de la celda">
         <PdfStyleFields
           idPrefix="pdf-cell"
           value={cell}
@@ -203,7 +201,6 @@ export function PdfCellPanel() {
       </PanelSection>
 
       <PanelSection
-        legibleTitle
         title="Avanzado"
         description="Para quien sabe CSS. Aquí van todas las clases de la celda, también las que define a mano un bloque HTML con <style>. Los estilos en línea se limpian igual que el HTML libre, y ganan sobre lo de arriba."
       >

@@ -41,7 +41,6 @@ export function PdfTablePanel() {
 
   return (
     <PanelSection
-      legibleTitle
       title="Tabla"
       aside={
         <span className="text-[10px] text-fg-muted tabular-nums">

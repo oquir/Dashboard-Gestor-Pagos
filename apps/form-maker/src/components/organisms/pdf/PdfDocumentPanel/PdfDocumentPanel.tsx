@@ -25,7 +25,7 @@ export function PdfDocumentPanel() {
 
   return (
     <>
-      <PanelSection legibleTitle title="Letra del documento">
+      <PanelSection title="Letra del documento">
         <div className="grid grid-cols-[1fr_88px] gap-2">
           <div className="min-w-0">
             <Label htmlFor="pdf-font-family" className="text-[11px]">
@@ -63,7 +63,6 @@ export function PdfDocumentPanel() {
       </PanelSection>
 
       <PanelSection
-        legibleTitle
         title="Margen extra"
         description={`El back ya deja ${PDF_BACK_MARGIN_MM} mm en cada lado de cada hoja. Lo que escribas aquí se suma a esos ${PDF_BACK_MARGIN_MM} mm. Úsalo cuando un municipio diga que la declaración sale pegada al borde.`}
       >
@@ -89,7 +88,6 @@ export function PdfDocumentPanel() {
 
       {hasFactoryPdfDesign(design.taxType) && (
         <PanelSection
-          legibleTitle
           title="Plantilla de fábrica"
           description="El formulario único nacional en una hoja carta, con las variables que hoy llena el back. Reemplaza el diseño de ahora; Ctrl+Z lo devuelve."
         >

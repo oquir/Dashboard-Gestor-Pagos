@@ -22,7 +22,6 @@ export function PdfSheetsPanel() {
 
   return (
     <PanelSection
-      legibleTitle
       title="Hojas"
       description="Cada hoja es una página aparte. Si algo no cabe, la hoja lo avisa: pásalo a otra hoja o achica el margen."
     >

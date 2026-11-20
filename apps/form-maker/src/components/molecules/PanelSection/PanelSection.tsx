@@ -4,13 +4,7 @@ import type { PanelSectionProps } from './PanelSection.types'
 // Agrupa los controles del panel en tarjetas con un rotulo chico. Antes era una lista plana de
 // campos separados solo por espacio, y con doce controles seguidos no habia forma de saber cual
 // tenia que ver con cual.
-export function PanelSection({
-  title,
-  description,
-  aside,
-  legibleTitle = false,
-  children,
-}: PanelSectionProps) {
+export function PanelSection({ title, description, aside, children }: PanelSectionProps) {
   return (
     // En oscuro, un velo negro y no un token: la tarjeta tiene que quedar apenas mas oscura que el
     // panel, y entre surface (neutral-900) y surface-sunken (neutral-950) no hay paso intermedio. En
@@ -18,11 +12,8 @@ export function PanelSection({
     // border normal (slate-200) sobre blanco casi no se ve.
     <section className="flex flex-col gap-3 rounded-lg border border-border-strong bg-surface p-3 dark:border-border dark:bg-black/25">
       <div className="flex items-center justify-between gap-2">
-        <h3
-          className={`text-[10px] font-semibold uppercase tracking-wider ${
-            legibleTitle ? 'text-fg-muted' : 'text-fg-subtle'
-          }`}
-        >
+        {/* fg-muted y no fg-subtle: a 10 px en mayusculas, el subtle daba 2,63:1 sobre blanco. */}
+        <h3 className="text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
           {title}
         </h3>
         <div className="flex items-center gap-2">
