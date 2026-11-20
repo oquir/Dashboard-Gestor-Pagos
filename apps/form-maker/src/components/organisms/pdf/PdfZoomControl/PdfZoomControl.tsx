@@ -7,8 +7,8 @@ import {
   PDF_ZOOM_PRESETS,
 } from '../../../../constants'
 import { useClickOutside } from '../../../../hooks'
-import { formatZoom } from '../../../../lib'
-import { stepPdfZoom } from '../../../../lib/pdfDesign'
+import { formatZoom, getCanvasScrollPort } from '../../../../lib'
+import { fitPdfZoom, stepPdfZoom } from '../../../../lib/pdfDesign'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { Tooltip } from '../../../atoms'
 import {
@@ -28,6 +28,11 @@ export function PdfZoomControl() {
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   useClickOutside(containerRef, () => setIsOpen(false), isOpen)
+
+  function fitWidth(): void {
+    const port: HTMLElement | null = getCanvasScrollPort()
+    if (port) apply(fitPdfZoom(port.clientWidth))
+  }
 
   function apply(value: number): void {
     setZoom(value)
@@ -79,6 +84,10 @@ export function PdfZoomControl() {
 
       {isOpen && (
         <div role="menu" className={MENU_CLASSES}>
+          <button type="button" role="menuitem" onClick={fitWidth} className={ZOOM_ITEM_CLASSES}>
+            Ajustar al ancho
+          </button>
+          <div className="my-1 border-t border-border-subtle" />
           {PDF_ZOOM_PRESETS.map((preset) => (
             <button
               key={preset}

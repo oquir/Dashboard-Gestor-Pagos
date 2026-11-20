@@ -8,6 +8,7 @@ import {
   PDF_LINE_HEIGHT,
   PDF_MAX_EXTRA_MARGIN_MM,
   PDF_NO_EXTRA_MARGINS,
+  PDF_PAPER_WIDTH_MM,
   PDF_CLASS_NAME_PATTERN,
   PDF_PX_PER_MM,
   PDF_RESERVED_CLASS_PREFIX,
@@ -37,7 +38,14 @@ import type {
 } from '../../types'
 import { parseCssText } from '../cssStyles'
 import { pdfCssText, sanitizeCss } from '../pdfHtml'
-import { MARGIN_STEP_MM, PDF_CELL_BORDER, PDF_CELL_PADDING, TAX_PARAM } from './pdfDesign.constants'
+import {
+  FIT_GUTTER_PX,
+  FIT_STEP,
+  MARGIN_STEP_MM,
+  PDF_CELL_BORDER,
+  PDF_CELL_PADDING,
+  TAX_PARAM,
+} from './pdfDesign.constants'
 
 // Reglas puras del diseño del PDF: medidas de la hoja, el diseño en blanco y de que impuesto es.
 // Sin React ni store. Solo lo usa el diseñador, que se carga con React.lazy: por eso no esta en
@@ -222,6 +230,15 @@ export function stepPdfZoom(zoom: number, direction: 1 | -1): number {
   const steps: number = zoom / PDF_ZOOM_STEP
   const next: number = direction === 1 ? Math.floor(steps + 1e-9) + 1 : Math.ceil(steps - 1e-9) - 1
   return clampPdfZoom(next * PDF_ZOOM_STEP)
+}
+
+// El zoom con el que la hoja llena el ancho del lienzo: "Ajustar al ancho" y el zoom al abrir
+// (docs/Plan-PDF-UX-P2.md). Redondeado hacia abajo a 5 % para que no aparezca el scroll horizontal.
+export function fitPdfZoom(viewportWidth: number): number {
+  const paperPx: number = PDF_PAPER_WIDTH_MM * PDF_PX_PER_MM
+  const raw: number = (viewportWidth - FIT_GUTTER_PX) / paperPx
+  if (!Number.isFinite(raw) || raw <= 0) return clampPdfZoom(PDF_ZOOM_MIN)
+  return clampPdfZoom(Math.floor(raw / FIT_STEP + 1e-9) * FIT_STEP)
 }
 
 // La rueda es continua: proporcional al zoom de ahora, para que se sienta igual de lejos que de cerca.

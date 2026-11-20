@@ -83,7 +83,7 @@ export function PdfSheetView({
     <section className={PDF_CANVAS_CLASS.sheet}>
       <div style={{ width: PAPER_WIDTH_PX * zoom, height: PAPER_HEIGHT_PX * zoom }}>
         <div
-          className={`${PDF_CANVAS_CLASS.paper} ${isActive ? PDF_CANVAS_CLASS.active : ''}`}
+          className={`${PDF_CANVAS_CLASS.paper} ${isActive && total > 1 ? PDF_CANVAS_CLASS.active : ''}`}
           style={paperStyle}
           onClick={onActivate}
         >

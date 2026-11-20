@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { PDF_CANVAS_CLASS } from '../../../../constants'
-import { pdfStyleSheet, wheelPdfZoom } from '../../../../lib/pdfDesign'
+import { fitPdfZoom, pdfStyleSheet, wheelPdfZoom } from '../../../../lib/pdfDesign'
 import { selectedCellIds } from '../../../../lib/pdfDesignEdit'
 import { useFormStore } from '../../../../store'
 import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
@@ -50,6 +50,16 @@ export function PdfCanvas() {
   const hostRef = useCallback((node: HTMLDivElement | null) => {
     if (node) setShadowRoot(node.shadowRoot ?? node.attachShadow({ mode: 'open' }))
   }, [])
+
+  // Al abrir, la hoja llena el ancho (docs/Plan-PDF-UX-P2.md). Va antes de la suscripcion de abajo a
+  // proposito: asi este cambio de zoom no anota ancla y la vista arranca arriba, no en el centro.
+  const didFitRef = useRef<boolean>(false)
+  useEffect(() => {
+    const port: HTMLElement | null = scrollerOf(shadowRoot)
+    if (!port || didFitRef.current) return
+    didFitRef.current = true
+    usePdfDesignStore.getState().setZoom(fitPdfZoom(port.clientWidth))
+  }, [shadowRoot])
 
   // Ctrl + rueda acerca con el punto bajo el cursor quieto. Sin esto el navegador haria su propio
   // zoom de pagina, que agranda tambien la barra lateral.

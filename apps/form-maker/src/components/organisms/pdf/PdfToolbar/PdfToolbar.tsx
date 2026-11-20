@@ -2,8 +2,6 @@ import { useMemo } from 'react'
 import { Xmark } from 'reicon-react'
 import { useStore } from 'zustand'
 import {
-  CANVAS_SELECTION_COUNT_CLASSES,
-  CANVAS_TOOLBAR_ACTION_CLASSES,
   CANVAS_TOOLBAR_CLASSES,
   CANVAS_TOOLBAR_DIVIDER_CLASSES,
   CANVAS_TOOLBAR_GROUP_CLASSES,
@@ -14,6 +12,7 @@ import { usePdfDesignStore } from '../../../../store/pdfDesignStore'
 import { Tooltip } from '../../../atoms'
 import { CanvasToolPicker, HistoryButtons, PerformanceModeToggle } from '../../../molecules'
 import { PdfZoomControl } from '../PdfZoomControl'
+import { MERGE_BUTTON_CLASSES, SELECTION_COUNT_CLASSES } from './PdfToolbar.constants'
 
 // La barra flotante del diseñador de PDF: la misma del lienzo del formulario (CanvasToolbar) con las
 // mismas piezas, sin + Fila ni + Grupo repetible, que no existen aca, y con el zoom del lienzo. Va como hermana del area que
@@ -63,13 +62,9 @@ export function PdfToolbar() {
           <span aria-hidden className={CANVAS_TOOLBAR_DIVIDER_CLASSES} />
 
           <div className={CANVAS_TOOLBAR_GROUP_CLASSES}>
-            <span className={CANVAS_SELECTION_COUNT_CLASSES}>{selectedCount} celdas</span>
+            <span className={SELECTION_COUNT_CLASSES}>{selectedCount} celdas</span>
             <Tooltip content="Combinar las celdas seleccionadas en una">
-              <button
-                type="button"
-                onClick={mergeSelection}
-                className={CANVAS_TOOLBAR_ACTION_CLASSES}
-              >
+              <button type="button" onClick={mergeSelection} className={MERGE_BUTTON_CLASSES}>
                 Combinar
               </button>
             </Tooltip>
