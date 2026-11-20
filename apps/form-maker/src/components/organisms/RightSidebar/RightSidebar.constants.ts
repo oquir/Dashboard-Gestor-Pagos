@@ -15,7 +15,7 @@ export const PANEL_TAB_BASE_CLASSES: string =
 export const PANEL_TAB_ACTIVE_CLASSES: string =
   "font-semibold text-fg-strong after:absolute after:inset-x-1.5 after:-bottom-px after:h-0.5 after:rounded-t-sm after:bg-brand after:content-['']"
 
-export const PANEL_TAB_INACTIVE_CLASSES: string = 'font-medium text-fg-subtle hover:text-fg'
+export const PANEL_TAB_INACTIVE_CLASSES: string = 'font-medium text-fg-muted hover:text-fg'
 
 // Durante un arrastre la pestana de Steps se impone sola; el punto es lo unico que lo explica.
 export const PANEL_TAB_DROP_DOT_CLASSES: string =
@@ -30,4 +30,4 @@ export const PANEL_COLLAPSE_BUTTON_CLASSES: string =
 // La accion del bloque Formulario va como texto y no como boton con fondo: es secundaria, y el
 // primario del panel ya lo tiene la fila de acciones (Exportar).
 export const OPEN_PROJECT_BUTTON_CLASSES: string =
-  'text-[10px] font-medium text-fg-subtle transition-colors hover:text-fg-strong hover:cursor-pointer'
+  'text-[10px] font-medium text-fg-muted transition-colors hover:text-fg-strong hover:cursor-pointer'

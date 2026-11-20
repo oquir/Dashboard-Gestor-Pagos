@@ -11,4 +11,4 @@ export const METRIC_NUMBER_CLASSES: string =
   'text-[17px] font-semibold leading-5 tabular-nums text-fg-strong'
 
 export const METRIC_CAPTION_CLASSES: string =
-  'text-[9px] font-semibold uppercase tracking-wider text-fg-subtle'
+  'text-[9px] font-semibold uppercase tracking-wider text-fg-muted'

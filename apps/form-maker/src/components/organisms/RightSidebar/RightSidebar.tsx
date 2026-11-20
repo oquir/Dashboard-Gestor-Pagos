@@ -140,14 +140,14 @@ export function RightSidebar() {
             <>
               <PanelBlock
                 title="Pasos"
-                action={<span className="text-[10px] text-fg-subtle">{stepCountLabel}</span>}
+                action={<span className="text-[10px] text-fg-muted">{stepCountLabel}</span>}
               >
                 <CanvasTabs />
               </PanelBlock>
 
               <PanelBlock
                 title="Paso activo"
-                action={<span className="text-[10px] text-fg-subtle">{activeStepLabel}</span>}
+                action={<span className="text-[10px] text-fg-muted">{activeStepLabel}</span>}
               >
                 <StepTitleEditor />
               </PanelBlock>

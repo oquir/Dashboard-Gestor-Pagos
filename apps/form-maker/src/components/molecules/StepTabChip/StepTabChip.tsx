@@ -39,8 +39,8 @@ export function StepTabChip({
   // pestanas con una fila colgando del puntero. El titulo vive en el bloque "Paso activo" y sigue
   // a un hover de distancia, en el Tooltip.
   const chipClasses: string = active
-    ? 'bg-brand text-on-brand ring-[3px] ring-brand/20'
-    : 'bg-surface-raised text-fg-muted hover:bg-surface-inset hover:text-fg-strong'
+    ? 'bg-brand-strong text-on-brand-strong ring-[3px] ring-brand/20'
+    : 'bg-surface-raised text-fg-soft hover:bg-surface-inset hover:text-fg-strong'
 
   return (
     <div

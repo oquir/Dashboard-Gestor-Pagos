@@ -71,7 +71,7 @@ export function StepTitleEditor() {
               <InfoHint text={HIDDEN_STEP_DESCRIPTION} label="Ayuda sobre Ocultar este paso" />
             </div>
           </div>
-          {formStep.hidden && <p className="text-xs text-fg-subtle">{HIDDEN_STEP_NOTE}</p>}
+          {formStep.hidden && <p className="text-xs text-fg-muted">{HIDDEN_STEP_NOTE}</p>}
         </div>
       )}
     </div>
