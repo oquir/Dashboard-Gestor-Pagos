@@ -10,6 +10,7 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 - `docs/Dominio-ICA.md` — **read before working on the `industria_comercio`, `retencion_industria_comercio` or `autorretencion` templates, renglones, scripts, sanctions or deadlines.** ⏳ marks data that expires (UVT, bases, deadlines, rates): re-verify only those.
 - `docs/Pendientes-PDF.md` — **read before any work on a declaration's PDF** ("Diseñar PDF", its templates, the `{Variable}` placeholders). Tick items off there as they land (`[x]`, strikethrough, date, commit).
 - `docs/Plan-PDF-UX-P1.md` / `docs/Plan-PDF-UX-P2.md` (Spanish) — fix plans from the 2026-11-19 UI critique, **PDF designer only** (not the form builder). Read before touching the designer's UI; tick items there.
+- `docs/Plan-Form-UX-P1.md` / `docs/Plan-Form-UX-P2.md` (Spanish) — fix plans from the 2026-11-20 UI critique of the **form editor** (canvas, both panels, floating bar), with the user's decisions (a click on a field does NOT switch the left panel; a palette click adds the field; the palette goes all-Spanish). Read before touching the editor's UI; tick items there.
 
 ## Where to read (section in `docs/Decisiones.md`)
 
