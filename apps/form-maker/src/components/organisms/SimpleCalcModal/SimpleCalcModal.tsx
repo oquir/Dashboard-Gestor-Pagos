@@ -172,7 +172,7 @@ export function SimpleCalcModal({ field, candidates, onClose }: SimpleCalcModalP
             Ver el script generado
           </span>
           <span className="flex items-center gap-2">
-            <span className="font-mono text-[11px] font-normal text-fg-subtle">JavaScript</span>
+            <span className="font-mono text-[11px] font-normal text-fg-muted">JavaScript</span>
             <AngleDown2 size={14} className={CODE_CHEVRON_CLASSES} />
           </span>
         </summary>

@@ -17,7 +17,7 @@ export function SelectableOptionCard({
       }`}
     >
       <p className="text-sm font-medium text-slate-800 dark:text-neutral-100">{label}</p>
-      <p className="text-xs text-slate-400 dark:text-neutral-500">{description}</p>
+      <p className="text-xs text-fg-muted">{description}</p>
     </button>
   )
 }

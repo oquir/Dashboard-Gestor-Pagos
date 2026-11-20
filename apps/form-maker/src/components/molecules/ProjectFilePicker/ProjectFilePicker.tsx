@@ -57,7 +57,7 @@ export function ProjectFilePicker({
             {summary.formTypeLabel}
           </p>
           <p className="text-xs text-slate-500 dark:text-neutral-400">{summaryLine(summary)}</p>
-          <p className="text-xs text-slate-400 dark:text-neutral-500">
+          <p className="text-xs text-fg-muted">
             Exportado el {new Date(summary.savedAt).toLocaleString()}
           </p>
         </div>
@@ -65,7 +65,7 @@ export function ProjectFilePicker({
 
       {result?.status === 'ok' && <FieldRenameNotice renamed={result.renamed} />}
 
-      <p className="text-[11px] text-slate-400 dark:text-neutral-500">
+      <p className="text-[11px] text-fg-muted">
         Abre solo archivos de personas de confianza: sus scripts se ejecutan en el simulador.
       </p>
     </div>

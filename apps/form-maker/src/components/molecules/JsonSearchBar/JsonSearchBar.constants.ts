@@ -14,7 +14,7 @@ export const SEARCH_INPUT_CLASSES: string =
   'min-w-0 flex-1 bg-transparent py-0.5 text-xs text-fg-strong outline-none placeholder:text-fg-subtle'
 
 export const SEARCH_COUNT_CLASSES: string =
-  'shrink-0 whitespace-nowrap px-1 text-right text-[11px] tabular-nums text-fg-subtle'
+  'shrink-0 whitespace-nowrap px-1 text-right text-[11px] tabular-nums text-fg-muted'
 
 export const SEARCH_BUTTON_CLASSES: string =
   'flex h-6 w-6 shrink-0 items-center justify-center rounded text-fg-muted hover:cursor-pointer hover:bg-surface-raised disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent'

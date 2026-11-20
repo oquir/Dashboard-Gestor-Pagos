@@ -12,7 +12,7 @@ export const HEADER_CLASSES: string =
   'flex shrink-0 items-start justify-between gap-4 border-b border-border px-6 pt-5 pb-4'
 
 export const EYEBROW_CLASSES: string =
-  'inline-flex items-center gap-1.5 self-start rounded-full border border-brand-border/30 bg-brand-surface px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-brand-fg'
+  'inline-flex items-center gap-1.5 self-start rounded-full border border-brand-border/30 bg-brand-surface px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-brand-strong'
 
 export const TITLE_CLASSES: string = 'text-xl font-bold leading-snug tracking-tight text-fg-strong'
 
