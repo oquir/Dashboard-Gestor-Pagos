@@ -76,7 +76,7 @@ export function PdfDesigner() {
           <Tooltip content={saveError ?? status.label}>
             <span
               className={`flex items-center gap-1.5 text-[11px] ${
-                status.tone === 'error' ? 'text-danger' : 'text-fg-subtle'
+                status.tone === 'error' ? 'text-danger' : 'text-fg-muted'
               }`}
             >
               <span

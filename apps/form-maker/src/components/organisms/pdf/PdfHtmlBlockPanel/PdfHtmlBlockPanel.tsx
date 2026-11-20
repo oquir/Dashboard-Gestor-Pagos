@@ -24,6 +24,7 @@ export function PdfHtmlBlockPanel() {
 
   return (
     <PanelSection
+      legibleTitle
       title="Bloque HTML"
       description="HTML libre, como en las plantillas a mano. Se limpia al pintar y al publicar: se quitan scripts, iframes, formularios, eventos (onclick…) y enlaces javascript:. Se permite <style>, que vale para toda la plantilla."
     >

@@ -24,7 +24,7 @@ export function PdfSidebar() {
       )}
       {selectionKind === 'block' && <PdfHtmlBlockPanel />}
       {selectionKind === null && (
-        <p className="rounded-lg border border-dashed border-border px-3 py-4 text-center text-[11px] text-fg-subtle">
+        <p className="rounded-lg border border-dashed border-border px-3 py-4 text-center text-[11px] text-fg-muted">
           Haz clic en una celda o en un bloque de la hoja para editarlo. Shift+clic en otra celda
           selecciona el rectángulo entre las dos.
         </p>

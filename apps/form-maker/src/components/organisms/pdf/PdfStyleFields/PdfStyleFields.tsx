@@ -35,7 +35,7 @@ export function PdfStyleFields({
 
   return (
     <>
-      <PanelSection title="Letra">
+      <PanelSection legibleTitle title="Letra">
         <div className="grid grid-cols-[88px_1fr] items-end gap-2">
           <PdfNumberField
             id={`${idPrefix}-font-size`}
@@ -69,7 +69,7 @@ export function PdfStyleFields({
         </div>
       </PanelSection>
 
-      <PanelSection title="Alineación">
+      <PanelSection legibleTitle title="Alineación">
         <div className="grid grid-cols-3 gap-1.5">
           {HORIZONTAL_ALIGNS.map((option) => (
             <button
@@ -98,7 +98,7 @@ export function PdfStyleFields({
         </div>
       </PanelSection>
 
-      <PanelSection title="Bordes">
+      <PanelSection legibleTitle title="Bordes">
         <div className="grid grid-cols-4 gap-1.5">
           {BORDER_SIDES.map(({ side, label }) => (
             <button
@@ -133,13 +133,14 @@ export function PdfStyleFields({
       </PanelSection>
 
       <PanelSection
+        legibleTitle
         title="Fondo"
         aside={
           value.backgroundColor ? (
             <button
               type="button"
               onClick={() => onChange({ backgroundColor: undefined })}
-              className="text-[11px] font-medium text-fg-subtle hover:cursor-pointer hover:text-fg-strong"
+              className="text-[11px] font-medium text-fg-muted hover:cursor-pointer hover:text-fg-strong"
             >
               Quitar
             </button>

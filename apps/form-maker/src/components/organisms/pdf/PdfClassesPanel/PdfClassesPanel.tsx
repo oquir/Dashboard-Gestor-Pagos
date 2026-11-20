@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import {
-  ADD_LINK_CLASSES,
+  PDF_ADD_LINK_CLASSES,
   ERROR_CLASSES,
   INPUT_CLASSES,
   PANEL_BUTTON_CLASSES,
@@ -57,6 +57,7 @@ export function PdfClassesPanel() {
 
   return (
     <PanelSection
+      legibleTitle
       title="Clases del diseño"
       description="Un estilo con nombre para muchas celdas: en el HTML sale una sola vez y cada celda dice solo su nombre, así el archivo queda corto. Con dos clases que digan lo mismo, gana la de más abajo en esta lista."
     >
@@ -70,13 +71,17 @@ export function PdfClassesPanel() {
             className={`${PANEL_BUTTON_CLASSES} font-mono ${item.name === editingClass ? PANEL_BUTTON_ON_CLASSES : ''}`}
           >
             {item.name}
-            <span className="font-sans text-[10px] text-fg-subtle tabular-nums">
+            <span className="font-sans text-[10px] text-fg-muted tabular-nums">
               {usage.get(item.name) ?? 0}
             </span>
           </button>
         ))}
       </div>
-      <button type="button" onClick={() => addClass()} className={`${ADD_LINK_CLASSES} self-start`}>
+      <button
+        type="button"
+        onClick={() => addClass()}
+        className={`${PDF_ADD_LINK_CLASSES} self-start`}
+      >
         + Clase
       </button>
 
@@ -103,7 +108,7 @@ export function PdfClassesPanel() {
             {nameError ? (
               <p className={`${ERROR_CLASSES} mt-1`}>{nameError}</p>
             ) : (
-              <p className="mt-1 text-[11px] text-fg-subtle">
+              <p className="mt-1 text-[11px] text-fg-muted">
                 En {usage.get(current.name) ?? 0} celdas. Cambiar el nombre lo cambia también en
                 ellas.
               </p>

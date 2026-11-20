@@ -95,7 +95,7 @@ export function PdfZoomControl() {
               ) : null}
             </button>
           ))}
-          <p className="border-t border-border-subtle px-2.5 pt-1.5 pb-1 text-[10px] text-fg-subtle">
+          <p className="border-t border-border-subtle px-2.5 pt-1.5 pb-1 text-[10px] text-fg-muted">
             También con Ctrl + rueda del mouse.
           </p>
         </div>

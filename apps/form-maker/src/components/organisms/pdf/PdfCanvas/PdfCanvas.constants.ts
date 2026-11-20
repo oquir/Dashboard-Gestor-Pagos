@@ -22,7 +22,7 @@ export const CANVAS_CSS: string = `
 .${C.content}.${C.extra} { outline: 1px dashed rgba(249,115,22,.6); }
 .${C.content}.${C.overflow} { outline: 2px solid var(--color-danger, #dc2626); }
 .${C.empty} { position: absolute; inset: 0; margin: 0; display: flex; align-items: center; justify-content: center; font: 13px system-ui, sans-serif; color: #94a3b8; pointer-events: none; }
-.${C.caption} { margin: 0; font: 11px/1.4 system-ui, sans-serif; color: var(--color-fg-subtle, #64748b); font-variant-numeric: tabular-nums; }
+.${C.caption} { margin: 0; font: 11px/1.4 system-ui, sans-serif; color: var(--color-fg-muted, #64748b); font-variant-numeric: tabular-nums; }
 .${C.warning} { color: var(--color-danger, #dc2626); font-weight: 600; }
 .${C.cell} { cursor: pointer; }
 .${C.cell}:hover { box-shadow: inset 0 0 0 1px rgba(249,115,22,.45); }

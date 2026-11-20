@@ -27,9 +27,7 @@ export function PdfTextField({
         />
       ) : (
         <div className="flex items-center gap-1">
-          {prefix && (
-            <span className="shrink-0 font-mono text-[11px] text-fg-subtle">{prefix}</span>
-          )}
+          {prefix && <span className="shrink-0 font-mono text-[11px] text-fg-muted">{prefix}</span>}
           <input
             id={id}
             value={value}
@@ -38,9 +36,7 @@ export function PdfTextField({
             spellCheck={false}
             className={INPUT_CLASSES}
           />
-          {suffix && (
-            <span className="shrink-0 font-mono text-[11px] text-fg-subtle">{suffix}</span>
-          )}
+          {suffix && <span className="shrink-0 font-mono text-[11px] text-fg-muted">{suffix}</span>}
         </div>
       )}
     </div>

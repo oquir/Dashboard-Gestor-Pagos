@@ -25,7 +25,7 @@ export function PdfDocumentPanel() {
 
   return (
     <>
-      <PanelSection title="Letra">
+      <PanelSection legibleTitle title="Letra">
         <div className="grid grid-cols-[1fr_88px] gap-2">
           <div className="min-w-0">
             <Label htmlFor="pdf-font-family" className="text-[11px]">
@@ -57,12 +57,13 @@ export function PdfDocumentPanel() {
             onChange={(value) => value !== undefined && setFontSize(value)}
           />
         </div>
-        <p className="text-[11px] text-fg-subtle">
+        <p className="text-[11px] text-fg-muted">
           Solo fuentes básicas: el servidor que arma el PDF tiene que tenerlas.
         </p>
       </PanelSection>
 
       <PanelSection
+        legibleTitle
         title="Margen extra"
         description={`El back ya deja ${PDF_BACK_MARGIN_MM} mm en cada lado de cada hoja. Lo que escribas aquí se suma a esos ${PDF_BACK_MARGIN_MM} mm. Úsalo cuando un municipio diga que la declaración sale pegada al borde.`}
       >
@@ -78,7 +79,7 @@ export function PdfDocumentPanel() {
                 suffix="mm"
                 onChange={(value) => setMargins({ [side]: value ?? 0 } as Partial<PdfMargins>)}
               />
-              <p className="mt-0.5 text-[10px] text-fg-subtle tabular-nums">
+              <p className="mt-0.5 text-[10px] text-fg-muted tabular-nums">
                 Total: {formatMm(PDF_BACK_MARGIN_MM + design.margins[side])} mm
               </p>
             </div>
@@ -88,6 +89,7 @@ export function PdfDocumentPanel() {
 
       {hasFactoryPdfDesign(design.taxType) && (
         <PanelSection
+          legibleTitle
           title="Plantilla de fábrica"
           description="El formulario único nacional en una hoja carta, con las variables que hoy llena el back. Reemplaza el diseño de ahora; Ctrl+Z lo devuelve."
         >

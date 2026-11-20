@@ -22,6 +22,7 @@ export function PdfSheetsPanel() {
 
   return (
     <PanelSection
+      legibleTitle
       title="Hojas"
       description="Cada hoja es una página aparte. Si algo no cabe, la hoja lo avisa: pásalo a otra hoja o achica el margen."
     >
@@ -53,7 +54,7 @@ export function PdfSheetsPanel() {
           Bloque HTML
         </button>
       </div>
-      <p className="text-[11px] text-fg-subtle">
+      <p className="text-[11px] text-fg-muted">
         Se agregan al final de la hoja {activeIndex >= 0 ? activeIndex + 1 : 1}.
       </p>
 

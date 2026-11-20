@@ -29,6 +29,9 @@
   --ui-brand-border: oklch(70.5% 0.213 47.604); /* orange-500 */
   --ui-brand-surface: oklch(98% 0.016 73.684); /* orange-50 */
   --ui-on-brand: oklch(100% 0 0); /* white */
+  /* Solo el diseñador de PDF (docs/Plan-PDF-UX-P1.md): el naranja con contraste AA. */
+  --ui-brand-strong: oklch(55.3% 0.195 38.402); /* orange-700 */
+  --ui-on-brand-strong: oklch(100% 0 0); /* white */
 
   --ui-danger: oklch(57.7% 0.245 27.325); /* red-600 */
   --ui-danger-soft: oklch(80.8% 0.114 19.571); /* red-300 */
@@ -92,6 +95,8 @@
   /* orange-500 */
   --ui-brand-surface: color-mix(in oklab, oklch(70.5% 0.213 47.604) 10%, transparent);
   --ui-on-brand: oklch(100% 0 0); /* white */
+  --ui-brand-strong: oklch(70.5% 0.213 47.604); /* orange-500 */
+  --ui-on-brand-strong: oklch(14.5% 0 0); /* neutral-950 */
 
   --ui-danger: oklch(70.4% 0.191 22.216); /* red-400 */
   --ui-danger-soft: oklch(70.4% 0.191 22.216); /* red-400 */
@@ -197,6 +202,8 @@
   --color-brand-border: var(--ui-brand-border);
   --color-brand-surface: var(--ui-brand-surface);
   --color-on-brand: var(--ui-on-brand);
+  --color-brand-strong: var(--ui-brand-strong);
+  --color-on-brand-strong: var(--ui-on-brand-strong);
 
   --color-danger: var(--ui-danger);
   --color-danger-soft: var(--ui-danger-soft);

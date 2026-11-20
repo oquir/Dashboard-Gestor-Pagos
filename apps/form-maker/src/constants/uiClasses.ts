@@ -39,6 +39,11 @@ export const COUNT_CLASSES: string =
 export const ADD_LINK_CLASSES: string =
   'text-xs font-medium text-brand-fg hover:cursor-pointer hover:text-brand-hover disabled:cursor-not-allowed disabled:opacity-40'
 
+// La del diseñador de PDF: brand-fg en claro da 3,58:1 sobre blanco (docs/Plan-PDF-UX-P1.md). El
+// hover subraya en vez de aclarar, para no bajar el contraste.
+export const PDF_ADD_LINK_CLASSES: string =
+  'text-xs font-medium text-brand-strong hover:cursor-pointer hover:underline disabled:cursor-not-allowed disabled:opacity-40'
+
 // El cromo del lienzo (tiradores, barra de fila, botones de borrar) aparece al pasar por encima y
 // se queda fijo en lo que esta seleccionado o enfocado: el hover solo no existe ni para el teclado
 // ni para una pantalla tactil. Son dos cadenas literales y no una funcion con el nombre del grupo

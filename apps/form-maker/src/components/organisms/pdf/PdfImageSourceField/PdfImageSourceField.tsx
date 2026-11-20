@@ -69,7 +69,7 @@ export function PdfImageSourceField({
         >
           Elegir archivo…
         </button>
-        <span className="text-[10px] text-fg-subtle">
+        <span className="text-[10px] text-fg-muted">
           {check.status === 'loading'
             ? 'Cargando…'
             : check.status === 'ok'

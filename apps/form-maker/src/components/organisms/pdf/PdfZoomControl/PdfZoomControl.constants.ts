@@ -10,4 +10,4 @@ export const MENU_CLASSES: string = `absolute bottom-10 left-1/2 z-20 flex w-40 
 export const ZOOM_ITEM_CLASSES: string =
   'flex items-center justify-between gap-4 px-2.5 py-1.5 text-left text-xs text-fg-soft transition-colors hover:bg-surface-raised hover:cursor-pointer dark:hover:bg-surface-inset'
 
-export const ZOOM_SHORTCUT_CLASSES: string = 'text-[10px] tabular-nums text-fg-subtle'
+export const ZOOM_SHORTCUT_CLASSES: string = 'text-[10px] tabular-nums text-fg-muted'

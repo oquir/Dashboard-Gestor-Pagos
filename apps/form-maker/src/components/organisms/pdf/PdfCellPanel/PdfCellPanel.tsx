@@ -1,5 +1,5 @@
 import {
-  ADD_LINK_CLASSES,
+  PDF_ADD_LINK_CLASSES,
   INPUT_CLASSES,
   PANEL_BUTTON_CLASSES,
   PANEL_BUTTON_ON_CLASSES,
@@ -50,17 +50,18 @@ export function PdfCellPanel() {
   return (
     <>
       <PanelSection
+        legibleTitle
         title="Contenido de la celda"
         aside={
           location.depth > 1 ? (
-            <span className="text-[10px] text-fg-subtle">
+            <span className="text-[10px] text-fg-muted">
               Tabla anidada · nivel {location.depth}
             </span>
           ) : undefined
         }
       >
         {count > 1 && (
-          <p className="text-[11px] text-fg-subtle">
+          <p className="text-[11px] text-fg-muted">
             {count} celdas seleccionadas: el estilo y las clases se aplican a todas; el contenido es
             el de la última que tocaste.
           </p>
@@ -105,7 +106,7 @@ export function PdfCellPanel() {
               className={`${INPUT_CLASSES} h-20 resize-y`}
               placeholder="Texto fijo, {variable} o los dos"
             />
-            <p className="text-[11px] text-fg-subtle">
+            <p className="text-[11px] text-fg-muted">
               Escribe entre llaves el dato que pone el back, como {'{total_impuesto_a_cargo}'}. Se
               puede mezclar con texto fijo.
             </p>
@@ -122,7 +123,7 @@ export function PdfCellPanel() {
               spellCheck={false}
               placeholder="<b>…</b>"
             />
-            <p className="text-[11px] text-fg-subtle">
+            <p className="text-[11px] text-fg-muted">
               Se limpia al pintar y al publicar: sin scripts, iframes, formularios ni eventos. Se
               permite {'<style>'}.
             </p>
@@ -130,7 +131,7 @@ export function PdfCellPanel() {
         )}
 
         {cell.content.kind === 'table' && (
-          <p className="text-[11px] text-fg-subtle">
+          <p className="text-[11px] text-fg-muted">
             Esta celda lleva una tabla adentro: haz clic en sus celdas para editarlas.
           </p>
         )}
@@ -138,7 +139,7 @@ export function PdfCellPanel() {
         {cell.content.kind === 'component' && (
           <>
             <PdfComponentPanel cellId={cell.id} component={cell.content.component} />
-            <p className="text-[11px] text-fg-subtle">
+            <p className="text-[11px] text-fg-muted">
               Si al componente le falta algo, pasa la celda a HTML: queda su HTML para retocarlo a
               mano.
             </p>
@@ -147,6 +148,7 @@ export function PdfCellPanel() {
       </PanelSection>
 
       <PanelSection
+        legibleTitle
         title="Clases"
         description="Una clase es un estilo con nombre que llevan muchas celdas: en el HTML sale una sola vez, y cada celda dice solo su nombre. Si la celda tiene además estilo propio, ese gana sobre la clase."
       >
@@ -168,7 +170,7 @@ export function PdfCellPanel() {
             })}
           </div>
         ) : (
-          <p className="text-[11px] text-fg-subtle">
+          <p className="text-[11px] text-fg-muted">
             El diseño todavía no tiene clases. Dale a esta celda el estilo que quieras y créala con
             el botón de abajo.
           </p>
@@ -183,7 +185,7 @@ export function PdfCellPanel() {
           <button
             type="button"
             onClick={() => createClassFromSelection()}
-            className={`${ADD_LINK_CLASSES} self-start`}
+            className={`${PDF_ADD_LINK_CLASSES} self-start`}
           >
             + Nueva clase con este estilo
           </button>
@@ -199,6 +201,7 @@ export function PdfCellPanel() {
       />
 
       <PanelSection
+        legibleTitle
         title="Avanzado"
         description="Para quien sabe CSS. Aquí van todas las clases de la celda, también las que define a mano un bloque HTML con <style>. Los estilos en línea se limpian igual que el HTML libre, y ganan sobre lo de arriba."
       >

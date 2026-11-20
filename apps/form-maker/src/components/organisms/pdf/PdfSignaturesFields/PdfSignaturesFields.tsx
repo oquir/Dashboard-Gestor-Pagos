@@ -1,4 +1,8 @@
-import { ADD_LINK_CLASSES, PANEL_DANGER_LINK_CLASSES, PDF_MAX_SIGNERS } from '../../../../constants'
+import {
+  PDF_ADD_LINK_CLASSES,
+  PANEL_DANGER_LINK_CLASSES,
+  PDF_MAX_SIGNERS,
+} from '../../../../constants'
 import type { PdfSigner } from '../../../../types'
 import { PdfNumberField } from '../PdfNumberField'
 import { PdfTextField } from '../PdfTextField'
@@ -33,7 +37,7 @@ export function PdfSignaturesFields({ component, onChange }: PdfSignaturesFields
           className="flex flex-col gap-2 rounded-md border border-border p-2 dark:bg-black/10"
         >
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-fg-subtle">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-fg-muted">
               Firma {index + 1}
             </span>
             {component.signers.length > 1 && (
@@ -73,7 +77,7 @@ export function PdfSignaturesFields({ component, onChange }: PdfSignaturesFields
           onClick={() =>
             onChange({ ...component, signers: [...component.signers, { ...NEW_SIGNER }] })
           }
-          className={`${ADD_LINK_CLASSES} self-start`}
+          className={`${PDF_ADD_LINK_CLASSES} self-start`}
         >
           + Otra firma
         </button>

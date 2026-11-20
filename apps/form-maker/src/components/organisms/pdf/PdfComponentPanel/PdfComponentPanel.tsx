@@ -73,7 +73,7 @@ export function PdfComponentPanel({ cellId, component }: PdfComponentPanelProps)
               onChange={(height) => update(withOptional(component, 'height', height))}
             />
           </div>
-          <p className="text-[11px] text-fg-subtle">
+          <p className="text-[11px] text-fg-muted">
             Con una sola medida, la otra sale de la proporción de la imagen.
           </p>
           <PdfTextField
@@ -158,7 +158,7 @@ export function PdfComponentPanel({ cellId, component }: PdfComponentPanelProps)
               N
             </button>
           </div>
-          <p className="text-[11px] text-fg-subtle">
+          <p className="text-[11px] text-fg-muted">
             Sale como imagen PNG, porque el convertidor del back no pinta bien el texto girado. El
             mismo PNG se ve en la hoja.
           </p>
@@ -223,7 +223,7 @@ export function PdfComponentPanel({ cellId, component }: PdfComponentPanelProps)
               onChange={(height) => height && update({ ...component, height })}
             />
           </div>
-          <p className="text-[11px] text-fg-subtle">
+          <p className="text-[11px] text-fg-muted">
             El back arma el código (GS1-128) y pone su imagen en esa variable. Se puede achatar a lo
             alto; a lo ancho, mejor no: se lee a lo ancho.
           </p>
@@ -248,7 +248,7 @@ export function PdfComponentPanel({ cellId, component }: PdfComponentPanelProps)
             suffix="px"
             onChange={(size) => size && update({ ...component, size })}
           />
-          <p className="text-[11px] text-fg-subtle">
+          <p className="text-[11px] text-fg-muted">
             Qué codifica lo define el back con cada municipio; aquí solo se reserva el lugar.
           </p>
         </>

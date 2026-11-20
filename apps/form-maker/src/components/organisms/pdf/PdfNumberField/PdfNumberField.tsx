@@ -46,7 +46,7 @@ export function PdfNumberField({
           onBlur={() => setDraft(null)}
           className={INPUT_CLASSES}
         />
-        {suffix && <span className="shrink-0 text-[11px] text-fg-subtle">{suffix}</span>}
+        {suffix && <span className="shrink-0 text-[11px] text-fg-muted">{suffix}</span>}
       </div>
     </div>
   )
