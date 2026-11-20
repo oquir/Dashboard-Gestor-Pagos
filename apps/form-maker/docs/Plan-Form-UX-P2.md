@@ -8,7 +8,17 @@
 Origen: crítica visual del 2026-11-20. Va después de P1 (`docs/Plan-Form-UX-P1.md`), donde están las
 decisiones del usuario. Marca cada punto como `[x]`, con fecha y commit.
 
-## [ ] P2.1 Rótulo del paso activo sobre el lienzo
+Decisiones del usuario al arrancar P2 (2026-11-20):
+
+- **P2.1:** el rótulo tiene que **diferenciar** un paso del formulario de un paso del modal de entrada,
+  no solo numerarlos.
+- **P2.2 en pausa:** el asterisco rojo no le convence; el usuario va a buscar cómo marcar los
+  obligatorios. No construirlo hasta que lo decida.
+- **P2.5 se hace, pero puede pedir revertirlo:** dejarlo aislado (solo clases, en sus propios archivos)
+  para que volver atrás sea trivial.
+- **P2.8:** se aprueban los nombres de la tabla.
+
+## [x] ~~P2.1 Rótulo del paso activo sobre el lienzo~~ (2026-11-20, sin commit)
 
 - **Hoy:**
   - El título del paso no aparece en ningún lugar del lienzo (medido: no está en `main`).
@@ -27,7 +37,7 @@ decisiones del usuario. Marca cada punto como `[x]`, con fecha y commit.
   - Si el paso está oculto, decirlo: "(oculto)".
 - **No toca** la decisión de los chips con número solo.
 
-## [ ] P2.2 Marcar en el lienzo los campos obligatorios
+## [ ] P2.2 Marcar en el lienzo los campos obligatorios — EN PAUSA (decisión del usuario)
 
 - **Hoy:** el simulador marca los obligatorios con `*` rojo (`PreviewField.tsx:77`) y el lienzo no.
   "Tipo de documento" tiene "Campo requerido" prendido y su tarjeta no lo muestra.
@@ -36,14 +46,14 @@ decisiones del usuario. Marca cada punto como `[x]`, con fecha y commit.
   Se usa la regla fija y no `isRequiredBySchema`: los overrides dependen de valores que el lienzo no
   tiene, y además esa función vive detrás del límite perezoso.
 
-## [ ] P2.3 La ✕ de la fila se confunde con la ✕ del campo
+## [x] ~~P2.3 La ✕ de la fila se confunde con la ✕ del campo~~ (2026-11-20, sin commit)
 
 - **Hoy:** la ✕ del campo (esquina de la tarjeta) y la ✕ de la barra de la fila ("Eliminar fila") usan
   el mismo glifo. En el último campo de una fila quedan a ~22 px (medido en Municipio, a 1600×1000), y
   la de la fila se lleva todos sus campos.
 - **Arreglo:** la fila borra con `Trash6`, como el menú contextual. La ✕ queda solo para el campo.
 
-## [ ] P2.4 Catálogos y Fechas no editan el campo
+## [x] ~~P2.4 Catálogos y Fechas no editan el campo~~ (2026-11-20, sin commit)
 
 - **Hoy:** `Sidebar.tsx:72` pone "Editando tipo_documento" en todas las pestañas menos Campos. Catálogos
   y Fechas son bancos globales del simulador: no dependen del campo ni viajan en el export. Además, el
@@ -55,7 +65,7 @@ decisiones del usuario. Marca cada punto como `[x]`, con fecha y commit.
   - Un separador fino en `SidebarTabRail` entre Campos | Atributos…Mapeo API | Catálogos y Fechas. Se
     puede leer de `FIELD_TABS`, que ya existe.
 
-## [ ] P2.5 Menos naranja lleno para que se lean la acción principal y la selección
+## [x] ~~P2.5 Menos naranja lleno para que se lean la acción principal y la selección~~ (2026-11-20, sin commit)
 
 - **Hoy:** en una sola pantalla hay naranja lleno en el riel activo, Exportar, la herramienta activa y
   el paso activo. A eso se suman Simulador en contorno, PDF teñido, la selección, la cadena de "se
@@ -68,7 +78,7 @@ decisiones del usuario. Marca cada punto como `[x]`, con fecha y commit.
 - **No se toca** lo decidido: la herramienta activa sigue llena y la cadena de "se envía" sigue en
   color marca (decisión del usuario).
 
-## [ ] P2.6 "Pasos" y no "Steps"
+## [x] ~~P2.6 "Pasos" y no "Steps"~~ (2026-11-20, sin commit)
 
 - **Hoy:** la pestaña dice "Steps", la métrica "STEPS", y los campos "Título del step" y "Subtítulo del
   step (opcional)". En el mismo panel aparecen "Pasos", "8 pasos" y "Paso activo".
@@ -76,7 +86,7 @@ decisiones del usuario. Marca cada punto como `[x]`, con fecha y commit.
   "Subtítulo del paso (opcional)" en `StepTitleEditor.tsx:40,52`. Actualizar el nombre de la pestaña en
   `docs/Decisiones.md` → `The right panel`.
 
-## [ ] P2.7 Un clic en la paleta agrega el campo
+## [x] ~~P2.7 Un clic en la paleta agrega el campo~~ (2026-11-20, sin commit)
 
 Decisión del usuario, 2026-11-20.
 
@@ -97,7 +107,7 @@ Decisión del usuario, 2026-11-20.
   - El subtítulo de Campos pasa a "Arrastra un campo al lienzo o haz clic para agregarlo al final".
   - No cambia el panel izquierdo (misma decisión que en P1.4).
 
-## [ ] P2.8 La paleta toda en español
+## [x] ~~P2.8 La paleta toda en español~~ (2026-11-20, sin commit)
 
 Decisión del usuario, 2026-11-20 (opción A: todo en español).
 
@@ -127,6 +137,44 @@ Decisión del usuario, 2026-11-20 (opción A: todo en español).
   - La tarjeta de identidad de Atributos también muestra el tipo ("Select" → "Lista desplegable").
   - El `type` interno (`select`, `checkbox`, …) **no cambia**: es contrato con el consumidor.
   - Revisar que las fichas de 72 px no queden de tres líneas con los nombres nuevos.
+
+## Resultado (2026-11-20)
+
+Lo que cambió respecto del plan, y por qué:
+
+- **P2.1:** `organisms/ActiveStepLabel`, en el `canvasOverlay`. Usa la insignia gris "Formulario" o la
+  invertida "Modal de entrada" (`bg-inverse`, la que pidió el usuario para diferenciarlos) + "Paso N de
+  M" + el título. La numeración es la del grupo, igual que el chip y "Paso activo", no
+  `orderedSteps`.
+- **P2.4:** el subtítulo es corto ("Datos de prueba del simulador") porque el del panel se corta en
+  una línea de 232 px. Los separadores salen de `RAIL_DIVIDER_BEFORE` (`Sidebar.constants.ts`).
+- **P2.5, reversible:**
+  - El tinte del riel se revirtió el mismo día, por pedido del usuario: el activo vuelve a
+    `bg-brand text-on-brand` (`RAIL_TAB_ACTIVE_CLASSES`). Los separadores del riel se quedan.
+  - Simulador y Diseñar PDF siguen neutros. Volver atrás es `SIMULATOR_BUTTON_CLASSES` y
+    `PDF_BUTTON_CLASSES` (antes contorno `border-brand-border` y `text-brand-strong`).
+- **P2.7:** acción `appendFieldToActiveCanvas` en el store y hook `useCanvasReveal` (lo comparten la
+  barra y la paleta; `CanvasReveal` pasó a `src/types/`). El subtítulo de Campos dice "Haz clic o
+  arrastra un campo al lienzo".
+- **Además (contraste que faltó en P1):** `HINT_CLASSES` y `BADGE_EMPTY_CLASSES` de
+  `constants/uiClasses.ts` seguían en `fg-subtle` (P1 solo revisó `src/components`), y el tipo de la
+  tarjeta de identidad daba 4,49:1 sobre el naranja claro (pasó a `fg-soft`).
+
+Medido en Edge headless a 1366×768, con los dos paneles abiertos:
+
+- **Rótulo:** "FORMULARIO | Paso 3 de 8 | Actividades gravadas" y "MODAL DE ENTRADA | Paso 1 de 2 |
+  Seleccione año gravable y período".
+- **Clic en "Lista desplegable":**
+  - En el paso 3 (con grupo repetible) y en el paso 2 del modal, agrega una fila al final, fuera del
+    grupo, con el campo seleccionado y a la vista.
+  - "Deshacer" la quita de una vez.
+  - Ctrl+Z simulado por CDP no llegó a la app, así que hay que probarlo con teclado real.
+- **Contraste:** en las ocho pestañas del panel izquierdo solo quedan dos textos bajo 4,5:1, y los dos
+  quedan fuera:
+  - El ejemplo de script de Lógica (placeholder, P3).
+  - El aviso `⚠ tipo` de Mapeo API (3,09:1). Es el token `warning` de `index.css`, y cambiarlo
+    toca todos los avisos, así que hay que decidirlo aparte.
+- **Pendiente de decidir:** "Botones de selección" ocupa tres líneas en su ficha de 72 px.
 
 ## Cómo verificar P2
 
