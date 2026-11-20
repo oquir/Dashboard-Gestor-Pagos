@@ -29,7 +29,7 @@ export function PxInput({ id, label, value, onChange }: PxInputProps) {
           onChange={(event) => onChange(event.target.value === '' ? '' : `${event.target.value}px`)}
           className="w-full min-w-0 rounded-md bg-transparent px-2.5 py-1.5 text-sm text-slate-700 outline-none dark:text-neutral-200"
         />
-        <span className="shrink-0 text-xs text-fg-subtle">px</span>
+        <span className="shrink-0 text-xs text-fg-muted">px</span>
       </div>
     </div>
   )

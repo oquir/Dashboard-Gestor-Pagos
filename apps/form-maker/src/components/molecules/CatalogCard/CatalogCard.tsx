@@ -81,7 +81,7 @@ export function CatalogCard({ catalog, stored }: CatalogCardProps) {
             <button
               type="button"
               onClick={clear}
-              className="shrink-0 text-[11px] text-slate-400 hover:cursor-pointer hover:text-red-600 dark:text-neutral-500"
+              className="shrink-0 text-[11px] text-fg-muted hover:cursor-pointer hover:text-danger"
             >
               Vaciar
             </button>

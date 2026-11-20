@@ -80,7 +80,7 @@ export function Sidebar() {
           }
         />
 
-        <div className="flex-1 overflow-y-auto p-4 text-sm text-slate-400 dark:text-neutral-500">
+        <div className="flex-1 overflow-y-auto p-4 text-sm text-fg-muted">
           {/* El key es la pestaña: al cambiar, el contenido se remonta y entra (ENTER_RISE_CLASSES). */}
           <div key={activeTab} className={ENTER_RISE_CLASSES}>
             {activeTab === 'fields' && <FieldPalette />}

@@ -15,7 +15,7 @@ export function SelectionSummary({ fields }: SelectionSummaryProps) {
             className="flex items-center justify-between gap-2 rounded-md border border-border bg-surface px-2 py-1.5"
           >
             <span className="truncate text-xs text-fg">{field.label}</span>
-            <code className="shrink-0 font-mono text-[10px] text-fg-subtle">{field.name}</code>
+            <code className="shrink-0 font-mono text-[10px] text-fg-muted">{field.name}</code>
           </li>
         ))}
       </ul>

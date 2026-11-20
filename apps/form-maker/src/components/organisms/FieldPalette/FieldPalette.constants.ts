@@ -17,6 +17,6 @@ export const PALETTE_SECTIONS: PaletteSection[] = SECTION_ORDER.map((category) =
 })).filter((section) => section.fieldTypes.length > 0)
 
 export const SECTION_HEADING_CLASSES: string =
-  'mb-2 text-[11px] font-semibold uppercase tracking-wide text-fg-subtle'
+  'mb-2 text-[11px] font-semibold uppercase tracking-wide text-fg-muted'
 
 export const SECTION_GRID_CLASSES: string = 'grid list-none grid-cols-3 gap-2'

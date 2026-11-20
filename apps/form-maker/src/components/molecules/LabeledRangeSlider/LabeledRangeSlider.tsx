@@ -24,7 +24,7 @@ export function LabeledRangeSlider({
         className="w-full cursor-grab accent-brand active:cursor-grabbing"
       />
       {(minLabel || maxLabel) && (
-        <div className="flex justify-between text-[10px] text-fg-subtle">
+        <div className="flex justify-between text-[10px] text-fg-muted">
           <span>{minLabel}</span>
           <span>{maxLabel}</span>
         </div>

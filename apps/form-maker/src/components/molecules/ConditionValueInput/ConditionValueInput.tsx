@@ -93,7 +93,7 @@ export function ConditionValueInput({
         />
       )}
 
-      {hint && <p className="text-[11px] text-fg-subtle">{hint}</p>}
+      {hint && <p className="text-[11px] text-fg-muted">{hint}</p>}
     </div>
   )
 }

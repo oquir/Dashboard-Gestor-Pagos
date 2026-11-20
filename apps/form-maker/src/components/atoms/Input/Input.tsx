@@ -4,7 +4,7 @@ export function Input({ className = '', disabled, tone = 'default', ...rest }: I
   const toneClasses: string = disabled
     ? 'bg-slate-50 text-slate-400 dark:text-neutral-500'
     : tone === 'code'
-      ? 'font-mono text-brand-fg'
+      ? 'font-mono text-brand-strong'
       : 'text-slate-700 dark:text-neutral-200'
 
   return (
