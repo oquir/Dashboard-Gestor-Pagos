@@ -3,8 +3,7 @@ import type { PhoneKind } from './fieldContact'
 import type { DateBound, DateFormatId } from './fieldDate'
 import type { RichTextContent } from './richText'
 
-// Lo que una condicion puede cambiar. Vive aparte de FieldValidations para que un override no
-// pueda anidar otros overrides: una sola capa, sin recursion que resolver.
+// Aparte de FieldValidations para que un override no pueda anidar overrides.
 export interface FieldValidationRules {
   required?: boolean
   minLength?: number
@@ -13,13 +12,12 @@ export interface FieldValidationRules {
   max?: number
   pattern?: string
   message?: string
-  // Solo campos fecha: lo mas temprano y lo mas tarde que se acepta. Ver lib/dateBound.
+  // Solo fecha. Ver lib/dateBound.
   minDate?: DateBound
   maxDate?: DateBound
 }
 
-// Cuando `when` se cumple, estas reglas se fusionan sobre las de base. Lo que el override no
-// declara se hereda: uno que solo trae `pattern` no se lleva por delante el `required` de abajo.
+// Se fusiona sobre la base: lo que no declara se hereda.
 export interface FieldValidationOverride {
   id: string
   when: FieldCondition
@@ -27,7 +25,7 @@ export interface FieldValidationOverride {
 }
 
 export interface FieldValidations extends FieldValidationRules {
-  // En orden: gana el primero que se cumpla. El consumidor aplica la misma regla.
+  // Gana el primero que se cumpla, tambien en el consumidor.
   overrides?: FieldValidationOverride[]
 }
 
@@ -39,14 +37,11 @@ export interface FieldStyles {
   textColor?: string
 }
 
-// Mapa CSS plano, camelCase, listo para el `style` de React. Es lo que sale al exportar en vez de
-// clases de Tailwind: el consumidor no tiene su fuente escaneado por Tailwind, asi que una clase
-// solo se aplicaria ahi por casualidad. Ver lib/cssStyles.
+// CSS plano camelCase para `style`, no clases: Tailwind no escanea el fuente del consumidor. Ver
+// lib/cssStyles.
 export type CssStyleMap = Record<string, string>
 
-// El calculo de un campo vive en un solo lugar: `script`, codigo con {{campo}} para leer a los
-// demas. Las reglas siguen aparte porque no son otro lenguaje sino una estructura declarativa
-// encima del mismo: condicion mas efecto, y el efecto habla este script.
+// Un solo lenguaje de calculo: las reglas son estructura declarativa cuyo efecto habla el script.
 export interface FieldLogic {
   script?: string
   rules?: FieldRule[]
@@ -97,9 +92,7 @@ export interface RuleCondition extends FieldCondition {
   id: string
 }
 
-// El efecto habla el mismo lenguaje que `logic.script` -- {{campo}} y un return que da el valor --
-// y no el de formulas. Las reglas siguen siendo una estructura declarativa, pero un solo lenguaje
-// de calculo en todo el aplicativo: dos era el problema que este cambio vino a sacar.
+// source habla el lenguaje de logic.script ({{campo}} y return), no uno de formulas.
 export type RuleEffect =
   | { id: string; kind: 'script'; source: string }
   | { id: string; kind: 'constant'; value: string | number | boolean }
@@ -112,25 +105,19 @@ export interface FieldRule {
   effects: RuleEffect[]
 }
 
-// A donde va el valor del campo: a una hoja del contrato, a la lista de conceptos del payload o a
-// ninguna parte. El concepto es la salida para lo que el contrato fijo no contempla; su
-// `idConcepto` falta mientras nadie lo escriba, y la revision de exportacion bloquea hasta que
-// exista. Ver lib/fieldConcept.
+// concept: lo que el contrato fijo no contempla; sin idConcepto la revision de exportacion bloquea.
+// Ver lib/fieldConcept.
 export type ApiBinding =
   { kind: 'mapped'; path: string } | { kind: 'excluded' } | { kind: 'concept'; idConcepto?: number }
 
-// Que columna de la opcion elegida se copia a que campo. Vive en el campo que ORIGINA la
-// seleccion y no en los que se llenan: un solo dueno, sin dos puntas que mantener sincronizadas,
-// igual que labelFor.
+// Vive en el campo que origina la seleccion, no en los que se llenan: un solo dueno, como labelFor.
 export interface CatalogFill {
   column: CatalogColumn
-  // Id del campo destino; se resuelve a nombre al exportar, como dependsOn.
+  // Id del destino; se resuelve a nombre al exportar.
   field: string
 }
 
-// Que catalogo alimenta las opciones del campo. `dependsOn` guarda el id del campo que
-// parametriza la consulta (departamento -> municipios) y se resuelve a nombre al exportar.
-// `fills` es lo que hace que al elegir una actividad se llenen solos su codigo CIIU y su tarifa.
+// dependsOn: id del campo padre (departamento -> municipios), a nombre al exportar.
 export interface FieldDataSource {
   catalog: string
   dependsOn?: string
@@ -158,42 +145,31 @@ export interface CanvasField {
   labelFor?: string
   content?: RichTextContent
   tooltip?: FieldTooltip
-  // Aproximar al millar mas cercano. Es un booleano y no un multiplo porque en los formularios
-  // que existen nunca aparecio otro redondeo; el multiplo vive en lib/fieldRounding.
+  // Al millar. Booleano porque nunca aparecio otro multiplo; ver lib/fieldRounding.
   rounding?: boolean
-  // Mostrar el valor con punto de miles y coma decimal. Es solo presentacion: el valor guardado
-  // sigue siendo un numero, nunca el texto formateado. Ver lib/numberFormat.
+  // Solo presentacion: el estado guarda el numero. Ver lib/numberFormat.
   formatted?: boolean
-  // Ausente significa que SI admite negativos: solo el false restringe. La polaridad va al reves
-  // que las dos de arriba a proposito, para no poner a recortar los borradores ya guardados.
+  // Ausente admite negativos: solo false restringe, para no recortar borradores ya guardados.
   allowsNegative?: boolean
-  // Cuantos decimales muestra y deja teclear. Ausente = los que traiga, hasta el tope de la lib.
-  // Recorta el valor ademas de rellenarlo al mostrar; ver lib/fieldRounding.
+  // Recorta el valor, no solo la vista. Ver lib/fieldRounding.
   decimals?: number
-  // Texto fijo antes y despues del numero ($, X1000, kW). Solo presentacion, como `formatted`: el
-  // valor sigue siendo el numero y el prefijo nunca entra en el. Ver lib/fieldAffix.
+  // Solo presentacion, nunca entran en el valor. Ver lib/fieldAffix.
   prefix?: string
   suffix?: string
-  // El texto gris del campo vacio. Solo presentacion: nunca entra en el valor. Ver
-  // lib/fieldPlaceholder.
+  // Solo presentacion. Ver lib/fieldPlaceholder.
   placeholder?: string
-  // Solo datalist: lo que se sugiere mientras se escribe, una entrada por linea del panel y tal
-  // cual se tecleo -- vacias incluidas --. No limita el valor, que sigue siendo el texto escrito.
-  // Ver lib/fieldSuggestions.
+  // Solo datalist, tal cual se tecleo (vacias incluidas). No limitan el valor. Ver
+  // lib/fieldSuggestions.
   suggestions?: string[]
-  // Solo telefono: que numero pide, y con eso que patron de fabrica valida. Ausente es celular, y
-  // por eso el store solo guarda "fijo" o "fax". Ver lib/fieldContact.
+  // Ausente es celular: el store solo guarda fijo o fax. Ver lib/fieldContact.
   phoneKind?: PhoneKind
-  // Dibujar las opciones en una sola linea en vez de una debajo de otra. Solo presentacion, y solo
-  // para radio_group y checkbox_group; ver lib/fieldOptions.
+  // Solo radio_group y checkbox_group. Ver lib/fieldOptions.
   inlineOptions?: boolean
-  // Un campo fecha que pide un rango en vez de una sola fecha: el valor pasa a ser
-  // { desde, hasta }. Cambia la forma del valor, no solo como se ve; ver lib/fieldDate.
+  // Cambia la forma del valor a { desde, hasta }. Ver lib/fieldDate.
   dateRange?: boolean
-  // Un campo fecha que pide tambien la hora, en una sola fecha o en las dos puntas del rango: el
-  // valor pasa de AAAA-MM-DD a AAAA-MM-DDTHH:mm. Solo cuando el municipio lo pide.
+  // El valor pasa a AAAA-MM-DDTHH:mm.
   includesTime?: boolean
-  // Como se ve la fecha y como viaja a la API. Por dentro el valor sigue en AAAA-MM-DD; el formato
-  // se aplica solo en el input y en el payload. Ausente = el input del navegador. Ver lib/dateFormat.
+  // Solo en el input y el payload: por dentro sigue AAAA-MM-DD. Ausente = input del navegador. Ver
+  // lib/dateFormat.
   dateFormat?: DateFormatId
 }

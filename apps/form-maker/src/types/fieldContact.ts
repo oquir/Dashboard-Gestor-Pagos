@@ -1,9 +1,8 @@
-// Un patron con su mensaje, ya resuelto entre el que escribio el autor y el que trae el tipo.
+// Ya resuelto entre el del autor y el de fabrica del tipo.
 export interface PatternRule {
   pattern: string
   message?: string
 }
 
-// Que numero pide un campo telefono. Cada uno trae su propio patron de fabrica. El fax acepta un
-// celular o un fijo, con una extension opcional al final.
+// Cada uno con su patron de fabrica. fax acepta celular o fijo, con extension opcional.
 export type PhoneKind = 'celular' | 'fijo' | 'fax'

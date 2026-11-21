@@ -1,9 +1,7 @@
 import type { CanvasField } from './field'
 import type { GroupCheck } from './groupCheck'
 
-// A proposito mas chico que FieldStyles: sin backgroundColor ni textColor. Una fila es un
-// contenedor de layout, no algo que se lee como un campo, y pintarla entera abre las mismas
-// preguntas de contraste que field.styles ya tiene sin resolver del lado del campo.
+// Sin backgroundColor ni textColor a proposito: una fila es layout, no algo que se lee.
 export interface RowStyles {
   customCss?: string
   marginTop?: string
@@ -25,7 +23,6 @@ export interface RepeatableGroup {
   min: number
   max: number
   arrayPath?: string
-  // Comprobaciones que abarcan al grupo entero, no a un campo suyo. Ver types/groupCheck.
   checks?: GroupCheck[]
 }
 
@@ -33,8 +30,8 @@ export interface FormStep {
   stepId: string
   title: string
   subtitle?: string
-  // Un paso oculto no se muestra ni se navega, pero sus campos siguen calculando y viajando en el
-  // payload: es lo que permite "quitar" el paso 7 sin dejar en cero el total que depende de el.
+  // No se muestra ni se navega, pero calcula y viaja en el payload: quita un paso sin dejar en cero
+  // los totales que dependen de el.
   hidden?: boolean
   rows: CanvasRow[]
   groups?: RepeatableGroup[]

@@ -1,11 +1,10 @@
 import type { PointerEvent as ReactPointerEvent } from 'react'
 
-// Las dos formas del tirador reciben lo mismo: FieldResizeHandle ya resolvio el arrastre y el
-// texto, ellas solo se dibujan.
+// FieldResizeHandle ya resolvio arrastre y texto; las variantes solo se dibujan.
 export interface FieldResizeHandleVariantProps {
   isResizing: boolean
   title: string
-  // Visible sin hover mientras el campo este seleccionado.
+  // Visible sin hover con el campo seleccionado.
   pinned: boolean
   onPointerDown: (event: ReactPointerEvent<HTMLElement>) => void
 }

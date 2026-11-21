@@ -14,8 +14,7 @@ import type { DraftPayload } from './persistenceTypes'
 import type { RichTextContent } from './richText'
 import type { FormType } from './setup'
 
-// El binding tal cual, salvo el concepto, que sale con su tipo de dato ya resuelto: asi el
-// consumidor sabe que valor* llenar sin copiar la tabla de tipos del builder.
+// El concepto sale con su tipo resuelto: el consumidor sabe que valor* llenar sin la tabla de tipos.
 export type ExportedApiBinding =
   | Exclude<ApiBinding, { kind: 'concept' }>
   | { kind: 'concept'; idConcepto?: number; tipo: ConceptValueKind }
@@ -26,8 +25,7 @@ export interface ExportedCondition {
   value?: FieldCondition['value'] | string[]
 }
 
-// El efecto de script sale compilado igual que el del campo, y con la misma forma: para el
-// consumidor son el mismo tipo de cosa y se ejecutan por el mismo camino.
+// Misma forma que el script del campo: el consumidor los ejecuta por el mismo camino.
 export type ExportedRuleEffect =
   | { id: string; kind: 'script'; script: ExportedScript }
   | { id: string; kind: 'constant'; value: string | number | boolean }
@@ -45,18 +43,15 @@ export interface ExportedValidationVariant {
   zodSchema: string
 }
 
-// El consumidor recorre `zodSchemaWhen` en orden y se queda con el primero cuya condicion se
-// cumpla; si ninguna se cumple, valida con `zodSchema`. La ausencia de `zodSchema` sigue siendo
-// como sabe que un campo presentacional no valida nada.
+// Gana la primera variante que se cumpla; si ninguna, zodSchema. Sin zodSchema el campo no valida
+// (presentacional).
 export interface ExportedValidations {
   zodSchema?: string
   zodSchemaWhen?: ExportedValidationVariant[]
 }
 
-// `compiled` es cuerpo de funcion listo para new Function, sin el preludio del formulario: ese
-// viaja una sola vez en formSchema.prelude y quien ejecuta lo antepone. `source` viaja solo para
-// poder reeditarlo: ejecutarlo seria un error, porque {{campo}} no es JS. `reads` son los nombres
-// que lee, para poder ordenar el calculo sin volver a parsear.
+// compiled: cuerpo para new Function sin el preludio (viaja una vez en formSchema.prelude). source
+// solo para reeditar: {{campo}} no es JS. reads: para ordenar el calculo sin reparsear.
 export interface ExportedScript {
   source: string
   compiled: string
@@ -68,9 +63,7 @@ export interface ExportedLogic {
   rules?: ExportedRule[]
 }
 
-// El contenido es el mismo RichTextContent que el modelo -- ya paso por el sanitizador al
-// serializarse -- pero `styles` sale resuelto a CSS plano, igual que el del campo: el consumidor
-// no interpreta clases, aplica un objeto.
+// content ya sanitizado; styles resuelto a CSS plano como el del campo.
 export interface ExportedTooltip {
   content: RichTextContent
   position: TooltipPosition
@@ -84,8 +77,7 @@ export interface ExportedField {
   label: string
   colStart: number
   colSpan: number
-  // Mapa CSS plano listo para `style`, nunca clases: ver lib/cssStyles. Siempre presente, aunque
-  // sea `{}` -- a diferencia de ExportedRow.styles, que es opcional.
+  // Siempre presente, aunque sea {} (ExportedRow.styles es opcional).
   styles: CssStyleMap
   validations: ExportedValidations
   logic: ExportedLogic
@@ -102,37 +94,30 @@ export interface ExportedField {
   tooltip?: ExportedTooltip
   rounding?: boolean
   formatted?: boolean
-  // Solo aparece cuando vale false. Si no viene, el campo admite negativos.
+  // Solo aparece en false; ausente admite negativos.
   allowsNegative?: boolean
   decimals?: number
-  // Solo en un campo numerico que los declare, ya recortados. Se dibujan al lado del input y nunca
-  // entran en el valor; ver lib/fieldAffix.
+  // Solo en numericos, recortados; nunca entran en el valor.
   prefix?: string
   suffix?: string
-  // El texto gris del campo vacio, ya recortado. Solo presentacion: el consumidor lo pone como
-  // placeholder del input (o como primera opcion de un select) y nunca lo toma como valor.
+  // Recortado; nunca es valor (en un select va como primera opcion).
   placeholder?: string
-  // Solo en un datalist que las tenga, ya recortadas y sin repetidas. Son el <option value> de su
-  // <datalist>: sugieren, no restringen, y el valor sigue siendo el texto escrito.
+  // Solo datalist, recortadas y sin repetidas: sugieren, no restringen.
   suggestions?: string[]
   inlineOptions?: boolean
-  // Solo aparece en un campo fecha que pide rango: su valor es { desde, hasta } y no un texto.
+  // Solo en true: el valor es { desde, hasta }.
   dateRange?: boolean
-  // Solo aparece en un campo fecha que pide hora: su valor es AAAA-MM-DDTHH:mm, sin huso.
+  // Solo en true: el valor es AAAA-MM-DDTHH:mm, sin huso.
   includesTime?: boolean
-  // Solo en un campo fecha con formato. El consumidor lo usa en dos bordes: para mostrar la fecha y
-  // al armar el payload. Valida y compara siempre sobre AAAA-MM-DD; ver lib/dateFormat.
+  // Solo para mostrar y armar el payload: valida y compara sobre AAAA-MM-DD. Ver lib/dateFormat.
   dateFormat?: DateFormatId
-  // Tope de longitud para el input. En texto son caracteres y en numero digitos de la parte
-  // entera; la regla completa esta en lib/fieldLength. Va ademas del schema, no en lugar del: el
-  // schema es lo que valida y esto es lo que frena el tecleo antes de que el valor exista.
+  // Frena el tecleo (texto: caracteres; numero: digitos enteros); el schema sigue validando. Ver
+  // lib/fieldLength.
   maxLength?: number
 }
 
-// Una comprobacion del grupo entero, con el script ya compilado igual que el de un campo: para el
-// consumidor es el mismo tipo de cosa y se ejecuta por el mismo camino. Se evalua en el ambito
-// raiz, donde la columna del grupo es el array completo. Verdadero pasa, falso muestra `message`.
-// Una comprobacion apagada no llega hasta aca: se filtra al exportar.
+// Se evalua en el ambito raiz, donde la columna del grupo es el array. Verdadero pasa. Las apagadas
+// no se exportan.
 export interface ExportedGroupCheck {
   id: string
   label: string
@@ -155,8 +140,7 @@ export interface ExportedRow {
   rowId: string
   columns: number
   groupId?: string
-  // Ausente cuando la fila no tiene nada que decir -- JSON.stringify descarta undefined, asi que
-  // una fila sin estilos serializa sin la clave.
+  // Ausente sin estilos.
   styles?: CssStyleMap
   fields: ExportedField[]
 }
@@ -165,8 +149,7 @@ export interface ExportedStep {
   stepId: string
   title: string
   subtitle?: string
-  // Solo aparece en true. El consumidor no lo muestra ni lo navega, pero calcula sus campos y los
-  // manda en el payload como cualquier otro.
+  // Solo en true. No se muestra ni se navega, pero calcula y viaja en el payload.
   hidden?: boolean
   rows: ExportedRow[]
   groups?: ExportedRepeatableGroup[]
@@ -175,12 +158,11 @@ export interface ExportedStep {
 export interface ProjectMeta {
   formId: string
   formType: FormType | null
-  // Fija en "1.0.0" y no dice nada: sigue porque el consumidor ya la tipa. Lo que dice si un
-  // consumidor puede con este formulario es `requires`.
+  // Fija en "1.0.0", sin significado: sigue porque el consumidor la tipa.
   version: string
   createdAt: string
-  // Lo que un consumidor tiene que saber hacer para ejecutar ESTE formulario sin perder nada en
-  // silencio. Si no reconoce alguna palabra, no lo carga. Ver lib/formRequires.
+  // Lo que el consumidor tiene que saber hacer; si no reconoce una palabra, no carga el formulario.
+  // Ver lib/formRequires.
   requires: string[]
 }
 
@@ -195,8 +177,7 @@ export interface ExportedSetupConfig {
 
 export interface ExportedFormSchema {
   gridBaseColumns: number
-  // Funciones y constantes compartidas por todos los scripts. Va una sola vez y no repetido
-  // dentro de cada `compiled`: quien ejecute lo antepone al cuerpo del campo.
+  // Compartido por todos los scripts; quien ejecuta lo antepone a cada compiled.
   prelude?: string
   steps: ExportedStep[]
 }
@@ -207,6 +188,5 @@ export interface FormExport {
   formSchema: ExportedFormSchema
 }
 
-// Lo que baja el boton Exportar: el contrato mas `builderDraft`, la copia del proyecto con la que
-// el builder lo vuelve a abrir. El consumidor no la lee y tiene que ignorarla.
+// builderDraft: la copia para reabrir en el builder; el consumidor la ignora.
 export type FormExportFile = FormExport & { builderDraft: DraftPayload }

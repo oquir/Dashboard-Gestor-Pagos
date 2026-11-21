@@ -1,13 +1,11 @@
 import type { DraftPayload, FieldRename } from './persistenceTypes'
 
-// Resultado de leer un JSON exportado para volver a abrirlo. A diferencia de DraftLoad, el error
-// viaja con su mensaje: quien elige un archivo necesita saber que hacer con el (volver a
-// exportarlo, actualizar el builder), no solo que no sirvio.
+// A diferencia de DraftLoad el error trae mensaje: quien eligio el archivo necesita saber que hacer.
 export type ProjectFileLoad =
   | { status: 'ok'; draft: DraftPayload; renamed: FieldRename[] }
   | { status: 'error'; message: string }
 
-// Lo que se muestra del archivo antes de abrirlo, para confirmar que es el que se buscaba.
+// Se muestra antes de abrir, para confirmar el archivo.
 export interface ProjectFileSummary {
   formTypeLabel: string
   stepCount: number

@@ -1,5 +1,4 @@
-// Una referencia {{campo}} encontrada en la fuente. `start` cae sobre la primera llave de apertura
-// y `end` justo despues de la ultima de cierre, para que el editor pueda decorar el tramo completo.
+// start en la primera llave y end tras la ultima: el editor decora el tramo completo.
 export interface ScriptRef {
   name: string
   start: number
@@ -8,7 +7,7 @@ export interface ScriptRef {
 }
 
 export interface ScriptCompileResult {
-  // Cuerpo de funcion listo para new Function, con las referencias conocidas ya sustituidas.
+  // Cuerpo para new Function, con las referencias ya sustituidas.
   code: string
   refs: ScriptRef[]
   reads: string[]
@@ -22,7 +21,7 @@ export interface ScriptValidation extends ScriptCompileResult {
 }
 
 export interface PreludeValidation {
-  // Toda {{x}} es ilegal en el preludio, sea campo o no: viajan aca para poder nombrarlas.
+  // En el preludio toda {{x}} es ilegal: viajan para poder nombrarlas.
   refs: ScriptRef[]
   error: string | null
   isEmpty: boolean

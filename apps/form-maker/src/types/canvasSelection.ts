@@ -1,5 +1,4 @@
-// Un rectangulo por sus cuatro bordes y no por origen y tamano: intersectar dos es comparar bordes,
-// y un marco arrastrado hacia arriba o hacia la izquierda no tiene que lidiar con anchos negativos.
+// Por bordes y no origen y tamano: intersectar es comparar y no hay anchos negativos.
 export interface SelectionRect {
   left: number
   top: number

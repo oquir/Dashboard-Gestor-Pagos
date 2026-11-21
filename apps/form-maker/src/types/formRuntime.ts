@@ -2,18 +2,13 @@ import type { ExportedField, ExportedRepeatableGroup, ExportedStep } from './exp
 import type { DeclaracionKind, ReglaAnio } from './maxDates'
 import type { ValorAnual } from './valores'
 
-// Lo que el runtime necesita ADEMAS del export. Va como segundo argumento y no dentro del modelo a
-// proposito: son datos que el consumidor recibe por otro lado -- su propio endpoint -- asi que el
-// simulador los recibe igual, y la separacion queda a la vista en la firma.
+// Lo que el runtime necesita ademas del export, como segundo argumento: el consumidor lo recibe de
+// su propio endpoint.
 export interface RuntimeContext {
-  // Ya resueltas al tipo de declaracion que es este formulario, para que los helpers no tengan que
-  // saber si estan en ICA o en retencion.
+  // Ya resueltas al tipo de declaracion del formulario.
   reglas: ReglaAnio[]
-  // "YYYY/MM/DD". Entra por parametro en vez de leerse del reloj adentro del helper para poder
-  // comprobar la mora sin tocar la hora del sistema.
+  // "YYYY/MM/DD", por parametro para probar la mora sin tocar el reloj.
   hoy: string
-  // La UVT y el salario minimo por ano. Del mismo lado de la frontera que `reglas`: el consumidor
-  // los recibe de su API y el simulador del banco de valores, nunca del JSON exportado.
   valores: ValorAnual[]
 }
 
@@ -24,8 +19,7 @@ export interface RuntimeScope {
   visible: Record<string, boolean>
   disabled: Record<string, boolean>
   computed: Record<string, boolean>
-  // Los que dieron negativo en un campo que no los admite y quedaron en 0. Es solo del simulador
-  // -- no viaja en el export -- y existe para que el 0 no aparezca sin explicacion.
+  // Negativos llevados a 0. Solo del simulador, para explicar ese 0.
   clamped: Record<string, boolean>
 }
 
@@ -33,8 +27,7 @@ export interface RuntimeSnapshot {
   root: RuntimeScope
   groups: Record<string, RuntimeScope[]>
   cycle: string[] | null
-  // Lo que fallo al calcular. Viaja en el snapshot y no en la validacion porque se descubre
-  // ejecutando, no validando; validateRuntime lo junta con el resto para mostrarlo en un solo sitio.
+  // Se descubren ejecutando; validateRuntime los junta con el resto.
   issues: RuntimeIssue[]
 }
 
@@ -48,8 +41,7 @@ export interface RuntimeModel {
   introSteps: ExportedStep[]
   hasIntroModal: boolean
   prelude: string
-  // Que declaracion es, leido de projectMeta.formType. Decide cual de las tres listas de la tabla
-  // de vencimientos aplica.
+  // De projectMeta.formType: elige la lista de vencimientos.
   declaracion: DeclaracionKind
   fieldsByName: Map<string, ExportedField>
   groupsById: Map<string, ExportedRepeatableGroup>

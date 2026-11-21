@@ -3,7 +3,7 @@ import type { PreviewState, RuntimeIssue, RuntimeModel, RuntimeSnapshot } from '
 
 export interface FormPreviewApi {
   model: RuntimeModel
-  // Las opciones cargadas a mano: el equivalente al catalogo que consultaria el consumidor.
+  // Hace las veces del endpoint de catalogos del consumidor.
   catalogBank: CatalogBank
   state: PreviewState
   snapshot: RuntimeSnapshot
@@ -14,7 +14,7 @@ export interface FormPreviewApi {
   setValue: (name: string, value: unknown, groupId?: string, index?: number) => void
   addGroupItem: (groupId: string) => void
   removeGroupItem: (groupId: string, index: number) => void
-  // Muestra los errores de esas claves y responde si el paso quedo limpio.
+  // true si esas claves quedaron sin errores.
   validateKeys: (keys: string[]) => boolean
   reset: () => void
 }

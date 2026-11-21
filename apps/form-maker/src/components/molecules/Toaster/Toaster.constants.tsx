@@ -23,7 +23,7 @@ export const TOAST_ICONS: ToasterProps['icons'] = {
   info: <InfoCircle className="size-4" aria-hidden />,
 }
 
-// Debajo del encabezado del diseñador, que es fijo, para no taparlo.
+// Debajo del encabezado fijo del disenador.
 export const TOAST_OFFSET: { top: number; right: number } = { top: 64, right: 24 }
 export const TOAST_MOBILE_OFFSET: { top: number; right: number; left: number } = {
   top: 64,
