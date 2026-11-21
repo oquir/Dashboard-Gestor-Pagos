@@ -212,7 +212,6 @@ export function printPdfHtml(html: string): void {
   document.body.appendChild(frame)
 }
 
-
 // Desde la segunda hoja, un salto de pagina antes; los lados son del contenedor.
 function writeSheet(
   sheet: PdfSheet,
@@ -295,7 +294,6 @@ function writeCellContent(content: PdfCellContent, ctx: PdfComponentContext): st
   if (content.kind === 'html') return normalizePdfHtml(content.html) || '&nbsp;'
   return content.text === '' ? '&nbsp;' : escapePdfText(content.text)
 }
-
 
 function readFormMakerFile(
   root: PdfHtmlElement,
@@ -509,7 +507,6 @@ function readMargins(value: string | null): PdfMargins {
   const [top, right, bottom, left] = (value ?? '').trim().split(/\s+/).map(Number)
   return normalizeMargins({ top, right, bottom, left })
 }
-
 
 // Entra entera en la hoja 1: cada tabla de primer nivel es un bloque, para partirla en hojas
 // bajando bloques. Se pinta como venia (pasarla a tablas del editor cambiaria lo que se ve).

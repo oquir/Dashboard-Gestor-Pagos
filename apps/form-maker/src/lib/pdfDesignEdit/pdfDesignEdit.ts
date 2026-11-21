@@ -302,7 +302,6 @@ export function sheetOf(design: PdfDesign, id: string): string | null {
   )
 }
 
-
 // El primer "claseN" libre, para una clase recien creada que despues se renombra.
 export function nextClassName(design: PdfDesign): string {
   const used: Set<string> = new Set(design.classes.map((item) => item.name))

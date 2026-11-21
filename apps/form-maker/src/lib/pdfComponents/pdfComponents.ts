@@ -146,7 +146,6 @@ function base64Bytes(src: string): number | null {
   return Math.floor((data.length * 3) / 4)
 }
 
-
 // Sin imagen o con {Logo}: caja en el lienzo y marca vacia en el archivo (deja reabrir el
 // componente).
 function imageHtml(component: PdfImageComponent, ctx: PdfComponentContext): string {

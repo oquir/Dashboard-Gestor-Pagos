@@ -2,7 +2,6 @@ import type { FieldOption } from '../../../types/field'
 import type { PhoneKind } from '../../../types/fieldContact'
 import type { OptionsNote } from './FieldPreviewControl.types'
 
-
 export const INPUT_CLASSES: string =
   'flex h-9 min-w-0 items-center justify-between gap-2 overflow-hidden rounded-md border border-border-strong bg-white px-3 text-sm text-fg-subtle dark:bg-neutral-900'
 
