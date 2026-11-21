@@ -31,7 +31,7 @@ export function AppCrashScreen({ message }: AppCrashScreenProps) {
           {hasProject && (
             <p className="mt-2">
               Al recargar se recupera el último borrador guardado. Si hiciste cambios después de
-              guardar, descarga primero una copia: se abre con <strong>Abrir…</strong> o{' '}
+              guardar, descarga primero una copia: se abre con <strong>Abrir formulario…</strong> o{' '}
               <strong>Cargar formulario</strong>.
             </p>
           )}

@@ -22,6 +22,6 @@ export const PANEL_TAB_DROP_DOT_CLASSES: string =
 export const PANEL_COLLAPSE_BUTTON_CLASSES: string =
   'flex h-[26px] w-[26px] items-center justify-center rounded-md text-fg-muted transition-colors hover:bg-surface-raised hover:text-fg-strong hover:cursor-pointer dark:hover:bg-surface-inset'
 
-// Texto y no boton con fondo: es secundaria.
+// Al pie del bloque Formulario, a todo el ancho y neutro: secundario frente a Subir y Exportar.
 export const OPEN_PROJECT_BUTTON_CLASSES: string =
-  'text-[10px] font-medium text-fg-muted transition-colors hover:text-fg-strong hover:cursor-pointer'
+  'press mt-1 flex w-full items-center justify-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium text-fg-soft transition-colors hover:border-border-strong hover:text-fg-strong hover:cursor-pointer'

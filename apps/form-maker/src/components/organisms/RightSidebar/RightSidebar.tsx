@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { FolderOpen } from 'reicon-react'
 import { useFormStore } from '../../../store/formStore'
 import type { RightSidebarTab } from '../../../types/ui'
 import { CanvasZoomControl } from '../../molecules/CanvasZoomControl/CanvasZoomControl'
@@ -106,21 +107,18 @@ export function RightSidebar() {
                 <ViewModeSwitch activeMode={viewMode} onSelect={setViewMode} />
               </PanelBlock>
 
-              <PanelBlock
-                title="Formulario"
-                action={
-                  <Tooltip content="Abrir un formulario exportado">
-                    <button
-                      type="button"
-                      onClick={() => setImportOpen(true)}
-                      className={OPEN_PROJECT_BUTTON_CLASSES}
-                    >
-                      Abrir…
-                    </button>
-                  </Tooltip>
-                }
-              >
+              <PanelBlock title="Formulario">
                 <FormSummary />
+                <Tooltip content="Abre un .json exportado. Reemplaza el formulario actual, con confirmación.">
+                  <button
+                    type="button"
+                    onClick={() => setImportOpen(true)}
+                    className={OPEN_PROJECT_BUTTON_CLASSES}
+                  >
+                    <FolderOpen size={13} />
+                    Abrir formulario…
+                  </button>
+                </Tooltip>
               </PanelBlock>
             </>
           )}
