@@ -1,6 +1,6 @@
 import { Check, Floppy2 } from 'reicon-react'
 import { useSaveButton } from '../../../hooks/useSaveButton/useSaveButton'
-import { SAVE_BUTTON_BASE_CLASSES, SAVE_BUTTON_STATE_CLASSES } from './SaveButton.constants'
+import { SAVE_BUTTON_STATE_CLASSES } from './SaveButton.constants'
 import type { SaveButtonProps } from './SaveButton.types'
 import { Tooltip } from '../../atoms'
 
@@ -18,9 +18,7 @@ export function SaveButton({ iconOnly = false }: SaveButtonProps) {
         type="button"
         onClick={handleSave}
         aria-label={iconOnly ? savedLabel : undefined}
-        className={`${SAVE_BUTTON_BASE_CLASSES} ${
-          justSaved ? SAVE_BUTTON_STATE_CLASSES.saved : SAVE_BUTTON_STATE_CLASSES.idle
-        }`}
+        className={justSaved ? SAVE_BUTTON_STATE_CLASSES.saved : SAVE_BUTTON_STATE_CLASSES.idle}
       >
         {justSaved ? <Check size={13} weight="Filled" /> : <Floppy2 size={13} />}
         {!iconOnly && (justSaved ? 'Guardado' : 'Guardar')}

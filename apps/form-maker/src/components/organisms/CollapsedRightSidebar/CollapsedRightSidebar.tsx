@@ -23,10 +23,12 @@ export function CollapsedRightSidebar() {
       {/* No se apaga fuera de la vista lienzo: guardar, exportar, subir y simular siguen en JSON y
           Payload. */}
       <div role="toolbar" aria-label="Acciones del formulario" className={CHIP_CLASSES}>
+        {/* Mismo orden que el panel: la importancia crece hacia el zoom. Terciarios sin borde,
+            secundarios con borde y Subir relleno. */}
         <SaveButton iconOnly />
+        <ExportButton iconOnly />
         <SimulatorButton iconOnly />
         <PdfDesignerButton iconOnly />
-        <ExportButton iconOnly />
         <UploadButton iconOnly />
         <CanvasZoomControl />
         <span aria-hidden className={CANVAS_TOOLBAR_DIVIDER_CLASSES} />

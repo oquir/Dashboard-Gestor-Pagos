@@ -67,6 +67,8 @@ Decisiones del usuario al arrancar P2 (2026-11-20):
 
 ## [x] ~~P2.5 Menos naranja lleno para que se lean la acción principal y la selección~~ (2026-11-20, sin commit)
 
+> Ampliado el 2026-11-20 por la jerarquía de botones (`constants/actionTiers.ts`, `docs/Decisiones.md`, "Button hierarchy"): Subir es el único relleno naranja y Exportar pasó a terciario.
+
 - **Hoy:** en una sola pantalla hay naranja lleno en el riel activo, Exportar, la herramienta activa y
   el paso activo. A eso se suman Simulador en contorno, PDF teñido, la selección, la cadena de "se
   envía", los toggles, el slider y los "+".

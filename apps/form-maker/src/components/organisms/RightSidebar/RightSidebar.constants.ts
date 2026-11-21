@@ -1,3 +1,4 @@
+import { ACTION_TIER_CLASSES } from '../../../constants'
 import type { RightSidebarTabItem } from './RightSidebar.types'
 
 export const TABS: RightSidebarTabItem[] = [
@@ -22,6 +23,5 @@ export const PANEL_TAB_DROP_DOT_CLASSES: string =
 export const PANEL_COLLAPSE_BUTTON_CLASSES: string =
   'flex h-[26px] w-[26px] items-center justify-center rounded-md text-fg-muted transition-colors hover:bg-surface-raised hover:text-fg-strong hover:cursor-pointer dark:hover:bg-surface-inset'
 
-// Al pie del bloque Formulario, a todo el ancho y neutro: secundario frente a Subir y Exportar.
-export const OPEN_PROJECT_BUTTON_CLASSES: string =
-  'press mt-1 flex w-full items-center justify-center gap-1.5 rounded-md border border-border px-2.5 py-1.5 text-xs font-medium text-fg-soft transition-colors hover:border-border-strong hover:text-fg-strong hover:cursor-pointer'
+// Terciario, como Guardar y Exportar con quienes comparte el pie del bloque Formulario.
+export const OPEN_PROJECT_BUTTON_CLASSES: string = ACTION_TIER_CLASSES.tertiary.compact

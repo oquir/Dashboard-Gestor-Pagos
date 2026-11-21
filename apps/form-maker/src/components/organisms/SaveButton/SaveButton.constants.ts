@@ -1,8 +1,8 @@
-export const SAVE_BUTTON_BASE_CLASSES: string =
-  'flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-medium press'
+import { ACTION_BASE_CLASSES, ACTION_TIER_CLASSES, ACTION_SIZE_CLASSES } from '../../../constants'
 
+// Terciario: se guarda solo cada tanto y con Ctrl+S. "Guardado" no es un boton nuevo sino el mismo en
+// verde (el que ya pasaba contraste) y sin accion mientras dura el aviso.
 export const SAVE_BUTTON_STATE_CLASSES: Record<'saved' | 'idle', string> = {
-  saved:
-    'border-emerald-300 bg-emerald-50 text-emerald-700 text-[10px] dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-400 hover:cursor-not-allowed',
-  idle: 'border-border text-fg-soft text-xs hover:border-border-strong hover:text-fg-strong hover:cursor-pointer',
+  saved: `${ACTION_BASE_CLASSES} ${ACTION_SIZE_CLASSES.compact} text-emerald-700 hover:cursor-not-allowed dark:text-emerald-400`,
+  idle: ACTION_TIER_CLASSES.tertiary.compact,
 }

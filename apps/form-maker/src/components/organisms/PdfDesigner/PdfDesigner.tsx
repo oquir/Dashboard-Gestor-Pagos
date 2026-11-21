@@ -14,11 +14,13 @@ import { PdfImportModal } from '../pdf/PdfImportModal'
 import { PdfSidebar } from '../pdf/PdfSidebar'
 import { PdfToolbar } from '../pdf/PdfToolbar'
 import {
-  EXIT_BUTTON_CLASSES,
+  BACK_BUTTON_CLASSES,
+  DOWNLOAD_BUTTON_CLASSES,
   HAND_CURSOR_CLASSES,
-  ICON_BUTTON_CLASSES,
-  UPLOAD_BUTTON_CLASSES,
+  OPEN_BUTTON_CLASSES,
   STATUS_DOT_CLASSES,
+  THEME_BUTTON_CLASSES,
+  UPLOAD_BUTTON_CLASSES,
 } from './PdfDesigner.constants'
 import { savedStatus } from './PdfDesigner.utils'
 
@@ -60,12 +62,24 @@ export function PdfDesigner() {
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-surface-sunken text-fg">
       <header className="flex shrink-0 items-center justify-between gap-4 border-b border-border bg-surface px-6 py-2">
-        <div className="min-w-0">
-          <h1 className="text-base font-semibold text-fg-strong">Diseñar PDF</h1>
-          <p className="truncate text-xs text-fg-muted">
-            {taxType ? `${taxTypeLabel(taxType)} · ` : ''}Carta · 5 mm de margen del back ·{' '}
-            {publishedVersion ? `Última versión subida: ${publishedVersion}` : 'Sin subir'}
-          </p>
+        <div className="flex min-w-0 items-center gap-4">
+          <Tooltip content="Volver al formulario">
+            <button
+              type="button"
+              onClick={() => setPdfDesignerOpen(false)}
+              className={BACK_BUTTON_CLASSES}
+            >
+              <ArrowLeft size={14} />
+              Volver
+            </button>
+          </Tooltip>
+          <div className="min-w-0">
+            <h1 className="text-base font-semibold text-fg-strong">Diseñar PDF</h1>
+            <p className="truncate text-xs text-fg-muted">
+              {taxType ? `${taxTypeLabel(taxType)} · ` : ''}Carta · 5 mm de margen del back ·{' '}
+              {publishedVersion ? `Última versión subida: ${publishedVersion}` : 'Sin subir'}
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
@@ -81,20 +95,30 @@ export function PdfDesigner() {
               {status.label}
             </span>
           </Tooltip>
+          <Tooltip content={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}>
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              aria-label={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}
+              className={THEME_BUTTON_CLASSES}
+            >
+              {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+          </Tooltip>
           {isReady && (
             <div className="flex items-center gap-1.5">
               <Tooltip content="Abre un .html de FormMaker o una plantilla hecha a mano. Con varios, vale el de versión más alta.">
                 <button
                   type="button"
                   onClick={() => setImportOpen(true)}
-                  className={EXIT_BUTTON_CLASSES}
+                  className={OPEN_BUTTON_CLASSES}
                 >
                   <FolderOpen size={14} />
                   Abrir…
                 </button>
               </Tooltip>
               <Tooltip content="Descarga una copia del .html del diseño actual. No gasta versión.">
-                <button type="button" onClick={download} className={EXIT_BUTTON_CLASSES}>
+                <button type="button" onClick={download} className={DOWNLOAD_BUTTON_CLASSES}>
                   <DocumentDownload2 size={14} />
                   Descargar HTML
                 </button>
@@ -119,24 +143,6 @@ export function PdfDesigner() {
               </Tooltip>
             </div>
           )}
-          <Tooltip content={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}>
-            <button
-              type="button"
-              onClick={toggleDarkMode}
-              aria-label={isDarkMode ? 'Activar modo claro' : 'Activar modo oscuro'}
-              className={ICON_BUTTON_CLASSES}
-            >
-              {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
-            </button>
-          </Tooltip>
-          <button
-            type="button"
-            onClick={() => setPdfDesignerOpen(false)}
-            className={EXIT_BUTTON_CLASSES}
-          >
-            <ArrowLeft size={14} />
-            Volver al formulario
-          </button>
         </div>
       </header>
 

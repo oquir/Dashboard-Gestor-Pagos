@@ -42,6 +42,7 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 | `validations.overrides`, `visibleWhen`/`enableWhen`                                      | `Conditional validations`, `Conditions`                                    |
 | Open an exported file                                                                    | `Opening an exported form (builderDraft)`                                  |
 | Export review                                                                            | `Export review (diagnoseForm)`                                             |
+| Button hierarchy (primary/secondary/tertiary), action row, chip order                    | `Button hierarchy (actionTiers)`                                           |
 | Subir (upload, fake request), toasts in the builder                                      | `Subir (upload to the API)`                                                |
 | `projectMeta.requires`                                                                   | `What a form requires`                                                     |
 | Pieces / persistence / output                                                            | `Architecture` → `Pieces`                                                  |
@@ -74,6 +75,7 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 - **Equality for undo is `sameDocument`** — selection, zoom, tool and drag state never create a history step. Edits that change nothing must return the same reference.
 - **Rounding/negatives/decimals change the value, not just display**; the formatted text never leaves the input (state holds a real `number`).
 - Nothing in the collapsed right chip's container may set `transform`/`filter`/`backdrop-filter`/`will-change`/`container-type` (breaks `ModalShell`). That's why the floating bar's `@container` lives in its own layer inside `CanvasToolbar`.
+- **Action buttons take their look from `constants/actionTiers`** (`ACTION_TIER_CLASSES`): primary / secondary / tertiary / quiet. The only filled orange is Subir; don't hand-write a new border or fill for a button.
 - Every UI hint uses `atoms/Tooltip`, never native `title=` (handles dnd-kit owns are the exception). Every new surface needs `dark:` variants.
 
 ## Commit conventions

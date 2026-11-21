@@ -58,13 +58,13 @@ export function RightSidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      {/* Solo Subir lleva texto: con Simulador tambien rotulado la fila pasaba de los 295px utiles. */}
+      {/* La importancia crece hacia el borde: los secundarios a la izquierda y Subir, el primario,
+          pegado al boton de plegar. Todo con texto, y "PDF" corto: Guardar, Abrir y Exportar bajaron al
+          bloque Formulario. Medir en 295px utiles si se cambia una etiqueta. */}
       <div className="flex items-center gap-1 border-b border-border px-3 py-2">
-        <SaveButton iconOnly />
-        <SimulatorButton iconOnly />
-        <PdfDesignerButton iconOnly />
+        <SimulatorButton />
+        <PdfDesignerButton shortLabel />
         <div className="ml-auto flex items-center gap-1">
-          <ExportButton iconOnly />
           <UploadButton />
           <RightPanelToggle className={PANEL_COLLAPSE_BUTTON_CLASSES} iconSize={14} />
         </div>
@@ -109,16 +109,22 @@ export function RightSidebar() {
 
               <PanelBlock title="Formulario">
                 <FormSummary />
-                <Tooltip content="Abre un .json exportado. Reemplaza el formulario actual, con confirmación.">
-                  <button
-                    type="button"
-                    onClick={() => setImportOpen(true)}
-                    className={OPEN_PROJECT_BUTTON_CLASSES}
-                  >
-                    <FolderOpen size={13} />
-                    Abrir formulario…
-                  </button>
-                </Tooltip>
+                {/* Los terciarios del formulario, a partes iguales: se guarda solo, y Abrir y Exportar
+                    son las dos caras del mismo archivo. */}
+                <div className="mt-1 grid grid-cols-3 gap-1">
+                  <SaveButton />
+                  <Tooltip content="Abrir un formulario exportado (.json). Reemplaza el actual, con confirmación.">
+                    <button
+                      type="button"
+                      onClick={() => setImportOpen(true)}
+                      className={OPEN_PROJECT_BUTTON_CLASSES}
+                    >
+                      <FolderOpen size={13} />
+                      Abrir…
+                    </button>
+                  </Tooltip>
+                  <ExportButton />
+                </div>
               </PanelBlock>
             </>
           )}

@@ -103,7 +103,7 @@ export const CANVAS_PERFORMANCE_ON_CLASSES: string =
 export const CANVAS_SELECTION_COUNT_CLASSES: string =
   'whitespace-nowrap px-2 text-xs font-semibold tabular-nums text-fg-strong'
 
-// Activo en pastilla y no en naranja: el naranja del panel es de Subir y Exportar.
+// Activo en pastilla y no en naranja: el unico naranja relleno del panel es Subir (actionTiers).
 export const SWITCH_TRACK_CLASSES: string =
   'flex gap-0.5 rounded-lg border border-border bg-surface-sunken p-[3px]'
 
