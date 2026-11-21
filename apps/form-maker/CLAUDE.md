@@ -42,6 +42,7 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 | `validations.overrides`, `visibleWhen`/`enableWhen`                                      | `Conditional validations`, `Conditions`                                    |
 | Open an exported file                                                                    | `Opening an exported form (builderDraft)`                                  |
 | Export review                                                                            | `Export review (diagnoseForm)`                                             |
+| Subir (upload, fake request), toasts in the builder                                      | `Subir (upload to the API)`                                                |
 | `projectMeta.requires`                                                                   | `What a form requires`                                                     |
 | Pieces / persistence / output                                                            | `Architecture` → `Pieces`                                                  |
 
@@ -86,7 +87,7 @@ Guidance for Claude Code in this app (FormMaker, formerly "Form Orchestrator"): 
 
 Package manager is **pnpm** (never npm/yarn/bun).
 
-- **A dependency only the lazy chunks import goes in `optimizeDeps.include`** (`vite.config.ts`: `sonner`, `@codemirror/*`, `@lezer/highlight`). Without it, the first open of the PDF designer or the Lógica tab failed in dev with "Failed to fetch dynamically imported module" (504 Outdated Optimize Dep). **Never run `vite --force` while a dev server is up**: it deletes `node_modules/.vite` before binding the port, under the live server.
+- **A dependency only the lazy chunks import goes in `optimizeDeps.include`** (`vite.config.ts`: `@codemirror/*`, `@lezer/highlight`; `sonner` left it when the builder started using it). Without it, the first open of the Lógica tab failed in dev with "Failed to fetch dynamically imported module" (504 Outdated Optimize Dep). **Never run `vite --force` while a dev server is up**: it deletes `node_modules/.vite` before binding the port, under the live server.
 
 - `pnpm dev` / `pnpm build` (typecheck `tsc -b` + build; may exceed the 2-min tool timeout, exit 143 = harness kill, re-run longer) / `pnpm lint` / `pnpm format` / `pnpm preview`
 - `pnpm exec tsx <script>.ts` — throwaway verification. **Run from the project root**, never from inside the scratchpad (pnpm 11 would try to `pnpm install` over the junctioned `node_modules`). Scratchpad needs `package.json` `{"type":"module"}`, absolute imports as `file:///C:/...`, a `node_modules` junction, and a `localStorage` stub installed _before_ a dynamic `import()` of the store.
@@ -96,7 +97,7 @@ Package manager is **pnpm** (never npm/yarn/bun).
 
 - Atomic design: `src/components/atoms|molecules|organisms/` + `layout/`; panels in `organisms/panels/`. Each component/hook gets **its own folder** with co-located `X.tsx`/`X.types.ts`/`X.constants.ts`/`X.utils.ts` (only what's needed) and an `index.ts` (`export * from './X'`). Hooks `src/hooks/useX/useX.ts`; libs `src/lib/<name>/<name>.ts`.
 - Import a component by its folder; across levels go through the level `index.ts`, **within a level import by folder, never the level index** (cycle). No upward imports (atom → molecule).
-- `hooks/`, `constants/`, `types/`, `lib/`, `store/` have an `index.ts` too; code outside imports through it. **Left out of the indices on purpose** (imported by folder, from behind the lazy boundary): `useFormPreview`, `usePreviewNavigation`, `usePreviewSearchSelect`, `usePdfDesignAutosave`, `usePdfDesignerShortcuts`, `usePdfFile`, `usePdfImageCheck`, `usePdfOverflowToast`; `molecules/Toaster` (sonner, only the PDF designer mounts it); libs `catalogFill`, `formRuntime`, `mockCatalog`, `pdf*`, `runtimeCondition|Derived|Payload|Validation`, `scriptDates`, `scriptRuntime`, `scriptValores`, `zodHydrate`; `store/pdfDesignStore.ts`, `banksSlice`. Libs import each other by folder, never through `lib/index.ts`.
+- `hooks/`, `constants/`, `types/`, `lib/`, `store/` have an `index.ts` too; code outside imports through it. **Left out of the indices on purpose** (imported by folder, from behind the lazy boundary): `useFormPreview`, `usePreviewNavigation`, `usePreviewSearchSelect`, `usePdfDesignAutosave`, `usePdfDesignerShortcuts`, `usePdfFile`, `usePdfImageCheck`, `usePdfOverflowToast`; libs `catalogFill`, `formRuntime`, `mockCatalog`, `pdf*`, `runtimeCondition|Derived|Payload|Validation`, `scriptDates`, `scriptRuntime`, `scriptValores`, `zodHydrate`; `store/pdfDesignStore.ts`, `banksSlice`. Libs import each other by folder, never through `lib/index.ts`.
 - A co-located `X.types.ts`/`X.constants.ts` is private to its folder; once something outside imports it, it moves to `src/types/` / `src/constants/` (whole file, not split). A new file there needs its line in the index.
 - `X.ts` is the module's public API — helpers/constants/types go in co-located files.
 

@@ -63,15 +63,15 @@ export function buildFormExport(
   }
 }
 
-export function downloadFormExport(
+// El archivo que se descarga y el que se sube: el contrato mas la copia del borrador para reabrir el
+// proyecto (lo compilado no alcanza para reeditar). El simulador y la vista JSON no la traen.
+export function buildFormExportFile(
   formSteps: FormStep[],
   setupConfig: SetupConfig,
   introModalSteps: IntroModalStep[],
   formScript: string,
-): void {
-  // La descarga lleva ademas la copia del borrador para reabrir el proyecto (lo compilado no
-  // alcanza para reeditar). El simulador y la vista JSON no la traen.
-  const data: FormExportFile = {
+): FormExportFile {
+  return {
     ...buildFormExport(formSteps, setupConfig, introModalSteps, formScript),
     builderDraft: buildDraftPayload({
       formSteps,
@@ -80,6 +80,20 @@ export function downloadFormExport(
       setupConfig,
     }),
   }
+}
+
+export function downloadFormExport(
+  formSteps: FormStep[],
+  setupConfig: SetupConfig,
+  introModalSteps: IntroModalStep[],
+  formScript: string,
+): void {
+  const data: FormExportFile = buildFormExportFile(
+    formSteps,
+    setupConfig,
+    introModalSteps,
+    formScript,
+  )
   const blob: Blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const anchor: HTMLAnchorElement = document.createElement('a')

@@ -14,6 +14,7 @@ import { ProjectImportModal } from '../ProjectImportModal/ProjectImportModal'
 import { SaveButton } from '../SaveButton/SaveButton'
 import { SimulatorButton } from '../SimulatorButton/SimulatorButton'
 import { StepTitleEditor } from '../StepTitleEditor/StepTitleEditor'
+import { UploadButton } from '../UploadButton/UploadButton'
 import {
   OPEN_PROJECT_BUTTON_CLASSES,
   PANEL_COLLAPSE_BUTTON_CLASSES,
@@ -56,14 +57,14 @@ export function RightSidebar() {
 
   return (
     <div className="flex h-full flex-col">
-      {/* Guardar y PDF como icono, Simulador y Exportar con texto: con cuatro etiquetas no entra
-          en los 295px utiles. Poca holgura: otra etiqueta ya no cabe. */}
+      {/* Solo Subir lleva texto: con Simulador tambien rotulado la fila pasaba de los 295px utiles. */}
       <div className="flex items-center gap-1 border-b border-border px-3 py-2">
         <SaveButton iconOnly />
+        <SimulatorButton iconOnly />
         <PdfDesignerButton iconOnly />
         <div className="ml-auto flex items-center gap-1">
-          <SimulatorButton />
-          <ExportButton />
+          <ExportButton iconOnly />
+          <UploadButton />
           <RightPanelToggle className={PANEL_COLLAPSE_BUTTON_CLASSES} iconSize={14} />
         </div>
       </div>

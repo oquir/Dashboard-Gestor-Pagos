@@ -10,6 +10,7 @@ import { ExportButton } from '../ExportButton/ExportButton'
 import { PdfDesignerButton } from '../PdfDesignerButton/PdfDesignerButton'
 import { SaveButton } from '../SaveButton/SaveButton'
 import { SimulatorButton } from '../SimulatorButton/SimulatorButton'
+import { UploadButton } from '../UploadButton/UploadButton'
 import { CHIP_CLASSES, NOTICE_CLASSES } from './CollapsedRightSidebar.constants'
 
 export function CollapsedRightSidebar() {
@@ -19,13 +20,14 @@ export function CollapsedRightSidebar() {
 
   return (
     <>
-      {/* No se apaga fuera de la vista lienzo: guardar, exportar y simular siguen en JSON y
+      {/* No se apaga fuera de la vista lienzo: guardar, exportar, subir y simular siguen en JSON y
           Payload. */}
       <div role="toolbar" aria-label="Acciones del formulario" className={CHIP_CLASSES}>
         <SaveButton iconOnly />
         <SimulatorButton iconOnly />
         <PdfDesignerButton iconOnly />
         <ExportButton iconOnly />
+        <UploadButton iconOnly />
         <CanvasZoomControl />
         <span aria-hidden className={CANVAS_TOOLBAR_DIVIDER_CLASSES} />
         <RightPanelToggle className={CANVAS_TOOLBAR_ICON_ACTION_CLASSES} />

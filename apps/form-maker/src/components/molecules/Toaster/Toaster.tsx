@@ -4,7 +4,7 @@ import { TOAST_CLASSES, TOAST_ICONS, TOAST_MOBILE_OFFSET, TOAST_OFFSET } from '.
 export function Toaster() {
   return (
     <SonnerToaster
-      position="top-right"
+      position="bottom-right"
       offset={TOAST_OFFSET}
       mobileOffset={TOAST_MOBILE_OFFSET}
       duration={6000}

@@ -477,6 +477,11 @@
   animation-delay: 0.9s !important;
 }
 
+/* Excepcion: el spinner de una espera (subir el formulario) tambien sigue girando, por la misma razon. */
+.low-performance .spinner {
+  animation-duration: 1s !important;
+}
+
 @utility bg-dot-grid {
   background-image: radial-gradient(
     circle at 11px 11px,

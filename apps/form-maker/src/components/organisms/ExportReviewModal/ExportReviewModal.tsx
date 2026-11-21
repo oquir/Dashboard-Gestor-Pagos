@@ -5,22 +5,26 @@ import {
   ERROR_BADGE_CLASSES,
   ITEM_CLASSES,
   LIST_CLASSES,
+  REVIEW_COPY,
   WARNING_BADGE_CLASSES,
 } from './ExportReviewModal.constants'
-import type { ExportReviewModalProps } from './ExportReviewModal.types'
+import type { ExportReviewModalProps, ReviewCopy } from './ExportReviewModal.types'
 import { summaryLabel } from './ExportReviewModal.utils'
 
 export function ExportReviewModal({
+  action,
   problems,
   hasErrors,
   onGoTo,
-  onExport,
+  onProceed,
   onClose,
 }: ExportReviewModalProps) {
+  const copy: ReviewCopy = REVIEW_COPY[action]
+
   return (
     <ModalShell
       maxWidthClassName="max-w-xl"
-      title="Revisión antes de exportar"
+      title={copy.title}
       description={summaryLabel(problems)}
       onClose={onClose}
       footer={
@@ -35,10 +39,10 @@ export function ExportReviewModal({
           <Button
             variant="primary"
             disabled={hasErrors}
-            onClick={onExport}
+            onClick={onProceed}
             className="px-4 py-1.5 text-sm hover:cursor-pointer"
           >
-            Exportar
+            {copy.actionLabel}
           </Button>
         </ModalActions>
       }
@@ -71,9 +75,7 @@ export function ExportReviewModal({
       </ul>
 
       {hasErrors && (
-        <p className="text-[11px] text-red-600 dark:text-red-400">
-          Corrige los errores para exportar.
-        </p>
+        <p className="text-[11px] text-red-600 dark:text-red-400">{copy.blockedHint}</p>
       )}
     </ModalShell>
   )

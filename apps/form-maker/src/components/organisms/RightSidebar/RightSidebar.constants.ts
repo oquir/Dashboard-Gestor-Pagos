@@ -18,7 +18,7 @@ export const PANEL_TAB_INACTIVE_CLASSES: string = 'font-medium text-fg-muted hov
 export const PANEL_TAB_DROP_DOT_CLASSES: string =
   'h-[5px] w-[5px] rounded-full bg-brand ring-[3px] ring-brand/20'
 
-// Solo icono y sin relleno: Exportar es el unico primario de la fila.
+// Solo icono y sin relleno: Subir es el unico primario de la fila.
 export const PANEL_COLLAPSE_BUTTON_CLASSES: string =
   'flex h-[26px] w-[26px] items-center justify-center rounded-md text-fg-muted transition-colors hover:bg-surface-raised hover:text-fg-strong hover:cursor-pointer dark:hover:bg-surface-inset'
 

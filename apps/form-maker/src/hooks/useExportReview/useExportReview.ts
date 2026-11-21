@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import { getBandElement, getFieldElement, getRowElement } from '../../lib'
-import { downloadFormExport } from '../../lib'
 import { diagnoseForm } from '../../lib'
 import { revealScrollBehavior } from '../../lib'
 import { useFormStore } from '../../store'
 import type { FormProblem } from '../../types'
 import type { PendingReveal, UseExportReviewResult } from './useExportReview.types'
 
-// Revision antes de exportar: corre al dar Exportar, no mientras se edita. Sin problemas descarga
-// directo; los errores bloquean y los avisos no. La deteccion vive en lib/formDiagnostics.
-export function useExportReview(): UseExportReviewResult {
+// Revision antes de exportar o subir: corre al dar el boton, no mientras se edita. Sin problemas
+// llama a onPass directo; los errores bloquean y los avisos no. La deteccion vive en
+// lib/formDiagnostics.
+export function useExportReview(onPass: () => void): UseExportReviewResult {
   const setCanvasViewMode = useFormStore((state) => state.setCanvasViewMode)
   const setActiveCanvas = useFormStore((state) => state.setActiveCanvas)
   const selectFieldAndEdit = useFormStore((state) => state.selectFieldAndEdit)
@@ -38,12 +38,7 @@ export function useExportReview(): UseExportReviewResult {
 
   const hasErrors: boolean = problems?.some((problem) => problem.severity === 'error') ?? false
 
-  function download(): void {
-    const { formSteps, setupConfig, introModal, formScript } = useFormStore.getState()
-    downloadFormExport(formSteps, setupConfig, introModal.steps, formScript)
-  }
-
-  function requestExport(): void {
+  function request(): void {
     // getState: corre una vez por clic, y suscribirse redibujaria el panel con cada cambio.
     const { formSteps, introModal, formScript } = useFormStore.getState()
     const found: FormProblem[] = diagnoseForm({
@@ -53,17 +48,17 @@ export function useExportReview(): UseExportReviewResult {
     })
 
     if (found.length === 0) {
-      download()
+      onPass()
       return
     }
 
     setProblems(found)
   }
 
-  function exportAnyway(): void {
+  function proceedAnyway(): void {
     if (hasErrors) return
 
-    download()
+    onPass()
     setProblems(null)
   }
 
@@ -98,8 +93,8 @@ export function useExportReview(): UseExportReviewResult {
   return {
     problems,
     hasErrors,
-    requestExport,
-    exportAnyway,
+    request,
+    proceedAnyway,
     goTo,
     close: () => setProblems(null),
   }

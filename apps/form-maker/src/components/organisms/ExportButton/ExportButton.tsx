@@ -1,37 +1,39 @@
-import { DirectSend2 } from 'reicon-react'
+import { DocumentDownload2 } from 'reicon-react'
 import { useExportReview } from '../../../hooks/useExportReview/useExportReview'
 import { ExportReviewModal } from '../ExportReviewModal/ExportReviewModal'
 import { EXPORT_BUTTON_CLASSES } from './ExportButton.constants'
 import type { ExportButtonProps } from './ExportButton.types'
+import { downloadCurrentForm } from './ExportButton.utils'
 import { Tooltip } from '../../atoms'
 
 const LABEL: string = 'Revisar el formulario y descargarlo como JSON'
 
-// Dueno de la revision y su modal. El panel y el chip nunca coexisten: hay un solo useExportReview
-// vivo.
+// Dueno de su revision y su modal. El panel y el chip nunca coexisten: hay un solo boton vivo.
 export function ExportButton({ iconOnly = false }: ExportButtonProps) {
-  const { problems, hasErrors, requestExport, exportAnyway, goTo, close } = useExportReview()
+  const { problems, hasErrors, request, proceedAnyway, goTo, close } =
+    useExportReview(downloadCurrentForm)
 
   return (
     <>
       <Tooltip content={LABEL}>
         <button
           type="button"
-          onClick={requestExport}
+          onClick={request}
           aria-label={iconOnly ? LABEL : undefined}
           className={EXPORT_BUTTON_CLASSES}
         >
-          <DirectSend2 size={13} />
+          <DocumentDownload2 size={13} />
           {!iconOnly && 'Exportar'}
         </button>
       </Tooltip>
 
       {problems && (
         <ExportReviewModal
+          action="export"
           problems={problems}
           hasErrors={hasErrors}
           onGoTo={goTo}
-          onExport={exportAnyway}
+          onProceed={proceedAnyway}
           onClose={close}
         />
       )}

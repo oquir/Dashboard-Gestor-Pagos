@@ -56,6 +56,8 @@ export interface FormState extends BanksSlice {
   // Ver usePerformanceClass.
   isLowPerformance: boolean
   lastSavedAt: string | null
+  // Una subida a la API en curso: bloquea otra. Vive aca porque el panel y el chip se turnan.
+  isUploadingForm: boolean
   dragPlacement: DragPlacement | null
   rowDropTarget: RowDropTarget | null
   rowDrag: RowDragState | null
@@ -80,6 +82,7 @@ export interface FormState extends BanksSlice {
   toggleDarkMode: () => void
   toggleLowPerformance: () => void
   markSaved: () => void
+  setUploadingForm: (uploading: boolean) => void
   selectFieldAndEdit: (fieldId: string, tab: SidebarTab) => void
   completeSetup: (config: {
     formType: FormType

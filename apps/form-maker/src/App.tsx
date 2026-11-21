@@ -1,5 +1,6 @@
 import './index.css'
 import { DraftRecoveryModal } from './components/organisms'
+import { Toaster } from './components/molecules'
 import { FormBuilder } from './components/organisms'
 import { SetupWizardModal } from './components/organisms'
 import { useAutosave } from './hooks'
@@ -38,7 +39,13 @@ function App() {
     return <SetupWizardModal draftWasInvalid={draftRecovery.wasInvalid} />
   }
 
-  return <FormBuilder />
+  // Un solo Toaster para el constructor y el disenador de PDF (FormBuilder monta uno u otro).
+  return (
+    <>
+      <FormBuilder />
+      <Toaster />
+    </>
+  )
 }
 
 export default App

@@ -3,8 +3,8 @@ import type { FormProblem } from '../../types'
 export interface UseExportReviewResult {
   problems: FormProblem[] | null
   hasErrors: boolean
-  requestExport: () => void
-  exportAnyway: () => void
+  request: () => void
+  proceedAnyway: () => void
   goTo: (problem: FormProblem) => void
   close: () => void
 }

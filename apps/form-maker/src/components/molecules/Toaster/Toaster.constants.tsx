@@ -1,5 +1,6 @@
 import { AlertCircle, AlertTriangle, InfoCircle, TickCircle2 } from 'reicon-react'
 import type { ToasterProps } from 'sonner'
+import { Spinner } from '../../atoms'
 
 // Sonner va sin estilos propios y toma los colores por rol de FormMaker (los tokens de index.css).
 export const TOAST_CLASSES: NonNullable<ToasterProps['toastOptions']>['classNames'] = {
@@ -9,7 +10,12 @@ export const TOAST_CLASSES: NonNullable<ToasterProps['toastOptions']>['className
   error: 'bg-danger-surface text-danger ring-danger-border',
   warning: 'bg-warning-surface text-warning ring-warning-border',
   info: 'bg-brand-surface text-brand-fg ring-brand-border',
-  icon: 'mt-0.5 shrink-0',
+  // El spinner va al final y centrado, no a la izquierda como los iconos de resultado.
+  loading: 'flex-row-reverse items-center [&_[data-icon]]:mt-0',
+  // relative + size-4: con unstyled sonner no le da caja al icono, y su .sonner-loader (absoluto, al
+  // 50%) se iba al medio del toast, al lado del titulo.
+  icon: 'relative mt-0.5 size-4 shrink-0',
+  content: 'min-w-0 flex-1',
   title: 'font-medium',
   description: 'mt-0.5 opacity-90',
   actionButton:
@@ -21,12 +27,13 @@ export const TOAST_ICONS: ToasterProps['icons'] = {
   error: <AlertCircle className="size-4" aria-hidden />,
   warning: <AlertTriangle className="size-4" aria-hidden />,
   info: <InfoCircle className="size-4" aria-hidden />,
+  loading: <Spinner className="size-4" />,
 }
 
-// Debajo del encabezado fijo del disenador.
-export const TOAST_OFFSET: { top: number; right: number } = { top: 64, right: 24 }
-export const TOAST_MOBILE_OFFSET: { top: number; right: number; left: number } = {
-  top: 64,
+// Esquina inferior derecha (decision del usuario): arriba tapaba la fila de acciones del panel.
+export const TOAST_OFFSET: { bottom: number; right: number } = { bottom: 24, right: 24 }
+export const TOAST_MOBILE_OFFSET: { bottom: number; right: number; left: number } = {
+  bottom: 16,
   right: 16,
   left: 16,
 }

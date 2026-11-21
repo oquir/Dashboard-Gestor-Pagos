@@ -9,8 +9,6 @@ import { useFormStore } from '../../../store'
 import { usePdfDesignStore } from '../../../store/pdfDesignStore'
 import type { PdfTaxType } from '../../../types'
 import { Tooltip } from '../../atoms'
-// Por la carpeta y no por el indice: arrastra sonner, que solo debe cargar este chunk.
-import { Toaster } from '../../molecules/Toaster'
 import { PdfCanvas } from '../pdf/PdfCanvas'
 import { PdfFileNotice } from '../pdf/PdfFileNotice'
 import { PdfSidebar } from '../pdf/PdfSidebar'
@@ -136,8 +134,6 @@ export function PdfDesigner() {
           </button>
         </div>
       </header>
-
-      <Toaster />
 
       {notice && <PdfFileNotice notice={notice} onDismiss={dismissNotice} />}
 

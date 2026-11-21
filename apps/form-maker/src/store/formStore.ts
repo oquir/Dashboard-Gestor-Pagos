@@ -135,6 +135,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
   isDarkMode: getInitialDarkMode(),
   isLowPerformance: getInitialLowPerformance(),
   lastSavedAt: null,
+  isUploadingForm: false,
   setDragPlacement: (placement) => set({ dragPlacement: placement }),
   setRowDropTarget: (target) => set({ rowDropTarget: target }),
   setRowDrag: (drag) => set({ rowDrag: drag }),
@@ -158,6 +159,7 @@ const createFormState: StateCreator<FormState, [['temporal', unknown]], []> = (s
   setSidebarTab: (tab) => set({ sidebarTab: tab }),
   setRightSidebarTab: (tab) => set({ rightSidebarTab: tab }),
   markSaved: () => set({ lastSavedAt: new Date().toISOString() }),
+  setUploadingForm: (uploading) => set({ isUploadingForm: uploading }),
   toggleDarkMode: () =>
     set((state) => {
       const next = !state.isDarkMode
