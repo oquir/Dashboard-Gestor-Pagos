@@ -7,10 +7,11 @@ import { uploadFormExport } from '../../lib/formUpload/formUpload'
 import { useFormStore } from '../../store/formStore'
 import type { FormExportFile } from '../../types/exportForm'
 import type { FormState } from '../../types/formStoreTypes'
-import type { FormUploadResult } from '../../types/formUpload'
+import type { FormUploadResult } from '../../types/upload'
 import { UPLOAD_TOAST_COPY } from './useFormUpload.constants'
 import type { UseFormUploadResult } from './useFormUpload.types'
-import { describeUpload, describeUploadError } from './useFormUpload.utils'
+import { describeApiError } from '../../lib/fakeApi/fakeApi'
+import { describeUpload } from './useFormUpload.utils'
 
 export function useFormUpload(): UseFormUploadResult {
   const isUploading: boolean = useFormStore((state) => state.isUploadingForm)
@@ -45,7 +46,7 @@ export function useFormUpload(): UseFormUploadResult {
       .catch((error: unknown) => {
         toast.error(UPLOAD_TOAST_COPY.error, {
           id: toastId,
-          description: describeUploadError(error),
+          description: describeApiError(error),
         })
       })
       .finally(() => useFormStore.getState().setUploadingForm(false))

@@ -30,6 +30,9 @@ export interface PdfDesignState {
   saveError: string | null
   // La proxima publicacion es N + 1. Fuera del historial: deshacer no puede repetir una N.
   publishedVersion: number | null
+  // Una subida a la API en curso: bloquea otra. Vista: fuera del historial y del guardado.
+  isUploading: boolean
+  setUploading: (uploading: boolean) => void
   zoom: number
   setZoom: (zoom: number) => void
   tool: CanvasTool

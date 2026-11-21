@@ -283,12 +283,6 @@ export type PdfFileRead =
     }
   | { ok: false; error: string }
 
-export interface PdfFileNotice {
-  tone: 'info' | 'error'
-  title: string
-  details: string[]
-}
-
 // Hoy llega por la URL. Lo que falta sale del formulario abierto.
 export interface PdfEntryParams {
   impuesto?: string

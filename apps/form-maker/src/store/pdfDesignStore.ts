@@ -69,6 +69,8 @@ const createPdfDesignState: StateCreator<PdfDesignState> = (set, get) => ({
   lastSavedAt: null,
   saveError: null,
   publishedVersion: null,
+  isUploading: false,
+  setUploading: (isUploading) => set({ isUploading }),
   zoom: 1,
   tool: 'move',
   sidebarTab: 'selection',

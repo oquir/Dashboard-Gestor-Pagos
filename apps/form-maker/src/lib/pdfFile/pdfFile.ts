@@ -61,6 +61,7 @@ import {
   FILE_ATTR,
   FILE_COMMENT,
   MESSAGES,
+  PDF_DRAFT_FILE_SUFFIX,
   PDF_FILE_FORMAT_VERSION,
   PRINT_CSS,
   PRINT_FRAME_TIMEOUT_MS,
@@ -83,18 +84,21 @@ import {
   versionFromFileName,
 } from './pdfFile.utils'
 
-// El .html del PDF: se genera para publicar y se lee para abrir. Es la unica fuente del diseno; lo
+// El .html del PDF: se genera para subir, descargar o imprimir y se lee para abrir. Es la unica fuente del diseno; lo
 // que hace falta para reabrir viaja en data-fm-*, que SelectPdf ignora. Pinta lo mismo que el
 // lienzo con las mismas funciones. Fuera de lib/index.ts.
 
-export function pdfFileName(taxType: PdfTaxType, version: number): string {
-  return `${taxType}_v${version}.html`
+// version null: un diseno que nunca se subio.
+export function pdfFileName(taxType: PdfTaxType, version: number | null): string {
+  return version === null
+    ? `${taxType}_${PDF_DRAFT_FILE_SUFFIX}.html`
+    : `${taxType}_v${version}.html`
 }
 
 // renderVerticalText necesita un <canvas> (lo pone lib/pdfVerticalText); sin el, writing-mode.
 export function buildPdfHtml(
   design: PdfDesign,
-  version: number,
+  version: number | null,
   renderVerticalText: PdfVerticalTextRenderer = () => null,
 ): string {
   const ctx: PdfComponentContext = {
@@ -113,7 +117,7 @@ export function buildPdfHtml(
   const rootAttributes: string = attrs([
     [FILE_ATTR.design, String(PDF_FILE_FORMAT_VERSION)],
     [FILE_ATTR.tax, design.taxType],
-    [FILE_ATTR.version, String(version)],
+    [FILE_ATTR.version, version === null ? null : String(version)],
     [FILE_ATTR.font, design.fontFamily],
     [FILE_ATTR.fontSize, String(design.fontSize)],
     [FILE_ATTR.margins, `${top} ${right} ${bottom} ${left}`],
@@ -126,7 +130,7 @@ export function buildPdfHtml(
     '<html lang="es">',
     '<head>',
     '<meta charset="utf-8">',
-    `<title>${escapePdfText(taxTypeLabel(design.taxType))} v${version}</title>`,
+    `<title>${escapePdfText(taxTypeLabel(design.taxType))}${version === null ? '' : ` v${version}`}</title>`,
     `<style>\n${BASE_CSS}\n${pdfStyleSheet(design)}\n</style>`,
     '</head>',
     '<body>',

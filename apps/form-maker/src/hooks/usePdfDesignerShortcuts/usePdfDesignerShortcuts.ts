@@ -64,7 +64,7 @@ export function usePdfDesignerShortcuts(): void {
       if (key === 'p' && !event.shiftKey && !event.altKey) {
         event.preventDefault()
         if (!state.design) return
-        printPdfHtml(buildPdfHtml(state.design, state.publishedVersion ?? 0, renderVerticalTextPng))
+        printPdfHtml(buildPdfHtml(state.design, state.publishedVersion, renderVerticalTextPng))
         return
       }
 

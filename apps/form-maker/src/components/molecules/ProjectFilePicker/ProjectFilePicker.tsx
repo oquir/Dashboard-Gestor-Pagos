@@ -1,7 +1,7 @@
-import { type ChangeEvent, useRef } from 'react'
-import { Button } from '../../atoms'
+import { FILE_ERROR_BOX_CLASSES, FILE_SUMMARY_BOX_CLASSES } from '../../../constants'
 import { FieldRenameNotice } from '../FieldRenameNotice'
-import { ERROR_BOX_CLASSES, FILE_ACCEPT, SUMMARY_BOX_CLASSES } from './ProjectFilePicker.constants'
+import { FileChooser } from '../FileChooser'
+import { FILE_ACCEPT } from './ProjectFilePicker.constants'
 import type { ProjectFilePickerProps } from './ProjectFilePicker.types'
 import { summaryLine } from './ProjectFilePicker.utils'
 
@@ -12,15 +12,6 @@ export function ProjectFilePicker({
   isReading,
   onPick,
 }: ProjectFilePickerProps) {
-  const inputRef = useRef<HTMLInputElement>(null)
-
-  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
-    const file: File | undefined = event.target.files?.[0]
-    // Se vacia para que volver a elegir el mismo archivo, ya corregido, dispare change otra vez.
-    event.target.value = ''
-    if (file) onPick(file)
-  }
-
   return (
     <div className="flex flex-col gap-3">
       <p className="text-sm text-slate-600 dark:text-neutral-300">
@@ -28,31 +19,17 @@ export function ProjectFilePicker({
         listo para seguir editándolo.
       </p>
 
-      <div className="flex min-w-0 items-center gap-3">
-        <Button
-          variant="secondary"
-          onClick={() => inputRef.current?.click()}
-          className="shrink-0 px-3 py-1.5 text-sm hover:cursor-pointer"
-        >
-          Elegir archivo
-        </Button>
-        <span className="truncate text-xs text-slate-500 dark:text-neutral-400">
-          {isReading ? 'Leyendo…' : (fileName ?? 'Ningún archivo elegido')}
-        </span>
-        <input
-          ref={inputRef}
-          type="file"
-          accept={FILE_ACCEPT}
-          aria-label="Archivo JSON exportado"
-          onChange={handleChange}
-          className="hidden"
-        />
-      </div>
+      <FileChooser
+        accept={FILE_ACCEPT}
+        ariaLabel="Archivo JSON exportado"
+        status={isReading ? 'Leyendo…' : (fileName ?? 'Ningún archivo elegido')}
+        onPick={(files) => onPick(files[0])}
+      />
 
-      {result?.status === 'error' && <p className={ERROR_BOX_CLASSES}>{result.message}</p>}
+      {result?.status === 'error' && <p className={FILE_ERROR_BOX_CLASSES}>{result.message}</p>}
 
       {summary && (
-        <div className={SUMMARY_BOX_CLASSES}>
+        <div className={FILE_SUMMARY_BOX_CLASSES}>
           <p className="text-sm font-medium text-slate-800 dark:text-neutral-100">
             {summary.formTypeLabel}
           </p>

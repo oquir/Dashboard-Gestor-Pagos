@@ -1,92 +1,59 @@
-import { useState } from 'react'
-import {
-  buildPdfHtml,
-  downloadPdfHtml,
-  pdfFileName,
-  pickLatestPdfFile,
-  readPdfFile,
-} from '../../lib/pdfFile'
+// Subir y descargar el .html del PDF (abrir va por usePdfImport). Subir (hoy peticion falsa,
+// lib/pdfUpload) es lo que asigna la N: sube <impuesto>_v<N+1>.html y la marca al responder bien.
+// Descargar es una copia que no gasta N: lleva la ultima subida, o _borrador si nunca se subio. Las
+// reglas estan en lib/pdfFile.
+import { toast } from 'sonner'
+import { describeApiError } from '../../lib/fakeApi/fakeApi'
+import { buildPdfHtml, downloadPdfHtml, pdfFileName } from '../../lib/pdfFile'
+import { uploadPdfHtml } from '../../lib/pdfUpload'
 import { renderVerticalTextPng } from '../../lib/pdfVerticalText'
 import { usePdfDesignStore } from '../../store/pdfDesignStore'
-import type { PdfFileNotice, PdfFileRead } from '../../types'
+import type { PdfDesignState } from '../../types'
+import { PDF_FILE_COPY } from './usePdfFile.constants'
+import type { UsePdfFileResult } from './usePdfFile.types'
+import { describePdfUpload } from './usePdfFile.utils'
 
-// Publicar y abrir el .html del PDF sin back: publicar descarga <impuesto>_v<N>.html con la N
-// siguiente. El aviso vive en estado local. Las reglas estan en lib/pdfFile.
-export function usePdfFile(): {
-  notice: PdfFileNotice | null
-  dismissNotice: () => void
-  publish: () => void
-  openFiles: (files: FileList | null) => Promise<void>
-} {
-  const [notice, setNotice] = useState<PdfFileNotice | null>(null)
+export function usePdfFile(): UsePdfFileResult {
+  const isUploading: boolean = usePdfDesignStore((state) => state.isUploading)
 
-  function publish(): void {
-    const { design, publishedVersion, markPublished } = usePdfDesignStore.getState()
+  function upload(): void {
+    const state: PdfDesignState = usePdfDesignStore.getState()
+    if (!state.design || state.isUploading) return
+
+    const version: number = (state.publishedVersion ?? 0) + 1
+    const fileName: string = pdfFileName(state.design.taxType, version)
+    const html: string = buildPdfHtml(state.design, version, renderVerticalTextPng)
+
+    state.setUploading(true)
+    const toastId: string | number = toast.loading(PDF_FILE_COPY.uploading, {
+      description: PDF_FILE_COPY.uploadingDescription,
+    })
+
+    uploadPdfHtml(html, fileName, version)
+      .then((result) => {
+        usePdfDesignStore.getState().markPublished(result.version)
+        toast.success(`${PDF_FILE_COPY.uploaded} · v${result.version}`, {
+          id: toastId,
+          description: describePdfUpload(result),
+        })
+      })
+      .catch((error: unknown) => {
+        toast.error(PDF_FILE_COPY.uploadFailed, {
+          id: toastId,
+          description: describeApiError(error),
+        })
+      })
+      .finally(() => usePdfDesignStore.getState().setUploading(false))
+  }
+
+  function download(): void {
+    const { design, publishedVersion } = usePdfDesignStore.getState()
     if (!design) return
 
-    const version: number = (publishedVersion ?? 0) + 1
-    const fileName: string = pdfFileName(design.taxType, version)
-    downloadPdfHtml(buildPdfHtml(design, version, renderVerticalTextPng), fileName)
-    markPublished(version)
-    setNotice({
-      tone: 'info',
-      title: `Se descargó ${fileName}`,
-      details: [
-        'Todavía no hay a dónde subirlo: llévalo tú al servidor de las plantillas.',
-        `La próxima vez que publiques saldrá la versión ${version + 1}.`,
-      ],
-    })
+    const fileName: string = pdfFileName(design.taxType, publishedVersion)
+    downloadPdfHtml(buildPdfHtml(design, publishedVersion, renderVerticalTextPng), fileName)
+    toast.success(`Se descargó ${fileName}`, { description: PDF_FILE_COPY.downloadedDescription })
   }
 
-  // Con varios archivos vale el de N mas alta. Reemplazar el diseno se deshace, asi que no se
-  // confirma.
-  async function openFiles(files: FileList | null): Promise<void> {
-    const { design, loadDesign } = usePdfDesignStore.getState()
-    if (!design || !files || files.length === 0) return
-
-    const list: File[] = [...files]
-    const reads: PdfFileRead[] = await Promise.all(
-      list.map(async (file) => {
-        try {
-          return readPdfFile(await file.text(), design.taxType, file.name)
-        } catch {
-          return { ok: false, error: 'No se pudo leer el archivo.' } satisfies PdfFileRead
-        }
-      }),
-    )
-    const failures: string[] = reads.flatMap((read, index) =>
-      read.ok ? [] : [list.length > 1 ? `${list[index].name}: ${read.error}` : read.error],
-    )
-
-    const chosen: number = pickLatestPdfFile(reads)
-    const read: PdfFileRead | undefined = reads[chosen]
-    if (!read?.ok) {
-      setNotice({
-        tone: 'error',
-        title:
-          list.length === 1
-            ? `No se pudo abrir ${list[0].name}`
-            : 'No se pudo abrir ningún archivo',
-        details: failures,
-      })
-      return
-    }
-
-    loadDesign(read.design, read.version)
-    const others: number = reads.filter((item) => item.ok).length - 1
-    setNotice({
-      tone: 'info',
-      title: `Se abrió ${list[chosen].name}${read.version ? ` (versión ${read.version})` : ''}`,
-      details: [
-        ...(others > 0
-          ? [`De los ${others + 1} que se pudieron leer, vale el de versión más alta.`]
-          : []),
-        ...read.warnings,
-        ...failures,
-        'Si no era lo que querías, Ctrl+Z vuelve al diseño de antes.',
-      ],
-    })
-  }
-
-  return { notice, dismissNotice: () => setNotice(null), publish, openFiles }
+  return { isUploading, upload, download }
 }

@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef } from 'react'
-import { ArrowLeft, DirectSend2, FolderOpen, Moon, Sun } from 'reicon-react'
+import { useEffect, useMemo, useState } from 'react'
+import { ArrowLeft, CloudUpload, DocumentDownload2, FolderOpen, Moon, Sun } from 'reicon-react'
 import { useCanvasPan } from '../../../hooks'
 import { usePdfDesignAutosave } from '../../../hooks/usePdfDesignAutosave'
 import { usePdfDesignerShortcuts } from '../../../hooks/usePdfDesignerShortcuts'
@@ -8,16 +8,16 @@ import { readPdfEntryParams, resolvePdfTaxType, taxTypeLabel } from '../../../li
 import { useFormStore } from '../../../store'
 import { usePdfDesignStore } from '../../../store/pdfDesignStore'
 import type { PdfTaxType } from '../../../types'
-import { Tooltip } from '../../atoms'
+import { Spinner, Tooltip } from '../../atoms'
 import { PdfCanvas } from '../pdf/PdfCanvas'
-import { PdfFileNotice } from '../pdf/PdfFileNotice'
+import { PdfImportModal } from '../pdf/PdfImportModal'
 import { PdfSidebar } from '../pdf/PdfSidebar'
 import { PdfToolbar } from '../pdf/PdfToolbar'
 import {
   EXIT_BUTTON_CLASSES,
   HAND_CURSOR_CLASSES,
   ICON_BUTTON_CLASSES,
-  PUBLISH_BUTTON_CLASSES,
+  UPLOAD_BUTTON_CLASSES,
   STATUS_DOT_CLASSES,
 } from './PdfDesigner.constants'
 import { savedStatus } from './PdfDesigner.utils'
@@ -34,8 +34,8 @@ export function PdfDesigner() {
   const saveError = usePdfDesignStore((state) => state.saveError)
   const publishedVersion = usePdfDesignStore((state) => state.publishedVersion)
   const openDesign = usePdfDesignStore((state) => state.openDesign)
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
-  const { notice, dismissNotice, publish, openFiles } = usePdfFile()
+  const [isImportOpen, setImportOpen] = useState<boolean>(false)
+  const { isUploading, upload, download } = usePdfFile()
   const tool = usePdfDesignStore((state) => state.tool)
 
   // La URL se lee una vez al montar.
@@ -64,7 +64,7 @@ export function PdfDesigner() {
           <h1 className="text-base font-semibold text-fg-strong">Diseñar PDF</h1>
           <p className="truncate text-xs text-fg-muted">
             {taxType ? `${taxTypeLabel(taxType)} · ` : ''}Carta · 5 mm de margen del back ·{' '}
-            {publishedVersion ? `Última versión: ${publishedVersion}` : 'Sin publicar'}
+            {publishedVersion ? `Última versión subida: ${publishedVersion}` : 'Sin subir'}
           </p>
         </div>
 
@@ -83,33 +83,38 @@ export function PdfDesigner() {
           </Tooltip>
           {isReady && (
             <div className="flex items-center gap-1.5">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".html,.htm,text/html"
-                multiple
-                className="hidden"
-                onChange={(event) => {
-                  const input: HTMLInputElement = event.currentTarget
-                  void openFiles(input.files).finally(() => {
-                    input.value = ''
-                  })
-                }}
-              />
               <Tooltip content="Abre un .html de FormMaker o una plantilla hecha a mano. Con varios, vale el de versión más alta.">
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => setImportOpen(true)}
                   className={EXIT_BUTTON_CLASSES}
                 >
                   <FolderOpen size={14} />
                   Abrir…
                 </button>
               </Tooltip>
-              <Tooltip content="Descarga el .html con el número de versión siguiente">
-                <button type="button" onClick={publish} className={PUBLISH_BUTTON_CLASSES}>
-                  <DirectSend2 size={13} />
-                  Publicar v{(publishedVersion ?? 0) + 1}
+              <Tooltip content="Descarga una copia del .html del diseño actual. No gasta versión.">
+                <button type="button" onClick={download} className={EXIT_BUTTON_CLASSES}>
+                  <DocumentDownload2 size={14} />
+                  Descargar HTML
+                </button>
+              </Tooltip>
+              <Tooltip
+                content={
+                  isUploading
+                    ? 'Subiendo la plantilla…'
+                    : `Sube el .html a la API como versión ${(publishedVersion ?? 0) + 1}`
+                }
+              >
+                <button
+                  type="button"
+                  onClick={upload}
+                  disabled={isUploading}
+                  aria-busy={isUploading}
+                  className={UPLOAD_BUTTON_CLASSES}
+                >
+                  {isUploading ? <Spinner className="size-[13px]" /> : <CloudUpload size={13} />}
+                  Subir v{(publishedVersion ?? 0) + 1}
                 </button>
               </Tooltip>
             </div>
@@ -135,7 +140,7 @@ export function PdfDesigner() {
         </div>
       </header>
 
-      {notice && <PdfFileNotice notice={notice} onDismiss={dismissNotice} />}
+      {isImportOpen && <PdfImportModal onClose={() => setImportOpen(false)} />}
 
       {!taxType && (
         <p className="mx-auto mt-16 max-w-md px-6 text-center text-sm text-fg-muted">

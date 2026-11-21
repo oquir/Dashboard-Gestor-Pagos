@@ -125,3 +125,11 @@ export const PANEL_BUTTON_ON_CLASSES: string =
 
 export const PANEL_DANGER_LINK_CLASSES: string =
   'text-[11px] font-medium text-danger hover:cursor-pointer hover:underline disabled:cursor-not-allowed disabled:opacity-40 disabled:no-underline'
+
+// Los modales de abrir (formulario y plantilla del PDF): el error de lectura y la ficha de lo que
+// se va a abrir.
+export const FILE_ERROR_BOX_CLASSES: string =
+  'rounded border border-red-200 bg-red-50 px-3 py-2 text-[11px] font-medium text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-400'
+
+export const FILE_SUMMARY_BOX_CLASSES: string =
+  'flex flex-col gap-0.5 rounded border border-slate-200 px-3 py-2 dark:border-neutral-700'

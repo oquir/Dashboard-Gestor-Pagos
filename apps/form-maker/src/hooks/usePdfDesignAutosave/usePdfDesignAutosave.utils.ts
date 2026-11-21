@@ -8,7 +8,7 @@ interface PendingSave {
 }
 
 // Guarda tras delayMs de calma y devuelve el apagado (que guarda lo pendiente). Abrir una plantilla
-// no guarda; publicar si cuenta como cambio, o la N se repetiria tras recargar.
+// no guarda; subir si cuenta como cambio, o la N se repetiria tras recargar.
 export function startPdfAutosave(store: StoreApi<PdfDesignState>, delayMs: number): () => void {
   let timer: ReturnType<typeof setTimeout> | null = null
   let pending: PendingSave | null = null

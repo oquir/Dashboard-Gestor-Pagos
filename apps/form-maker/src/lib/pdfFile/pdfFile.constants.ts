@@ -3,6 +3,9 @@
 // siguen abriendo.
 export const PDF_FILE_FORMAT_VERSION: number = 3
 
+// El nombre de una copia de un diseno que nunca se subio: sin _vN, porque la N la asigna Subir.
+export const PDF_DRAFT_FILE_SUFFIX: string = 'borrador'
+
 // Los atributos que dejan reabrir el diseño. SelectPdf los ignora.
 export const FILE_ATTR = {
   design: 'data-fm-design',
