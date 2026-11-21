@@ -10,9 +10,12 @@ import {
 
 export function FieldPalette() {
   const appendFieldToActiveCanvas = useFormStore((state) => state.appendFieldToActiveCanvas)
+  const setCanvasViewMode = useFormStore((state) => state.setCanvasViewMode)
   const reveal = useCanvasReveal()
 
   function handleAdd(fieldType: FieldTypeDef): void {
+    if (useFormStore.getState().canvasViewMode !== 'canvas') setCanvasViewMode('canvas')
+
     const before: number = getActiveRows(useFormStore.getState()).length
     appendFieldToActiveCanvas(fieldType)
 

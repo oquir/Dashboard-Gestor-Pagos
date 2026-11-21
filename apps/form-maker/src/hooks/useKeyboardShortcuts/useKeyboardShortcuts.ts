@@ -99,11 +99,13 @@ export function useKeyboardShortcuts() {
       if (state.isSimulatorOpen || state.isPdfDesignerOpen) return
 
       // Ctrl+flecha, de a uno. Solo Ctrl: Alt+flecha es atras del navegador, Ctrl+Alt gira la
-      // pantalla en equipos Intel y Cmd+flecha es atras en Mac.
+      // pantalla en equipos Intel y Cmd+flecha es atras en Mac. Solo en el lienzo: en JSON o
+      // Payload cambiar de paso no se ve.
       const stepOffset: 1 | -1 | undefined = STEP_NAVIGATION_OFFSETS[event.key]
 
       if (stepOffset !== undefined && event.ctrlKey && !event.metaKey && !event.altKey) {
         if (event.shiftKey || !state.setupConfig.isComplete) return
+        if (state.canvasViewMode !== 'canvas') return
         if (isEditableTarget(event.target)) return
 
         event.preventDefault()
